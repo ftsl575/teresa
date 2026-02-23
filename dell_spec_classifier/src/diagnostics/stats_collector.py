@@ -2,12 +2,25 @@
 Collect and persist run statistics (counts by entity_type, state, rules).
 """
 
+import hashlib
 import json
 from pathlib import Path
 from typing import List
 
 from src.core.normalizer import RowKind
 from src.core.classifier import ClassificationResult, EntityType
+
+
+def compute_file_hash(filepath: str, algorithm: str = "sha256") -> str:
+    """Compute hex digest of a file. Default: SHA-256. Reusable for any file (rules, mapping, etc.)."""
+    h = hashlib.new(algorithm)
+    with open(filepath, "rb") as f:
+        while True:
+            chunk = f.read(8192)
+            if not chunk:
+                break
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def collect_stats(classification_results: List[ClassificationResult]) -> dict:

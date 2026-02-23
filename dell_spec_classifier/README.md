@@ -110,8 +110,11 @@ For ITEM rows, state is derived from `option_name` (e.g. "No TPM", "Disabled"):
 3. **Run the pipeline** on dl1–dl5: `python main.py --input test_data/dlN.xlsx` for N=1..5.
 4. **Inspect** `unknown_rows.csv` and `run_summary.json` in the run folder; confirm `unknown_count` and classifications are as intended.
 5. **Update golden** if the change is intentional: `python main.py --input test_data/dlN.xlsx --update-golden` (answer `y`), or use `--save-golden` for non-interactive/CI.
-6. **Run the full test suite:** `pytest tests/ -v`.
-7. **Update CHANGELOG.md** and commit.
+6. **Review golden diffs carefully:** When reviewing a PR that updates golden files, verify that: (a) only the intended rows changed; (b) only the intended fields changed; (c) the PR description lists the count of changed rows and the nature of changes. Do not approve golden updates without understanding every diff.
+7. **Run the full test suite:** `pytest tests/ -v`.
+8. **Update CHANGELOG.md** and commit.
+
+**⚠ Rule ordering sensitivity:** Rules within each entity category use first-match semantics. When adding a new rule, verify that it does not shadow existing rules by running all 5 datasets (dl1.xlsx through dl5.xlsx) and confirming that golden diffs are limited to the intended rows. Inserting a rule above an existing rule with an overlapping regex pattern can silently change classification for previously-matched rows.
 
 ---
 

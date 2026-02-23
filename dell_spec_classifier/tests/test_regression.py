@@ -6,32 +6,8 @@ import json
 import pytest
 from pathlib import Path
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
-from src.rules.rules_engine import RuleSet
-
 from conftest import project_root
-
-
-def _run_pipeline_and_build_golden_rows(input_path: Path, rules_path: Path):
-    """Run parse → normalize → classify and return list of golden-format dicts."""
-    raw_rows = parse_excel(str(input_path))
-    normalized_rows = [normalize_row(r) for r in raw_rows]
-    ruleset = RuleSet.load(str(rules_path))
-    from src.core.classifier import classify_row
-    classification_results = [classify_row(r, ruleset) for r in normalized_rows]
-    out = []
-    for row, result in zip(normalized_rows, classification_results):
-        out.append({
-            "source_row_index": row.source_row_index,
-            "row_kind": result.row_kind.value,
-            "entity_type": result.entity_type.value if result.entity_type else None,
-            "state": result.state.value if result.state else None,
-            "matched_rule_id": result.matched_rule_id,
-            "device_type": getattr(result, "device_type", None),
-            "skus": list(row.skus),
-        })
-    return out
+from tests.helpers import run_pipeline_in_memory, build_golden_rows
 
 
 def _load_golden(golden_path: Path):
@@ -69,7 +45,8 @@ def test_regression(filename):
     if not golden_path.exists():
         pytest.skip(f"Golden file not found: {golden_path}. Run: python main.py --input test_data/{filename} --save-golden")
 
-    current = _run_pipeline_and_build_golden_rows(input_path, rules_path)
+    normalized, results = run_pipeline_in_memory(input_path, rules_path)
+    current = build_golden_rows(normalized, results)
     expected_rows = _load_golden(golden_path)
 
     if len(current) != len(expected_rows):

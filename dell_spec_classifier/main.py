@@ -24,7 +24,7 @@ from src.outputs.json_writer import (
     save_unknown_rows,
     save_header_rows,
 )
-from src.diagnostics.stats_collector import collect_stats, save_run_summary
+from src.diagnostics.stats_collector import collect_stats, save_run_summary, compute_file_hash
 from src.outputs.excel_writer import generate_cleaned_spec
 from src.outputs.annotated_writer import generate_annotated_source_excel
 
@@ -134,6 +134,7 @@ def main() -> int:
         save_header_rows(normalized_rows, run_folder)
 
         stats = collect_stats(classification_results)
+        stats["rules_file_hash"] = compute_file_hash(str(rules_path))
         save_run_summary(stats, run_folder)
 
         generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)

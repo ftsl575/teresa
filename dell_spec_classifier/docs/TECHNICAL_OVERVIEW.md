@@ -103,6 +103,7 @@ python main.py --input test_data/dl1.xlsx --update-golden
 - `entity_type` (строка или null)
 - `state` (строка или null)
 - `matched_rule_id` (строка)
+- `device_type` (строка или null)
 - `skus` (список строк)
 
 Генерация: при запуске с `--save-golden` или после подтверждения при `--update-golden` в `main.py` вызываются `_build_golden_rows(normalized_rows, classification_results)` и `_save_golden(golden_rows, golden_path)`.
@@ -211,3 +212,15 @@ dell_spec_classifier/
 - **Добавление правил:** добавить в нужную группу новый элемент с уникальным `rule_id`. Порядок в группе важен: срабатывает первое совпадение. Регулярные выражения применяются без учёта регистра (`re.IGNORECASE` в `match_rule` и `detect_state`).
 - **Новый тип сущности:** потребует изменений в коде: enum `EntityType` в `classifier.py`, ветка в `classify_row`, при необходимости — секция в YAML и её чтение в `RuleSet`. В текущей реализации новых типов без правок кода добавить нельзя.
 - **Регрессия:** после изменения правил или логики классификации нужно обновить golden (`--update-golden` с подтверждением) и перезапустить `pytest tests/test_regression.py`, при необходимости обновить `CHANGELOG.md` по принятой в проекте практике.
+
+---
+
+## 11. Known Limitations and Risks
+
+- **First-match rule sensitivity:** Entity classification and device_type assignment use first-match semantics within each rule category. Overlapping regex patterns between rules in the same category may cause shadowing: a rule placed earlier in the YAML will match instead of a more specific rule placed later. There is no automated overlap detection. Mitigation: when adding rules, run all 5 test datasets and inspect golden diffs before committing.
+
+- **Golden file coupling:** Golden files (golden/*_expected.jsonl) compare exact field values (entity_type, state, matched_rule_id, device_type, skus). Any change to normalization behavior (whitespace handling, SKU parsing order) or serialization will cause regression failures across all datasets. This is intentional — the golden files are the classification contract. However, it means that non-functional refactoring of the normalizer or parser requires golden regeneration and careful diff review.
+
+- **No automated rule overlap checker:** There is currently no lint or CI check to detect regex overlap between rules in the same category. This is deferred; at the current rule count (~30 rules), manual review during PR is sufficient. If the rule set grows significantly, an automated tool should be built.
+
+- **run_summary.json is schema-free:** There is no formal schema or validation for run_summary.json. Fields are added by collect_stats() and by main.py. Tests only assert on unknown_count and item_rows_count. Other fields could silently change type or disappear without test failure. Consider adding a schema test if the summary grows in scope.
