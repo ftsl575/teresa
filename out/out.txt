@@ -1,0 +1,29 @@
+PS C:\Users\G> # Перейди в папку проекта
+>> cd C:\Users\G\.cursor\worktrees\Teresa\agm\dell_spec_classifier
+>>
+>> # Проверка YAML
+>> python -c "import yaml; rules = yaml.safe_load(open('rules/dell_rules.yaml', encoding='utf-8')); print('SOFTWARE rules:', len(rules['software_rules'])); print('BASE rules:', len(rules['base_rules'])); print('Version:', rules['version'])"
+>>
+>> # Проверка тестов state detector
+>> pytest tests/test_state_detector.py -v
+SOFTWARE rules: 4
+BASE rules: 2
+Version: 1.0.0
+================================================= test session starts =================================================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\G\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\G\.cursor\worktrees\Teresa\agm\dell_spec_classifier
+plugins: anyio-4.11.0
+collected 8 items
+
+tests/test_state_detector.py::test_no_trusted_platform_module_absent PASSED                                      [ 12%]
+tests/test_state_detector.py::test_dell_connectivity_client_disabled PASSED                                      [ 25%]
+tests/test_state_detector.py::test_intel_xeon_present PASSED                                                     [ 37%]
+tests/test_state_detector.py::test_no_hdd_absent PASSED                                                          [ 50%]
+tests/test_state_detector.py::test_none_keyword_absent PASSED                                                    [ 62%]
+tests/test_state_detector.py::test_empty_option_present PASSED                                                   [ 75%]
+tests/test_state_detector.py::test_disabled_only PASSED                                                          [ 87%]
+tests/test_state_detector.py::test_not_included_absent PASSED                                                    [100%]
+
+================================================== 8 passed in 0.08s ==================================================
+PS C:\Users\G\.cursor\worktrees\Teresa\agm\dell_spec_classifier>
