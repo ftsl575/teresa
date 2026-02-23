@@ -1,0 +1,10 @@
+cleaned_spec:
+  include_types:
+    - BASE
+    - HW
+    - SOFTWARE
+    - SERVICE
+  include_only_present: true
+  exclude_headers: true
+
+rules_file: "rules/dell_rules.yaml"
