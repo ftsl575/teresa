@@ -1,0 +1,5 @@
+
+# Local test data
+dell_spec_classifier/test_data/
+**/__pycache__/
+dell_spec_classifier/output/
