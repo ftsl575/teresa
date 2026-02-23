@@ -1,0 +1,43 @@
+{
+  "total_rows": 376,
+  "header_rows_count": 11,
+  "item_rows_count": 365,
+  "entity_type_counts": {
+    "BASE": 8,
+    "HW": 165,
+    "CONFIG": 40,
+    "LOGISTIC": 56,
+    "NOTE": 8,
+    "SOFTWARE": 56,
+    "SERVICE": 32
+  },
+  "state_counts": {
+    "PRESENT": 234,
+    "ABSENT": 107,
+    "DISABLED": 24
+  },
+  "unknown_count": 0,
+  "rules_stats": {
+    "HEADER-SKIP": 11,
+    "BASE-001": 8,
+    "HW-003": 27,
+    "HW-001": 8,
+    "HW-002": 114,
+    "CONFIG-001": 40,
+    "HW-008-HBA-PERC-CUS": 8,
+    "LOGISTIC-004-CORD": 8,
+    "NOTE-001": 8,
+    "HW-004": 8,
+    "SOFTWARE-003": 16,
+    "SOFTWARE-001": 16,
+    "SOFTWARE-002": 8,
+    "SOFTWARE-004": 16,
+    "LOGISTIC-001": 48,
+    "SERVICE-001": 24,
+    "SERVICE-004": 8
+  },
+  "device_type_counts": {
+    "raid_controller": 8,
+    "power_cord": 8
+  }
+}

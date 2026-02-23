@@ -12,14 +12,12 @@ from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.outputs.annotated_writer import generate_annotated_source_excel
 
-
-def _project_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+from conftest import project_root
 
 
 def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(tmp_path):
     """Run pipeline on dl1.xlsx, generate annotated Excel; assert file exists, row count matches, has Entity Type/State columns, ITEM rows filled."""
-    root = _project_root()
+    root = project_root()
     input_path = root / "test_data" / "dl1.xlsx"
     if not input_path.exists():
         pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")

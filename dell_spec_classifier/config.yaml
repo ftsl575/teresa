@@ -1,3 +1,4 @@
+# Output columns for cleaned_spec.xlsx are fixed in excel_writer.py; no output_columns parameter is used.
 cleaned_spec:
   include_types:
     - BASE

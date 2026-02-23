@@ -6,14 +6,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-
-def _project_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+from conftest import project_root
 
 
 def test_cli_exit_code_stdout_artifacts():
     """Run main.py with dl1.xlsx; assert exit 0, stdout has total_rows, run folder has cleaned_spec.xlsx and run_summary.json."""
-    root = _project_root()
+    root = project_root()
     input_xlsx = root / "test_data" / "dl1.xlsx"
     if not input_xlsx.exists():
         import pytest

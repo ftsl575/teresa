@@ -1,0 +1,38 @@
+{
+  "total_rows": 42,
+  "header_rows_count": 4,
+  "item_rows_count": 38,
+  "entity_type_counts": {
+    "BASE": 1,
+    "HW": 17,
+    "CONFIG": 6,
+    "UNKNOWN": 1,
+    "NOTE": 1,
+    "SOFTWARE": 6,
+    "LOGISTIC": 3,
+    "SERVICE": 3
+  },
+  "state_counts": {
+    "PRESENT": 27,
+    "ABSENT": 9,
+    "DISABLED": 2
+  },
+  "unknown_count": 1,
+  "rules_stats": {
+    "HEADER-SKIP": 4,
+    "BASE-002": 1,
+    "HW-001": 1,
+    "HW-002": 13,
+    "CONFIG-001": 6,
+    "UNKNOWN-000": 1,
+    "NOTE-002": 1,
+    "HW-004": 1,
+    "SOFTWARE-003": 2,
+    "SOFTWARE-001": 2,
+    "SOFTWARE-002": 1,
+    "HW-003": 2,
+    "SOFTWARE-004": 1,
+    "LOGISTIC-001": 3,
+    "SERVICE-001": 3
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "total_rows": 102,
+  "header_rows_count": 13,
+  "item_rows_count": 89,
+  "entity_type_counts": {
+    "BASE": 2,
+    "HW": 44,
+    "CONFIG": 10,
+    "SOFTWARE": 12,
+    "LOGISTIC": 13,
+    "NOTE": 2,
+    "SERVICE": 6
+  },
+  "state_counts": {
+    "PRESENT": 70,
+    "ABSENT": 15,
+    "DISABLED": 4
+  },
+  "unknown_count": 0,
+  "rules_stats": {
+    "HEADER-SKIP": 13,
+    "BASE-001": 2,
+    "HW-001": 2,
+    "HW-002": 27,
+    "CONFIG-001": 10,
+    "SOFTWARE-001": 4,
+    "LOGISTIC-004-CORD": 2,
+    "NOTE-002": 2,
+    "SOFTWARE-004": 2,
+    "HW-004": 2,
+    "SOFTWARE-003": 4,
+    "SOFTWARE-002": 2,
+    "HW-003": 4,
+    "LOGISTIC-001": 9,
+    "SERVICE-001": 4,
+    "SERVICE-004": 2,
+    "HW-008-HBA-PERC-CUS": 4,
+    "LOGISTIC-005-SFP-CABLE": 2,
+    "HW-007-NIC-CUS": 1,
+    "HW-006-PSU-CUS": 1,
+    "HW-005-STORAGE-CUS": 1,
+    "HW-009-CPU-CUS": 2
+  },
+  "device_type_counts": {
+    "power_cord": 2,
+    "raid_controller": 2,
+    "hba": 2,
+    "sfp_cable": 2,
+    "nic": 1,
+    "psu": 1,
+    "storage_nvme": 1,
+    "cpu": 2
+  }
+}

@@ -1,0 +1,153 @@
+version: "1.0.0"
+
+# ============================================================
+# ROW KIND DETECTION (выполняется ПЕРВЫМ, до классификации)
+# ============================================================
+# Реализуется в коде (detect_row_kind), не в YAML
+# HEADER: Module Name пустой AND Option Name пустой AND SKUs пустой
+# ITEM: всё остальное
+
+# ============================================================
+# STATE DETECTION (global, применяется до классификации типа)
+# ============================================================
+state_rules:
+  absent_keywords:
+    - pattern: '^\s*No\s+'  # "No TPM", "No HDD"
+      state: ABSENT
+      rule_id: STATE-001
+
+    - pattern: '\bNone\b'
+      state: ABSENT
+      rule_id: STATE-002
+
+    - pattern: '\b(Empty|Not\s+Included|Without)\b'
+      state: ABSENT
+      rule_id: STATE-003
+
+    - pattern: '\bDisabled\b'
+      state: DISABLED
+      rule_id: STATE-004
+
+# ============================================================
+# ENTITY TYPE CLASSIFICATION (только для ITEM rows)
+# ============================================================
+
+# BASE (PRIORITY 1)
+base_rules:
+  - field: module_name
+    pattern: '^Base$'
+    entity_type: BASE
+    rule_id: BASE-001
+
+  - field: module_name
+    pattern: '^PowerEdge\s+R\d{3,4}(xs)?$'  # R660, R6715, R7625, R760xs, etc.
+    entity_type: BASE
+    rule_id: BASE-002
+
+# SERVICE (PRIORITY 2)
+service_rules:
+  - field: module_name
+    pattern: '\b(ProSupport|Hardware\s+(Support|Service)|Extended\s+Service|Deployment\s+Svcs)\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-001
+
+  - field: module_name
+    pattern: '^Dell\s+Services'
+    entity_type: SERVICE
+    rule_id: SERVICE-002
+
+  - field: option_name
+    pattern: '\bAsset\s+Tag.*ProSupport\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-004
+
+  # More specific first: NO WARRANTY UPGRADE before generic Warranty
+  - field: option_name
+    pattern: '\bNO\s+WARRANTY\s+UPGRADE\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-005
+
+  - field: option_name
+    pattern: '\b(Warranty|ProSupport|Next\s+Business\s+Day|Onsite\s+Service)\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-003
+
+# LOGISTIC (PRIORITY 3)
+logistic_rules:
+  - field: module_name
+    pattern: '\b(Shipping|Regulatory|ECCN|Documentation|Box\s+Labels)\b'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-001
+
+  - field: module_name
+    pattern: '^System\s+Documentation$'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-002
+
+  - field: module_name
+    pattern: '^Shipping\s+Material$'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-003
+
+# SOFTWARE (PRIORITY 4) — РАСШИРЕНО
+software_rules:
+  - field: module_name
+    pattern: '^Embedded\s+Systems\s+Management$'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-001
+
+  - field: module_name
+    pattern: '^Dell\s+Secure\s+Onboarding$'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-002
+
+  - field: module_name
+    pattern: '\b(Operating\s+System|OS\s+Media|iDRAC|OpenManage)\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-003
+
+  - field: option_name
+    pattern: '\b(Connectivity\s+Client|Secure\s+Onboarding\s+Client|iDRAC|Windows|Linux|VMware|License)\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-004
+
+# NOTE (PRIORITY 5)
+note_rules:
+  - field: option_name
+    pattern: '\bsupports\s+(ONLY|ALL|up\s+to)\b'
+    entity_type: NOTE
+    rule_id: NOTE-001
+
+  - field: option_name
+    pattern: '\b(Motherboard|included\s+with|required\s+for)\b'
+    entity_type: NOTE
+    rule_id: NOTE-002
+
+# CONFIG (PRIORITY 6)
+config_rules:
+  - field: module_name
+    pattern: '\b(RAID\s+Configuration|BIOS.*Settings?|Memory.*Type|Advanced\s+System\s+Configurations)\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-001
+
+# HW (PRIORITY 7)
+hw_rules:
+  - field: module_name
+    pattern: '^Chassis\s+Configuration$'
+    entity_type: HW
+    rule_id: HW-001
+
+  - field: module_name
+    pattern: '\b(Processor|Additional\s+Processor|Memory\s+Capacity|Hard\s+Drives|Power\s+Supply|Fans|Bezel|Motherboard|PCIe|OCP|RAID.*Controllers?|Cables|Thermal|Riser|Network\s+(Cards?|Adapters?))\b'
+    entity_type: HW
+    rule_id: HW-002
+
+  - field: module_name
+    pattern: '\b(BOSS|TPM|Trusted\s+Platform|GPU|FPGA|Acceleration|Quick\s+Sync|Password|BMC|KVM|Rack\s+Rails|Server\s+Accessories)\b'
+    entity_type: HW
+    rule_id: HW-003
+
+  - field: module_name
+    pattern: '\b(BACKPLANE|FRONT\s+STORAGE|REAR\s+STORAGE|Boot\s+Optimized\s+Storage)\b'
+    entity_type: HW
+    rule_id: HW-004

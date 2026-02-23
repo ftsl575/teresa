@@ -36,6 +36,29 @@ def match_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
     return None
 
 
+def match_device_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
+    """
+    Match a normalized row against device_type_rules (same field + regex).
+    Returns the first matching rule dict (device_type, rule_id) or None.
+    """
+    if not rules:
+        return None
+    for rule in rules:
+        field = rule.get("field")
+        pattern = rule.get("pattern")
+        if not field or not pattern:
+            continue
+        if field == "module_name":
+            value = row.module_name or ""
+        elif field == "option_name":
+            value = row.option_name or ""
+        else:
+            continue
+        if re.search(pattern, str(value), re.IGNORECASE):
+            return rule
+    return None
+
+
 class RuleSet:
     """
     Loaded Dell classification rules from YAML.
@@ -53,6 +76,11 @@ class RuleSet:
         self.note_rules: List[dict] = self._data.get("note_rules") or []
         self.config_rules: List[dict] = self._data.get("config_rules") or []
         self.hw_rules: List[dict] = self._data.get("hw_rules") or []
+
+        dtr = self._data.get("device_type_rules") or {}
+        self.device_type_rules: List[dict] = dtr.get("rules") or []
+        applies = dtr.get("applies_to") or []
+        self.device_type_applies_to = set(applies) if isinstance(applies, list) else set()
 
     def get_state_rules(self) -> List[dict]:
         """Return the list of state rules (absent_keywords) for detect_state."""
