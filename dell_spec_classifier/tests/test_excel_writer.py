@@ -15,14 +15,12 @@ from src.core.normalizer import RowKind
 from src.core.state_detector import State
 from src.outputs.excel_writer import generate_cleaned_spec
 
-
-def _project_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+from conftest import project_root
 
 
 @pytest.fixture
 def config():
-    root = _project_root()
+    root = project_root()
     config_path = root / "config.yaml"
     if config_path.exists():
         with open(config_path, encoding="utf-8") as f:
@@ -38,7 +36,7 @@ def config():
 
 def test_excel_writer_file_exists_no_headers_only_include_types_and_present(config, tmp_path):
     """Run pipeline on dl1.xlsx, generate cleaned spec; assert file exists, no HEADER, only include_types, only PRESENT."""
-    root = _project_root()
+    root = project_root()
     input_path = root / "test_data" / "dl1.xlsx"
     if not input_path.exists():
         pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")

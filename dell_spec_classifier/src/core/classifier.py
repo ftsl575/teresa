@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from src.core.normalizer import NormalizedRow, RowKind
 from src.core.state_detector import State, detect_state
-from src.rules.rules_engine import RuleSet, match_rule
+from src.rules.rules_engine import RuleSet, match_rule, match_device_type_rule
 
 
 class EntityType(Enum):
@@ -33,6 +33,7 @@ class ClassificationResult:
     entity_type: Optional[EntityType]
     state: Optional[State]
     matched_rule_id: str
+    device_type: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
 
 
@@ -40,6 +41,7 @@ def classify_row(row: NormalizedRow, ruleset: RuleSet) -> ClassificationResult:
     """
     Classify a normalized row: HEADER → skip; ITEM → priority: BASE → SERVICE
     → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW → UNKNOWN.
+    For ITEM rows with entity_type HW or LOGISTIC, run second pass to set device_type.
     """
     if row.row_kind == RowKind.HEADER:
         return ClassificationResult(
@@ -53,66 +55,73 @@ def classify_row(row: NormalizedRow, ruleset: RuleSet) -> ClassificationResult:
 
     match = match_rule(row, ruleset.base_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.BASE,
             state=State.PRESENT,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.service_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.SERVICE,
             state=state,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.logistic_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.LOGISTIC,
             state=state,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.software_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.SOFTWARE,
             state=state,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.note_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.NOTE,
             state=State.PRESENT,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.config_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.CONFIG,
             state=state,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     match = match_rule(row, ruleset.hw_rules)
     if match:
-        return ClassificationResult(
+        result = ClassificationResult(
             row_kind=RowKind.ITEM,
             entity_type=EntityType.HW,
             state=state,
             matched_rule_id=match["rule_id"],
         )
+        return _apply_device_type(row, result, ruleset)
 
     return ClassificationResult(
         row_kind=RowKind.ITEM,
@@ -121,3 +130,25 @@ def classify_row(row: NormalizedRow, ruleset: RuleSet) -> ClassificationResult:
         matched_rule_id="UNKNOWN-000",
         warnings=["No matching rule found"],
     )
+
+
+def _apply_device_type(row: NormalizedRow, result: ClassificationResult, ruleset: RuleSet) -> ClassificationResult:
+    """
+    Second pass: for ITEM rows with entity_type in device_type_rules.applies_to
+    and matched_rule_id != UNKNOWN-000, set device_type from first matching rule.
+    """
+    if result.entity_type is None or result.matched_rule_id == "UNKNOWN-000":
+        return result
+    if result.entity_type.value not in ruleset.device_type_applies_to:
+        return result
+    match = match_device_type_rule(row, ruleset.device_type_rules)
+    if match and match.get("device_type"):
+        return ClassificationResult(
+            row_kind=result.row_kind,
+            entity_type=result.entity_type,
+            state=result.state,
+            matched_rule_id=result.matched_rule_id,
+            device_type=match["device_type"],
+            warnings=result.warnings,
+        )
+    return result

@@ -89,6 +89,23 @@ logistic_rules:
     entity_type: LOGISTIC
     rule_id: LOGISTIC-003
 
+  # Power Cords (C13/C14, C19/C20, Jumper/Rack cord)
+  - field: option_name
+    pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-004-CORD
+
+  # SFP / Twinax cables
+  - field: option_name
+    pattern: '(?i)(sfp|twinax|dac).*(cable|direct\s+attach)'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-005-SFP-CABLE
+
+  - field: module_name
+    pattern: '(?i)sfp\s+module'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-005-SFP-CABLE
+
 # SOFTWARE (PRIORITY 4) — РАСШИРЕНО
 software_rules:
   - field: module_name
@@ -130,7 +147,7 @@ config_rules:
     entity_type: CONFIG
     rule_id: CONFIG-001
 
-# HW (PRIORITY 7)
+# HW (PRIORITY 7) — generic module rules first (HW-001–004), then specific option_name rules (Customer Kit / Install)
 hw_rules:
   - field: module_name
     pattern: '^Chassis\s+Configuration$'
@@ -151,3 +168,94 @@ hw_rules:
     pattern: '\b(BACKPLANE|FRONT\s+STORAGE|REAR\s+STORAGE|Boot\s+Optimized\s+Storage)\b'
     entity_type: HW
     rule_id: HW-004
+
+  # Below: option_name-only rules for rows that did not match any module (formerly UNKNOWN)
+  # Power Supply Customer Kit
+  - field: option_name
+    pattern: '(?i)power\s+supply.*(cus(tomer)?\s+kit|ck)'
+    entity_type: HW
+    rule_id: HW-006-PSU-CUS
+
+  # Storage: SSD / NVMe Customer Kit
+  - field: option_name
+    pattern: '(?i)(ssd|nvme|sata|hot-plug).*(cus(tomer)?\s+kit|ck)'
+    entity_type: HW
+    rule_id: HW-005-STORAGE-CUS
+
+  # NIC / OCP Customer Kit or Install
+  - field: option_name
+    pattern: '(?i)(gbe|sfp28|sfp\+|nic|ocp).*(cus(tomer)?\s+(kit|install)|ck)'
+    entity_type: HW
+    rule_id: HW-007-NIC-CUS
+
+  # HBA / PERC / Fibre Channel
+  - field: option_name
+    pattern: '(?i)(hba|perc|fibre\s+channel|fc\s+hba|raid\s+controller).*(dib|ck|full\s+height|low\s+profile)'
+    entity_type: HW
+    rule_id: HW-008-HBA-PERC-CUS
+
+  # CPU Customer Install
+  - field: option_name
+    pattern: '(?i)(xeon|intel\s+xeon).*(customer\s+install|cus(tomer)?\s+kit|ck)'
+    entity_type: HW
+    rule_id: HW-009-CPU-CUS
+
+# ============================================================
+# DEVICE TYPE (second pass: only for ITEM rows with entity_type HW or LOGISTIC)
+# First match wins. device_type appears only when matched_rule_id != UNKNOWN-000.
+# ============================================================
+device_type_rules:
+  applies_to: [HW, LOGISTIC]
+
+  rules:
+    # LOGISTIC
+    - field: option_name
+      pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'
+      device_type: power_cord
+      rule_id: LOGISTIC-004-CORD
+
+    - field: option_name
+      pattern: '(?i)(sfp|twinax|dac).*(cable|direct\s+attach)'
+      device_type: sfp_cable
+      rule_id: LOGISTIC-005-SFP-CABLE
+
+    - field: module_name
+      pattern: '(?i)sfp\s+module'
+      device_type: sfp_cable
+      rule_id: LOGISTIC-005-SFP-CABLE
+
+    # HW — order matters: more specific first
+    - field: option_name
+      pattern: '(?i)nvme.*(cus(tomer)?\s+kit|ck)'
+      device_type: storage_nvme
+      rule_id: HW-005-STORAGE-CUS
+
+    - field: option_name
+      pattern: '(?i)(ssd|sata).*(cus(tomer)?\s+kit|ck)'
+      device_type: storage_ssd
+      rule_id: HW-005-STORAGE-CUS
+
+    - field: option_name
+      pattern: '(?i)power\s+supply.*(cus(tomer)?\s+kit|ck)'
+      device_type: psu
+      rule_id: HW-006-PSU-CUS
+
+    - field: option_name
+      pattern: '(?i)(gbe|sfp28|sfp\+|nic|ocp).*(cus(tomer)?\s+(kit|install)|ck)'
+      device_type: nic
+      rule_id: HW-007-NIC-CUS
+
+    - field: option_name
+      pattern: '(?i)(perc|raid\s+controller).*(dib|ck|full\s+height|low\s+profile)'
+      device_type: raid_controller
+      rule_id: HW-008-HBA-PERC-CUS
+
+    - field: option_name
+      pattern: '(?i)(hba|fibre\s+channel|fc\s+hba).*(dib|ck|full\s+height|low\s+profile)'
+      device_type: hba
+      rule_id: HW-008-HBA-PERC-CUS
+
+    - field: option_name
+      pattern: '(?i)(xeon|intel\s+xeon).*(customer\s+install|cus(tomer)?\s+kit|ck)'
+      device_type: cpu
+      rule_id: HW-009-CPU-CUS

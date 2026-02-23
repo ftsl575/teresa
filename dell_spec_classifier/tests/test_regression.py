@@ -10,9 +10,7 @@ from src.core.parser import parse_excel
 from src.core.normalizer import normalize_row
 from src.rules.rules_engine import RuleSet
 
-
-def _project_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+from conftest import project_root
 
 
 def _run_pipeline_and_build_golden_rows(input_path: Path, rules_path: Path):
@@ -30,6 +28,7 @@ def _run_pipeline_and_build_golden_rows(input_path: Path, rules_path: Path):
             "entity_type": result.entity_type.value if result.entity_type else None,
             "state": result.state.value if result.state else None,
             "matched_rule_id": result.matched_rule_id,
+            "device_type": getattr(result, "device_type", None),
             "skus": list(row.skus),
         })
     return out
@@ -50,7 +49,7 @@ def _load_golden(golden_path: Path):
 def _compare_row(expected: dict, actual: dict, row_label: str) -> list[str]:
     """Return list of diff messages for this row."""
     diffs = []
-    for key in ("entity_type", "state", "matched_rule_id", "skus"):
+    for key in ("entity_type", "state", "matched_rule_id", "device_type", "skus"):
         exp = expected.get(key)
         act = actual.get(key)
         if exp != act:
@@ -58,10 +57,10 @@ def _compare_row(expected: dict, actual: dict, row_label: str) -> list[str]:
     return diffs
 
 
-@pytest.mark.parametrize("filename", ["dl1.xlsx", "dl2.xlsx"])
+@pytest.mark.parametrize("filename", ["dl1.xlsx", "dl2.xlsx", "dl3.xlsx", "dl4.xlsx", "dl5.xlsx"])
 def test_regression(filename):
     """Run pipeline for filename, load golden, compare row-by-row (entity_type, state, matched_rule_id, skus)."""
-    root = _project_root()
+    root = project_root()
     input_path = root / "test_data" / filename
     if not input_path.exists():
         pytest.skip(f"test_data/{filename} not found")

@@ -41,6 +41,14 @@ def collect_stats(classification_results: List[ClassificationResult]) -> dict:
         rid = r.matched_rule_id
         rules_stats[rid] = rules_stats.get(rid, 0) + 1
 
+    device_type_counts = {}
+    for r in classification_results:
+        if r.row_kind != RowKind.ITEM or not getattr(r, "device_type", None):
+            continue
+        dt = r.device_type
+        if dt:
+            device_type_counts[dt] = device_type_counts.get(dt, 0) + 1
+
     return {
         "total_rows": total_rows,
         "header_rows_count": header_rows_count,
@@ -49,6 +57,7 @@ def collect_stats(classification_results: List[ClassificationResult]) -> dict:
         "state_counts": state_counts,
         "unknown_count": unknown_count,
         "rules_stats": rules_stats,
+        "device_type_counts": device_type_counts,
     }
 
 

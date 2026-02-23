@@ -28,13 +28,19 @@ def _normalized_row_to_dict(row: NormalizedRow) -> dict:
 
 
 def _classification_result_to_dict(result: ClassificationResult) -> dict:
-    return {
+    """Build dict for classification.jsonl. device_type only for ITEM with matched_rule_id != UNKNOWN-000."""
+    out = {
         "row_kind": result.row_kind.value,
         "entity_type": result.entity_type.value if result.entity_type else None,
         "state": result.state.value if result.state else None,
         "matched_rule_id": result.matched_rule_id,
         "warnings": result.warnings,
     }
+    if result.row_kind.value == "ITEM" and result.matched_rule_id != "UNKNOWN-000" and result.entity_type is not None:
+        out["device_type"] = result.device_type
+    else:
+        out["device_type"] = None
+    return out
 
 
 def save_rows_raw(rows: List[dict], run_folder: Path) -> None:

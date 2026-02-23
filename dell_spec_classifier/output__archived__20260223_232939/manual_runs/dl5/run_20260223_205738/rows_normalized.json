@@ -1,0 +1,630 @@
+[
+  {
+    "source_row_index": 8,
+    "row_kind": "HEADER",
+    "group_name": "Group 1",
+    "group_id": "6476658.1.1",
+    "product_name": "PowerEdge R6715 - Full Configuration - [EMEA_R6715]",
+    "module_name": "",
+    "option_name": "",
+    "option_id": null,
+    "skus": [],
+    "qty": 0,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 9,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "PowerEdge R6715",
+    "option_name": "PowerEdge R6715 Server",
+    "option_id": "G0Q4I72",
+    "skus": [
+      "210-BNRK"
+    ],
+    "qty": 1,
+    "option_price": 3566.0
+  },
+  {
+    "source_row_index": 10,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Chassis Configuration",
+    "option_name": "2.5\" Chassis with up to 8 NVMe Hardware RAID Drives, Front PERC 12",
+    "option_id": "GFEP3DJ",
+    "skus": [
+      "321-BLMP",
+      "750-BBPB"
+    ],
+    "qty": 1,
+    "option_price": 792.0
+  },
+  {
+    "source_row_index": 11,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Processor",
+    "option_name": "AMD EPYC 9355P 3.55GHz, 32C/64T, 256 Cache (280W) DDR5-6400",
+    "option_id": "G3RFLT4",
+    "skus": [
+      "338-CRCD"
+    ],
+    "qty": 1,
+    "option_price": 5400.0
+  },
+  {
+    "source_row_index": 12,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Processor Thermal Configuration",
+    "option_name": "Heatsink for 1 CPU Configuration (CPU greater than 240W)",
+    "option_id": "GD7KT8P",
+    "skus": [
+      "412-BBLB"
+    ],
+    "qty": 1,
+    "option_price": 145.0
+  },
+  {
+    "source_row_index": 13,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Memory Configuration Type",
+    "option_name": "Performance Optimized",
+    "option_id": "G6VDIHE",
+    "skus": [
+      "370-AHLL"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 14,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Memory DIMM Type and Speed",
+    "option_name": "6400MT/s RDIMMs",
+    "option_id": "GL7EXYA",
+    "skus": [
+      "370-BCCX"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 15,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Memory Capacity",
+    "option_name": "64GB RDIMM, 6400MT/s, Dual Rank",
+    "option_id": "G9S8BKC",
+    "skus": [
+      "370-BCCZ"
+    ],
+    "qty": 4,
+    "option_price": 12696.0
+  },
+  {
+    "source_row_index": 16,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "RAID Configuration",
+    "option_name": "C31, No RAID with NVMe and front PERC",
+    "option_id": "G6XZNR9",
+    "skus": [
+      "379-BEGI"
+    ],
+    "qty": 1,
+    "option_price": 0.01
+  },
+  {
+    "source_row_index": 17,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "RAID/Internal Storage Controllers",
+    "option_name": "PERC H965i Controller, Front, DC-MHS",
+    "option_id": "G48B20G",
+    "skus": [
+      "403-BDMY"
+    ],
+    "qty": 1,
+    "option_price": 2637.0
+  },
+  {
+    "source_row_index": 18,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Hard Drives",
+    "option_name": "No Hard Drive",
+    "option_id": "GZ4G6T3",
+    "skus": [
+      "400-ABHL"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 19,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Hard Drives (PCIe SSD/Flex Bay)",
+    "option_name": "3.84TB Data Center NVMe Read Intensive AG Drive U2  with Carrier",
+    "option_id": "GLGI57H",
+    "skus": [
+      "400-BMTN"
+    ],
+    "qty": 2,
+    "option_price": 12976.0
+  },
+  {
+    "source_row_index": 20,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "BIOS and Advanced System Configuration Settings",
+    "option_name": "Power Saving BIOS Setting",
+    "option_id": "GEARJ9V",
+    "skus": [
+      "384-BBBH"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 21,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Advanced System Configurations",
+    "option_name": "No Energy Star",
+    "option_id": "G9IONL3",
+    "skus": [
+      "387-BBEY"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 22,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Advanced System Configurations",
+    "option_name": "UEFI BIOS Boot Mode with GPT Partition",
+    "option_id": "GSFTG4Y",
+    "skus": [
+      "800-BBDM"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 23,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Fans",
+    "option_name": "PowerEdge 1U Standard Fan",
+    "option_id": "GFZPC2Q",
+    "skus": [
+      "384-BDTT"
+    ],
+    "qty": 1,
+    "option_price": 248.0
+  },
+  {
+    "source_row_index": 24,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Power Supply",
+    "option_name": "Dual, Fully Redundant (1+1),Hot-Plug MHS Power Supply, 1500W MM (100-240Vac) Titanium",
+    "option_id": "GPT0Z4D",
+    "skus": [
+      "450-BCXC"
+    ],
+    "qty": 1,
+    "option_price": 2294.0
+  },
+  {
+    "source_row_index": 25,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Power Cords",
+    "option_name": "Rack Power Cord 2M (C13/C14 10A)",
+    "option_id": "GDE0CHU",
+    "skus": [
+      "450-AADY"
+    ],
+    "qty": 2,
+    "option_price": 50.0
+  },
+  {
+    "source_row_index": 26,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "PCIe Riser",
+    "option_name": "Riser Config 2, 2 x16 LP (Gen5)",
+    "option_id": "G14SN0H",
+    "skus": [
+      "330-BCZX"
+    ],
+    "qty": 1,
+    "option_price": 402.0
+  },
+  {
+    "source_row_index": 27,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Motherboard",
+    "option_name": "PowerEdge R6715 Motherboard V2",
+    "option_id": "G5EJKSD",
+    "skus": [
+      "329-BLJB"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 28,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "OCP 3.0 Network Adapters",
+    "option_name": "Intel Ethernet E610-XAT2 Dual Port 10GbE BASE-T Adapter, OCP 3.0 NIC",
+    "option_id": "GEMYN8F",
+    "skus": [
+      "540-BFNV"
+    ],
+    "qty": 1,
+    "option_price": 594.0
+  },
+  {
+    "source_row_index": 29,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "OCP 3.0 Accessories",
+    "option_name": "1 OCP - No Cable",
+    "option_id": "GN1I836",
+    "skus": [
+      "780-BCZQ"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 30,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Bezel",
+    "option_name": "No Bezel for x8 and x10 Chassis",
+    "option_id": "GPH3T2N",
+    "skus": [
+      "321-BLFQ",
+      "350-BBBW"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 31,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Boot Optimized Storage Cards",
+    "option_name": "No BOSS card, Rear Blank",
+    "option_id": "GVQU07E",
+    "skus": [
+      "470-BCHP"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 32,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Operating System",
+    "option_name": "No Operating System",
+    "option_id": "G78MU35",
+    "skus": [
+      "611-BBBF"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 33,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "OS Media Kits",
+    "option_name": "No Media Required",
+    "option_id": "GKH7AZI",
+    "skus": [
+      "605-BBFN"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 34,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Embedded Systems Management",
+    "option_name": "iDRAC10, Enterprise 17G",
+    "option_id": "GN3OR80",
+    "skus": [
+      "634-CSHS",
+      "634-CSHT",
+      "634-CSHY"
+    ],
+    "qty": 1,
+    "option_price": 2167.0
+  },
+  {
+    "source_row_index": 35,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Embedded Systems Management",
+    "option_name": "Dell Connectivity Client - Disabled 17G",
+    "option_id": "G2QT39O",
+    "skus": [
+      "379-BFXT",
+      "634-CZRP"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 36,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Dell Secure Onboarding",
+    "option_name": "Dell Secure Onboarding Client 17G - Disabled",
+    "option_id": "GEZIN59",
+    "skus": [
+      "634-CZWJ"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 37,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "KVM/Quick Sync",
+    "option_name": "Blank Left Ear Module",
+    "option_id": "GGLNSF9",
+    "skus": [
+      "350-BCYJ"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 38,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Password",
+    "option_name": "iDRAC Legacy Password for OCP cards",
+    "option_id": "GI1M6T9",
+    "skus": [
+      "379-BETF"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 39,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Rack Rails",
+    "option_name": "ReadyRails Sliding Rails Without Cable Management Arm or Strain Relief Bar",
+    "option_id": "GNR1WTG",
+    "skus": [
+      "770-BECD"
+    ],
+    "qty": 1,
+    "option_price": 71.0
+  },
+  {
+    "source_row_index": 40,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Shipping",
+    "option_name": "PowerEdge R6715 Shipping EMEA1  (English/French/German/Spanish/Russian/Hebrew)",
+    "option_id": "G3ER894",
+    "skus": [
+      "340-DRWG",
+      "340-DSGK"
+    ],
+    "qty": 1,
+    "option_price": 15.0
+  },
+  {
+    "source_row_index": 41,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Shipping Material",
+    "option_name": "PowerEdge 1U Shipping Material",
+    "option_id": "G2T9KMA",
+    "skus": [
+      "340-DNSY"
+    ],
+    "qty": 1,
+    "option_price": 44.0
+  },
+  {
+    "source_row_index": 42,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Regulatory",
+    "option_name": "PowerEdge No CCC, CE Label Marking",
+    "option_id": "GOC6PGW",
+    "skus": [
+      "389-FHJB"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 43,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "DPU Cables",
+    "option_name": "No DPUs Cable Required, No DPU",
+    "option_id": "GV6CUGB",
+    "skus": [
+      "470-AEYU"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 44,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Dell Services: Hardware Support",
+    "option_name": "Parts Only Warranty 12Months, 12 Month(s)",
+    "option_id": "GF03X6K",
+    "skus": [
+      "709-BBIX"
+    ],
+    "qty": 1,
+    "option_price": 0.01
+  },
+  {
+    "source_row_index": 45,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Extended Service",
+    "option_name": "ProSupport and Next Business Day Onsite Service, 12 Month(s)",
+    "option_id": "G4ASPON",
+    "skus": [
+      "865-BBLM"
+    ],
+    "qty": 1,
+    "option_price": 970.49
+  },
+  {
+    "source_row_index": 46,
+    "row_kind": "ITEM",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "Infrastructure Deployment Svcs",
+    "option_name": "No Field Deployment  Customer Install Required",
+    "option_id": "GMZGA07",
+    "skus": [
+      "883-BBFN"
+    ],
+    "qty": 1,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 47,
+    "row_kind": "HEADER",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "",
+    "option_name": "",
+    "option_id": null,
+    "skus": [],
+    "qty": 0,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 48,
+    "row_kind": "HEADER",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "",
+    "option_name": "",
+    "option_id": null,
+    "skus": [],
+    "qty": 0,
+    "option_price": 0.0
+  },
+  {
+    "source_row_index": 49,
+    "row_kind": "HEADER",
+    "group_name": null,
+    "group_id": null,
+    "product_name": null,
+    "module_name": "",
+    "option_name": "",
+    "option_id": null,
+    "skus": [],
+    "qty": 0,
+    "option_price": 0.0
+  }
+]

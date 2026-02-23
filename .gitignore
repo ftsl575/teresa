@@ -1,5 +1,6 @@
 
 # Local test data
 dell_spec_classifier/test_data/
+dell_spec_classifier/test_data/*.xlsx
 **/__pycache__/
 dell_spec_classifier/output/
