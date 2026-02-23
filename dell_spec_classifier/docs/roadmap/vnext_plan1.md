@@ -1,3 +1,10 @@
+---
+**Document:** vNext execution and closure plan (Phase 0–4, prompts 1–3).  
+**Created:** 2026-02-23.  
+**Stage:** Post-MVP improvements (test paths, golden, UNKNOWN closure, device_type, docs).  
+**Status:** Reference only — planned work is completed; this document is preserved for context and future contributors. For current behavior, see [README.md](../../README.md) and [TECHNICAL_OVERVIEW.md](../TECHNICAL_OVERVIEW.md).
+---
+
 # Dell Spec Classifier — vNext Plan
 
 **Версия документа**: 1.1 (vNext, точечные правки)

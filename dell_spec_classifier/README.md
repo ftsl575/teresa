@@ -4,6 +4,13 @@ Pipeline for classifying Dell Excel specifications: Excel → parse → normaliz
 
 For implementation details and architecture, see [docs/TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md).
 
+## Design and Planning Documents
+
+The following documents guided development and are kept as reference. They are **completed** and are not the source of truth for current behavior; use [TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md) and this README for that.
+
+- **[docs/architecture/dell_mvp_technical_spec.md](docs/architecture/dell_mvp_technical_spec.md)** — Original MVP technical architecture and specification (phases 0–10, row_kind, entity types, rules, tests). Created February 2026; describes the baseline design before implementation.
+- **[docs/roadmap/vnext_plan1.md](docs/roadmap/vnext_plan1.md)** — vNext execution plan: test data paths, golden files, full regression (dl1–dl5), UNKNOWN closure, device_type, and documentation. Created 2026-02-23; phases 0–3 and related prompts have been executed.
+
 ---
 
 ## Installation
