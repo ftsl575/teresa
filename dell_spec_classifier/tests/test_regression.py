@@ -25,7 +25,7 @@ def _load_golden(golden_path: Path):
 def _compare_row(expected: dict, actual: dict, row_label: str) -> list[str]:
     """Return list of diff messages for this row."""
     diffs = []
-    for key in ("entity_type", "state", "matched_rule_id", "device_type", "skus"):
+    for key in ("entity_type", "state", "matched_rule_id", "device_type", "hw_type", "skus"):
         exp = expected.get(key)
         act = actual.get(key)
         if exp != act:

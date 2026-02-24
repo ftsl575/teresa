@@ -30,6 +30,7 @@ def build_golden_rows(normalized_rows: list, classification_results: list) -> li
             "state": result.state.value if result.state else None,
             "matched_rule_id": result.matched_rule_id,
             "device_type": getattr(result, "device_type", None),
+            "hw_type": getattr(result, "hw_type", None),
             "skus": list(row.skus),
         })
     return out

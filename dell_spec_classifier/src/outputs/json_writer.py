@@ -40,6 +40,10 @@ def _classification_result_to_dict(result: ClassificationResult) -> dict:
         out["device_type"] = result.device_type
     else:
         out["device_type"] = None
+    if result.row_kind.value == "ITEM" and result.matched_rule_id != "UNKNOWN-000" and result.entity_type is not None:
+        out["hw_type"] = getattr(result, "hw_type", None)
+    else:
+        out["hw_type"] = None
     return out
 
 
