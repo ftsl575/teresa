@@ -9,3 +9,5 @@ out/
 test_data/
 output/
 test_Dell_R770.xlsx
+
+make_run_results.ps1
