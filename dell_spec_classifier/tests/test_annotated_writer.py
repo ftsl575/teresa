@@ -31,8 +31,8 @@ def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(
         raw_rows, normalized_rows, classification_results, input_path, tmp_path
     )
 
-    assert out_path.exists(), "annotated_source.xlsx should exist"
-    assert out_path.name == "annotated_source.xlsx"
+    assert out_path.exists(), "annotated workbook should exist"
+    assert out_path.name == f"{input_path.stem}_annotated.xlsx"
 
     df_orig = pd.read_excel(input_path, header=None, engine="openpyxl")
     df_ann = pd.read_excel(out_path, header=None, engine="openpyxl")
@@ -40,15 +40,19 @@ def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(
     assert len(df_ann) == len(df_orig), (
         f"Row count must match original: expected {len(df_orig)}, got {len(df_ann)}"
     )
-    assert df_ann.shape[1] == df_orig.shape[1] + 2, (
-        "Annotated file must have two extra columns (Entity Type, State)"
+    assert df_ann.shape[1] == df_orig.shape[1] + 4, (
+        "Annotated file must have four extra columns (Entity Type, State, device_type, hw_type)"
     )
-    # Last two columns are Entity Type and State
-    entity_col = df_ann.iloc[:, -2].astype(str).str.strip()
-    state_col = df_ann.iloc[:, -1].astype(str).str.strip()
-    # Header row contains "Entity Type" and "State" in those columns
+    # Last four columns are Entity Type, State, device_type, hw_type
+    entity_col = df_ann.iloc[:, -4].astype(str).str.strip()
+    state_col = df_ann.iloc[:, -3].astype(str).str.strip()
+    device_type_col = df_ann.iloc[:, -2].astype(str).str.strip()
+    hw_type_col = df_ann.iloc[:, -1].astype(str).str.strip()
+    # Header row contains corresponding labels in those columns somewhere
     assert (entity_col == "Entity Type").any(), "Entity Type column header must appear"
     assert (state_col == "State").any(), "State column header must appear"
+    assert (device_type_col == "device_type").any(), "device_type column header must appear"
+    assert (hw_type_col == "hw_type").any(), "hw_type column header must appear"
     # At least one ITEM row has non-empty Entity Type (e.g. BASE, HW)
     non_empty = entity_col[(entity_col != "") & (entity_col != "Entity Type")]
     assert len(non_empty) > 0, "At least one ITEM row should have Entity Type filled"

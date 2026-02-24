@@ -139,7 +139,7 @@ def main() -> int:
 
         generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
         generate_annotated_source_excel(
-            raw_rows, normalized_rows, classification_results, input_path, run_folder
+            raw_rows, normalized_rows, classification_results, input_path, output_dir
         )
         log.info("Done.")
 

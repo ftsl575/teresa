@@ -59,6 +59,26 @@ def match_device_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[di
     return None
 
 
+def match_hw_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
+    """Match row against hw_type regex rules. First match wins."""
+    if not rules:
+        return None
+    for rule in rules:
+        field = rule.get("field")
+        pattern = rule.get("pattern")
+        if not field or not pattern:
+            continue
+        if field == "module_name":
+            value = row.module_name or ""
+        elif field == "option_name":
+            value = row.option_name or ""
+        else:
+            continue
+        if re.search(pattern, str(value), re.IGNORECASE):
+            return rule
+    return None
+
+
 class RuleSet:
     """
     Loaded Dell classification rules from YAML.
@@ -81,6 +101,13 @@ class RuleSet:
         self.device_type_rules: List[dict] = dtr.get("rules") or []
         applies = dtr.get("applies_to") or []
         self.device_type_applies_to = set(applies) if isinstance(applies, list) else set()
+
+        htr = self._data.get("hw_type_rules") or {}
+        self.hw_type_rules: List[dict] = htr.get("rules") or []
+        self.hw_type_device_type_map: dict = htr.get("device_type_map") or {}
+        self.hw_type_rule_id_map: dict = htr.get("rule_id_map") or {}
+        ht_applies = htr.get("applies_to") or []
+        self.hw_type_applies_to = set(ht_applies) if isinstance(ht_applies, list) else set()
 
     def get_state_rules(self) -> List[dict]:
         """Return the list of state rules (absent_keywords) for detect_state."""

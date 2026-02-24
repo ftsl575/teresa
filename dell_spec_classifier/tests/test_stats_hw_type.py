@@ -7,23 +7,33 @@ import pytest
 from conftest import project_root
 from tests.helpers import run_pipeline_in_memory
 from src.diagnostics.stats_collector import collect_stats
+from src.core.classifier import HW_TYPE_VOCAB
 
-VALID_HW_TYPES = {
-    "processor",
-    "memory",
-    "storage",
-    "power_supply",
-    "network",
-    "storage_controller",
-    "gpu",
-    "cooling",
-    "expansion",
-    "security",
-    "chassis",
-    "cable",
-    "motherboard",
-    "management",
+# Exact expected hw_type_counts from real run on dl1.xlsx (Pack 9 baseline)
+EXPECTED_DL1_HW_TYPE_COUNTS = {
+    "tpm": 1,
+    "chassis": 2,
+    "cpu": 4,
+    "ram": 1,
+    "storage_controller": 1,
+    "ssd": 2,
+    "fan": 1,
+    "psu": 2,
+    "riser": 1,
+    "network_adapter": 3,
+    "cable": 2,
+    "nvme": 1,
+    "management": 1,
+    "mounting_kit": 1,
+    "hdd": 1,
 }
+EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 24
+
+
+def test_hw_type_vocab():
+    assert len(HW_TYPE_VOCAB) == 20
+    assert all(isinstance(v, str) and v for v in HW_TYPE_VOCAB)
+    assert all(v == v.lower() for v in HW_TYPE_VOCAB)
 
 
 @pytest.fixture
@@ -43,10 +53,13 @@ def test_hw_type_counts_key_exists(dl1_stats):
     assert isinstance(dl1_stats["hw_type_counts"], dict)
 
 
-def test_hw_type_counts_values_are_positive(dl1_stats):
-    for key, value in dl1_stats["hw_type_counts"].items():
-        assert isinstance(value, int), f"hw_type_counts[{key!r}] should be int"
-        assert value > 0, f"hw_type_counts[{key!r}] should be > 0, got {value}"
+def test_hw_type_counts_exact_values(dl1_stats):
+    """Exact counts from dl1.xlsx run; all keys in HW_TYPE_VOCAB."""
+    hw_type_counts = dl1_stats["hw_type_counts"]
+    assert hw_type_counts == EXPECTED_DL1_HW_TYPE_COUNTS
+    for key in hw_type_counts:
+        assert key in HW_TYPE_VOCAB, f"hw_type_counts key {key!r} not in HW_TYPE_VOCAB"
+    assert sum(hw_type_counts.values()) == EXPECTED_DL1_HW_TYPE_TOTAL
 
 
 def test_hw_type_counts_sum_le_hw_entity_count(dl1_stats):
@@ -57,8 +70,3 @@ def test_hw_type_counts_sum_le_hw_entity_count(dl1_stats):
     assert total_hw_type <= hw_count, (
         f"sum(hw_type_counts)={total_hw_type} should be <= entity_type_counts['HW']={hw_count}"
     )
-
-
-def test_hw_type_counts_keys_are_valid(dl1_stats):
-    for key in dl1_stats["hw_type_counts"]:
-        assert key in VALID_HW_TYPES, f"hw_type_counts key {key!r} not in known hw_type set"

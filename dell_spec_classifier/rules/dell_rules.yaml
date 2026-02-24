@@ -128,6 +128,11 @@ software_rules:
     entity_type: SOFTWARE
     rule_id: SOFTWARE-004
 
+  - field: option_name
+    pattern: '(?i)\b(iDRAC|OpenManage|BMC)\b.*\bLicense\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-005
+
 # NOTE (PRIORITY 5)
 note_rules:
   - field: option_name
@@ -147,6 +152,21 @@ config_rules:
     entity_type: CONFIG
     rule_id: CONFIG-001
 
+  - field: module_name
+    pattern: '(?i)\b(Performance|Thermal|Power)\s+Profile\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-002
+
+  - field: module_name
+    pattern: '(?i)^Password$'
+    entity_type: CONFIG
+    rule_id: CONFIG-003
+
+  - field: module_name
+    pattern: '(?i)^Group\s+Manager$'
+    entity_type: CONFIG
+    rule_id: CONFIG-004
+
 # HW (PRIORITY 7) — generic module rules first (HW-001–004), then specific option_name rules (Customer Kit / Install)
 hw_rules:
   - field: module_name
@@ -160,7 +180,7 @@ hw_rules:
     rule_id: HW-002
 
   - field: module_name
-    pattern: '\b(BOSS|TPM|Trusted\s+Platform|GPU|FPGA|Acceleration|Quick\s+Sync|Password|BMC|KVM|Rack\s+Rails|Server\s+Accessories)\b'
+    pattern: '\b(BOSS|TPM|Trusted\s+Platform|GPU|FPGA|Acceleration|Quick\s+Sync|BMC|KVM|Rack\s+Rails|Server\s+Accessories)\b'
     entity_type: HW
     rule_id: HW-003
 
@@ -259,3 +279,175 @@ device_type_rules:
       pattern: '(?i)(xeon|intel\s+xeon).*(customer\s+install|cus(tomer)?\s+kit|ck)'
       device_type: cpu
       rule_id: HW-009-CPU-CUS
+
+# ============================================================
+# HW TYPE (third pass: only for ITEM rows with entity_type HW)
+# Priority: device_type_map > rule_id_map > regex rules > null
+# First match wins in regex rules. ORDER MATTERS.
+# ============================================================
+hw_type_rules:
+  applies_to: [HW]
+
+  # Layer 1: device_type → hw_type (all snake_case)
+  device_type_map:
+    cpu: cpu
+    psu: psu
+    nic: network_adapter
+    storage_nvme: nvme
+    storage_ssd: ssd
+    raid_controller: storage_controller
+    hba: storage_controller
+
+  # Layer 2: matched_rule_id → hw_type
+  rule_id_map:
+    HW-001: chassis
+    HW-004: nvme
+    HW-005-STORAGE-CUS: nvme
+    HW-006-PSU-CUS: psu
+    HW-007-NIC-CUS: network_adapter
+    HW-008-HBA-PERC-CUS: storage_controller
+    HW-009-CPU-CUS: cpu
+
+  # Layer 3: regex rules (first match wins, ORDER MATTERS)
+  rules:
+    # --- blank (перехват до всего) ---
+    - field: module_name
+      pattern: '(?i)\b(Blank|Filler|Dummy)\b'
+      hw_type: blank
+
+    - field: option_name
+      pattern: '(?i)\b(Blank|Filler|Dummy|Slot\s+Filler)\b'
+      hw_type: blank
+
+    - field: option_name
+      pattern: '(?i)\bNo\s+Hard\s+Drive\b'
+      hw_type: blank
+
+    # --- backplane (до storage) ---
+    - field: module_name
+      pattern: '(?i)\b(Backplane|Drive\s+Cage|Bay\s+Assembly)\b'
+      hw_type: backplane
+
+    - field: option_name
+      pattern: '(?i)\b(Backplane|Drive\s+Cage|Bay\s+Assembly)\b'
+      hw_type: backplane
+
+    # --- cable (до GPU/network — перехват "No Cable" и Cables модулей) ---
+    - field: module_name
+      pattern: '(?i)\bCables?\b'
+      hw_type: cable
+
+    - field: option_name
+      pattern: '(?i)(No\s+(Cable|Cables)\s+Required|No\s+Cable|No\s+DPU)'
+      hw_type: cable
+
+    # --- mounting_kit (до chassis) ---
+    - field: module_name
+      pattern: '(?i)\b(Rack\s+Rails|Cable\s+Management)\b'
+      hw_type: mounting_kit
+
+    - field: option_name
+      pattern: '(?i)\b(ReadyRails|Cable\s+Management\s+Arm|CMA)\b'
+      hw_type: mounting_kit
+
+    # --- cpu ---
+    - field: module_name
+      pattern: '(?i)\b(Processor|Additional\s+Processor)\b'
+      hw_type: cpu
+
+    # --- ram ---
+    - field: module_name
+      pattern: '(?i)\bMemory\s+Capacity\b'
+      hw_type: ram
+
+    # --- nvme (option_name, до generic storage) ---
+    - field: option_name
+      pattern: '(?i)\bNVMe\b'
+      hw_type: nvme
+
+    - field: module_name
+      pattern: '(?i)\b(Boot\s+Optimized|BOSS)\b'
+      hw_type: nvme
+
+    # --- ssd (option_name, negative lookahead for NVMe) ---
+    - field: option_name
+      pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
+      hw_type: ssd
+
+    # --- hdd ---
+    - field: option_name
+      pattern: '(?i)\b(HDD|\d+(\.\d+)?K\s*RPM|7200\s*RPM|10K\s*RPM|15K\s*RPM)\b'
+      hw_type: hdd
+
+    # --- storage_controller ---
+    - field: module_name
+      pattern: '(?i)\b(RAID|Storage\s+Controller|External\s+Controller)\b'
+      hw_type: storage_controller
+
+    - field: option_name
+      pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel|BBU|Battery\s+Backup)\b'
+      hw_type: storage_controller
+
+    # --- psu ---
+    - field: module_name
+      pattern: '(?i)\bPower\s+Supply\b'
+      hw_type: psu
+
+    # --- cpu_heatsink (ONLY explicit Heatsink in option_name) ---
+    - field: option_name
+      pattern: '(?i)\bHeatsink\b'
+      hw_type: cpu_heatsink
+
+    # --- fan (explicit Fan in option or Fans in module) ---
+    # RISK: verify on dl2 that "Fan"/"Fans" does not appear in non-cooling contexts
+    - field: option_name
+      pattern: '(?i)\bFan\b'
+      hw_type: fan
+
+    - field: module_name
+      pattern: '(?i)\bFans?\b'
+      hw_type: fan
+
+    # --- network_adapter (NARROWED: explicit adapter context, not bare "OCP") ---
+    - field: module_name
+      pattern: '(?i)\b(Network\s+Adapter|OCP\s+3\.0\s+Network|NIC|Multi\s+Selection\s+Network)\b'
+      hw_type: network_adapter
+
+    - field: module_name
+      pattern: '(?i)\b(Additional\s+)?Network\s+Cards?\b'
+      hw_type: network_adapter
+
+    # --- gpu (module starts with GPU/FPGA, NOT containing Cables) ---
+    - field: module_name
+      pattern: '(?i)^(GPU|FPGA)\b(?!.*Cables)'
+      hw_type: gpu
+
+    # --- riser ---
+    - field: module_name
+      pattern: '(?i)\b(PCIe|Riser)\b'
+      hw_type: riser
+
+    # --- chassis ---
+    - field: module_name
+      pattern: '(?i)\b(Chassis|Bezel|Server\s+Accessories)\b'
+      hw_type: chassis
+
+    # --- management ---
+    - field: module_name
+      pattern: '(?i)\b(KVM|BMC|Quick\s+Sync)\b'
+      hw_type: management
+
+    # --- tpm ---
+    - field: module_name
+      pattern: '(?i)\b(TPM|Trusted\s+Platform)\b'
+      hw_type: tpm
+
+    # --- motherboard ---
+    - field: module_name
+      pattern: '(?i)\bMotherboard\b'
+      hw_type: motherboard
+
+    # NOTE: Thermal Configuration without Heatsink/Fan in option → no match → null + warning.
+    # NOTE: Hard Drives without SSD/HDD/NVMe signal in option → no match → null + warning.
+    # NOTE: "OCP 3.0 Accessories" with "No Cable" → caught by cable rule above.
+    # These gaps are resolved in Pack 10 (dl2-dl5 expansion).

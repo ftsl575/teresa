@@ -70,6 +70,13 @@ def collect_stats(classification_results: List[ClassificationResult]) -> dict:
         if ht:
             hw_type_counts[ht] = hw_type_counts.get(ht, 0) + 1
 
+    hw_type_null_count = sum(
+        1 for r in classification_results
+        if r.row_kind == RowKind.ITEM
+        and r.entity_type == EntityType.HW
+        and not getattr(r, "hw_type", None)
+    )
+
     return {
         "total_rows": total_rows,
         "header_rows_count": header_rows_count,
@@ -80,6 +87,7 @@ def collect_stats(classification_results: List[ClassificationResult]) -> dict:
         "rules_stats": rules_stats,
         "device_type_counts": device_type_counts,
         "hw_type_counts": hw_type_counts,
+        "hw_type_null_count": hw_type_null_count,
     }
 
 
