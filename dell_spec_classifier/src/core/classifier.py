@@ -3,7 +3,7 @@ Row classifier: entity type (BASE, HW, SERVICE, ...) from rules.
 HEADER rows are skipped; ITEM rows follow priority order.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import List, Optional
 
@@ -143,12 +143,5 @@ def _apply_device_type(row: NormalizedRow, result: ClassificationResult, ruleset
         return result
     match = match_device_type_rule(row, ruleset.device_type_rules)
     if match and match.get("device_type"):
-        return ClassificationResult(
-            row_kind=result.row_kind,
-            entity_type=result.entity_type,
-            state=result.state,
-            matched_rule_id=result.matched_rule_id,
-            device_type=match["device_type"],
-            warnings=result.warnings,
-        )
+        return replace(result, device_type=match["device_type"])
     return result
