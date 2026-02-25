@@ -75,7 +75,7 @@
 {"source_row_index": 82, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["389-FHJB"]}
 {"source_row_index": 83, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOGPU-001", "device_type": null, "hw_type": null, "skus": ["470-AEYU"]}
 {"source_row_index": 84, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BCRX"]}
-{"source_row_index": 85, "row_kind": "ITEM", "entity_type": "UNKNOWN", "state": "PRESENT", "matched_rule_id": "UNKNOWN-000", "device_type": null, "hw_type": null, "skus": ["470-ACEV"]}
+{"source_row_index": 85, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-SFP-MODULES-MULTI", "device_type": "sfp_cable", "hw_type": "cable", "skus": ["470-ACEV"]}
 {"source_row_index": 86, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 87, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "PRESENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["709-BBIX"]}
 {"source_row_index": 88, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "PRESENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["865-BBLL", "865-BBLM"]}
