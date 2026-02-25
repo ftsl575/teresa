@@ -6,6 +6,7 @@ import pytest
 import yaml
 from pathlib import Path
 
+from conftest import project_root
 from src.core.state_detector import State, detect_state
 
 
@@ -60,3 +61,24 @@ def test_disabled_only(state_rules):
 def test_not_included_absent(state_rules):
     """'Not Included' -> ABSENT."""
     assert detect_state("Not Included", state_rules) == State.ABSENT
+
+
+def test_blank_override_present():
+    """DEC-003: 'No OCP - 2 Rear Blanks' -> PRESENT (override)."""
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load(str(project_root() / "rules" / "dell_rules.yaml"))
+    assert detect_state("No OCP - 2 Rear Blanks", rs.get_state_rules()).value == "PRESENT"
+
+
+def test_no_cable_absent():
+    """DEC-001: '2 OCP - No Cable' -> ABSENT."""
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load(str(project_root() / "rules" / "dell_rules.yaml"))
+    assert detect_state("2 OCP - No Cable", rs.get_state_rules()).value == "ABSENT"
+
+
+def test_boss_blank_present():
+    """Override: '1 Rear Blank' in 'No BOSS card, 1 Rear Blank' -> PRESENT (quantity + Rear Blanks)."""
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load(str(project_root() / "rules" / "dell_rules.yaml"))
+    assert detect_state("No BOSS card, 1 Rear Blank", rs.get_state_rules()).value == "PRESENT"

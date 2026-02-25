@@ -24,7 +24,7 @@
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BDKD"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 34, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 36, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 37, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -70,7 +70,7 @@
 {"source_row_index": 77, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-003", "device_type": null, "hw_type": "gpu", "skus": ["490-BJRN"]}
 {"source_row_index": 78, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 79, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 80, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 80, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 81, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 82, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 83, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -117,7 +117,7 @@
 {"source_row_index": 124, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BDKD"]}
 {"source_row_index": 125, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 126, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 127, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 127, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 128, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 129, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 130, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -164,7 +164,7 @@
 {"source_row_index": 171, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BDKD"]}
 {"source_row_index": 172, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 173, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 174, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 174, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 175, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 176, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 177, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -211,7 +211,7 @@
 {"source_row_index": 218, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BDKD"]}
 {"source_row_index": 219, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 220, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 221, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 221, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 222, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 223, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 224, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -258,7 +258,7 @@
 {"source_row_index": 265, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-003", "device_type": null, "hw_type": "gpu", "skus": ["490-BJRN"]}
 {"source_row_index": 266, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 267, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 268, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 268, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 269, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 270, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 271, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -306,7 +306,7 @@
 {"source_row_index": 313, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-003", "device_type": null, "hw_type": "gpu", "skus": ["490-BJRN"]}
 {"source_row_index": 314, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 315, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 316, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 316, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 317, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 318, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 319, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -351,7 +351,7 @@
 {"source_row_index": 358, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "network_adapter", "skus": ["540-BDKD"]}
 {"source_row_index": 359, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 360, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["350-BBBW", "350-BCKC"]}
-{"source_row_index": 361, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCID"]}
+{"source_row_index": 361, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBOSS-001", "device_type": null, "hw_type": null, "skus": ["403-BCID"]}
 {"source_row_index": 362, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 363, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 364, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}

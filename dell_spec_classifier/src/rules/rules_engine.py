@@ -89,6 +89,7 @@ class RuleSet:
         self._data = data
         sr = self._data.get("state_rules") or {}
         self._state_rules_list: List[dict] = sr.get("absent_keywords") or []
+        self._state_override_list: List[dict] = sr.get("present_override_keywords") or []
         self.base_rules: List[dict] = self._data.get("base_rules") or []
         self.service_rules: List[dict] = self._data.get("service_rules") or []
         self.logistic_rules: List[dict] = self._data.get("logistic_rules") or []
@@ -109,9 +110,12 @@ class RuleSet:
         ht_applies = htr.get("applies_to") or []
         self.hw_type_applies_to = set(ht_applies) if isinstance(ht_applies, list) else set()
 
-    def get_state_rules(self) -> List[dict]:
-        """Return the list of state rules (absent_keywords) for detect_state."""
-        return self._state_rules_list
+    def get_state_rules(self):
+        """Return (absent_keywords, present_override_keywords) for detect_state."""
+        return (self._state_rules_list, self._state_override_list)
+
+    def get_state_override_rules(self) -> List[dict]:
+        return self._state_override_list
 
     @property
     def version(self) -> str:

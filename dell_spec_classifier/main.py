@@ -45,7 +45,7 @@ def _load_config(config_path: Path) -> dict:
 
 
 def _build_golden_rows(normalized_rows, classification_results):
-    """Build list of dicts for golden JSONL: source_row_index, row_kind, entity_type, state, matched_rule_id, device_type, skus."""
+    """Build list of dicts for golden JSONL: source_row_index, row_kind, entity_type, state, matched_rule_id, device_type, hw_type, skus."""
     out = []
     for row, result in zip(normalized_rows, classification_results):
         out.append({
@@ -55,6 +55,7 @@ def _build_golden_rows(normalized_rows, classification_results):
             "state": result.state.value if result.state else None,
             "matched_rule_id": result.matched_rule_id,
             "device_type": getattr(result, "device_type", None),
+            "hw_type": getattr(result, "hw_type", None),
             "skus": list(row.skus),
         })
     return out

@@ -9,25 +9,24 @@ from tests.helpers import run_pipeline_in_memory
 from src.diagnostics.stats_collector import collect_stats
 from src.core.classifier import HW_TYPE_VOCAB
 
-# Exact expected hw_type_counts from real run on dl1.xlsx (Pack 9 baseline)
+# Exact expected hw_type_counts from real run on dl1.xlsx (post DEC-001/002, DEC-006: BOSS→storage_controller)
 EXPECTED_DL1_HW_TYPE_COUNTS = {
     "tpm": 1,
     "chassis": 2,
     "cpu": 4,
     "ram": 1,
-    "storage_controller": 1,
+    "storage_controller": 2,
     "ssd": 2,
     "fan": 1,
     "psu": 2,
     "riser": 1,
     "network_adapter": 3,
-    "cable": 2,
-    "nvme": 1,
+    "cable": 1,
     "management": 1,
     "mounting_kit": 1,
     "hdd": 1,
 }
-EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 24
+EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 23
 
 
 def test_hw_type_vocab():

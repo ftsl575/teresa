@@ -145,27 +145,29 @@ def test_nic_broadcom_ocp_customer_install(ruleset):
     assert r.device_type == "nic"
 
 
-# --- SFP Cable (LOGISTIC-005-SFP-CABLE) ---
+# --- SFP/DAC Cable (DEC-007: HW, device_type=sfp_cable, hw_type=cable) ---
 def test_sfp_cable_twinax_3m(ruleset):
     row = _row(
+        module_name="Cables",
         option_name="Dell Networking, Cable, SFP28 to SFP28, 25GbE, Passive Copper Twinax Direct Attach Cable, 3 Meter",
         skus=["470-ACEV"],
     )
     r = classify_row(row, ruleset)
-    assert r.entity_type == EntityType.LOGISTIC
-    assert r.matched_rule_id == "LOGISTIC-005-SFP-CABLE"
+    assert r.entity_type == EntityType.HW
     assert r.device_type == "sfp_cable"
+    assert r.hw_type == "cable"
 
 
 def test_sfp_cable_cus_kit(ruleset):
     row = _row(
+        module_name="Cables",
         option_name="SC Cable, SFP28 to SFP28, 25GbE, Passive Copper Twinax Direct Attach Cable, 3 Meter, Cus Kit",
         skus=["470-ADDO"],
     )
     r = classify_row(row, ruleset)
-    assert r.entity_type == EntityType.LOGISTIC
-    assert r.matched_rule_id == "LOGISTIC-005-SFP-CABLE"
+    assert r.entity_type == EntityType.HW
     assert r.device_type == "sfp_cable"
+    assert r.hw_type == "cable"
 
 
 # --- HBA / PERC (HW-008-HBA-PERC-CUS) ---

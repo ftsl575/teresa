@@ -1,8 +1,8 @@
 {"source_row_index": 8, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-001", "device_type": null, "hw_type": null, "skus": ["210-BFMO"]}
-{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["379-BDTF"]}
+{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": null, "skus": ["379-BDTF"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": "storage_nvme", "hw_type": "nvme", "skus": ["379-BDSX"]}
-{"source_row_index": 12, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["379-BDTE"]}
+{"source_row_index": 12, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": null, "skus": ["379-BDTE"]}
 {"source_row_index": 13, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-003", "device_type": null, "hw_type": "tpm", "skus": ["461-AAIG"]}
 {"source_row_index": 14, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-001", "device_type": null, "hw_type": "chassis", "skus": ["321-BKFZ"]}
 {"source_row_index": 15, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cpu", "skus": ["338-CGXC"]}
@@ -12,7 +12,7 @@
 {"source_row_index": 19, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["370-BBRX"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "ram", "skus": ["370-BBRV"]}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["780-BCDW"]}
-{"source_row_index": 22, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "storage_controller", "skus": ["405-ABDN", "405-ABDN", "750-ADWO", "750-ADWO"]}
+{"source_row_index": 22, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "raid_controller", "hw_type": "storage_controller", "skus": ["405-ABDN", "405-ABDN", "750-ADWO", "750-ADWO"]}
 {"source_row_index": 23, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "blank", "skus": ["400-ABHL"]}
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "nvme", "skus": ["345-BJNW"]}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["384-BBBH"]}
@@ -29,7 +29,7 @@
 {"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-008-HBA-PERC-CUS", "device_type": "hba", "hw_type": "storage_controller", "skus": ["540-BDHC"]}
 {"source_row_index": 37, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 38, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "chassis", "skus": ["321-BHXZ", "325-BEVI"]}
-{"source_row_index": 39, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "nvme", "skus": ["403-BCRZ", "470-AFMF"]}
+{"source_row_index": 39, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-BOSS-001", "device_type": null, "hw_type": "storage_controller", "skus": ["403-BCRZ", "470-AFMF"]}
 {"source_row_index": 40, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 41, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
@@ -42,7 +42,7 @@
 {"source_row_index": 49, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["340-DDHI"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["340-DCXY"]}
 {"source_row_index": 51, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["389-EFMJ"]}
-{"source_row_index": 52, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cable", "skus": ["470-AEYU"]}
+{"source_row_index": 52, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOGPU-001", "device_type": null, "hw_type": null, "skus": ["470-AEYU"]}
 {"source_row_index": 53, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["817-BBBP"]}
 {"source_row_index": 54, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "PRESENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["709-BBIY"]}
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "ABSENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["883-BBBD"]}

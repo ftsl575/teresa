@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to Dell classification rules will be documented in this file.
 
@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.1.0] — 2026-02-25
+
+### Fixed
+- DEC-003: "Blanks" plural now recognized; state overridden to PRESENT
+- DEC-001/002: "No Cable" / "No Cables Required" classified as CONFIG+ABSENT
+- DEC-004: Optics and transceivers classified as hw_type=network_adapter
+- DEC-005: PERC Controller rows now have device_type=raid_controller
+- DEC-006: BOSS-N1 → storage_controller; No BOSS Card → CONFIG+ABSENT
+- F1: Hard Drive / 10K rows now classified as hw_type=hdd
 
 ## [1.1.1] - 2026-02-25
 

@@ -1,4 +1,4 @@
-version: "1.0.0"
+version: "1.1.0"
 
 # ============================================================
 # ROW KIND DETECTION (выполняется ПЕРВЫМ, до классификации)
@@ -11,6 +11,10 @@ version: "1.0.0"
 # STATE DETECTION (global, применяется до классификации типа)
 # ============================================================
 state_rules:
+  present_override_keywords:
+    # Quantity + Rear Blank(s) only (OCP-style); excludes "No BOSS card, Rear Blank" and "No GPU Blanks"
+    - pattern: '(?i)\b\d+\s+Rear\s+Blanks?\b'
+      rule_id: STATE-OVERRIDE-001
   absent_keywords:
     - pattern: '^\s*No\s+'  # "No TPM", "No HDD"
       state: ABSENT
@@ -27,6 +31,10 @@ state_rules:
     - pattern: '\bDisabled\b'
       state: DISABLED
       rule_id: STATE-004
+
+    - pattern: '\bNo\s+Cables?\b'
+      state: ABSENT
+      rule_id: STATE-005
 
 # ============================================================
 # ENTITY TYPE CLASSIFICATION (только для ITEM rows)
@@ -95,17 +103,6 @@ logistic_rules:
     entity_type: LOGISTIC
     rule_id: LOGISTIC-004-CORD
 
-  # SFP / Twinax cables
-  - field: option_name
-    pattern: '(?i)(sfp|twinax|dac).*(cable|direct\s+attach)'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-005-SFP-CABLE
-
-  - field: module_name
-    pattern: '(?i)sfp\s+module'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-005-SFP-CABLE
-
 # SOFTWARE (PRIORITY 4) — РАСШИРЕНО
 software_rules:
   - field: module_name
@@ -147,6 +144,24 @@ note_rules:
 
 # CONFIG (PRIORITY 6)
 config_rules:
+  # DEC-001: "No Cable" / "No Cables" placeholder (exclude Blank/Blanks for DEC-003)
+  - field: option_name
+    pattern: '(?i)^(?!.*\bBlanks?\b).*\bNo\s+Cables?\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOCABLE-001
+
+  # DEC-002: GPU/FPGA placeholder "No Cables Required, No GPU Blanks"
+  - field: option_name
+    pattern: '(?i)(?=.*No\s+Cables?\s+Required)(?=.*No\s+GPU\s+Blanks).*'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOGPU-001
+
+  # DEC-006: No BOSS Card (exclude "No BOSS … Rear Blank" which stays HW+blank)
+  - field: option_name
+    pattern: '(?i)^(?!.*Rear\s+Blank).*No\s+BOSS\s+Card'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOBOSS-001
+
   - field: module_name
     pattern: '\b(RAID\s+Configuration|BIOS.*Settings?|Memory.*Type|Advanced\s+System\s+Configurations)\b'
     entity_type: CONFIG
@@ -167,8 +182,26 @@ config_rules:
     entity_type: CONFIG
     rule_id: CONFIG-004
 
-# HW (PRIORITY 7) — generic module rules first (HW-001–004), then specific option_name rules (Customer Kit / Install)
+# HW (PRIORITY 7) — Optics first (DEC-004), then BOSS (DEC-006), then generic module, then other option_name
 hw_rules:
+  # DEC-004: Optics/transceivers only (Transceiver or Optic(s)); exclude Cable + exclude NIC rows with SFP28 port mention
+  - field: option_name
+    pattern: '(?i)(?!.*\bCable\b).*\b(Transceiver|Optics?)\b'
+    entity_type: HW
+    rule_id: HW-OPTICS-001
+
+  # DEC-006: BOSS-N1 controller card → storage_controller
+  - field: option_name
+    pattern: '(?i)(?=.*BOSS-N1)(?=.*controller\s+card).*'
+    entity_type: HW
+    rule_id: HW-BOSS-001
+
+  # DEC-006: No BOSS … Rear Blank → blank (state override gives PRESENT)
+  - field: option_name
+    pattern: '(?i)(?=.*No\s+BOSS)(?=.*Rear\s+Blank).*'
+    entity_type: HW
+    rule_id: HW-NOBOSS-BLANK-001
+
   - field: module_name
     pattern: '^Chassis\s+Configuration$'
     entity_type: HW
@@ -275,6 +308,18 @@ device_type_rules:
       device_type: hba
       rule_id: HW-008-HBA-PERC-CUS
 
+    # DEC-005: PERC + Controller (broader match, no suffix required)
+    - field: option_name
+      pattern: '(?i)\bPERC\b.*\bController\b'
+      device_type: raid_controller
+      rule_id: DEC-005-PERC-CONTROLLER
+
+    # DEC-005: RAID Controllers module → raid_controller
+    - field: module_name
+      pattern: '(?i)\bRAID.*Controllers?\b'
+      device_type: raid_controller
+      rule_id: DEC-005-RAID-MODULE
+
     - field: option_name
       pattern: '(?i)(xeon|intel\s+xeon).*(customer\s+install|cus(tomer)?\s+kit|ck)'
       device_type: cpu
@@ -298,10 +343,12 @@ hw_type_rules:
     raid_controller: storage_controller
     hba: storage_controller
 
-  # Layer 2: matched_rule_id → hw_type
+  # Layer 2: matched_rule_id → hw_type (HW-004→nvme removed for DEC-006; BOSS option_name drives type)
   rule_id_map:
     HW-001: chassis
-    HW-004: nvme
+    HW-OPTICS-001: network_adapter
+    HW-BOSS-001: storage_controller
+    HW-NOBOSS-BLANK-001: blank
     HW-005-STORAGE-CUS: nvme
     HW-006-PSU-CUS: psu
     HW-007-NIC-CUS: network_adapter
@@ -310,13 +357,14 @@ hw_type_rules:
 
   # Layer 3: regex rules (first match wins, ORDER MATTERS)
   rules:
-    # --- blank (перехват до всего) ---
+    # --- blank (перехват до всего); Blanks? = plural ---
+    # Temporary compatibility: exclude GPU Blanks from blank hw_type until Prompt 4 implements DEC-002 (CONFIG) and Prompt 8 updates golden.
     - field: module_name
-      pattern: '(?i)\b(Blank|Filler|Dummy)\b'
+      pattern: '(?i)\b(Blanks?|Filler|Dummy)\b'
       hw_type: blank
 
     - field: option_name
-      pattern: '(?i)\b(Blank|Filler|Dummy|Slot\s+Filler)\b'
+      pattern: '(?i)\b((?<!GPU\s)Blanks?|Filler|Dummy|Slot\s+Filler)\b'
       hw_type: blank
 
     - field: option_name
@@ -374,9 +422,9 @@ hw_type_rules:
       pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
       hw_type: ssd
 
-    # --- hdd ---
+    # --- hdd (drive context: option_name has "Hard Drive"/"HDD"; 10K/15K with or without RPM) ---
     - field: option_name
-      pattern: '(?i)\b(HDD|\d+(\.\d+)?K\s*RPM|7200\s*RPM|10K\s*RPM|15K\s*RPM)\b'
+      pattern: '(?i)(?=.*(?:Hard\s+Drive|HDD)).*\b(HDD|\d+(\.\d+)?K(?:\s*RPM)?|7200(?:\s*RPM)?)\b'
       hw_type: hdd
 
     # --- storage_controller ---
