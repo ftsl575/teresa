@@ -1,0 +1,97 @@
+PROMPT — Fix P6/P6.5 fallout: Optics rule too broad + update unit tests for DEC-007
+
+CONTEXT
+- After DEC-004 (HW-OPTICS-001) and DEC-007 (DAC/Twinax SFP cables -> HW), `pytest tests/ -q` fails.
+- Failures observed:
+  1) `HW-OPTICS-001` incorrectly matches NIC rows that merely mention SFP28 ports (not optics modules), breaking:
+     - tests/test_device_type.py::test_nic_intel_e810_customer_kit
+     - tests/test_device_type.py::test_nic_broadcom_ocp_customer_install
+     Expected matched_rule_id: HW-007-NIC-CUS, got HW-OPTICS-001.
+  2) tests/test_device_type.py still expects SFP/DAC cables to be LOGISTIC, but DEC-007 changed taxonomy (now HW).
+  3) tests/test_regression.py fails because golden files are still baseline; do NOT update golden in this prompt (golden update belongs to P9).
+
+GOAL
+- Narrow `HW-OPTICS-001` so it matches ONLY real optics/transceivers, not NIC cards with SFP28 ports.
+- Update unit tests in `tests/test_device_type.py` to reflect DEC-007: SFP/DAC cable rows are HW (not LOGISTIC).
+- Keep scope minimal: YAML + tests only. No Python production code changes.
+
+PATCH_SCOPE
+Files to modify:
+1) dell_spec_classifier/rules/dell_rules.yaml
+2) dell_spec_classifier/tests/test_device_type.py
+
+Do NOT modify:
+- Any src/core/*.py or src/rules/*.py in this prompt
+- golden/*.jsonl (belongs to P9)
+- tests/test_regression.py expectations
+
+TASK A — Narrow HW-OPTICS-001 pattern
+Current behavior: rule triggers on SFP28 token alone.
+Fix: make HW-OPTICS-001 require optics/transceiver intent, not port-type mention.
+
+Required change (conceptual):
+- HW-OPTICS-001 should match when option_name contains one of:
+  - "Transceiver"
+  - "Optic" / "Optics"
+  - "SFP+ SR Optic" style strings
+  - "SFP28 SR" transceiver strings where "Transceiver" present
+- It must NOT match NIC descriptions like:
+  - "Intel E810-XXV 25GbE SFP28 Dual Port PCIe ... Customer Kit"
+  - "Broadcom 57504 ... SFP28 ... OCP NIC ... Customer Install"
+
+Implementation constraint:
+- Keep the existing negative lookahead excluding word "Cable" (to avoid DAC/DAC-cable rows).
+- Add an additional guard: require the word "Transceiver" OR "Optic/Optics" (case-insensitive) in the line.
+  - This is the safest deterministic discriminator across your datasets.
+
+So the optics rule should NOT include plain SFP+/SFP28 tokens as standalone triggers.
+
+Acceptance for TASK A:
+- `pytest tests/test_device_type.py -q` passes for NIC customer-kit tests.
+- In dl6 run, G0FVJIE (SFP+ SR Optic) and GNID9SB (25GbE SFP28 SR Transceiver) still match:
+  - matched_rule_id=HW-OPTICS-001
+  - hw_type=network_adapter
+
+TASK B — Update tests for DEC-007 (SFP/DAC cables are HW)
+Update `tests/test_device_type.py` for:
+- `test_sfp_cable_twinax_3m`
+- `test_sfp_cable_cus_kit`
+
+New expected behavior:
+- entity_type == HW
+- device_type == "sfp_cable"
+- hw_type == "cable"
+Also ensure matched_rule_id is stable (likely HW-002 or another HW rule); do NOT overconstrain if matched_rule_id may vary by rule ordering.
+Prefer asserting:
+- entity_type
+- device_type
+- hw_type
+and avoid strict matched_rule_id unless it is guaranteed.
+
+Acceptance for TASK B:
+- `pytest tests/test_device_type.py -q` passes.
+
+NOTE ABOUT REGRESSION TESTS
+- `tests/test_regression.py` is expected to FAIL until P9 (golden update). Do not change it here.
+
+COMMANDS (PowerShell; run from C:\Users\G\Desktop\teresa\dell_spec_classifier)
+1) Unit tests:
+  pytest tests/test_device_type.py -q
+  pytest tests/test_smoke.py -q
+  pytest tests/test_stats_hw_type.py -q
+2) Spot-check optics and DAC in dl6:
+  python main.py --input test_data\dl6.xlsx --output-dir output
+  python -c "
+import json,re
+from pathlib import Path
+run = sorted(Path('output').glob('run_*'))[-1]
+rows = json.load((run/'rows_normalized.json').open())
+res  = [json.loads(l) for l in (run/'classification.jsonl').open())
+targets = {'G0FVJIE','GNID9SB','GU0B9PV'}
+for r,o in zip(rows,res):
+    if (r.get('option_id') in targets):
+        print(r.get('option_id'), (r.get('option_name') or '')[:80], o.get('matched_rule_id'), o.get('entity_type'), o.get('hw_type'), o.get('device_type'))
+"
+Expected:
+- G0FVJIE, GNID9SB -> matched_rule_id HW-OPTICS-001, hw_type network_adapter
+- GU0B9PV -> entity_type HW, hw_type cable, device_type sfp_cable
