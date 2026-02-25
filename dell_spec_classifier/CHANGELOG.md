@@ -5,7 +5,12 @@ All notable changes to Dell classification rules will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+Release tag **v1.1.0** points to commit **5af576d**.
+
 ## [Unreleased]
+
+### Added
+- Tests: robust annotated.xlsx header-row detection when a Solution Info preamble is present (no classifier/rules changes).
 
 ## [1.1.0] — 2026-02-25
 
@@ -16,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEC-005: PERC Controller rows now have device_type=raid_controller
 - DEC-006: BOSS-N1 → storage_controller; No BOSS Card → CONFIG+ABSENT
 - F1: Hard Drive / 10K rows now classified as hw_type=hdd
+- SFP Modules (Multi): DAC/Twinax direct-attach cable rows → entity_type=HW, hw_type=cable, device_type=sfp_cable; FRONT STORAGE / REAR STORAGE → hw_type=chassis
 
 ## [1.1.1] - 2026-02-25
 

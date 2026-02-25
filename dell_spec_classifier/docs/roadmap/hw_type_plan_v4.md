@@ -8,6 +8,26 @@
 
 ---
 
+## Status
+
+**Status:** Completed / reference-only (plan executed).  
+**Last updated:** 2026-02-26  
+
+## Execution log (what was actually merged)
+
+- DEC-007: optics rule narrowing + tests (prompt_p7a_optics_rule_narrow_and_tests_dec007.txt).
+- DEC-005: device_type coverage for PERC controller rows (PROMPT_8_PERC_device_type_DEC-005.txt).
+- Golden + CHANGELOG + release tag alignment for v1.1.0 (PROMPT_9_Golden_Tests_Changelog_Version_1.1.0.txt; baseline text reference PROMPT_9_ORIGINAL_1to1.txt).
+- Rules/fixes for SFP Modules + DAC cables, plus storage hw_type fixes (PROMPT_10_SFP_Modules_and_Storage_hw_type_fix.txt).
+- Tests-only: robust header-row detection for annotated.xlsx exports with a preamble (CURSOR_PROMPT_fix_annotated_header_row.txt).
+
+### Git anchors
+
+- Release tag **v1.1.0** points to commit **5af576d**.
+- Annotated.xlsx header detection fix was merged via PR #2 and is on **main** at merge commit **a0499e8** (post-tag).
+
+---
+
 ## Table of Contents
 
 1. [UNDERSTANDING](#1-understanding)
