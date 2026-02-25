@@ -222,6 +222,11 @@ hw_rules:
     entity_type: HW
     rule_id: HW-004
 
+  - field: module_name
+    pattern: '(?i)\bSFP\s+Modules?\b'
+    entity_type: HW
+    rule_id: HW-010-SFP-MODULES-MULTI
+
   # Below: option_name-only rules for rows that did not match any module (formerly UNKNOWN)
   # Power Supply Customer Kit
   - field: option_name
@@ -276,6 +281,12 @@ device_type_rules:
       pattern: '(?i)sfp\s+module'
       device_type: sfp_cable
       rule_id: LOGISTIC-005-SFP-CABLE
+
+    # DEC-010: DAC/Twinax direct-attach cable option_name (HW rows from SFP Modules (Multi))
+    - field: option_name
+      pattern: '(?i)\b(sfp|sfp\+|sfp28|twinax|dac|direct\s+attach)\b.*\b(cable|twinax)\b'
+      device_type: sfp_cable
+      rule_id: DEC-010-SFP-DAC-CABLE
 
     # HW — order matters: more specific first
     - field: option_name
@@ -385,6 +396,10 @@ hw_type_rules:
       pattern: '(?i)\bCables?\b'
       hw_type: cable
 
+    - field: module_name
+      pattern: '(?i)\bSFP\s+Modules?\b'
+      hw_type: cable
+
     - field: option_name
       pattern: '(?i)(No\s+(Cable|Cables)\s+Required|No\s+Cable|No\s+DPU)'
       hw_type: cable
@@ -478,6 +493,10 @@ hw_type_rules:
     # --- chassis ---
     - field: module_name
       pattern: '(?i)\b(Chassis|Bezel|Server\s+Accessories)\b'
+      hw_type: chassis
+
+    - field: module_name
+      pattern: '(?i)\b(FRONT\s+STORAGE|REAR\s+STORAGE)\b'
       hw_type: chassis
 
     # --- management ---
