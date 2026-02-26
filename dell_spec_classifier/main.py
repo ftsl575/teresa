@@ -8,6 +8,7 @@ import argparse
 import json
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -27,6 +28,7 @@ from src.outputs.json_writer import (
 from src.diagnostics.stats_collector import collect_stats, save_run_summary, compute_file_hash
 from src.outputs.excel_writer import generate_cleaned_spec
 from src.outputs.annotated_writer import generate_annotated_source_excel
+from src.outputs.branded_spec_writer import generate_branded_spec
 
 
 def _resolve_path(path: str, base: Path) -> Path:
@@ -130,17 +132,26 @@ def main() -> int:
         log.info("Saving artifacts to %s", run_folder)
         save_rows_raw(raw_rows, run_folder)
         save_rows_normalized(normalized_rows, run_folder)
-        save_classification(classification_results, run_folder)
+        save_classification(classification_results, normalized_rows, run_folder)
         save_unknown_rows(normalized_rows, classification_results, run_folder)
         save_header_rows(normalized_rows, run_folder)
 
         stats = collect_stats(classification_results)
         stats["rules_file_hash"] = compute_file_hash(str(rules_path))
+        stats["input_file"] = input_path.name
+        stats["run_timestamp"] = datetime.utcnow().replace(microsecond=0).isoformat()
         save_run_summary(stats, run_folder)
 
         generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
         generate_annotated_source_excel(
-            raw_rows, normalized_rows, classification_results, input_path, output_dir
+            raw_rows, normalized_rows, classification_results, input_path, run_folder
+        )
+        branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
+        generate_branded_spec(
+            normalized_rows=normalized_rows,
+            classification_results=classification_results,
+            source_filename=input_path.name,
+            output_path=branded_path,
         )
         log.info("Done.")
 

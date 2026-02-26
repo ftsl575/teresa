@@ -5,7 +5,7 @@ Save pipeline artifacts: raw rows, normalized rows, classification (JSON/JSONL),
 import csv
 import json
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Union
 
 from src.core.normalizer import NormalizedRow, RowKind
 from src.core.classifier import ClassificationResult, EntityType
@@ -27,31 +27,48 @@ def _normalized_row_to_dict(row: NormalizedRow) -> dict:
     }
 
 
-def _classification_result_to_dict(result: ClassificationResult) -> dict:
-    """Build dict for classification.jsonl. device_type only for ITEM with matched_rule_id != UNKNOWN-000."""
+def _classification_result_to_dict(
+    result: ClassificationResult,
+    source_row_index: Optional[int] = None,
+) -> dict:
+    """Build dict for classification.jsonl.
+    source_row_index is int when normalized_rows provided, null otherwise.
+    Field is always present in output schema.
+    """
     out = {
+        "source_row_index": source_row_index,  # null when old call path, int when new
         "row_kind": result.row_kind.value,
         "entity_type": result.entity_type.value if result.entity_type else None,
         "state": result.state.value if result.state else None,
         "matched_rule_id": result.matched_rule_id,
         "warnings": result.warnings,
     }
-    if result.row_kind.value == "ITEM" and result.matched_rule_id != "UNKNOWN-000" and result.entity_type is not None:
-        out["device_type"] = result.device_type
-    else:
-        out["device_type"] = None
-    if result.row_kind.value == "ITEM" and result.matched_rule_id != "UNKNOWN-000" and result.entity_type is not None:
-        out["hw_type"] = getattr(result, "hw_type", None)
-    else:
-        out["hw_type"] = None
+    is_classified = (
+        result.row_kind.value == "ITEM"
+        and result.matched_rule_id != "UNKNOWN-000"
+        and result.entity_type is not None
+    )
+    out["device_type"] = result.device_type if is_classified else None
+    out["hw_type"] = getattr(result, "hw_type", None) if is_classified else None
     return out
 
 
 def save_rows_raw(rows: List[dict], run_folder: Path) -> None:
-    """Write raw parsed rows to rows_raw.json (indent=2, ensure_ascii=False)."""
+    """Write raw parsed rows to rows_raw.json. float NaN replaced with null."""
     path = Path(run_folder) / "rows_raw.json"
+
+    def _sanitize_nan(obj):
+        """Replace float NaN with None only. str/int/bool/None unchanged."""
+        if isinstance(obj, float) and obj != obj:
+            return None
+        if isinstance(obj, dict):
+            return {k: _sanitize_nan(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_sanitize_nan(v) for v in obj]
+        return obj
+
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(rows, f, indent=2, ensure_ascii=False)
+        json.dump(_sanitize_nan(rows), f, indent=2, ensure_ascii=False)
 
 
 def save_rows_normalized(rows: List[NormalizedRow], run_folder: Path) -> None:
@@ -62,12 +79,42 @@ def save_rows_normalized(rows: List[NormalizedRow], run_folder: Path) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def save_classification(results: List[ClassificationResult], run_folder: Path) -> None:
-    """Write one JSON object per line to classification.jsonl."""
-    path = Path(run_folder) / "classification.jsonl"
+def save_classification(
+    results: List[ClassificationResult],
+    normalized_rows_or_run_folder: Union[List[NormalizedRow], Path],
+    run_folder: Optional[Path] = None,
+) -> None:
+    """Write one JSON object per line to classification.jsonl.
+
+    Backward-compatible signature:
+      Old (smoke tests): save_classification(results, run_folder)
+        → source_row_index: null in every row
+      New (main.py):     save_classification(results, normalized_rows, run_folder)
+        → source_row_index: int from normalized_rows[i].source_row_index
+    """
+    if isinstance(normalized_rows_or_run_folder, Path):
+        # Old call path: second arg is run_folder
+        actual_run_folder = normalized_rows_or_run_folder
+        normalized_rows = None
+    else:
+        # New call path: second arg is normalized_rows
+        normalized_rows = normalized_rows_or_run_folder
+        actual_run_folder = run_folder
+        assert len(results) == len(normalized_rows), \
+            "Results and normalized_rows length mismatch"
+
+    path = Path(actual_run_folder) / "classification.jsonl"
     with open(path, "w", encoding="utf-8") as f:
-        for result in results:
-            line = json.dumps(_classification_result_to_dict(result), ensure_ascii=False) + "\n"
+        for i, result in enumerate(results):
+            source_row_index = (
+                normalized_rows[i].source_row_index
+                if normalized_rows is not None
+                else None
+            )
+            line = json.dumps(
+                _classification_result_to_dict(result, source_row_index),
+                ensure_ascii=False,
+            ) + "\n"
             f.write(line)
 
 

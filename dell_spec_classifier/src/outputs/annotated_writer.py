@@ -18,11 +18,11 @@ def generate_annotated_source_excel(
     normalized_rows: List[NormalizedRow],
     classification_results: List[ClassificationResult],
     original_excel_path: Path,
-    output_dir: Path,
+    run_folder: Path,
 ) -> Path:
     """
     Load original Excel, add columns Entity Type, State, device_type, hw_type,
-    and save to output_dir/<stem>_annotated.xlsx.
+    and save to run_folder/<stem>_annotated.xlsx.
     Row count unchanged; mapping by source_row_index (Excel 1-based).
     """
     path = Path(original_excel_path)
@@ -69,8 +69,8 @@ def generate_annotated_source_excel(
     df["device_type"] = device_type_col
     df["hw_type"] = hw_type_col
 
-    output_dir = Path(output_dir)
+    run_folder = Path(run_folder)
     stem = path.stem
-    out_path = output_dir / f"{stem}_annotated.xlsx"
+    out_path = run_folder / f"{stem}_annotated.xlsx"
     df.to_excel(out_path, index=False, header=False, engine="openpyxl")
     return out_path
