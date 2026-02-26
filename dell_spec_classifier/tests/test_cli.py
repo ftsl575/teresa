@@ -30,8 +30,8 @@ def test_cli_exit_code_stdout_artifacts():
 
     output_dir = root / "output"
     assert output_dir.exists(), "output/ should exist"
-    run_folders = list(output_dir.glob("run_*"))
-    assert run_folders, "At least one output/run_* folder should exist"
+    run_folders = list(output_dir.glob("run-*"))
+    assert run_folders, "At least one output/run-* folder should exist"
     latest = max(run_folders, key=lambda p: p.stat().st_mtime)
     assert (latest / "cleaned_spec.xlsx").exists(), f"cleaned_spec.xlsx missing in {latest}"
     assert (latest / "run_summary.json").exists(), f"run_summary.json missing in {latest}"

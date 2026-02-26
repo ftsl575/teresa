@@ -1,26 +1,16 @@
 # Dell Specification Classifier
 
-Pipeline for classifying Dell Excel specifications: Excel → parse → normalize → classify → run artifacts + cleaned spec. Classification is deterministic and rule-based (YAML + regex on `module_name` / `option_name`).
+Deterministic rule-based pipeline for classifying Dell Excel specification files.
 
-For implementation details and architecture, see [docs/TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md).
-
-## Design and Planning Documents
-
-The following documents guided development and are kept as reference. They are **completed** and are not the source of truth for current behavior; use [TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md) and this README for that.
-
-- **[docs/architecture/dell_mvp_technical_spec.md](docs/architecture/dell_mvp_technical_spec.md)** — Original MVP technical architecture and specification (phases 0–10, row_kind, entity types, rules, tests). Created February 2026; describes the baseline design before implementation.
-- **[docs/roadmap/vnext_plan1.md](docs/roadmap/vnext_plan1.md)** — vNext execution plan: test data paths, golden files, full regression (dl1–dl5), UNKNOWN closure, device_type, and documentation. Created 2026-02-23; phases 0–3 and related prompts have been executed.
+**Excel in → parse → normalize → classify → Excel/JSON/CSV out.**
+Classification uses YAML rules + regex. No ML. Fully reproducible.
 
 ---
 
-## Installation
+## Requirements
 
-- **Requirements:** Python 3.10+, and dependencies from `requirements.txt` (e.g. `pandas`, `openpyxl`, `PyYAML`).
-- From the project root (`dell_spec_classifier/`):
-  ```bash
-  pip install -r requirements.txt
-  ```
-- No system-wide install; run `main.py` from this directory or pass paths relative to CWD.
+- Python 3.10+
+- `pip install -r requirements.txt`
 
 ---
 
@@ -28,159 +18,109 @@ The following documents guided development and are kept as reference. They are *
 
 ```bash
 cd dell_spec_classifier
+pip install -r requirements.txt
+
+# Single file
 python main.py --input test_data/dl1.xlsx
+
+# Batch: process all xlsx in a directory
+python main.py --batch-dir test_data --output-dir output
 ```
 
-This creates a run folder under `output/run_YYYYMMDD_HHMMSS/` with classification artifacts and `cleaned_spec.xlsx`. Use `--output-dir` to change the output base directory.
+---
+
+## Output
+
+Each run creates a timestamped folder:
+
+**Single run:** `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/`
+**Batch:** per-file folders + `output/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`
+
+### Per-run artifacts
+
+| File | Description |
+|---|---|
+| `classification.jsonl` | Classification result per row (entity_type, state, device_type, hw_type) |
+| `run_summary.json` | Aggregate counts: entity types, states, hw_types, unknown count |
+| `cleaned_spec.xlsx` | Filtered spec (types from config: BASE, HW, SOFTWARE, SERVICE; PRESENT only) |
+| `<stem>_annotated.xlsx` | Original file + 4 added columns: Entity Type, State, device_type, hw_type |
+| `<stem>_branded.xlsx` | Branded spec grouped by server and entity type sections |
+| `unknown_rows.csv` | Rows that matched no rule — review these after each run |
+| `rows_raw.json` | Raw parsed rows (debug) |
+| `rows_normalized.json` | Normalized rows with row_kind (debug) |
+| `header_rows.csv` | Section separator rows |
+| `run.log` | Pipeline log for this run |
+
+### TOTAL folder (batch mode)
+
+`run-YYYY-MM-DD__HH-MM-SS-TOTAL/` aggregates the three presentation files from every
+per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_spec.xlsx`.
 
 ---
 
 ## CLI Reference
 
-| Option | Description |
-|--------|-------------|
-| `--input` | **Required.** Path to input Excel file (`.xlsx`). |
-| `--config` | Path to config YAML (default: `config.yaml`). |
-| `--output-dir` | Base directory for run folders (default: `output`). |
-| `--save-golden` | Run pipeline and save `golden/<stem>_expected.jsonl` for the given input (no prompt). |
-| `--update-golden` | Run pipeline and overwrite golden after interactive confirmation (`y`/`n`). |
+| Option | Default | Description |
+|---|---|---|
+| `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
+| `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
+| `--config PATH` | `config.yaml` | Config YAML |
+| `--output-dir PATH` | `output` | Base directory for run folders |
+| `--save-golden` | — | Save golden/<stem>_expected.jsonl without confirmation |
+| `--update-golden` | — | Overwrite golden with interactive confirmation |
 
-Paths are resolved relative to the current working directory unless absolute.
-
----
-
-## Run Artifacts
-
-Each run creates a timestamped folder under `output/` (or `--output-dir`) containing:
-
-| File | Description |
-|------|-------------|
-| `rows_raw.json` | Raw parsed rows from Excel. |
-| `rows_normalized.json` | Normalized rows with `row_kind`. |
-| `classification.jsonl` | One JSON object per line: `row_kind`, `entity_type`, `state`, `matched_rule_id`, `device_type` (when applicable), `warnings`. |
-| `unknown_rows.csv` | ITEM rows classified as UNKNOWN. |
-| `header_rows.csv` | HEADER rows. |
-| `run_summary.json` | Counts: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`. |
-| `cleaned_spec.xlsx` | Filtered spec per `config.yaml` (e.g. BASE/HW/SOFTWARE/SERVICE, PRESENT only). |
-| `annotated_source.xlsx` | Source rows with added Entity Type and State columns. |
-| `run.log` | Log for this run. |
+Either `--input` or `--batch-dir` is required. Full reference: `docs/user/CLI_CONFIG_REFERENCE.md`.
 
 ---
 
-## entity_type
+## Test Data
 
-Eight possible entity types for ITEM rows (HEADER rows have no entity type):
-
-| Value | Description |
-|-------|-------------|
-| BASE | Base system / chassis (e.g. Base, PowerEdge R660). |
-| HW | Hardware (processors, memory, drives, power supply, NICs, etc.). |
-| CONFIG | Configuration (e.g. RAID, BIOS). |
-| SOFTWARE | Software / OS / licenses. |
-| SERVICE | Services (ProSupport, warranty, deployment). |
-| LOGISTIC | Logistics (shipping, documentation, power cords, cables). |
-| NOTE | Informational notes (e.g. "supports ONLY", "included with"). |
-| UNKNOWN | No rule matched. |
+Test files (`test_data/dl1.xlsx` … `dl6.xlsx`) are **not in git**.
+Place them under `dell_spec_classifier/test_data/`.
+Smoke, regression, and threshold tests skip automatically if files are absent.
 
 ---
 
-## row_kind
-
-- **HEADER:** Row where Module Name, Option Name, and SKUs are all empty (section separator). Not classified by entity rules.
-- **ITEM:** Any other row; classified by priority (BASE → SERVICE → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW → UNKNOWN).
-
----
-
-## State
-
-For ITEM rows, state is derived from `option_name` (e.g. "No TPM", "Disabled"):
-
-| Value | Meaning |
-|-------|---------|
-| PRESENT | Option is present / included. |
-| ABSENT | Option is not included (e.g. "No HDD", "Empty"). |
-| DISABLED | Option is disabled. |
-
----
-
-## Rules Change Process
-
-1. **Edit rules** in `rules/dell_rules.yaml` (entity rules and/or `device_type_rules`).
-2. **Add or update unit tests** in `tests/test_rules_unit.py` or `tests/test_device_type.py` for the new or changed patterns.
-3. **Run the pipeline** on dl1–dl5: `python main.py --input test_data/dlN.xlsx` for N=1..5.
-4. **Inspect** `unknown_rows.csv` and `run_summary.json` in the run folder; confirm `unknown_count` and classifications are as intended.
-5. **Update golden** if the change is intentional: `python main.py --input test_data/dlN.xlsx --update-golden` (answer `y`), or use `--save-golden` for non-interactive/CI.
-6. **Review golden diffs carefully:** When reviewing a PR that updates golden files, verify that: (a) only the intended rows changed; (b) only the intended fields changed; (c) the PR description lists the count of changed rows and the nature of changes. Do not approve golden updates without understanding every diff.
-7. **Run the full test suite:** `pytest tests/ -v`.
-8. **Update CHANGELOG.md** and commit.
-
-**⚠ Rule ordering sensitivity:** Rules within each entity category use first-match semantics. When adding a new rule, verify that it does not shadow existing rules by running all 5 datasets (dl1.xlsx through dl5.xlsx) and confirming that golden diffs are limited to the intended rows. Inserting a rule above an existing rule with an overlapping regex pattern can silently change classification for previously-matched rows.
-
----
-
-## How to Run Tests
-
-From `dell_spec_classifier/`:
+## Running Tests
 
 ```bash
-# All tests
-pytest tests/ -v --tb=short
-
-# Unit tests only (no Excel files needed)
+# Unit tests only (no xlsx needed)
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v
 
-# Smoke and regression (require test_data/dl1.xlsx … dl5.xlsx)
-pytest tests/test_smoke.py tests/test_regression.py -v
+# Full suite (requires test_data/ + golden/)
+pytest tests/ -v --tb=short
 
-# Device-type and unknown-threshold checks
-pytest tests/test_device_type.py tests/test_unknown_threshold.py -v
+# Regression only
+pytest tests/test_regression.py -v
 ```
-
-Tests that depend on `test_data/*.xlsx` will **skip** with a clear message if the file is missing.
 
 ---
 
-## Note on test_data
-
-Test Excel files (`test_data/dl1.xlsx` … `dl5.xlsx`) are **not** in git. Place them locally under `dell_spec_classifier/test_data/` so that:
-
-- Smoke and regression tests can run (otherwise they are skipped).
-- Golden generation works: `python main.py --input test_data/dlN.xlsx --save-golden`.
-
-You can regenerate golden for all five files with:
+## Updating Golden (after rule changes)
 
 ```bash
-# PowerShell
-.\scripts\generate_golden.ps1
+python main.py --input test_data/dl1.xlsx --save-golden
+# Repeat for dl2..dl6 as needed
+pytest tests/test_regression.py -v
 ```
 
 ---
 
-## Regression
+## Troubleshooting
 
-Regression tests compare the current pipeline output to **golden files** row-by-row (`entity_type`, `state`, `matched_rule_id`, `device_type`, `skus`).
-
-- **Generate golden** (first time or after adding a new input file):
-  ```bash
-  python main.py --input test_data/dl1.xlsx --save-golden
-  ```
-  This creates `golden/dl1_expected.jsonl`. Repeat for `dl2.xlsx`, etc., or use `scripts/generate_golden.ps1`.
-
-- **Update golden** after intentionally changing rules or logic (prompts for confirmation):
-  ```bash
-  python main.py --input test_data/dl1.xlsx --update-golden
-  ```
-  Answer `y` to overwrite `golden/dl1_expected.jsonl`. In non-interactive environments use `--save-golden` instead.
-
-- **Run regression tests**:
-  ```bash
-  pytest tests/test_regression.py -v
-  ```
-  Each test runs the pipeline for one input file, loads the corresponding `golden/<stem>_expected.jsonl`, and fails if any row differs.
+| Error | Cause | Fix |
+|---|---|---|
+| `Input file not found` | Wrong `--input` path | Use absolute path or run from `dell_spec_classifier/` |
+| `Config file not found` | Wrong `--config` path | Default is `config.yaml` in CWD |
+| `No header row found` | Excel missing `"Module Name"` cell | Verify first sheet has `Module Name` header in first 20 rows |
+| `Rules file not found` | `rules_file` in config invalid | Check `config.yaml` → `rules_file` path |
+| Regression test fails | Rules changed without golden update | Run `--save-golden`, review diff carefully |
+| `unknown_rows.csv` not empty | Input has rows matching no rule | Review patterns; add rules per `docs/rules/RULES_AUTHORING_GUIDE.md` |
 
 ---
 
-## config.yaml reference
+## Documentation
 
-- **`rules_file`:** Path to the rules YAML (default: `rules/dell_rules.yaml`).
-- **`cleaned_spec`:** `include_types` (entity types to include in cleaned spec), `include_only_present`, `exclude_headers`. Output columns for the cleaned Excel are fixed in `excel_writer.py`; there is no `output_columns` config parameter.
+Full documentation: [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md)
+
+Changelog: [`CHANGELOG.md`](CHANGELOG.md)

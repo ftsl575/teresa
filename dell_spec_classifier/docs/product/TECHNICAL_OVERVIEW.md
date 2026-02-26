@@ -10,9 +10,10 @@
 
 - **Вход:** один Excel-файл (`.xlsx`) с таблицей спецификации (столбцы в том числе: Module Name, Option Name, SKUs, Qty, Option List Price).
 - **Выход:**
-  - папка прогона `output/run_YYYYMMDD_HHMMSS/` с артефактами (JSON, CSV, Excel);
+  - папка прогона `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/` с артефактами (JSON, CSV, Excel);
   - очищенная спецификация `cleaned_spec.xlsx` (только выбранные типы и состояние);
-  - аннотированный исходный файл `annotated_source.xlsx` (все строки + колонки Entity Type, State).
+  - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type);
+  - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
 
 Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED).
 
@@ -34,12 +35,14 @@
 5. **Классификация** — для каждой нормализованной строки `src.core.classifier.classify_row(row, ruleset)`:
    - если `row_kind == HEADER` → результат с `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
    - иначе: сначала `detect_state(option_name, state_rules)` (PRESENT/ABSENT/DISABLED), затем проверка правил по приоритету: BASE → SERVICE → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW; при отсутствии совпадений → UNKNOWN.
-6. **Создание папки прогона** — `src.diagnostics.run_manager.create_run_folder(output_dir, input_filename)` → `output/run_YYYYMMDD_HHMMSS/` (при коллизии добавляется суффикс `_1`, `_2`, …).
+6. **Создание папки прогона** — создаётся `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/` через `create_run_folder(output_dir, input_filename, stamp)`.
 7. **Сохранение артефактов:**
    - `src.outputs.json_writer`: `save_rows_raw`, `save_rows_normalized`, `save_classification`, `save_unknown_rows`, `save_header_rows`;
    - `src.diagnostics.stats_collector`: `collect_stats(classification_results)` и `save_run_summary(stats, run_folder)`;
    - `src.outputs.excel_writer.generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)` → `cleaned_spec.xlsx`;
-   - `src.outputs.annotated_writer.generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, input_path, run_folder)` → `annotated_source.xlsx`.
+   - `src.outputs.annotated_writer.generate_annotated_source_excel(...)` → `<stem>_annotated.xlsx`;
+   - `src.outputs.branded_spec_writer.generate_branded_spec(...)` → `<stem>_branded.xlsx`.
+   **Режим batch:** создаётся папка TOTAL через `create_total_folder()` и копирование трёх презентационных файлов через `copy_to_total()`.
 8. **Опционально: golden** — при флагах `--save-golden` или `--update-golden` формируются строки в формате golden и запись в `golden/<stem>_expected.jsonl`; для `--update-golden` перед перезаписью запрашивается подтверждение (y/n).
 9. **Логирование** — после создания папки прогона в корневой логгер добавляется `FileHandler(run_folder / "run.log")`. В stdout выводится краткий summary (total_rows, header_rows_count, item_rows_count, entity_type_counts, unknown_count, run_folder).
 
@@ -63,9 +66,10 @@
 | `classification.jsonl` | Одна строка — один JSON: `row_kind`, `entity_type`, `state`, `matched_rule_id`, `warnings`. |
 | `unknown_rows.csv` | Только ITEM-строки с `entity_type == UNKNOWN`; кодировка UTF-8-sig. |
 | `header_rows.csv` | Только строки с `row_kind == HEADER`; UTF-8-sig. |
-| `run_summary.json` | Агрегаты: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`. |
+| `run_summary.json` | Агрегаты: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
 | `cleaned_spec.xlsx` | Подмножество ITEM: типы из `config["cleaned_spec"]["include_types"]`, при `include_only_present` только state PRESENT. Колонки: Module Name, Option Name, SKUs, Qty, Option List Price, Entity Type, State. |
-| `annotated_source.xlsx` | Копия исходного листа (построчно), добавлены две колонки Entity Type и State; строки не удаляются; запись с `header=False`. |
+| `<stem>_annotated.xlsx` | Копия исходного листа (построчно), добавлены четыре колонки: Entity Type, State, device_type, hw_type; строки не удаляются; запись с `header=False`. |
+| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по типу сущности; из `src.outputs.branded_spec_writer.py`. |
 | `run.log` | Текстовый лог этапов пайплайна. |
 
 Типы сущностей в коде: `EntityType` в `src/core/classifier.py` — BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN. Состояния: `State` в `src/core/state_detector.py` — PRESENT, ABSENT, DISABLED.
@@ -78,11 +82,14 @@
 
 | Аргумент | Обязательность | Описание |
 |----------|----------------|----------|
-| `--input` | обязательный | Путь к входному Excel. |
+| `--input` | обязателен в single-file режиме | Путь к входному Excel. |
+| `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
 | `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
 | `--output-dir` | нет (по умолчанию `output`) | Каталог для подпапок прогонов. |
 | `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
 | `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
+
+Именование папок прогонов: **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
 
 Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
 
@@ -121,9 +128,9 @@ python main.py --input test_data/dl1.xlsx --update-golden
 Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder)`.
 
 - Исходный Excel читается через `pandas.read_excel(..., header=None)`. Строка заголовка находится через `find_header_row(original_excel_path)`.
-- К таблице добавляются два столбца: "Entity Type" и "State". В строке заголовка в этих ячейках пишутся подписи "Entity Type" и "State".
-- Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value` и `state.value`; иначе — пусто.
-- Результат сохраняется в `run_folder / "annotated_source.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
+- К таблице добавляются четыре колонки: "Entity Type", "State", "device_type", "hw_type". В строке заголовка в этих ячейках пишутся соответствующие подписи.
+- Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value`, `state.value`, `device_type`, `hw_type`; иначе — пусто.
+- Результат сохраняется в `run_folder / "<stem>_annotated.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
 
 Вызов выполняется в `main.py` после `generate_cleaned_spec`.
 
@@ -169,7 +176,7 @@ dell_spec_classifier/
 ├── golden/
 │   └── <stem>_expected.jsonl  # при наличии
 ├── output/
-│   └── run_YYYYMMDD_HHMMSS/   # артефакты прогонов
+│   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов
 └── docs/
     └── TECHNICAL_OVERVIEW.md  # этот документ
 ```
@@ -186,8 +193,8 @@ dell_spec_classifier/
   - `test_state_detector.py` — `detect_state` по правилам из YAML (ABSENT, DISABLED, PRESENT по умолчанию).
   - `test_rules_unit.py` — классификация: HEADER→HEADER-SKIP, BASE, SOFTWARE (в т.ч. Embedded Systems Management, Dell Secure Onboarding), HW (Chassis Configuration), SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN, state в результате.
   - `test_excel_writer.py` — наличие `cleaned_spec.xlsx`, отсутствие HEADER в нём, только типы из `include_types`, только PRESENT при `include_only_present`.
-  - `test_annotated_writer.py` — наличие `annotated_source.xlsx`, совпадение числа строк с исходным, наличие колонок Entity Type/State и заполненных значений для ITEM.
-- **CLI** (`test_cli.py`): запуск `main.py --input ... --config config.yaml --output-dir output` через subprocess; проверка exit code 0, наличия в stdout подстроки `total_rows`, наличия в `output/run_*` файлов `cleaned_spec.xlsx` и `run_summary.json`.
+  - `test_annotated_writer.py` — наличие `<stem>_annotated.xlsx`, совпадение числа строк с исходным, наличие колонок Entity Type, State, device_type, hw_type и заполненных значений для ITEM.
+- **CLI** (`test_cli.py`): запуск `main.py --input ... --config config.yaml --output-dir output` через subprocess; проверка exit code 0, наличия в stdout подстроки `total_rows`, наличия в `output/run-*` файлов `cleaned_spec.xlsx` и `run_summary.json`.
 - **Regression** (`test_regression.py`): см. раздел 5; при отличии выводится diff по строкам.
 
 Зависимости тестов: при отсутствии `test_data/dl1.xlsx` или соответствующих golden файлов тесты помечаются как skip, где это реализовано.

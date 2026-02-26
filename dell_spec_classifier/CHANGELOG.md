@@ -1,66 +1,71 @@
 # Changelog
 
-All notable changes to Dell classification rules will be documented in this file.
+All notable changes are documented here.
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+Versioning: [SemVer](https://semver.org/).
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+**Versioning policy:**
+- MAJOR: breaking changes to `classification.jsonl` schema or CLI contracts.
+- MINOR: new entity types, new fields in `run_summary.json`, new output files, new CLI options.
+- PATCH: rule additions/fixes, test additions, documentation updates.
 
-Release tag **v1.1.0** points to commit **5af576d**.
+---
 
 ## [Unreleased]
 
 ### Added
-- Tests: robust annotated.xlsx header-row detection when a Solution Info preamble is present (no classifier/rules changes).
+- Batch mode (`--batch-dir`): process all .xlsx in a directory; creates per-run folders
+  and a TOTAL aggregation folder.
+- TOTAL folder aggregation: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`,
+  `<stem>_cleaned_spec.xlsx` copied from each run into `run-YYYY-MM-DD__HH-MM-SS-TOTAL/`.
+- Readable run folder naming: `run-YYYY-MM-DD__HH-MM-SS-<stem>` (was `run_YYYYMMDD_HHMMSS`).
+- Branded spec output: `<stem>_branded.xlsx` per run (grouped by BASE server + entity type sections).
+- Annotated export expanded to 4 columns: Entity Type, State, device_type, hw_type.
+- `run_summary.json` extended: `device_type_counts`, `hw_type_counts`, `hw_type_null_count`,
+  `rules_file_hash`, `input_file`, `run_timestamp`.
+- Full documentation restructure: `docs/product/`, `docs/user/`, `docs/schemas/`,
+  `docs/rules/`, `docs/dev/`, `docs/roadmap/`, `docs/prompts/`.
+- `run_manager.py`: `get_session_stamp()`, `create_total_folder()`, `copy_to_total()`.
+
+### Fixed
+- Inconsistency between core CLI run naming and batch wrapper naming — now unified in core.
+- Annotated header-row detection when a Solution Info preamble is present.
+
+---
+
+## [1.1.1] — 2026-02-25
+
+### Added
+- Full `hw_type` classification pipeline (three-layer: device_type_map → rule_id_map → regex).
+- `hw_type` statistics in `run_summary.json` (`hw_type_counts`, `hw_type_null_count`).
+- Annotated Excel output with `hw_type` column.
+
+### Fixed
+- Unresolved HW rows now produce `hw_type: null` + warning instead of crashing.
+- Regression synchronization with golden after hw_type addition.
+
+---
 
 ## [1.1.0] — 2026-02-25
 
 ### Fixed
-- DEC-003: "Blanks" plural now recognized; state overridden to PRESENT
-- DEC-001/002: "No Cable" / "No Cables Required" classified as CONFIG+ABSENT
-- DEC-004: Optics and transceivers classified as hw_type=network_adapter
-- DEC-005: PERC Controller rows now have device_type=raid_controller
-- DEC-006: BOSS-N1 → storage_controller; No BOSS Card → CONFIG+ABSENT
-- F1: Hard Drive / 10K rows now classified as hw_type=hdd
-- SFP Modules (Multi): DAC/Twinax direct-attach cable rows → entity_type=HW, hw_type=cable, device_type=sfp_cable; FRONT STORAGE / REAR STORAGE → hw_type=chassis
+- DEC-003: "Blanks" plural recognized; state overridden to PRESENT.
+- DEC-001/002: "No Cable" / "No Cables Required" classified as CONFIG + ABSENT.
+- DEC-004: Optics and transceivers classified as `hw_type=network_adapter`.
+- DEC-005: PERC Controller rows now have `device_type=raid_controller`.
+- DEC-006: BOSS-N1 controller card → `storage_controller`; "No BOSS Card" → CONFIG + ABSENT.
+- F1: Hard Drive / 10K rows classified as `hw_type=hdd`.
+- SFP Modules: DAC/Twinax cables → `entity_type=HW`, `hw_type=cable`, `device_type=sfp_cable`.
+- FRONT STORAGE / REAR STORAGE → `hw_type=chassis`.
 
-## [1.1.1] - 2026-02-25
+---
 
-### Added
-- Full hw_type classification pipeline
-- Three-layer hw_type matching (device_type → rule_id → regex)
-- hw_type statistics (counts + null counter)
-- Annotated Excel output with hw_type column
-
-### Fixed
-- Unresolved HW rows handling
-- Regression synchronization with golden
-- Repository cleanup (remove helper scripts and artifacts)
-## [1.1.0] - 2026-02-23 (vNext Phase 2)
+## [1.0.0] — 2026-02-23
 
 ### Added
-- **device_type** field: `ClassificationResult` and `classification.jsonl` now include `device_type` for ITEM rows with HW/LOGISTIC and `matched_rule_id != UNKNOWN-000`. `run_summary.json` includes `device_type_counts`.
-- **device_type_rules** in `dell_rules.yaml`: second-pass match for HW/LOGISTIC rows to assign power_cord, storage_ssd, storage_nvme, psu, nic, sfp_cable, hba, raid_controller, cpu.
-- **New entity rules** (first-match after HW-001вЂ“004 / LOGISTIC-001вЂ“003):
-  - LOGISTIC-004-CORD: power cords (option_name: power cord, jumper cord, rack cord, C13/C14/C19/C20)
-  - LOGISTIC-005-SFP-CABLE: SFP/twinax cables (option_name or module_name SFP Module)
-  - HW-005-STORAGE-CUS: SSD/NVMe Customer Kit
-  - HW-006-PSU-CUS: Power Supply Customer Kit
-  - HW-007-NIC-CUS: NIC/OCP Customer Kit or Install
-  - HW-008-HBA-PERC-CUS: HBA/PERC/Fibre Channel (DIB, CK, full height, low profile)
-  - HW-009-CPU-CUS: Xeon Customer Install
-- **tests/test_device_type.py**: 20 unit tests for all MUST-FIX SKUs and edge cases (UNKNOWN/HEADER/BASE в†’ device_type None).
-- Golden format extended with `device_type`; regression compares entity_type, state, matched_rule_id, device_type, skus.
-
-### Changed
-- HW rules order: generic module rules (HW-001вЂ“004) before option_name-only rules (HW-005вЂ“009) so only formerly UNKNOWN rows are reclassified; anti-regression preserved.
-- `scripts/generate_golden.ps1`: fixed Write-Warning causing parse error in some PowerShell hosts.
-
-## [1.0.0] - 2026-02-23
-
-### Added
-- Initial release with 8 entity types (BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN)
-- row_kind detection (ITEM/HEADER)
-- SOFTWARE-001: Embedded Systems Management
-- SOFTWARE-002: Dell Secure Onboarding
-- Full test coverage with regression tests
-
+- Initial release: 8 entity types (BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN).
+- `row_kind` detection (ITEM/HEADER).
+- State detection: PRESENT, ABSENT, DISABLED.
+- Full test coverage with regression tests (`golden/dl1–dl5_expected.jsonl`).
+- SOFTWARE-001: Embedded Systems Management.
+- SOFTWARE-002: Dell Secure Onboarding.
