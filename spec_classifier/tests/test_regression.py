@@ -1,4 +1,4 @@
-﻿"""
+"""
 Regression tests: compare pipeline output to golden/*_expected.jsonl row-by-row.
 """
 
@@ -13,7 +13,7 @@ from tests.helpers import run_pipeline_in_memory, build_golden_rows
 def _load_golden(golden_path: Path):
     """Load golden JSONL into list of dicts."""
     rows = []
-    with open(golden_path, encoding="utf-8") as f:
+    with open(golden_path, encoding="utf-8-sig") as f:
         for line in f:
             line = line.strip()
             if not line:

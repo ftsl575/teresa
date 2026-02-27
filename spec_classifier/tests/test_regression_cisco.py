@@ -1,4 +1,4 @@
-﻿"""Regression tests for Cisco CCW pipeline vs golden JSONL."""
+"""Regression tests for Cisco CCW pipeline vs golden JSONL."""
 
 import json
 import pytest
@@ -10,7 +10,7 @@ from tests.helpers import run_cisco_pipeline_in_memory, build_golden_rows
 
 def _load_golden(golden_path: Path):
     rows = []
-    with open(golden_path, encoding="utf-8") as f:
+    with open(golden_path, encoding="utf-8-sig") as f:
         for line in f:
             line = line.strip()
             if not line:
