@@ -1,6 +1,6 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Dell Specification Classifier — CLI entry point.
+Spec Classifier — multivendor CLI entry point (Dell, Cisco CCW).
 Pipeline: Excel → parse → normalize → classify → artifacts + cleaned spec.
 """
 
@@ -221,7 +221,7 @@ def _run_single(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Dell Specification Classifier — classify Excel spec, write artifacts and cleaned spec.",
+        description="Spec Classifier — classify Excel/CCW spec (Dell, Cisco), write artifacts and cleaned spec.",
     )
     parser.add_argument("--input", default=None, help="Path to input Excel file (.xlsx) — required in single-file mode")
     parser.add_argument(

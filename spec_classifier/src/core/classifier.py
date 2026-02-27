@@ -1,4 +1,4 @@
-﻿"""
+"""
 Row classifier: entity type (BASE, HW, SERVICE, ...) from rules.
 HEADER rows are skipped; ITEM rows follow priority order.
 """
@@ -26,11 +26,24 @@ class EntityType(Enum):
 
 
 HW_TYPE_VOCAB = frozenset({
-    "cpu", "ram", "ssd", "hdd", "nvme",
-    "storage_controller", "psu", "fan", "cpu_heatsink",
-    "network_adapter", "riser", "gpu",
-    "tpm", "chassis", "cable", "management",
-    "motherboard", "mounting_kit", "backplane", "blank",
+    # Основное изделие (BASE rows)
+    "server", "switch", "storage_system", "wireless_ap",
+    # Вычислительные компоненты
+    "cpu", "memory", "gpu",
+    # Подсистема хранения
+    "storage_drive", "storage_controller", "hba", "backplane", "io_module",
+    # Сеть
+    "network_adapter", "transceiver", "cable",
+    # Питание
+    "psu",
+    # Охлаждение
+    "fan", "heatsink",
+    # Расширение и механика
+    "riser", "chassis", "rail", "blank_filler",
+    # Управление
+    "management", "tpm",
+    # Аксессуары
+    "accessory",
 })
 
 

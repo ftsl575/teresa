@@ -1,4 +1,4 @@
-﻿# Dell Specification Classifier
+# Dell Specification Classifier
 
 Deterministic rule-based pipeline for classifying Dell Excel specification files.
 
@@ -99,7 +99,7 @@ vendor_rules:
 
 ## Test Data
 
-Test files (`test_data/dl1.xlsx` … `dl6.xlsx`) are **not in git**.
+Test files (`test_data/dl1.xlsx` … `dl5.xlsx` (Dell) and `ccw_1.xlsx`, `ccw_2.xlsx` (Cisco CCW)) are **not in git**.
 Place them under `spec_classifier/test_data/`.
 Smoke, regression, and threshold tests skip automatically if files are absent.
 
@@ -116,6 +116,10 @@ pytest tests/ -v --tb=short
 
 # Regression only
 pytest tests/test_regression.py -v
+
+# Cisco тесты
+pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
+       tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 ```
 
 ---
@@ -124,7 +128,8 @@ pytest tests/test_regression.py -v
 
 ```bash
 python main.py --input test_data/dl1.xlsx --save-golden
-# Repeat for dl2..dl6 as needed
+# Repeat for dl2..dl5 as needed
+# Cisco: python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden (and ccw_2)
 pytest tests/test_regression.py -v
 ```
 
@@ -140,6 +145,8 @@ pytest tests/test_regression.py -v
 | `Rules file not found` | `rules_file` in config invalid | Check `config.yaml` → `rules_file` path |
 | Regression test fails | Rules changed without golden update | Run `--save-golden`, review diff carefully |
 | `unknown_rows.csv` not empty | Input has rows matching no rule | Review patterns; add rules per `docs/rules/RULES_AUTHORING_GUIDE.md` |
+| `Sheet 'Price Estimate' not found` | Cisco файл содержит другой лист | Убедитесь что загружен именно CCW export; список листов будет в сообщении об ошибке |
+| `--vendor cisco` — нет `_branded.xlsx` | Ожидаемо | Cisco branded spec не создаётся |
 
 ---
 

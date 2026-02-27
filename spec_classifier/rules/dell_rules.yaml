@@ -1,4 +1,4 @@
-﻿version: "1.1.0"
+version: "1.1.0"
 
 # ============================================================
 # ROW KIND DETECTION (выполняется ПЕРВЫМ, до классификации)
@@ -349,18 +349,18 @@ hw_type_rules:
     cpu: cpu
     psu: psu
     nic: network_adapter
-    storage_nvme: nvme
-    storage_ssd: ssd
+    storage_nvme: storage_drive
+    storage_ssd: storage_drive
     raid_controller: storage_controller
-    hba: storage_controller
+    hba: hba
 
   # Layer 2: matched_rule_id → hw_type (HW-004→nvme removed for DEC-006; BOSS option_name drives type)
   rule_id_map:
     HW-001: chassis
     HW-OPTICS-001: network_adapter
     HW-BOSS-001: storage_controller
-    HW-NOBOSS-BLANK-001: blank
-    HW-005-STORAGE-CUS: nvme
+    HW-NOBOSS-BLANK-001: blank_filler
+    HW-005-STORAGE-CUS: storage_drive
     HW-006-PSU-CUS: psu
     HW-007-NIC-CUS: network_adapter
     HW-008-HBA-PERC-CUS: storage_controller
@@ -372,15 +372,15 @@ hw_type_rules:
     # Temporary compatibility: exclude GPU Blanks from blank hw_type until Prompt 4 implements DEC-002 (CONFIG) and Prompt 8 updates golden.
     - field: module_name
       pattern: '(?i)\b(Blanks?|Filler|Dummy)\b'
-      hw_type: blank
+      hw_type: blank_filler
 
     - field: option_name
       pattern: '(?i)\b((?<!GPU\s)Blanks?|Filler|Dummy|Slot\s+Filler)\b'
-      hw_type: blank
+      hw_type: blank_filler
 
     - field: option_name
       pattern: '(?i)\bNo\s+Hard\s+Drive\b'
-      hw_type: blank
+      hw_type: blank_filler
 
     # --- backplane (до storage) ---
     - field: module_name
@@ -407,11 +407,11 @@ hw_type_rules:
     # --- mounting_kit (до chassis) ---
     - field: module_name
       pattern: '(?i)\b(Rack\s+Rails|Cable\s+Management)\b'
-      hw_type: mounting_kit
+      hw_type: rail
 
     - field: option_name
       pattern: '(?i)\b(ReadyRails|Cable\s+Management\s+Arm|CMA)\b'
-      hw_type: mounting_kit
+      hw_type: rail
 
     # --- cpu ---
     - field: module_name
@@ -421,26 +421,26 @@ hw_type_rules:
     # --- ram ---
     - field: module_name
       pattern: '(?i)\bMemory\s+Capacity\b'
-      hw_type: ram
+      hw_type: memory
 
     # --- nvme (option_name, до generic storage) ---
     - field: option_name
       pattern: '(?i)\bNVMe\b'
-      hw_type: nvme
+      hw_type: storage_drive
 
     - field: module_name
       pattern: '(?i)\b(Boot\s+Optimized|BOSS)\b'
-      hw_type: nvme
+      hw_type: storage_drive
 
     # --- ssd (option_name, negative lookahead for NVMe) ---
     - field: option_name
       pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
-      hw_type: ssd
+      hw_type: storage_drive
 
     # --- hdd (drive context: option_name has "Hard Drive"/"HDD"; 10K/15K with or without RPM) ---
     - field: option_name
       pattern: '(?i)(?=.*(?:Hard\s+Drive|HDD)).*\b(HDD|\d+(\.\d+)?K(?:\s*RPM)?|7200(?:\s*RPM)?)\b'
-      hw_type: hdd
+      hw_type: storage_drive
 
     # --- storage_controller ---
     - field: module_name
@@ -459,7 +459,7 @@ hw_type_rules:
     # --- cpu_heatsink (ONLY explicit Heatsink in option_name) ---
     - field: option_name
       pattern: '(?i)\bHeatsink\b'
-      hw_type: cpu_heatsink
+      hw_type: heatsink
 
     # --- fan (explicit Fan in option or Fans in module) ---
     # RISK: verify on dl2 that "Fan"/"Fans" does not appear in non-cooling contexts
@@ -512,7 +512,7 @@ hw_type_rules:
     # --- motherboard ---
     - field: module_name
       pattern: '(?i)\bMotherboard\b'
-      hw_type: motherboard
+      hw_type: chassis
 
     # NOTE: Thermal Configuration without Heatsink/Fan in option → no match → null + warning.
     # NOTE: Hard Drives without SSD/HDD/NVMe signal in option → no match → null + warning.

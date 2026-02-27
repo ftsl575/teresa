@@ -1,4 +1,4 @@
-# Руководство по тестированию — Dell Specification Classifier
+# Руководство по тестированию — Spec Classifier (Dell + Cisco CCW)
 
 ## 1. Тестовая стратегия
 
@@ -6,6 +6,9 @@
 - **Integration (с xlsx):** прогон пайплайна на test_data/dlN.xlsx; проверка артефактов (test_smoke, test_excel_writer, test_annotated_writer, test_cli).
 - **Regression (xlsx + golden):** test_regression — построчное сравнение с golden/<stem>_expected.jsonl.
 - **Acceptance:** test_unknown_threshold (лимит unknown), test_dec_acceptance и др. по необходимости.
+- **Cisco Unit:** test_cisco_parser — parse_excel на ccw_1/ccw_2 (26 и 82 строки); test_cisco_normalizer — bundle_id, parent_line_number, is_bundle_root, module_name, standalone.
+- **Cisco Regression:** test_regression_cisco — построчное сравнение с golden/ccw_1_expected.jsonl и ccw_2_expected.jsonl.
+- **Cisco Threshold:** test_unknown_threshold_cisco — unknown_count = 0 для ccw_1 и ccw_2.
 
 ---
 
@@ -23,6 +26,10 @@ pytest tests/test_regression.py -v
 
 # Вся батарея
 pytest tests/ -v --tb=short
+
+# Cisco тесты
+pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
+       tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 ```
 
 ---
@@ -39,6 +46,7 @@ pytest tests/ -v --tb=short
 - **Обновление:** `--update-golden` с интерактивным подтверждением (y/N). В CI — `--save-golden`.
 - **Сравниваемые поля:** entity_type, state, matched_rule_id, device_type, hw_type, skus (и другие, заданные в тесте).
 - **Политика:** обновлять golden только осознанно после изменения правил/логики; в PR обязательно описание diff и ревью.
+- **Cisco golden:** `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`. Генерация: `python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden` (аналогично для ccw_2). После изменения `cisco_rules.yaml` — обновить оба Cisco golden.
 
 ---
 
@@ -54,7 +62,8 @@ pytest tests/ -v --tb=short
 
 ```bash
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py \
-       tests/test_regression.py tests/test_unknown_threshold.py -v --tb=short
+       tests/test_regression.py tests/test_unknown_threshold.py \
+       tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v --tb=short
 ```
 
 При отсутствии test_data или golden часть тестов будет пропущена; unit-тесты и регрессия (если файлы есть) должны быть зелёными.
@@ -67,7 +76,7 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 
 ---
 
-## 8. Работа с новым датасетом (dlN)
+## 8. Работа с новым датасетом
 
 1. Скопировать xlsx в test_data/dlN.xlsx.
 2. Запустить `python main.py --input test_data/dlN.xlsx --save-golden`.
@@ -76,3 +85,13 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 5. Добавить параметр в parametrize в test_regression.py (и при необходимости в другие тесты).
 6. Запустить полный набор тестов.
 7. Закоммитить golden/dlN_expected.jsonl и изменения тестов.
+
+### Новый Cisco датасет (ccwN.xlsx)
+
+1. Скопировать в `test_data/ccw_N.xlsx`.
+2. Запустить `python main.py --input test_data/ccw_N.xlsx --vendor cisco`.
+3. Проверить `unknown_rows.csv` и `run_summary.json` (цель: `unknown_count = 0`).
+4. При `unknown > 0`: добавить правила в `rules/cisco_rules.yaml`, повторить шаг 2.
+5. Запустить `python main.py --input test_data/ccw_N.xlsx --vendor cisco --save-golden`.
+6. Добавить `ccw_N` в `@pytest.mark.parametrize` в `test_regression_cisco.py`.
+7. Запустить `pytest tests/ -v` и закоммитить `golden/ccw_N_expected.jsonl`.
