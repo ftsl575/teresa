@@ -13,6 +13,18 @@ Versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added (Multivendor — Cisco CCW)
+- VendorAdapter ABC (`src/vendors/base.py`); DellAdapter and CiscoAdapter.
+- Cisco CCW parser (`src/vendors/cisco/parser.py`): sheet "Price Estimate", line_number hierarchy, last-non-empty data-end detection.
+- CiscoNormalizedRow (`src/vendors/cisco/normalizer.py`): bundle_id, is_bundle_root, parent_line_number, module_name, service_duration_months, vendor extension fields.
+- `rules/cisco_rules.yaml`: unknown_count = 0 on ccw_1 (26 rows) and ccw_2 (82 rows).
+- `--vendor {dell,cisco}` CLI flag; `vendor_rules` config section.
+- `vendor_stats` in `run_summary.json`: always present (`{}` for Dell, populated for Cisco).
+- Annotated writer now vendor-agnostic: accepts `header_row_index` from adapter.
+- Branded spec skipped for Cisco.
+- Golden files: `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`.
+- Cisco test suite: test_cisco_parser, test_cisco_normalizer, test_regression_cisco, test_unknown_threshold_cisco.
+
 ### Changed
 - **Repo layout:** Removed legacy `dell_spec_classifier/` shim folder. `spec_classifier/` is the only canonical project root. Run CLI and tests from inside `spec_classifier/` (see README).
 
