@@ -1,4 +1,4 @@
-# Baseline v1.1.0
+﻿# Baseline v1.1.0
 
 **Date:** 2026-02-23  
 **Status:** Stable / Frozen

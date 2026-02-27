@@ -1,4 +1,4 @@
-PROMPT — Fix P6/P6.5 fallout: Optics rule too broad + update unit tests for DEC-007
+﻿PROMPT — Fix P6/P6.5 fallout: Optics rule too broad + update unit tests for DEC-007
 
 CONTEXT
 - After DEC-004 (HW-OPTICS-001) and DEC-007 (DAC/Twinax SFP cables -> HW), `pytest tests/ -q` fails.
@@ -17,8 +17,8 @@ GOAL
 
 PATCH_SCOPE
 Files to modify:
-1) dell_spec_classifier/rules/dell_rules.yaml
-2) dell_spec_classifier/tests/test_device_type.py
+1) spec_classifier/rules/dell_rules.yaml
+2) spec_classifier/tests/test_device_type.py
 
 Do NOT modify:
 - Any src/core/*.py or src/rules/*.py in this prompt
@@ -74,7 +74,7 @@ Acceptance for TASK B:
 NOTE ABOUT REGRESSION TESTS
 - `tests/test_regression.py` is expected to FAIL until P9 (golden update). Do not change it here.
 
-COMMANDS (PowerShell; run from C:\Users\G\Desktop\teresa\dell_spec_classifier)
+COMMANDS (PowerShell; run from C:\Users\G\Desktop\teresa\spec_classifier)
 1) Unit tests:
   pytest tests/test_device_type.py -q
   pytest tests/test_smoke.py -q

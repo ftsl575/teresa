@@ -1,4 +1,4 @@
-"""
+﻿"""
 Shared test helpers for pipeline execution. Imported by test_regression.py and test_unknown_threshold.py.
 """
 

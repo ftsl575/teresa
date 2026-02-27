@@ -1,4 +1,4 @@
-"""Unit tests for Cisco CCW normalizer."""
+﻿"""Unit tests for Cisco CCW normalizer."""
 
 from src.vendors.cisco.normalizer import CiscoNormalizedRow, normalize_cisco_rows
 

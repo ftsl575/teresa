@@ -1,4 +1,4 @@
-{"source_row_index": 19, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["C8500L-8S4X"]}
+﻿{"source_row_index": 19, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["C8500L-8S4X"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-005", "device_type": null, "hw_type": null, "skus": ["EDGE-OTHER"]}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-010", "device_type": null, "hw_type": "management", "skus": ["C-RFID-1R"]}
 {"source_row_index": 22, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-005", "device_type": null, "hw_type": "ram", "skus": ["MEM-C8500L-16GB"]}

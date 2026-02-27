@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Dell Specification Classifier — CLI entry point.
 Pipeline: Excel → parse → normalize → classify → artifacts + cleaned spec.

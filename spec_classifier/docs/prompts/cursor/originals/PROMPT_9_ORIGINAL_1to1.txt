@@ -1,4 +1,4 @@
-### PROMPT 9 — Golden files + regression tests + CHANGELOG
+﻿### PROMPT 9 — Golden files + regression tests + CHANGELOG
 
 **[CONTEXT]**
 After P1–P8 all acceptance criteria pass. Golden files reflect pre-fix outputs. Tests must be updated and CHANGELOG written.

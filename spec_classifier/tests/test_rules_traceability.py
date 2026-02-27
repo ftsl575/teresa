@@ -1,4 +1,4 @@
-"""
+﻿"""
 Tests for rules file hash (SHA-256) traceability in run_summary.json.
 """
 

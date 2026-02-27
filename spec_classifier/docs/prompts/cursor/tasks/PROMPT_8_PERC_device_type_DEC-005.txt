@@ -1,4 +1,4 @@
-### PROMPT 8 — PERC device_type (DEC-005)
+﻿### PROMPT 8 — PERC device_type (DEC-005)
 
 **[CONTEXT]**
 `device_type_rules` sets `device_type=raid_controller` only for PERC rows with suffix `(dib|ck|full_height|low_profile)`. Plain "PERC H755 SAS Front Controller" rows get `device_type=null`. Per DEC-005 they must have `device_type=raid_controller` + `hw_type=storage_controller`. hw_type Layer 3 already has the PERC rule so only device_type is missing.

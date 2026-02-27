@@ -1,4 +1,4 @@
-"""
+﻿"""
 Row classifier: entity type (BASE, HW, SERVICE, ...) from rules.
 HEADER rows are skipped; ITEM rows follow priority order.
 """

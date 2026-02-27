@@ -1,4 +1,4 @@
-# Phase A.5 Stabilization Implementation Pack
+﻿# Phase A.5 Stabilization Implementation Pack
 
 **Project:** Dell Specification Classifier  
 **Baseline:** v1.1.0 (frozen)  
@@ -277,7 +277,7 @@ Key changes: no `output_base`, no `run_folder`, no `save_*` calls, no `json.load
 ### 3.6 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 0. Verify conftest.py is untouched
 git diff conftest.py
@@ -314,7 +314,7 @@ python -c "from tests.helpers import run_pipeline_in_memory, build_golden_rows; 
 ### 3.7 Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Baseline v1.1.0 — all tests passing. We are doing Phase A.5 stabilization (no functional changes).
 
 Task: PR1 — Shared test harness + remove disk side effects.
@@ -525,7 +525,7 @@ Where `rules_path` is the resolved path to `dell_rules.yaml` that is already use
 ### 4.7 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Verify collect_stats and save_run_summary unchanged
 git diff src/diagnostics/stats_collector.py
@@ -557,7 +557,7 @@ python -c "from src.diagnostics.stats_collector import compute_file_hash; print(
 ### 4.8 Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Baseline v1.1.0 — all tests passing. Phase A.5 stabilization.
 
 Task: PR2 — Add rules file hash (SHA-256) to run_summary.json for traceability.
@@ -702,7 +702,7 @@ pytest tests/ -v --tb=short
 ### 5.7 Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Baseline v1.1.0. Phase A.5 stabilization — documentation PR.
 
 Task: PR3 — Add golden review policy, rule ordering warning, and known limitations to docs.

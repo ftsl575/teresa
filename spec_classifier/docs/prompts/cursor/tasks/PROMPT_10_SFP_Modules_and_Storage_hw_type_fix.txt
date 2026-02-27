@@ -1,4 +1,4 @@
-PROMPT 10 — Post‑P9 hotfix: SFP Modules (Multi) DAC cables + FRONT/REAR STORAGE hw_type
+﻿PROMPT 10 — Post‑P9 hotfix: SFP Modules (Multi) DAC cables + FRONT/REAR STORAGE hw_type
 
 ROLE
 You are Cursor acting inside repo. Implement the minimal, deterministic fix. NO GUESSES. YAML-only if possible. If acceptance fails, stop and report exact failing case (file, row, OptionID, expected vs actual).
@@ -21,7 +21,7 @@ B) FRONT STORAGE / REAR STORAGE rows must be:
 
 PATCH SCOPE (explicit; keep minimal)
 Touch ONLY:
-1) dell_spec_classifier\rules\dell_rules.yaml
+1) spec_classifier\rules\dell_rules.yaml
 
 Do NOT touch:
 - golden/ (no golden updates in this prompt)
@@ -91,24 +91,24 @@ ACCEPTANCE (must be met)
 
 3) No new UNKNOWN rows introduced in any dataset.
 
-COMMANDS (PowerShell; run from dell_spec_classifier folder; full paths)
+COMMANDS (PowerShell; run from spec_classifier folder; full paths)
 ```powershell
-Set-Location -Path "C:\Users\G\Desktop\TERESA\dell_spec_classifier"
+Set-Location -Path "C:\Users\G\Desktop\TERESA\spec_classifier"
 
 # Clean prior runs
-Remove-Item -Recurse -Force "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output\run_*" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\G\Desktop\TERESA\spec_classifier\output\run_*" -ErrorAction SilentlyContinue
 
 # Run dl1–dl6
 foreach ($n in 1..6) {
-    python "C:\Users\G\Desktop\TERESA\dell_spec_classifier\main.py" `
-        --input "C:\Users\G\Desktop\TERESA\dell_spec_classifier\test_data\dl$n.xlsx" `
-        --output-dir "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output"
+    python "C:\Users\G\Desktop\TERESA\spec_classifier\main.py" `
+        --input "C:\Users\G\Desktop\TERESA\spec_classifier\test_data\dl$n.xlsx" `
+        --output-dir "C:\Users\G\Desktop\TERESA\spec_classifier\output"
 }
 
 # Print last 6 run summaries (must show dl3 unknown_count=0 and dl4 hw_type_null_count=0)
 python -c "
 import json, glob, os
-runs = sorted(glob.glob(r'C:\\Users\\G\\Desktop\\TERESA\\dell_spec_classifier\\output\\run_*\\run_summary.json'))
+runs = sorted(glob.glob(r'C:\\Users\\G\\Desktop\\TERESA\\spec_classifier\\output\\run_*\\run_summary.json'))
 assert len(runs) >= 6, f'Expected >=6 runs, found {len(runs)}'
 print('--- RUN SUMMARY CHECK ---')
 for path in runs[-6:]:
@@ -126,7 +126,7 @@ targets = {
   'GBEZWO8': ('HW','PRESENT','chassis',None),
   'GOXF0L2': ('HW','ABSENT','chassis',None),
 }
-files = sorted(glob.glob(r'C:\\Users\\G\\Desktop\\TERESA\\dell_spec_classifier\\output\\run_*\\*_annotated.xlsx'))
+files = sorted(glob.glob(r'C:\\Users\\G\\Desktop\\TERESA\\spec_classifier\\output\\run_*\\*_annotated.xlsx'))
 assert files, 'No annotated xlsx files found under output/run_*'
 found = {k:0 for k in targets}
 for fp in files:
@@ -152,5 +152,5 @@ print('PASS spot-checks; occurrences:', found)
 ```
 
 DELIVERABLE
-- A single commit / PR that changes ONLY dell_spec_classifier\rules\dell_rules.yaml
+- A single commit / PR that changes ONLY spec_classifier\rules\dell_rules.yaml
 - Report the exact diff summary (git diff --stat) and paste the updated run summary check output (6 runs).

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Unit tests for row normalizer and row_kind detection.
 """
 

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Generate cleaned spec Excel: only ITEM rows of included types and (optionally) PRESENT state.
 """
 

@@ -1,4 +1,4 @@
-# TERESA — MASTER PLAN + CURSOR PROMPT PACK
+﻿# TERESA — MASTER PLAN + CURSOR PROMPT PACK
 Version: v2.0  |  Date: 2026-02-25  |  Single source of truth. Ignore previous chats.
 
 ---
@@ -112,7 +112,7 @@ Execute Cursor Prompt Pack P1–P9 **strictly in order**, one PR per prompt.
 [TASK]       — exact changes (YAML patches / Python LOC)
 [PATCH_SCOPE]— files to touch, max LOC
 [ACCEPTANCE] — before/after rows + OptionID checks
-[COMMANDS]   — PowerShell verification (full paths from dell_spec_classifier\)
+[COMMANDS]   — PowerShell verification (full paths from spec_classifier\)
 ```
 
 ---

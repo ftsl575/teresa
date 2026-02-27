@@ -1,4 +1,4 @@
-"""
+﻿"""
 Tests for branded_spec_writer: file creation, absent block, title, multiple BASE blocks, UNKNOWN.
 Build NormalizedRow and ClassificationResult manually; do not run pipeline.
 """

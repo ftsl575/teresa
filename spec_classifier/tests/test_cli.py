@@ -1,4 +1,4 @@
-"""
+﻿"""
 CLI smoke test: run main.py via subprocess and assert exit code, stdout, and artifacts.
 """
 

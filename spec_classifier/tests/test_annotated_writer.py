@@ -1,4 +1,4 @@
-"""
+﻿"""
 Smoke test for annotated source Excel export.
 Uses robust header detection so annotated files with a preamble (e.g. Solution Info) are parsed correctly.
 """

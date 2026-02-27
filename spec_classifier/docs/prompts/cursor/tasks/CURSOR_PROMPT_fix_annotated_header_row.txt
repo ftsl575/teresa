@@ -1,4 +1,4 @@
-ROLE
+﻿ROLE
 You are Cursor acting inside this repo as an AI pair programmer.
 Goal: fix annotated.xlsx header parsing in our spot-check tooling/tests.
 Constraints: NO GUESSES. Minimal deterministic change. Do not change classifier behavior, rules, or goldens unless strictly required (it should not be).
@@ -35,13 +35,13 @@ ACCEPTANCE CRITERIA
 
 VERIFICATION COMMANDS (PowerShell)
 1) Full tests:
-   python -m pytest "C:\Users\G\Desktop\teresa\dell_spec_classifier\tests\" -v --tb=short
+   python -m pytest "C:\Users\G\Desktop\teresa\spec_classifier\tests\" -v --tb=short
 
 2) (Optional) Local run to regenerate annotated files (if useful for debugging):
    foreach ($n in 1..6) {
-       python "C:\Users\G\Desktop\teresa\dell_spec_classifier\main.py" `
-           --input "C:\Users\G\Desktop\teresa\dell_spec_classifier\test_data\dl$n.xlsx" `
-           --output-dir "C:\Users\G\Desktop\teresa\dell_spec_classifier\output"
+       python "C:\Users\G\Desktop\teresa\spec_classifier\main.py" `
+           --input "C:\Users\G\Desktop\teresa\spec_classifier\test_data\dl$n.xlsx" `
+           --output-dir "C:\Users\G\Desktop\teresa\spec_classifier\output"
    }
 
 DELIVERABLE

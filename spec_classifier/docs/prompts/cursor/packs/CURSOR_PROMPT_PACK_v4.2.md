@@ -1,4 +1,4 @@
-# CURSOR PROMPT PACK — Dell Spec Classifier
+﻿# CURSOR PROMPT PACK — Dell Spec Classifier
 ## Версия: v4.2 (Fix 3 backward-compatible signature)
 ## Среда: Windows PowerShell + Cursor
 
@@ -112,7 +112,7 @@ git reset --hard baseline-before-prompts
 **Определение:** regression gate = запуск существующих тестов, которые сравнивают вывод пайплайна с golden/*.
 
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python -m pytest tests\test_regression.py tests\test_dec_acceptance.py -v
 ```
 
@@ -133,7 +133,7 @@ python -m pytest tests\test_regression.py tests\test_dec_acceptance.py -v
 ## BASELINE — выполнить ДО начала изменений
 
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Все тесты зелёные
 python -m pytest tests\ -q
@@ -207,7 +207,7 @@ generate_annotated_source_excel(
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input ..\test_data\dl1.xlsx --output-dir ..\output
 
 $run = Get-ChildItem ..\output\run_* | Sort-Object Name | Select-Object -Last 1
@@ -257,7 +257,7 @@ def save_rows_raw(rows: List[dict], run_folder: Path) -> None:
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input ..\test_data\dl1.xlsx --output-dir ..\output
 
 $run = Get-ChildItem ..\output\run_* | Sort-Object Name | Select-Object -Last 1
@@ -373,7 +373,7 @@ save_classification(classification_results, normalized_rows, run_folder)
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Полный тест-сьют — должен быть зелёным (включая smoke tests)
 python -m pytest tests\ -q
@@ -451,7 +451,7 @@ stats["run_timestamp"] = datetime.utcnow().replace(microsecond=0).isoformat()
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input ..\test_data\dl1.xlsx --output-dir ..\output
 
 $run = Get-ChildItem ..\output\run_* | Sort-Object Name | Select-Object -Last 1
@@ -476,7 +476,7 @@ print('OK:', d['input_file'], d['run_timestamp'])
 
 **Сначала убедиться что параметр нигде не используется:**
 ```powershell
-Select-String -Path "dell_spec_classifier\src\**\*.py" -Pattern "exclude_headers" -Recurse
+Select-String -Path "spec_classifier\src\**\*.py" -Pattern "exclude_headers" -Recurse
 # Вывод должен быть пустым
 ```
 
@@ -484,11 +484,11 @@ Select-String -Path "dell_spec_classifier\src\**\*.py" -Pattern "exclude_headers
 
 **Acceptance + regression (PowerShell):**
 ```powershell
-Select-String -Path "dell_spec_classifier\config.yaml" -Pattern "exclude_headers"
+Select-String -Path "spec_classifier\config.yaml" -Pattern "exclude_headers"
 # Пустой вывод
 
 # Regression gate — убедиться что удаление не сломало контракт
-cd dell_spec_classifier
+cd spec_classifier
 python -m pytest tests\test_regression.py tests\test_dec_acceptance.py -v
 # Все PASSED
 ```
@@ -502,7 +502,7 @@ python -m pytest tests\test_regression.py tests\test_dec_acceptance.py -v
 
 **Примечание:** если Fix 3 уже выполнен — функция уже содержит `is_classified`. Проверить:
 ```powershell
-Select-String -Path "dell_spec_classifier\src\outputs\json_writer.py" -Pattern "is_classified"
+Select-String -Path "spec_classifier\src\outputs\json_writer.py" -Pattern "is_classified"
 # Если строка найдена — Fix 6 пропустить.
 ```
 
@@ -519,7 +519,7 @@ out["hw_type"] = getattr(result, "hw_type", None) if is_classified else None
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python -m pytest tests\ -q
 # Количество passed = baseline, 0 failed
 ```
@@ -555,7 +555,7 @@ Select-String -Path ".gitignore" -Pattern "__pycache__"
 ### Финальная проверка Prompt 1
 
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 
 # Прогон пайплайна
 python main.py --input ..\test_data\dl1.xlsx --output-dir ..\output
@@ -606,7 +606,7 @@ git commit -m "fix: 7 bugfixes — annotated path, NaN, source_row_index, run_su
 
 **Перед началом — проверить зависимость:**
 ```powershell
-Select-String -Path "dell_spec_classifier\requirements.txt" -Pattern "openpyxl"
+Select-String -Path "spec_classifier\requirements.txt" -Pattern "openpyxl"
 # Должна быть найдена строка с openpyxl.
 # Если отсутствует — добавить строку "openpyxl>=3.1.0" в requirements.txt перед продолжением.
 ```
@@ -617,7 +617,7 @@ Select-String -Path "dell_spec_classifier\requirements.txt" -Pattern "openpyxl"
 
 Передать в Cursor:
 
-> Создай файл `dell_spec_classifier/src/outputs/branded_spec_writer.py` с точным содержимым ниже. Ничего не добавляй, не изменяй, не сокращай. Не трогай никакие другие файлы.
+> Создай файл `spec_classifier/src/outputs/branded_spec_writer.py` с точным содержимым ниже. Ничего не добавляй, не изменяй, не сокращай. Не трогай никакие другие файлы.
 
 ```python
 """
@@ -876,9 +876,9 @@ def generate_branded_spec(
 
 **Acceptance (PowerShell):**
 ```powershell
-Test-Path "dell_spec_classifier\src\outputs\branded_spec_writer.py"   # True
+Test-Path "spec_classifier\src\outputs\branded_spec_writer.py"   # True
 
-cd dell_spec_classifier
+cd spec_classifier
 python -c "from src.outputs.branded_spec_writer import generate_branded_spec; print('import OK')"
 ```
 
@@ -888,7 +888,7 @@ python -c "from src.outputs.branded_spec_writer import generate_branded_spec; pr
 
 Передать в Cursor:
 
-> В файле `dell_spec_classifier/main.py` внести ровно два изменения. Ничего другого не трогать.
+> В файле `spec_classifier/main.py` внести ровно два изменения. Ничего другого не трогать.
 >
 > **Изменение 1.** В блок импортов, сразу после строки:
 > ```python
@@ -926,7 +926,7 @@ python -c "from src.outputs.branded_spec_writer import generate_branded_spec; pr
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input ..\test_data\dl1.xlsx --output-dir ..\output
 
 $run = Get-ChildItem ..\output\run_* | Sort-Object Name | Select-Object -Last 1
@@ -971,7 +971,7 @@ git commit -m "feat: add branded_spec_writer module"
 
 Передать в Cursor:
 
-> Создай файл `dell_spec_classifier/tests/test_branded_spec_writer.py`.
+> Создай файл `spec_classifier/tests/test_branded_spec_writer.py`.
 > Посмотри на стиль тестов в `tests/test_annotated_writer.py` для справки по структуре.
 > Не меняй ни один существующий файл.
 > Реализуй ровно 7 тест-кейсов:
@@ -1027,7 +1027,7 @@ import src.outputs.branded_spec_writer as bsw; bsw.SHOW_ABSENT_BLOCK = False (в
 
 **Acceptance (PowerShell):**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python -m pytest tests\test_branded_spec_writer.py -v
 # Все 7 тестов: PASSED
 
@@ -1052,7 +1052,7 @@ git commit -m "test: add tests for branded_spec_writer"
 ## ИТОГОВАЯ ПРОВЕРКА (после всех 3 промптов)
 
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 
 # Прогон на всех тестовых файлах
 foreach ($f in Get-ChildItem ..\test_data\*.xlsx) {

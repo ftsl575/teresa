@@ -1,4 +1,4 @@
-"""
+﻿"""
 State detection for Dell specification rows (PRESENT / ABSENT / DISABLED).
 Uses regex patterns from rules; default is PRESENT.
 """

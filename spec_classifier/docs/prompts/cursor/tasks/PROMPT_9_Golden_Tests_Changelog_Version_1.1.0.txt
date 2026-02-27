@@ -1,4 +1,4 @@
-PR9 (PROMPT 9) — Golden files + regression tests + CHANGELOG + version bump (v2 pack)
+﻿PR9 (PROMPT 9) — Golden files + regression tests + CHANGELOG + version bump (v2 pack)
 
 ROLE
 You are Cursor acting inside repo. Follow teresa_master_plan_cursor_pack_v2.md Prompt 9 strictly. One PR only. No extra refactors.
@@ -6,21 +6,21 @@ You are Cursor acting inside repo. Follow teresa_master_plan_cursor_pack_v2.md P
 NO GUESSES. If anything fails acceptance, stop and report exact failing case.
 
 FILES TO TOUCH (explicit)
-1) dell_spec_classifier\golden\dl1_expected.jsonl
-2) dell_spec_classifier\golden\dl2_expected.jsonl
-3) dell_spec_classifier\golden\dl3_expected.jsonl
-4) dell_spec_classifier\golden\dl4_expected.jsonl
-5) dell_spec_classifier\golden\dl5_expected.jsonl
-6) dell_spec_classifier\tests\test_state_detector.py
-7) dell_spec_classifier\tests\test_dec_acceptance.py   (NEW FILE)
-8) dell_spec_classifier\CHANGELOG.md
-9) dell_spec_classifier\rules\dell_rules.yaml   (version bump ONLY)
+1) spec_classifier\golden\dl1_expected.jsonl
+2) spec_classifier\golden\dl2_expected.jsonl
+3) spec_classifier\golden\dl3_expected.jsonl
+4) spec_classifier\golden\dl4_expected.jsonl
+5) spec_classifier\golden\dl5_expected.jsonl
+6) spec_classifier\tests\test_state_detector.py
+7) spec_classifier\tests\test_dec_acceptance.py   (NEW FILE)
+8) spec_classifier\CHANGELOG.md
+9) spec_classifier\rules\dell_rules.yaml   (version bump ONLY)
 
 SOURCE OF TRUTH
 - teresa_master_plan_cursor_pack_v2.md, PROMPT 9 (Golden + tests + changelog + version bump). See lines L1–L13 (Patch scope + acceptance) and L33–L46 (state tests + changelog + version bump).  fileciteturn2file1L1-L13 fileciteturn2file4L1-L46
 
 IMPORTANT IMPLEMENTATION DETAIL (repo reality)
-The CLI in dell_spec_classifier\main.py does NOT have --export-golden. It has:
+The CLI in spec_classifier\main.py does NOT have --export-golden. It has:
 - --save-golden (non-interactive, writes golden/<stem>_expected.jsonl)
 - --update-golden (interactive confirm)
 Use --save-golden.
@@ -34,7 +34,7 @@ Step A — Regenerate golden files dl1–dl5 ONLY
   - git diff --stat golden\
   - git diff golden\ (to verify only expected rows changed)
 
-Step B — Append 3 unit tests to dell_spec_classifier\tests\test_state_detector.py
+Step B — Append 3 unit tests to spec_classifier\tests\test_state_detector.py
 Add tests equivalent to Prompt 9 (blank override present, no cable absent, boss blank present). fileciteturn2file4L1-L26
 
 Implementation guidance (match existing test style):
@@ -42,7 +42,7 @@ Implementation guidance (match existing test style):
 - Update helper loader to return BOTH absent_keywords and present_override_keywords (or add a second helper), then call detect_state(..., override_rules=...).
 - Keep existing tests passing. Do not rewrite existing tests wholesale.
 
-Step C — Add new file dell_spec_classifier\tests\test_dec_acceptance.py
+Step C — Add new file spec_classifier\tests\test_dec_acceptance.py
 Goal: deterministic assertions for DEC/Fix outcomes without relying on golden file equality.
 
 Use existing helper:
@@ -70,51 +70,51 @@ Minimum assertions (from QA checklist in the plan): fileciteturn2file1L
   - G5T0EH3
   Assert for both: entity_type=HW, state=PRESENT, hw_type=storage_controller, device_type=raid_controller.
 
-Step D — Update dell_spec_classifier\CHANGELOG.md
+Step D — Update spec_classifier\CHANGELOG.md
 Append a section exactly as plan describes (date 2026-02-25, fixed bullets). fileciteturn2file4L33-L43
 
 Step E — Bump rules version
-In dell_spec_classifier\rules\dell_rules.yaml update only the version field from "1.0.0" to "1.1.0". No other YAML edits in this PR. fileciteturn2file1L1-L9
+In spec_classifier\rules\dell_rules.yaml update only the version field from "1.0.0" to "1.1.0". No other YAML edits in this PR. fileciteturn2file1L1-L9
 
 ACCEPTANCE (must be met before PR is ready)
 1) pytest is green: python -m pytest tests\ -v --tb=short fileciteturn2file1L10-L13
 2) Latest run_summary.json for dl6 reports hw_type_null_count = 0, and unknown_count does not exceed baseline. fileciteturn2file1L10-L13
 3) Golden diffs only in dl1–dl5_expected.jsonl; no other files in golden/ changed.
 
-COMMANDS (PowerShell; run from dell_spec_classifier folder)
+COMMANDS (PowerShell; run from spec_classifier folder)
 Use these exact commands (update only if your local path differs):
 
 ```powershell
-Set-Location -Path "C:\Users\G\Desktop\TERESA\dell_spec_classifier"
+Set-Location -Path "C:\Users\G\Desktop\TERESA\spec_classifier"
 
 # 0) Clean prior output (optional but recommended)
-Remove-Item -Recurse -Force "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output\run_*" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\G\Desktop\TERESA\spec_classifier\output\run_*" -ErrorAction SilentlyContinue
 
 # A) Regenerate golden dl1–dl5 (non-interactive)
 foreach ($n in 1..5) {
-    python "C:\Users\G\Desktop\TERESA\dell_spec_classifier\main.py" `
-        --input "C:\Users\G\Desktop\TERESA\dell_spec_classifier\test_data\dl$n.xlsx" `
-        --output-dir "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output" `
+    python "C:\Users\G\Desktop\TERESA\spec_classifier\main.py" `
+        --input "C:\Users\G\Desktop\TERESA\spec_classifier\test_data\dl$n.xlsx" `
+        --output-dir "C:\Users\G\Desktop\TERESA\spec_classifier\output" `
         --save-golden
 }
 
 # B) Full test suite
-python -m pytest "C:\Users\G\Desktop\TERESA\dell_spec_classifier\tests\" -v --tb=short 2>&1 |
-    Tee-Object -FilePath "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output\pytest_final.log"
+python -m pytest "C:\Users\G\Desktop\TERESA\spec_classifier\tests\" -v --tb=short 2>&1 |
+    Tee-Object -FilePath "C:\Users\G\Desktop\TERESA\spec_classifier\output\pytest_final.log"
 
 # C) Run dl6 once to refresh latest run_summary.json for acceptance checks
-python "C:\Users\G\Desktop\TERESA\dell_spec_classifier\main.py" `
-    --input "C:\Users\G\Desktop\TERESA\dell_spec_classifier\test_data\dl6.xlsx" `
-    --output-dir "C:\Users\G\Desktop\TERESA\dell_spec_classifier\output"
+python "C:\Users\G\Desktop\TERESA\spec_classifier\main.py" `
+    --input "C:\Users\G\Desktop\TERESA\spec_classifier\test_data\dl6.xlsx" `
+    --output-dir "C:\Users\G\Desktop\TERESA\spec_classifier\output"
 
 # D) Inspect golden diff before commit
-git diff --stat "C:\Users\G\Desktop\TERESA\dell_spec_classifier\golden\"
-git diff "C:\Users\G\Desktop\TERESA\dell_spec_classifier\golden\"
+git diff --stat "C:\Users\G\Desktop\TERESA\spec_classifier\golden\"
+git diff "C:\Users\G\Desktop\TERESA\spec_classifier\golden\"
 
 # E) Check run_summary invariants (prints latest run summary in output\run_* folder)
 python -c "
 import json, glob
-runs = sorted(glob.glob(r'C:\Users\G\Desktop\TERESA\dell_spec_classifier\output\run_*\run_summary.json'))
+runs = sorted(glob.glob(r'C:\Users\G\Desktop\TERESA\spec_classifier\output\run_*\run_summary.json'))
 assert runs, 'No run_summary.json found'
 with open(runs[-1], encoding='utf-8') as f: s = json.load(f)
 print('hw_type_null_count:', s.get('hw_type_null_count'))

@@ -1,4 +1,4 @@
-"""Regression tests for Cisco CCW pipeline vs golden JSONL."""
+﻿"""Regression tests for Cisco CCW pipeline vs golden JSONL."""
 
 import json
 import pytest

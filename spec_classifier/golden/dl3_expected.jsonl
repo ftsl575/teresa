@@ -1,4 +1,4 @@
-{"source_row_index": 8, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+﻿{"source_row_index": 8, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-001", "device_type": null, "hw_type": null, "skus": ["210-BNWX"]}
 {"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-001", "device_type": null, "hw_type": "chassis", "skus": ["321-BLHK"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": null, "hw_type": "cpu", "skus": ["338-CTBB"]}

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Row normalization and row_kind detection for Dell specification rows.
 HEADER = Module Name, Option Name, SKUs all empty; otherwise ITEM.
 """

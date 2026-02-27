@@ -1,4 +1,4 @@
-# Phase B Step 2 Preparation Pack — Safe ClassificationResult Copying
+﻿# Phase B Step 2 Preparation Pack — Safe ClassificationResult Copying
 
 **Project:** Dell Specification Classifier  
 **Baseline:** v1.1.1 (Phase A.5 complete, stabilized)  
@@ -188,7 +188,7 @@ return replace(result, device_type=match["device_type"])
 ### 7.1 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Verify only classifier.py changed
 git diff --name-only
@@ -236,7 +236,7 @@ This is an optional confidence check — the existing test suite already validat
 ## 8. Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Baseline v1.1.1 — Phase A.5 complete, all tests passing.
 This is the mandatory first commit of Phase B Step 2.
 

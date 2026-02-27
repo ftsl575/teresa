@@ -1,4 +1,4 @@
-"""
+﻿"""
 Cisco CCW (Commerce Workspace) Excel parser.
 Sheet 'Price Estimate', header row by 'Line Number' + 'Part Number'.
 """

@@ -1,4 +1,4 @@
-"""
+﻿"""
 DEC acceptance tests (P1–P8). Covers OptionIDs from QA checklist.
 Deterministic assertions on entity_type, state, hw_type, device_type.
 """

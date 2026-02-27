@@ -1,4 +1,4 @@
-"""
+﻿"""
 Excel parser for Dell specification files.
 Finds header row by 'Module Name', then parses data with __row_index__ = Excel row number.
 """

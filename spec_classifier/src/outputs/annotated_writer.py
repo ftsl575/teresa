@@ -1,4 +1,4 @@
-"""
+﻿"""
 Annotated source Excel: same as input but with extra columns — Entity Type, State, device_type, hw_type.
 All rows preserved; no rows removed.
 """

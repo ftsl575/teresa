@@ -1,4 +1,4 @@
----
+﻿---
 **Document:** vNext execution and closure plan (Phase 0–4, prompts 1–3).  
 **Created:** 2026-02-23.  
 **Stage:** Post-MVP improvements (test paths, golden, UNKNOWN closure, device_type, docs).  
@@ -26,7 +26,7 @@
 
 ## Что нужно улучшить и почему
 
-**Блокер тестирования (audit C1/C2/C3/C4):** `test_data/` лежит вне `dell_spec_classifier/`, поэтому все smoke/regression/integration тесты молча пропускаются (`pytest.skip`). Golden-файлы не существуют (папка `golden/` содержит только `.gitkeep`). Regression параметризована на dl1–dl2 вместо dl1–dl5. Smoke — только dl1. Итог: **нулевое фактическое тестовое покрытие на реальных данных**, хотя unit-тесты (21+8+12 = 41) проходят без xlsx-файлов.
+**Блокер тестирования (audit C1/C2/C3/C4):** `test_data/` лежит вне `spec_classifier/`, поэтому все smoke/regression/integration тесты молча пропускаются (`pytest.skip`). Golden-файлы не существуют (папка `golden/` содержит только `.gitkeep`). Regression параметризована на dl1–dl2 вместо dl1–dl5. Smoke — только dl1. Итог: **нулевое фактическое тестовое покрытие на реальных данных**, хотя unit-тесты (21+8+12 = 41) проходят без xlsx-файлов.
 
 **UNKNOWN выше 5% на dl3 (audit F3, run_results):** dl3 — 12/89 = 13.5%; dl1 — 4/49 = 8.2%; dl2 — 8/365 = 2.2%; dl4 — 2/50 = 4%; dl5 — 1/38 = 2.6%. Конкретные паттерны из unknown_rows.csv четко идентифицированы и поддаются детерминированным правилам.
 
@@ -36,7 +36,7 @@
 
 ## Точные gap'ы
 
-- `test_data/` не в `dell_spec_classifier/` → все тесты с файлами skip (audit C1, блокер)
+- `test_data/` не в `spec_classifier/` → все тесты с файлами skip (audit C1, блокер)
 - `golden/` пустая → regression не работает (audit C2, блокер)
 - Regression параметризована `["dl1.xlsx", "dl2.xlsx"]` → dl3–dl5 не покрыты (audit C3)
 - Smoke только на dl1 → dl2–dl5 не проверяются (audit C4)
@@ -67,14 +67,14 @@ No questions; sufficient facts provided.
 **Goal:** Сделать так, чтобы unit-тесты всегда проходили, а smoke/regression запускались при наличии xlsx-файлов по документированному пути.
 
 **Tasks:**
-- Задокументировать ожидаемый путь: `dell_spec_classifier/test_data/dl{1..5}.xlsx` (не коммитим xlsx в git, добавляем в `.gitignore`).
-- Убедиться, что `_project_root() / "test_data"` разрешается корректно из `dell_spec_classifier/` (не из `teresa-main/`).
+- Задокументировать ожидаемый путь: `spec_classifier/test_data/dl{1..5}.xlsx` (не коммитим xlsx в git, добавляем в `.gitignore`).
+- Убедиться, что `_project_root() / "test_data"` разрешается корректно из `spec_classifier/` (не из `teresa-main/`).
 - Добавить `test_data/*.xlsx` в `.gitignore`.
 - Unit-тесты (`test_rules_unit.py`, `test_state_detector.py`, `test_normalizer.py`) должны проходить без xlsx-файлов — проверить отсутствие неявных зависимостей.
 - Добавить в `conftest.py` фикстуру `skip_if_no_test_data` (уже может быть; если нет — добавить явно), чтобы пропуски были видимы как `SKIPPED` с конкретным сообщением, а не тихим skip.
 
 **DoD / Acceptance:**
-- `cd dell_spec_classifier && pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v` → 41+ passed, 0 failed, 0 errors (без xlsx).
+- `cd spec_classifier && pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v` → 41+ passed, 0 failed, 0 errors (без xlsx).
 - `pytest tests/ -v` без xlsx → все smoke/regression/integration → SKIPPED (с сообщением), не ERROR.
 - `pytest tests/ -v` при наличии `test_data/dl1.xlsx` → smoke dl1 проходит без skip.
 - `test_data/*.xlsx` присутствует в `.gitignore`.
@@ -82,7 +82,7 @@ No questions; sufficient facts provided.
 **Verification commands:**
 ```powershell
 # Без xlsx-файлов:
-cd dell_spec_classifier
+cd spec_classifier
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v --tb=short
 # Ожидание: 41+ passed
 
@@ -132,7 +132,7 @@ Select-String "test_data" .gitignore
 
 **Verification commands:**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 # Генерация golden (после Phase 2):
 foreach ($i in 1..5) { python main.py --input test_data/dl$i.xlsx --save-golden }
 
@@ -302,7 +302,7 @@ foreach ($i in 1..5) {
 
 **Verification commands:**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 # Прогон после правок:
 foreach ($i in 1..5) {
   python main.py --input test_data/dl$i.xlsx --output-dir output/vnext_check/dl$i
@@ -373,7 +373,7 @@ Select-String "parse|normaliz" output/*/run.log | Select-Object -First 5
 
 | Issue (источник) | Fix | How to verify |
 |-----------------|-----|---------------|
-| `test_data/` не в `dell_spec_classifier/` (audit C1) | Поместить dl1–dl5.xlsx в `dell_spec_classifier/test_data/`; добавить в `.gitignore` | `pytest tests/ -v` → smoke/regression not SKIPPED; `Select-String "test_data" .gitignore` |
+| `test_data/` не в `spec_classifier/` (audit C1) | Поместить dl1–dl5.xlsx в `spec_classifier/test_data/`; добавить в `.gitignore` | `pytest tests/ -v` → smoke/regression not SKIPPED; `Select-String "test_data" .gitignore` |
 | golden/ пустая (audit C2) | `python main.py --save-golden --input test_data/dlX.xlsx` для dl1–dl5 | `ls golden/*.jsonl` → 5 файлов |
 | Regression только dl1–dl2 (audit C3) | Расширить параметризацию `test_regression.py` до dl1–dl5 | `grep -A3 "parametrize" tests/test_regression.py` содержит dl3–dl5 |
 | Smoke только dl1 (audit C4) | Параметризовать `test_smoke.py` по dl1–dl5 | `pytest tests/test_smoke.py -v` → 5 passed |
@@ -428,14 +428,14 @@ Select-String "parse|normaliz" output/*/run.log | Select-Object -First 5
 ## Prompt 1: Tests / Golden / Coverage
 
 **Context:**
-Репозиторий `dell_spec_classifier/` — детерминированный пайплайн классификации Excel-спецификаций Dell. Тесты существуют, но не работают из-за:
-1. `test_data/dl1–dl5.xlsx` находятся в `teresa-main/test_data/`, а тесты ищут `dell_spec_classifier/test_data/` через `_project_root()`.
+Репозиторий `spec_classifier/` — детерминированный пайплайн классификации Excel-спецификаций Dell. Тесты существуют, но не работают из-за:
+1. `test_data/dl1–dl5.xlsx` находятся в `teresa-main/test_data/`, а тесты ищут `spec_classifier/test_data/` через `_project_root()`.
 2. `golden/` пуста — нет `dl1_expected.jsonl … dl5_expected.jsonl`.
 3. `test_regression.py` параметризован только на dl1–dl2.
 4. `test_smoke.py` запускается только на dl1.
 
 **Task:**
-1. Убедиться, что `_project_root()` возвращает `dell_spec_classifier/` (на основе `__file__`, не CWD). Если нет — исправить.
+1. Убедиться, что `_project_root()` возвращает `spec_classifier/` (на основе `__file__`, не CWD). Если нет — исправить.
 2. Добавить `test_data/*.xlsx` в `.gitignore`.
 3. Расширить `test_regression.py` параметры: `["dl1.xlsx", "dl2.xlsx", "dl3.xlsx", "dl4.xlsx", "dl5.xlsx"]`.
 4. Расширить `test_smoke.py` — параметризовать по dl1–dl5.
@@ -458,7 +458,7 @@ Select-String "parse|normaliz" output/*/run.log | Select-Object -First 5
 
 **Commands:**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 pytest tests/ -v --tb=short 2>&1 | Tee-Object test_output.txt
 Select-String "SKIPPED|PASSED|FAILED|ERROR" test_output.txt | Group-Object { $_.Line.Split()[0] }
 ```
@@ -496,7 +496,7 @@ Select-String "SKIPPED|PASSED|FAILED|ERROR" test_output.txt | Group-Object { $_.
 
 **Commands:**
 ```powershell
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input test_data/dl1.xlsx --output-dir output/vnext_v1/dl1
 python main.py --input test_data/dl3.xlsx --output-dir output/vnext_v1/dl3
 # Проверить UNKNOWN:

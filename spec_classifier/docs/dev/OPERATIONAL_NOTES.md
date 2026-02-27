@@ -1,4 +1,4 @@
-# Операционные заметки — Dell Specification Classifier
+﻿# Операционные заметки — Dell Specification Classifier
 
 ## 1. Одиночный прогон
 

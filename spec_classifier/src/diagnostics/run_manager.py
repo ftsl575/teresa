@@ -1,4 +1,4 @@
-"""
+﻿"""
 Run folder management: create unique output directories per pipeline run and batch session.
 
 Naming conventions:

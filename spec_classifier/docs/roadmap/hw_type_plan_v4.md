@@ -1,6 +1,6 @@
-# hw_type System v4 — Full Implementation Plan
+﻿# hw_type System v4 — Full Implementation Plan
 
-**Project:** teresa / dell_spec_classifier  
+**Project:** teresa / spec_classifier  
 **Date:** 2026-02-24  
 **Baseline:** v1.1.2 (Phase B Step 2)  
 **Approach:** Option B — полное обновление enum + тесты + golden + docs  
@@ -395,7 +395,7 @@ Then read artifacts from:
 ### Prompt 1 — Pack 4.5: Entity-type bugfixes
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛ: rules/dell_rules.yaml
 BASELINE: v1.1.2
 
@@ -500,7 +500,7 @@ import json; print(json.dumps(json.load(open(_latest_run/'run_summary.json', enc
 ### Prompt 2 — Pack 5: hw_type enum + ClassificationResult field
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: src/core/classifier.py, tests/test_stats_hw_type.py
 
 КОНТЕКСТ:
@@ -576,7 +576,7 @@ import json; print(json.load(open(_latest_run/'run_summary.json', encoding='utf-
 ### Prompt 3 — Pack 6 part 1: hw_type_rules секция в YAML
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛ: rules/dell_rules.yaml
 
 КОНТЕКСТ:
@@ -781,7 +781,7 @@ print(f'Unique hw_types: {sorted(set(all_vals))}')
 ### Prompt 4 — Pack 6 part 2: RuleSet загрузка hw_type_rules
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛ: src/rules/rules_engine.py
 
 КОНТЕКСТ:
@@ -829,7 +829,7 @@ print('OK')
 ### Prompt 5 — Pack 7: _apply_hw_type() реализация и подключение
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: src/rules/rules_engine.py, src/core/classifier.py
 
 КОНТЕКСТ:
@@ -952,7 +952,7 @@ print(f'Non-HW with hw_type: {len(nonhw)} (must be 0)')
 ### Prompt 6 — Pack 8: Annotated source — hw_type + naming
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: src/outputs/excel_writer.py (или файл генерирующий annotated_source.xlsx), main.py
 
 КОНТЕКСТ:
@@ -1005,7 +1005,7 @@ print('OK')
 ### Prompt 7 — Pack 9: Golden + regression lock (ТОЧНЫЕ counts)
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: golden/dl1_expected.jsonl..dl5_expected.jsonl, tests/test_stats_hw_type.py, tests/test_regression.py
 
 КОНТЕКСТ:
@@ -1071,7 +1071,7 @@ print('OK')
 ### Prompt 8 — Pack 10 part 1: Warning + monitoring
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: src/core/classifier.py, src/diagnostics/stats_collector.py
 
 КОНТЕКСТ:
@@ -1131,7 +1131,7 @@ for idx, l in warned:
 ### Prompt 9 — Pack 10 part 2: dl2–dl5 expansion + Fan verification
 
 ```
-ПРОЕКТ: teresa / dell_spec_classifier
+ПРОЕКТ: teresa / spec_classifier
 ФАЙЛЫ: rules/dell_rules.yaml, golden/*_expected.jsonl
 
 КОНТЕКСТ:

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Unit tests for state detection (PRESENT / ABSENT / DISABLED).
 """
 

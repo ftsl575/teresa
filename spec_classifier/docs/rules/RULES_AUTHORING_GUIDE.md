@@ -1,4 +1,4 @@
-# Руководство по правилам — Dell Specification Classifier
+﻿# Руководство по правилам — Dell Specification Classifier
 
 ## 1. Обзор
 

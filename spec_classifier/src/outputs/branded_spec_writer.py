@@ -1,4 +1,4 @@
-"""
+﻿"""
 Branded specification document: groups items by server (BASE) and entity type sections.
 Output mirrors YADRO-style format with company brand colors.
 """

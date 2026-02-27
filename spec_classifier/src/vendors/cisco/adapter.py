@@ -1,4 +1,4 @@
-from src.vendors.base import VendorAdapter
+﻿from src.vendors.base import VendorAdapter
 from src.vendors.cisco.parser import parse_excel
 from src.vendors.cisco.normalizer import normalize_cisco_rows
 

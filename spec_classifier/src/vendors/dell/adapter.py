@@ -1,4 +1,4 @@
-from src.vendors.base import VendorAdapter
+﻿from src.vendors.base import VendorAdapter
 from src.core.parser import parse_excel, find_header_row
 from src.core.normalizer import normalize_row
 

@@ -1,4 +1,4 @@
-# Phase B Step 2 Implementation Pack — hw_type Field and Resolution Logic
+﻿# Phase B Step 2 Implementation Pack — hw_type Field and Resolution Logic
 
 **Project:** Dell Specification Classifier  
 **Baseline:** v1.1.1 + Phase B Step 2 commit 1 (`dataclasses.replace` in `_apply_device_type`)  
@@ -553,7 +553,7 @@ class TestHwTypePreservedByDeviceType:
 ### 7.1 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Verify only expected files changed
 git diff --name-only
@@ -610,7 +610,7 @@ If this test fails, it means `_apply_device_type` is NOT using `dataclasses.repl
 ## 8. Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Baseline v1.1.1 + Phase B Step 2 commit 1 (dataclasses.replace in _apply_device_type).
 All 80 tests passing.
 This is Phase B Step 2 commit 2: add hw_type field and resolution logic.
@@ -962,7 +962,7 @@ for key in ("entity_type", "state", "matched_rule_id", "device_type", "hw_type",
 **Run** the golden regeneration command for each dataset:
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 python main.py --input test_data/dl1.xlsx --save-golden
 python main.py --input test_data/dl2.xlsx --save-golden
@@ -1011,7 +1011,7 @@ grep '"entity_type": "SERVICE"' golden/dl1_expected.jsonl | head -5
 ### 10.6 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Verify changed files
 git diff --name-only
@@ -1061,7 +1061,7 @@ grep '"hw_type"' output/*/classification.jsonl | head -5
 ### 10.7 Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Phase B Step 2 commit 2 is merged: hw_type field exists on ClassificationResult,
 _apply_hw_type is wired, hw_type_rules exist in dell_rules.yaml.
 All tests pass. hw_type is computed in memory but NOT yet in any output file.
@@ -1292,7 +1292,7 @@ class TestHwTypeCounts:
 ### 11.7 Verification Commands
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 
 # 1. Verify only expected files changed
 git diff --name-only
@@ -1326,7 +1326,7 @@ python -c "import json; d=json.load(open('output/$(ls -t output | head -1)/run_s
 ### 11.8 Cursor Prompt
 
 ```
-Context: Dell Specification Classifier project at dell_spec_classifier/.
+Context: Dell Specification Classifier project at spec_classifier/.
 Phase B Step 2 commits 1-3 are merged:
   - commit 1: dataclasses.replace in _apply_device_type
   - commit 2: hw_type field + _apply_hw_type + hw_type_rules in dell_rules.yaml

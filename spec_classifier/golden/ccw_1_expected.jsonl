@@ -1,4 +1,4 @@
-{"source_row_index": 19, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["N9K-C93180YC-FX3"]}
+﻿{"source_row_index": 19, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["N9K-C93180YC-FX3"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-001", "device_type": null, "hw_type": null, "skus": ["NXK-AF-PE"]}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-003", "device_type": null, "hw_type": null, "skus": ["MODE-NXOS"]}
 {"source_row_index": 22, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-005", "device_type": null, "hw_type": null, "skus": ["NXOS-CS-10.3.1F"]}

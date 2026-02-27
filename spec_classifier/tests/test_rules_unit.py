@@ -1,4 +1,4 @@
-"""
+﻿"""
 Unit tests for classification rules (entity type and rule_id).
 """
 

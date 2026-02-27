@@ -1,4 +1,4 @@
-"""
+﻿"""
 Collect and persist run statistics (counts by entity_type, state, rules).
 """
 

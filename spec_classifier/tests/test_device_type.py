@@ -1,4 +1,4 @@
-"""
+﻿"""
 Unit tests for device_type assignment (Phase 2 rules: LOGISTIC-004-CORD, HW-005–009, LOGISTIC-005-SFP-CABLE).
 Covers MUST-FIX SKUs from vnext_plan1.md and edge cases (UNKNOWN → device_type None; non-HW/LOGISTIC → None).
 """

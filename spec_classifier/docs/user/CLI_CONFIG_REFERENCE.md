@@ -1,4 +1,4 @@
-# Справка по CLI и config — Dell Specification Classifier
+﻿# Справка по CLI и config — Dell Specification Classifier
 
 ## 1. CLI-параметры
 

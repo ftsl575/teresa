@@ -1,4 +1,4 @@
-"""
+﻿"""
 Rules engine: load Dell rules from YAML and match rows against entity rules.
 """
 

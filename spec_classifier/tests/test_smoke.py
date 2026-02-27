@@ -1,4 +1,4 @@
-"""
+﻿"""
 Smoke test: full pipeline on test_data/dl1–dl5.xlsx; assert all diagnostic artifacts exist.
 """
 

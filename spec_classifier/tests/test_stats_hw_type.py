@@ -1,4 +1,4 @@
-"""
+﻿"""
 Tests for hw_type_counts in collect_stats and run_summary.json.
 """
 

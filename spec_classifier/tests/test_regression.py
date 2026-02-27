@@ -1,4 +1,4 @@
-"""
+﻿"""
 Regression tests: compare pipeline output to golden/*_expected.jsonl row-by-row.
 """
 

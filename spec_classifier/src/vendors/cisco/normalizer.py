@@ -1,4 +1,4 @@
-"""
+﻿"""
 Cisco CCW row normalization: raw dicts → CiscoNormalizedRow (core contract + vendor extension).
 """
 
