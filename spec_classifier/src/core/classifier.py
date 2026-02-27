@@ -44,9 +44,6 @@ HW_TYPE_VOCAB = frozenset({
     "management", "tpm",
     # Аксессуары
     "accessory",
-    # --- LEGACY (временно, удалить после Фазы 3) ---
-    "ram", "ssd", "hdd", "nvme", "cpu_heatsink",
-    "motherboard", "mounting_kit", "blank",
 })
 
 
