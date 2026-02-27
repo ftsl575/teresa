@@ -1,4 +1,4 @@
-# Dell Specification Classifier
+﻿# Dell Specification Classifier
 
 Deterministic rule-based pipeline for classifying Dell Excel specification files.
 
@@ -17,7 +17,7 @@ Classification uses YAML rules + regex. No ML. Fully reproducible.
 ## Quick Start
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 pip install -r requirements.txt
 
 # Single file (Dell default)
@@ -100,7 +100,7 @@ vendor_rules:
 ## Test Data
 
 Test files (`test_data/dl1.xlsx` … `dl6.xlsx`) are **not in git**.
-Place them under `dell_spec_classifier/test_data/`.
+Place them under `spec_classifier/test_data/`.
 Smoke, regression, and threshold tests skip automatically if files are absent.
 
 ---
@@ -134,7 +134,7 @@ pytest tests/test_regression.py -v
 
 | Error | Cause | Fix |
 |---|---|---|
-| `Input file not found` | Wrong `--input` path | Use absolute path or run from `dell_spec_classifier/` |
+| `Input file not found` | Wrong `--input` path | Use absolute path or run from `spec_classifier/` |
 | `Config file not found` | Wrong `--config` path | Default is `config.yaml` in CWD |
 | `No header row found` | Excel missing `"Module Name"` cell | Verify first sheet has `Module Name` header in first 20 rows |
 | `Rules file not found` | `rules_file` in config invalid | Check `config.yaml` → `rules_file` path |

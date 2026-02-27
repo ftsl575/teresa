@@ -1,9 +1,9 @@
 
 # Local test data
-dell_spec_classifier/test_data/
-dell_spec_classifier/test_data/*.xlsx
+spec_classifier/test_data/
+spec_classifier/test_data/*.xlsx
 **/__pycache__/
-dell_spec_classifier/output/
+spec_classifier/output/
 for cursor/
 out/
 test_data/

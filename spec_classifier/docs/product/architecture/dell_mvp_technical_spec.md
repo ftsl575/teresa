@@ -1,4 +1,4 @@
----
+﻿---
 **Document:** Original MVP technical architecture and specification for the Dell Specification Classifier pipeline.  
 **Created:** February 2026.  
 **Stage:** Pre-implementation / MVP design (Phases 0–10).  
@@ -168,7 +168,7 @@ base_rules:
 ## A) Архитектура MVP
 
 ```
-dell_spec_classifier/
+spec_classifier/
 ├── src/
 │   ├── core/
 │   │   ├── parser.py          # Парсинг Excel → raw rows
@@ -1252,7 +1252,7 @@ rules_file: "rules/dell_rules.yaml"
 **Task**: 
 1. Создай структуру проекта:
    ```
-   dell_spec_classifier/
+   spec_classifier/
    ├── src/
    │   ├── core/
    │   ├── rules/
@@ -1308,9 +1308,9 @@ rules_file: "rules/dell_rules.yaml"
 
 **Commands to verify**:
 ```bash
-ls -R dell_spec_classifier/
-pip install -r dell_spec_classifier/requirements.txt
-cat dell_spec_classifier/CHANGELOG.md  # Должен показать версию 1.0.0
+ls -R spec_classifier/
+pip install -r spec_classifier/requirements.txt
+cat spec_classifier/CHANGELOG.md  # Должен показать версию 1.0.0
 ```
 
 ---

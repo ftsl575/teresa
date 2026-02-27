@@ -13,6 +13,9 @@ Versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Repo layout:** Removed legacy `dell_spec_classifier/` shim folder. `spec_classifier/` is the only canonical project root. Run CLI and tests from inside `spec_classifier/` (see README).
+
 ### Added
 - Batch mode (`--batch-dir`): process all .xlsx in a directory; creates per-run folders
   and a TOTAL aggregation folder.

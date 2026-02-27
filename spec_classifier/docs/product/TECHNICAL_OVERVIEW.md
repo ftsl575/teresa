@@ -1,4 +1,4 @@
-# Dell Specification Classifier — Technical Overview
+﻿# Dell Specification Classifier — Technical Overview
 
 Документ описывает **фактическую** реализацию проекта (код в репозитории). Источники: спецификация `dell_mvp_technical_spec.md`, код в `src/`, `main.py`, тесты в `tests/`, `config.yaml`, `README.md`.
 
@@ -141,7 +141,7 @@ python main.py --input test_data/dl1.xlsx --update-golden
 Реальная структура по репозиторию:
 
 ```
-dell_spec_classifier/
+spec_classifier/
 ├── main.py                    # CLI и оркестрация пайплайна
 ├── config.yaml                # cleaned_spec, rules_file
 ├── requirements.txt

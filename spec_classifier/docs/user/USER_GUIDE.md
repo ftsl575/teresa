@@ -1,4 +1,4 @@
-# Руководство пользователя — Dell Specification Classifier
+﻿# Руководство пользователя — Dell Specification Classifier
 
 ## 1. Назначение
 
@@ -21,7 +21,7 @@
 Минимальный пример:
 
 ```bash
-cd dell_spec_classifier
+cd spec_classifier
 python main.py --input test_data/dl1.xlsx
 ```
 
