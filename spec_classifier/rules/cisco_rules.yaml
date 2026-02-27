@@ -160,10 +160,21 @@ hw_rules:
 device_type_rules:
   applies_to: [HW, LOGISTIC]
   rules:
+    # Пассивный медный DAC/twinax кабель — по SKU (самый специфичный первым)
+    - field: sku
+      pattern: '(?i)-CU\d'
+      device_type: cable
+      rule_id: DT-C-001-DAC-SKU
+    # Пассивный медный DAC/twinax или активный AOC кабель — по описанию
+    - field: option_name
+      pattern: '(?i)(passive\s+copper|twinax|direct.attach\s+cable|\bDAC\b|\bAOC\b)'
+      device_type: cable
+      rule_id: DT-C-001-DAC-OPT
+    # Оптические трансиверы (GLC/SFP/QSFP/QDD)
     - field: sku
       pattern: '^(GLC|SFP|QSFP|QDD)'
-      device_type: sfp_cable
-      rule_id: DT-C-001
+      device_type: transceiver
+      rule_id: DT-C-001-OPT
     - field: sku
       pattern: '(?i)^(PWR-|NXA-PAC|C\dK?-PWR)'
       device_type: psu
@@ -180,7 +191,9 @@ device_type_rules:
 hw_type_rules:
   applies_to: [HW]
   device_type_map:
-    sfp_cable: network_adapter
+    transceiver: transceiver
+    cable: cable
+    sfp_cable: cable
     psu: psu
     fan: fan
   rule_id_map: {}
@@ -195,20 +208,28 @@ hw_type_rules:
       rule_id: HWT-C-002
     - field: option_name
       pattern: '(?i)\bblank\b|filler'
-      hw_type: blank
+      hw_type: blank_filler
       rule_id: HWT-C-003
     - field: option_name
       pattern: '(?i)rack mount|mounting|accessory kit|rubber feet|screws'
-      hw_type: mounting_kit
+      hw_type: rail
       rule_id: HWT-C-004
     - field: option_name
       pattern: '(?i)SSD'
       hw_type: ssd
       rule_id: HWT-C-005
     - field: option_name
-      pattern: '(?i)stack(ing)?\s+(module|kit)'
-      hw_type: network_adapter
-      rule_id: HWT-C-006
+      pattern: '(?i)stacking?\s+module'
+      hw_type: accessory
+      rule_id: HWT-C-006-MOD
+    - field: option_name
+      pattern: '(?i)stacking?\s+kit'
+      hw_type: accessory
+      rule_id: HWT-C-006-KIT
+    - field: sku
+      pattern: '^C9300L-STACK-A$'
+      hw_type: accessory
+      rule_id: HWT-C-006-SKU
     - field: option_name
       pattern: '(?i)\bRFID\b'
       hw_type: management
