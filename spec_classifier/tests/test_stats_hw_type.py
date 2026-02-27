@@ -1,4 +1,4 @@
-﻿"""
+"""
 Tests for hw_type_counts in collect_stats and run_summary.json.
 """
 
@@ -30,7 +30,7 @@ EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 23
 
 
 def test_hw_type_vocab():
-    assert len(HW_TYPE_VOCAB) == 20
+    assert len(HW_TYPE_VOCAB) == 33
     assert all(isinstance(v, str) and v for v in HW_TYPE_VOCAB)
     assert all(v == v.lower() for v in HW_TYPE_VOCAB)
 
