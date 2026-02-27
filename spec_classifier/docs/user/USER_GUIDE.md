@@ -1,8 +1,8 @@
-﻿# Руководство пользователя — Dell Specification Classifier
+# Руководство пользователя — Dell Specification Classifier
 
 ## 1. Назначение
 
-Система классифицирует строки Dell-спецификаций в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
+Система классифицирует строки спецификаций (Dell и Cisco CCW) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
 
 ---
 
@@ -13,6 +13,13 @@
 - **Ожидаемые столбцы:** Module Name, Option Name, SKUs, Qty, Option List Price.
 - **Опциональные:** Group Name, Group ID, Product Name, Option ID.
 - **Ограничения:** один лист, один файл за запуск в single-file режиме; для нескольких файлов — режим `--batch-dir`.
+
+**Cisco CCW (`--vendor cisco`):**
+
+- Формат: `.xlsx`, лист `"Price Estimate"` (строго, без fallback).
+- Строка заголовка: ищется по одновременному наличию `"Line Number"` и `"Part Number"` в первых 100 строках.
+- Ожидаемые столбцы: Line Number, Part Number, Description, Qty, Unit List Price, Unit Net Price, Disc(%), Extended Net Price, Service Duration (Months), Smart Account Mandatory, Estimated Lead Time (Days).
+- Особенности: trailing `=` в Part Number удаляется автоматически; пустой Part Number внутри данных допустим (конец данных определяется по последней непустой ячейке Part Number).
 
 ---
 
@@ -37,7 +44,7 @@ python main.py --input test_data/dl1.xlsx
 | `run_summary.json` | Сводка: total_rows, entity_type_counts, state_counts, unknown_count, device_type_counts, hw_type_counts, rules_file_hash, input_file, run_timestamp. |
 | `cleaned_spec.xlsx` | Отфильтрованная спецификация: типы из конфига (BASE, HW, SOFTWARE, SERVICE), только PRESENT (если `include_only_present: true`). |
 | `<stem>_annotated.xlsx` | Исходный файл + 4 колонки: Entity Type, State, device_type, hw_type. Все строки сохранены. |
-| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по entity_type; блок «Не установлено» для ABSENT при необходимости. |
+| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по entity_type; блок «Не установлено» для ABSENT при необходимости. ⚠️ Не создаётся для Cisco CCW прогонов. |
 | `unknown_rows.csv` | Строки, для которых не сработало ни одно правило (entity_type = UNKNOWN). Ревизия после каждого прогона. |
 | `rows_raw.json` | Сырые строки после парсера (отладка). |
 | `rows_normalized.json` | Нормализованные строки с row_kind (отладка). |
@@ -78,6 +85,8 @@ python main.py --input test_data/dl1.xlsx
 3. Если `unknown_count > 0`: добавить или скорректировать правило в `dell_rules.yaml` → запустить снова → проверить diff в классификации.
 4. При принятии изменений: `python main.py --input test_data/dl1.xlsx --save-golden` и `pytest tests/test_regression.py -v`.
 5. Если `unknown_count = 0` и регрессия зелёная — готово.
+
+Для Cisco CCW: шаги аналогичны, но с `--vendor cisco` и правилами в `rules/cisco_rules.yaml`. Цель — `unknown_count = 0` на `ccw_1` и `ccw_2`.
 
 ---
 

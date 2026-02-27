@@ -1,4 +1,4 @@
-﻿# Dell Specification Classifier — Technical Overview
+# Spec Classifier — Technical Overview (Multivendor)
 
 Документ описывает **фактическую** реализацию проекта (код в репозитории). Источники: спецификация `dell_mvp_technical_spec.md`, код в `src/`, `main.py`, тесты в `tests/`, `config.yaml`, `README.md`.
 
@@ -15,7 +15,7 @@
   - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type);
   - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
 
-Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED).
+Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED). Поддерживаемые вендоры: **Dell** (формат Dell spec export, заголовок "Module Name") и **Cisco CCW** (формат Cisco Commerce Workspace export, лист "Price Estimate", заголовок "Line Number" + "Part Number"). Вендор задаётся флагом `--vendor {dell,cisco}`.
 
 ---
 
@@ -23,14 +23,13 @@
 
 Реализованная последовательность в `main.py`:
 
-1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся из `config["rules_file"]` (по умолчанию `rules/dell_rules.yaml`).
-2. **Парсинг Excel** — `src.core.parser.parse_excel(filepath)`:
-   - поиск строки заголовка по ячейке `"Module Name"` (`find_header_row`);
-   - чтение листа с этим заголовком, удаление колонки `"Unnamed: 0"` при наличии;
-   - каждая строка — dict с полями листа и `__row_index__` = номер строки в Excel (1-based): `pandas_idx + header_row_index + 2`.
-3. **Нормализация** — для каждой сырой строки вызывается `src.core.normalizer.normalize_row(raw_row)`:
-   - определение `row_kind`: HEADER, если пусты Module Name, Option Name и SKUs; иначе ITEM;
-   - приведение типов (SKUs → список строк, Qty → int, Option List Price → float), пробелы и пустоты обрабатываются.
+1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся через `adapter.get_rules_file()`, который возвращает значение из `config["vendor_rules"][vendor]` (или fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`.
+2. **Парсинг Excel** — `adapter.parse(str(input_path))` (vendor-specific):
+   - Dell: ищет строку заголовка по ячейке `"Module Name"` в первых 20 строках (`src.vendors.dell.adapter` → `src.core.parser`);
+   - Cisco: ищет строку заголовка по одновременному наличию `"Line Number"` и `"Part Number"` на листе `"Price Estimate"` (`src.vendors.cisco.parser`).
+3. **Нормализация** — `adapter.normalize(raw_rows)` (vendor-specific):
+   - Dell: `src.core.normalizer.normalize_row` → `NormalizedRow`;
+   - Cisco: `src.vendors.cisco.normalizer.normalize_cisco_rows` → `CiscoNormalizedRow` (duck-type compatible с NormalizedRow, содержит дополнительные Cisco-поля).
 4. **Загрузка правил** — `src.rules.rules_engine.RuleSet.load(rules_path)` (YAML, UTF-8). Правила разложены по атрибутам: `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, плюс `get_state_rules()` из `state_rules.absent_keywords`.
 5. **Классификация** — для каждой нормализованной строки `src.core.classifier.classify_row(row, ruleset)`:
    - если `row_kind == HEADER` → результат с `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
@@ -85,6 +84,7 @@
 | `--input` | обязателен в single-file режиме | Путь к входному Excel. |
 | `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
 | `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
+| `--vendor` | нет (default: `dell`) | `dell` или `cisco`. Выбирает адаптер парсинга/нормализации и файл правил. |
 | `--output-dir` | нет (по умолчанию `output`) | Каталог для подпапок прогонов. |
 | `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
 | `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
@@ -111,6 +111,7 @@ python main.py --input test_data/dl1.xlsx --update-golden
 - `state` (строка или null)
 - `matched_rule_id` (строка)
 - `device_type` (строка или null)
+- `hw_type` (строка или null)
 - `skus` (список строк)
 
 Генерация: при запуске с `--save-golden` или после подтверждения при `--update-golden` в `main.py` вызываются `_build_golden_rows(normalized_rows, classification_results)` и `_save_golden(golden_rows, golden_path)`.
@@ -127,7 +128,7 @@ python main.py --input test_data/dl1.xlsx --update-golden
 
 Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder)`.
 
-- Исходный Excel читается через `pandas.read_excel(..., header=None)`. Строка заголовка находится через `find_header_row(original_excel_path)`.
+- Исходный Excel читается через `pandas.read_excel(..., header=None)`. Строка заголовка передаётся как `header_row_index` из адаптера (результат `adapter.parse()`). Dell-парсер больше не вызывается внутри `annotated_writer`. Это обеспечивает корректную работу для обоих вендоров.
 - К таблице добавляются четыре колонки: "Entity Type", "State", "device_type", "hw_type". В строке заголовка в этих ячейках пишутся соответствующие подписи.
 - Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value`, `state.value`, `device_type`, `hw_type`; иначе — пусто.
 - Результат сохраняется в `run_folder / "<stem>_annotated.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
@@ -142,43 +143,42 @@ python main.py --input test_data/dl1.xlsx --update-golden
 
 ```
 spec_classifier/
-├── main.py                    # CLI и оркестрация пайплайна
-├── config.yaml                # cleaned_spec, rules_file
-├── requirements.txt
-├── README.md
-├── CHANGELOG.md
+├── main.py
+├── config.yaml
 ├── rules/
-│   └── dell_rules.yaml        # version, state_rules.absent_keywords, base_rules, service_rules, logistic_rules, software_rules, note_rules, config_rules, hw_rules
+│   ├── dell_rules.yaml
+│   └── cisco_rules.yaml          # Cisco rules (service_duration_months, bundles, etc.)
 ├── src/
-│   ├── core/
-│   │   ├── parser.py          # find_header_row, parse_excel
-│   │   ├── normalizer.py      # RowKind, NormalizedRow, detect_row_kind, normalize_row
-│   │   ├── classifier.py      # EntityType, ClassificationResult, classify_row
-│   │   └── state_detector.py   # State, detect_state
-│   ├── rules/
-│   │   └── rules_engine.py    # match_rule, RuleSet.load
-│   ├── outputs/
-│   │   ├── json_writer.py     # save_rows_raw, save_rows_normalized, save_classification, save_unknown_rows, save_header_rows
-│   │   ├── excel_writer.py    # generate_cleaned_spec
-│   │   └── annotated_writer.py # generate_annotated_source_excel
-│   └── diagnostics/
-│       ├── run_manager.py     # create_run_folder
-│       └── stats_collector.py # collect_stats, save_run_summary
+│   ├── core/                     # parser, normalizer, classifier, state_detector
+│   ├── rules/                    # rules_engine.py
+│   ├── outputs/                  # json_writer, excel_writer, annotated_writer, branded_spec_writer
+│   ├── diagnostics/              # run_manager, stats_collector
+│   └── vendors/
+│       ├── base.py               # VendorAdapter ABC
+│       ├── dell/
+│       │   └── adapter.py        # DellAdapter
+│       └── cisco/
+│           ├── parser.py         # CCW parser
+│           ├── normalizer.py     # CiscoNormalizedRow
+│           └── adapter.py        # CiscoAdapter
 ├── tests/
-│   ├── test_smoke.py          # полный прогон на dl1.xlsx, проверка наличия артефактов
-│   ├── test_normalizer.py     # unit-тесты нормализатора и row_kind
-│   ├── test_state_detector.py # unit-тесты detect_state
-│   ├── test_rules_unit.py     # unit-тесты классификации (в т.ч. HEADER, BASE, SOFTWARE-001/002, HW-001)
-│   ├── test_excel_writer.py   # прогон и проверка cleaned_spec.xlsx
-│   ├── test_annotated_writer.py # прогон и проверка annotated_source.xlsx
-│   ├── test_cli.py            # запуск main.py через subprocess, проверка exit code и артефактов
-│   └── test_regression.py     # построчное сравнение с golden
+│   ├── (все существующие Dell-тесты)
+│   ├── test_cisco_parser.py      # CCW parse_excel на ccw_1/ccw_2
+│   ├── test_cisco_normalizer.py  # CiscoNormalizedRow / Cisco normalizer
+│   ├── test_regression_cisco.py  # регрессия Cisco по golden
+│   └── test_unknown_threshold_cisco.py  # unknown_threshold для Cisco
 ├── golden/
-│   └── <stem>_expected.jsonl  # при наличии
+│   ├── dl1_expected.jsonl
+│   ├── dl2_expected.jsonl
+│   ├── dl3_expected.jsonl
+│   ├── dl4_expected.jsonl
+│   ├── dl5_expected.jsonl
+│   ├── ccw_1_expected.jsonl      # Cisco golden (Price Estimate, 26 строк)
+│   └── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
 ├── output/
 │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов
 └── docs/
-    └── TECHNICAL_OVERVIEW.md  # этот документ
+    └── TECHNICAL_OVERVIEW.md
 ```
 
 Отдельного модуля для сохранения `rules_stats.json` в коде нет; статистика по правилам входит в `run_summary.json` в поле `rules_stats`.
@@ -188,6 +188,11 @@ spec_classifier/
 ## 8. Тестовая стратегия
 
 - **Smoke** (`tests/test_smoke.py`): один прогон на `test_data/dl1.xlsx`, проверка создания всех перечисленных артефактов в папке прогона (в т.ч. `rows_raw.json`, `rows_normalized.json`, `classification.jsonl`, `unknown_rows.csv`, `header_rows.csv`, `run_summary.json`). При отсутствии файла — skip.
+- **Cisco-тесты**:
+  - `test_cisco_parser.py` — `parse_excel` на `test_data/ccw_1.xlsx` и `test_data/ccw_2.xlsx` (ожидается 26 и 82 строки соответственно).
+  - `test_cisco_normalizer.py` — проверка полей `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone` для нормализованных Cisco-строк.
+  - `test_regression_cisco.py` — построчная регрессия по `golden/ccw_1_expected.jsonl` и `golden/ccw_2_expected.jsonl`.
+  - `test_unknown_threshold_cisco.py` — проверка, что `unknown_count == 0` для обоих CCW-файлов.
 - **Unit-тесты:**
   - `test_normalizer.py` — `detect_row_kind` (HEADER/ITEM), `normalize_row` (SKUs, qty, option_price, NaN/пустоты).
   - `test_state_detector.py` — `detect_state` по правилам из YAML (ABSENT, DISABLED, PRESENT по умолчанию).
@@ -203,7 +208,7 @@ spec_classifier/
 
 ## 9. Ограничения и допущения
 
-- **Один бренд:** правила заточены под Dell; единый файл правил `rules/dell_rules.yaml`. Плагинной модели по брендам в коде нет.
+- **Два вендора:** Dell (`rules/dell_rules.yaml`) и Cisco (`rules/cisco_rules.yaml`). Cisco читает лист `"Price Estimate"` (строго, без fallback). Заголовок Cisco определяется по одновременному наличию `"Line Number"` и `"Part Number"`. SKU в Cisco: trailing-часть удаляется. Branded spec для Cisco не создаётся.
 - **Один лист:** парсер и аннотированный экспорт работают с первым листом Excel.
 - **Заголовок:** строка заголовка ищется по точному совпадению ячейки с `"Module Name"` в первых 20 строках; при отсутствии — `find_header_row` возвращает `None`, `parse_excel` бросает `ValueError`.
 - **Кодировки:** конфиг и YAML правил читаются в UTF-8; CSV пишутся в UTF-8-sig для корректного открытия в Excel.
@@ -219,6 +224,14 @@ spec_classifier/
 - **Добавление правил:** добавить в нужную группу новый элемент с уникальным `rule_id`. Порядок в группе важен: срабатывает первое совпадение. Регулярные выражения применяются без учёта регистра (`re.IGNORECASE` в `match_rule` и `detect_state`).
 - **Новый тип сущности:** потребует изменений в коде: enum `EntityType` в `classifier.py`, ветка в `classify_row`, при необходимости — секция в YAML и её чтение в `RuleSet`. В текущей реализации новых типов без правок кода добавить нельзя.
 - **Регрессия:** после изменения правил или логики классификации нужно обновить golden (`--update-golden` с подтверждением) и перезапустить `pytest tests/test_regression.py`, при необходимости обновить `CHANGELOG.md` по принятой в проекте практике.
+
+Cisco-правила: файл `rules/cisco_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`, `is_bundle_root` (строки `"true"`/`"false"` в нижнем регистре), `service_duration_months`. После изменения `rules/cisco_rules.yaml` рекомендуется запускать:
+
+```bash
+python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden
+python main.py --input test_data/ccw_2.xlsx --vendor cisco --save-golden
+pytest tests/test_regression_cisco.py -v
+```
 
 ---
 

@@ -1,4 +1,4 @@
-﻿# Руководство по тестированию — Dell Specification Classifier
+# Руководство по тестированию — Dell Specification Classifier
 
 ## 1. Тестовая стратегия
 
@@ -29,7 +29,7 @@ pytest tests/ -v --tb=short
 
 ## 3. Тестовые данные
 
-Файлы `test_data/dl1.xlsx` … `dl6.xlsx` не хранятся в git. Размещайте их в `spec_classifier/test_data/`. При отсутствии файла тесты, зависящие от него, пропускаются (skip) с сообщением.
+Файлы `test_data/dl1.xlsx` … `dl5.xlsx`, `ccw_1.xlsx`, `ccw_2.xlsx` не хранятся в git. Размещайте их в `spec_classifier/test_data/`. При отсутствии файла тесты, зависящие от него, пропускаются (skip) с сообщением.
 
 ---
 

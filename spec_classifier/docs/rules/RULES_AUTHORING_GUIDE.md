@@ -1,8 +1,8 @@
-﻿# Руководство по правилам — Dell Specification Classifier
+# Руководство по правилам — Dell Specification Classifier
 
 ## 1. Обзор
 
-Правила хранятся в `rules/dell_rules.yaml`. Классификация детерминирована; для каждой ITEM-строки применяется первое совпадение (first-match) в заданном порядке категорий и внутри каждой категории.
+Правила хранятся в `rules/dell_rules.yaml` (Dell) и `rules/cisco_rules.yaml` (Cisco). Файл выбирается через `--vendor {dell,cisco}` и секцию `vendor_rules` в `config.yaml`. Классификация детерминирована; для каждой ITEM-строки применяется первое совпадение (first-match) в заданном порядке категорий и внутри каждой категории; семантика одинакова для обоих вендоров.
 
 ---
 
@@ -66,10 +66,12 @@
 ## 8. Пошаговое добавление правила
 
 1. Сформулировать критерий (regex по module_name или option_name).
-2. Проверить regex на тестовых строках (в т.ч. на всех датасетах dl1–dl5).
+2. Проверить regex на тестовых строках (в т.ч. на всех датасетах dl1–dl5 (для Dell) или ccw_1, ccw_2 (для Cisco)).
 3. Выбрать категорию и место в YAML (после более специфичных правил).
 4. Добавить правило с уникальным rule_id.
-5. Запустить пайплайн на всех тестовых файлах.
+5. Запустить пайплайн на всех тестовых файлах вендора:
+   - Dell: `python main.py --input test_data/dl1.xlsx` (и dl2..dl5)
+   - Cisco: `python main.py --input test_data/ccw_1.xlsx --vendor cisco` (и ccw_2)
 6. Проверить unknown_rows.csv и run_summary.json.
 7. При необходимости добавить unit-тест в test_rules_unit.py или test_device_type.py.
 8. Обновить golden (`--save-golden`) и прогнать test_regression.py.
@@ -98,4 +100,19 @@
 
 ## 11. Версионирование правил
 
-При изменении правил обновлять поле **version** в `dell_rules.yaml`. SHA-256 файла правил записывается в run_summary.json (rules_file_hash) для воспроизводимости.
+При изменении правил обновлять поле **version** в `dell_rules.yaml`. То же применяется к `cisco_rules.yaml` — поле **version** обновлять при любом изменении Cisco-правил. SHA-256 файла правил записывается в run_summary.json (rules_file_hash) для воспроизводимости.
+
+---
+
+## 12. Cisco-правила
+
+- **Файл:** `rules/cisco_rules.yaml`.
+- **Доступные поля для `field`:** `module_name`, `option_name`, `sku`, `is_bundle_root` (значения `"true"`/`"false"` в нижнем регистре), `service_duration_months`.
+- **Примечание:** `sku` матчится только по `skus[0]` (MVP limitation). При наличии multi-SKU строк рекомендуется расширить логику.
+- **После изменений:**
+
+```bash
+python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden
+python main.py --input test_data/ccw_2.xlsx --vendor cisco --save-golden
+pytest tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
+```
