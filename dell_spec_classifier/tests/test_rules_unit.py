@@ -266,3 +266,63 @@ def test_state_disabled_in_classification(ruleset):
     assert result.entity_type == EntityType.SOFTWARE
     assert result.state is not None
     assert result.state.value == "DISABLED"
+
+
+# --- Field dispatch: sku, is_bundle_root, unknown field ---
+
+
+def test_match_rule_sku_field():
+    """Rule with field: sku should match row where skus[0] matches pattern."""
+    from src.rules.rules_engine import match_rule
+    row = NormalizedRow(
+        source_row_index=1,
+        row_kind=RowKind.ITEM,
+        group_name=None,
+        group_id=None,
+        product_name=None,
+        module_name="",
+        option_name="10GBASE-SR SFP Module",
+        option_id=None,
+        skus=["SFP-10G-SR-S"],
+        qty=1,
+        option_price=100.0,
+    )
+    rules = [{"field": "sku", "pattern": "^SFP", "entity_type": "HW", "rule_id": "HW-TEST"}]
+    result = match_rule(row, rules)
+    assert result is not None
+    assert result["rule_id"] == "HW-TEST"
+
+
+def test_match_rule_unknown_field_guaranteed_skip():
+    """Unknown field must NEVER match, even with .* pattern."""
+    from src.rules.rules_engine import match_rule
+    row = NormalizedRow(
+        source_row_index=1,
+        row_kind=RowKind.ITEM,
+        group_name=None,
+        group_id=None,
+        product_name=None,
+        module_name="Test",
+        option_name="Test",
+        option_id=None,
+        skus=[],
+        qty=1,
+        option_price=0.0,
+    )
+    rules = [{"field": "nonexistent_field", "pattern": ".*", "rule_id": "X"}]
+    result = match_rule(row, rules)
+    assert result is None, "Unknown field with .* pattern must NOT match"
+
+
+def test_match_rule_is_bundle_root_lowercase():
+    """is_bundle_root should be serialized as lowercase 'true'/'false'."""
+    from src.rules.rules_engine import _get_field_value
+
+    class FakeRow:
+        module_name = ""
+        option_name = ""
+        skus = []
+        is_bundle_root = True
+
+    val = _get_field_value(FakeRow(), "is_bundle_root")
+    assert val == "true", f"Expected 'true', got '{val}'"

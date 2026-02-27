@@ -13,8 +13,6 @@ from pathlib import Path
 
 import yaml
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.diagnostics.run_manager import (
@@ -34,6 +32,19 @@ from src.diagnostics.stats_collector import collect_stats, save_run_summary, com
 from src.outputs.excel_writer import generate_cleaned_spec
 from src.outputs.annotated_writer import generate_annotated_source_excel
 from src.outputs.branded_spec_writer import generate_branded_spec
+
+
+def _get_adapter(vendor: str, config: dict):
+    from src.vendors.dell.adapter import DellAdapter
+    from src.vendors.cisco.adapter import CiscoAdapter
+    adapters = {
+        "dell": lambda: DellAdapter(config),
+        "cisco": lambda: CiscoAdapter(config),
+    }
+    factory = adapters.get(vendor)
+    if not factory:
+        raise ValueError(f"Unknown vendor: {vendor}")
+    return factory()
 
 
 def _resolve_path(path: str, base: Path) -> Path:
@@ -80,6 +91,7 @@ def _run_single(
     config: dict,
     config_path: Path,
     output_dir: Path,
+    vendor: str = "dell",
     session_stamp: str = None,
     total_folder: Path = None,
     save_golden: bool = False,
@@ -93,12 +105,13 @@ def _run_single(
     if log is None:
         log = logging.getLogger(__name__)
     try:
+        adapter = _get_adapter(vendor, config)
         log.info("Parsing Excel: %s", input_path)
-        raw_rows = parse_excel(str(input_path))
+        raw_rows, header_row_index = adapter.parse(str(input_path))
         log.info("Normalizing rows (row_kind)...")
-        normalized_rows = [normalize_row(r) for r in raw_rows]
+        normalized_rows = adapter.normalize(raw_rows)
 
-        rules_file = config.get("rules_file", "rules/dell_rules.yaml")
+        rules_file = adapter.get_rules_file()
         rules_path = _resolve_path(rules_file, cwd)
         if not rules_path.exists():
             print(f"Error: Rules file not found: {rules_path}", file=sys.stderr)
@@ -126,19 +139,36 @@ def _run_single(
         stats["rules_file_hash"] = compute_file_hash(str(rules_path))
         stats["input_file"] = input_path.name
         stats["run_timestamp"] = datetime.utcnow().replace(microsecond=0).isoformat()
+
+        vendor_stats = {}
+        if vendor != "dell":
+            bundle_roots = [r for r in normalized_rows if getattr(r, "is_bundle_root", False)]
+            vendor_stats["top_level_bundles_count"] = len(bundle_roots)
+            svc_rows = [r for r in normalized_rows if getattr(r, "service_duration_months", None) is not None]
+            vendor_stats["rows_with_service_duration"] = len(svc_rows)
+            depths = []
+            for r in normalized_rows:
+                ln = getattr(r, "line_number", "")
+                if ln:
+                    depths.append(len(ln.split(".")))
+            vendor_stats["max_hierarchy_depth"] = max(depths) if depths else 0
+        stats["vendor_stats"] = vendor_stats
+
         save_run_summary(stats, run_folder)
 
         generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
         generate_annotated_source_excel(
-            raw_rows, normalized_rows, classification_results, input_path, run_folder
+            raw_rows, normalized_rows, classification_results, input_path, run_folder,
+            header_row_index=header_row_index,
         )
-        branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
-        generate_branded_spec(
-            normalized_rows=normalized_rows,
-            classification_results=classification_results,
-            source_filename=input_path.name,
-            output_path=branded_path,
-        )
+        if vendor == "dell":
+            branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
+            generate_branded_spec(
+                normalized_rows=normalized_rows,
+                classification_results=classification_results,
+                source_filename=input_path.name,
+                output_path=branded_path,
+            )
 
         # Copy to TOTAL if batch mode
         if total_folder is not None:
@@ -200,6 +230,7 @@ def main() -> int:
         help="Process all .xlsx files in this directory (batch mode). "
         "Creates per-run folders + a TOTAL aggregation folder.",
     )
+    parser.add_argument("--vendor", choices=["dell", "cisco"], default="dell", help="Vendor adapter (default: dell)")
     parser.add_argument("--config", default="config.yaml", help="Path to config YAML (default: config.yaml)")
     parser.add_argument("--output-dir", default="output", help="Output directory for run folders (default: output)")
     parser.add_argument("--save-golden", action="store_true", help="Run pipeline and save golden/<stem>_expected.jsonl")
@@ -249,6 +280,7 @@ def main() -> int:
                 config=config,
                 config_path=config_path,
                 output_dir=output_dir,
+                vendor=args.vendor,
                 session_stamp=session_stamp,
                 total_folder=total_folder,
                 save_golden=getattr(args, "save_golden", False),
@@ -276,6 +308,7 @@ def main() -> int:
         config=config,
         config_path=config_path,
         output_dir=output_dir,
+        vendor=args.vendor,
         session_stamp=None,
         total_folder=None,
         save_golden=getattr(args, "save_golden", False),

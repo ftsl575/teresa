@@ -11,20 +11,36 @@ from src.core.normalizer import NormalizedRow, RowKind
 from src.core.classifier import ClassificationResult, EntityType
 
 
-def _normalized_row_to_dict(row: NormalizedRow) -> dict:
-    return {
+def _normalized_row_to_dict(row) -> dict:
+    """Serialize NormalizedRow or compatible duck-type to dict.
+    Core fields always present. Vendor-specific fields added if semantically present."""
+    d = {
         "source_row_index": row.source_row_index,
-        "row_kind": row.row_kind.value,
+        "row_kind": row.row_kind.value if hasattr(row.row_kind, "value") else str(row.row_kind),
         "group_name": row.group_name,
         "group_id": row.group_id,
         "product_name": row.product_name,
         "module_name": row.module_name,
         "option_name": row.option_name,
-        "option_id": row.option_id,
+        "option_id": getattr(row, "option_id", None),
         "skus": row.skus,
         "qty": row.qty,
         "option_price": row.option_price,
     }
+    _VENDOR_FIELDS = [
+        "line_number", "bundle_id", "is_top_level", "is_bundle_root",
+        "parent_line_number", "service_duration_months",
+        "smart_account_mandatory", "lead_time_days",
+        "unit_net_price", "disc_pct", "extended_net_price",
+    ]
+    for f in _VENDOR_FIELDS:
+        val = getattr(row, f, None)
+        if val is None:
+            continue
+        if isinstance(val, str) and val == "":
+            continue
+        d[f] = val
+    return d
 
 
 def _classification_result_to_dict(

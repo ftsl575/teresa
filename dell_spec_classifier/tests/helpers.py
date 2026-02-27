@@ -63,6 +63,18 @@ def run_pipeline_in_memory(input_path: Path, rules_path: Path) -> tuple[list, li
     return (normalized, results)
 
 
+def run_cisco_pipeline_in_memory(input_path: Path, rules_path: Path) -> tuple[list, list]:
+    """Run Cisco parse → normalize → classify in memory. Returns (normalized_rows, classification_results)."""
+    from src.vendors.cisco.parser import parse_excel as cisco_parse
+    from src.vendors.cisco.normalizer import normalize_cisco_rows
+
+    raw_rows, _ = cisco_parse(str(input_path))
+    normalized = normalize_cisco_rows(raw_rows)
+    ruleset = RuleSet.load(str(rules_path))
+    results = [classify_row(r, ruleset) for r in normalized]
+    return (normalized, results)
+
+
 def build_golden_rows(normalized_rows: list, classification_results: list) -> list[dict]:
     """Build golden-format dicts from pipeline results. Matches golden JSONL schema."""
     out = []

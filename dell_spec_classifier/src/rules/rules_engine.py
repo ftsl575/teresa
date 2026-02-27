@@ -2,6 +2,7 @@
 Rules engine: load Dell rules from YAML and match rows against entity rules.
 """
 
+import logging
 import re
 from pathlib import Path
 from typing import List, Optional
@@ -9,6 +10,40 @@ from typing import List, Optional
 import yaml
 
 from src.core.normalizer import NormalizedRow
+
+_log = logging.getLogger(__name__)
+
+_KNOWN_FIELDS = frozenset({
+    "module_name", "option_name", "sku",
+    "is_bundle_root", "service_duration_months",
+})
+
+
+def _get_field_value(row, field: str):
+    """
+    Extract field value from NormalizedRow (or duck-type compatible) for rule matching.
+
+    Returns:
+      str value — for known fields (may be empty string if value absent)
+      None — for UNKNOWN fields (caller must skip the rule)
+    """
+    if field == "module_name":
+        return str(row.module_name or "")
+    elif field == "option_name":
+        return str(row.option_name or "")
+    elif field == "sku":
+        return str(row.skus[0]) if row.skus else ""
+    elif field == "is_bundle_root":
+        val = getattr(row, "is_bundle_root", None)
+        if val is None:
+            return ""
+        return "true" if val else "false"
+    elif field == "service_duration_months":
+        val = getattr(row, "service_duration_months", None)
+        return str(val) if val is not None else ""
+    else:
+        _log.warning("Unknown field in rule: %s — rule will be skipped", field)
+        return None
 
 
 def match_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
@@ -25,11 +60,8 @@ def match_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
         pattern = rule.get("pattern")
         if not field or not pattern:
             continue
-        if field == "module_name":
-            value = row.module_name or ""
-        elif field == "option_name":
-            value = row.option_name or ""
-        else:
+        value = _get_field_value(row, field)
+        if value is None:
             continue
         if re.search(pattern, str(value), re.IGNORECASE):
             return rule
@@ -48,11 +80,8 @@ def match_device_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[di
         pattern = rule.get("pattern")
         if not field or not pattern:
             continue
-        if field == "module_name":
-            value = row.module_name or ""
-        elif field == "option_name":
-            value = row.option_name or ""
-        else:
+        value = _get_field_value(row, field)
+        if value is None:
             continue
         if re.search(pattern, str(value), re.IGNORECASE):
             return rule
@@ -68,11 +97,8 @@ def match_hw_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
         pattern = rule.get("pattern")
         if not field or not pattern:
             continue
-        if field == "module_name":
-            value = row.module_name or ""
-        elif field == "option_name":
-            value = row.option_name or ""
-        else:
+        value = _get_field_value(row, field)
+        if value is None:
             continue
         if re.search(pattern, str(value), re.IGNORECASE):
             return rule

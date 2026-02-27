@@ -20,8 +20,11 @@ Classification uses YAML rules + regex. No ML. Fully reproducible.
 cd dell_spec_classifier
 pip install -r requirements.txt
 
-# Single file
+# Single file (Dell default)
 python main.py --input test_data/dl1.xlsx
+
+# Cisco CCW export
+python main.py --input data/ccw_quote.xlsx --vendor cisco
 
 # Batch: process all xlsx in a directory
 python main.py --batch-dir test_data --output-dir output
@@ -62,6 +65,7 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 
 | Option | Default | Description |
 |---|---|---|
+| `--vendor {dell,cisco}` | `dell` | Vendor adapter: Dell spec export or Cisco CCW export |
 | `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
 | `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
 | `--config PATH` | `config.yaml` | Config YAML |
@@ -70,6 +74,26 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 | `--update-golden` | — | Overwrite golden with interactive confirmation |
 
 Either `--input` or `--batch-dir` is required. Full reference: `docs/user/CLI_CONFIG_REFERENCE.md`.
+
+---
+
+## Vendor Support
+
+- **Dell (default):** Parses Dell export (header row by "Module Name"). All artifacts including branded spec. Use `--vendor dell` or omit.
+- **Cisco CCW:** Parses Cisco Commerce Workspace export (sheet **"Price Estimate"**). Same pipeline; annotated Excel gets extra columns (line_number, service_duration_months). Branded spec is not generated for Cisco. `run_summary.json` includes `vendor_stats` (e.g. top_level_bundles_count, max_hierarchy_depth).
+
+**Config:** Rules per vendor in `config.yaml`:
+
+```yaml
+vendor_rules:
+  dell: "rules/dell_rules.yaml"
+  cisco: "rules/cisco_rules.yaml"
+```
+
+**Cisco parser limitations:**
+- Sheet name must be exactly `"Price Estimate"` (no fallback).
+- Empty Part Number within data is allowed; parser uses last non-empty Part Number row to determine data end.
+- Trailing `=` on Part Number (e.g. `SFP-10G-SR-S=`) is stripped automatically.
 
 ---
 

@@ -8,3 +8,7 @@ cleaned_spec:
   include_only_present: true
 
 rules_file: "rules/dell_rules.yaml"
+
+vendor_rules:
+  dell: "rules/dell_rules.yaml"
+  cisco: "rules/cisco_rules.yaml"
