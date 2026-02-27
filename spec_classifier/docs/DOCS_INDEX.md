@@ -11,6 +11,7 @@
 | `docs/dev/` | **Normative.** Contributing, testing, operational notes. |
 | `docs/roadmap/` | **Reference only.** Completed plans. Not normative. |
 | `docs/prompts/` | **Archival.** AI prompts (Cursor/Claude). Do not treat as specification. |
+| `docs/taxonomy/` | **Normative.** Source of truth for controlled vocabularies (e.g., hw_type). |
 
 ## Key Documents
 
@@ -26,6 +27,7 @@
 | `docs/dev/OPERATIONAL_NOTES.md` | How do I run batch jobs and manage artifacts? |
 | `docs/product/TECHNICAL_OVERVIEW.md` | How does the pipeline work internally? |
 | `CHANGELOG.md` | What changed in each version? |
+| `docs/taxonomy/hw_type_taxonomy.md` | What are the allowed hw_type values and the exact meaning/boundaries? |
 
 ## Conventions
 
