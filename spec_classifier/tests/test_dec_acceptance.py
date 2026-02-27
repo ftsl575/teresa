@@ -1,4 +1,4 @@
-﻿"""
+"""
 DEC acceptance tests (P1–P8). Covers OptionIDs from QA checklist.
 Deterministic assertions on entity_type, state, hw_type, device_type.
 """
@@ -62,7 +62,7 @@ def test_dec_gevnb9t_hdd(ruleset):
     r = classify_row(row, ruleset)
     assert r.entity_type == EntityType.HW
     assert r.state.value == "PRESENT"
-    assert r.hw_type == "hdd"
+    assert r.hw_type == "storage_drive"
 
 
 # --- GDIOK4A, GN1I836: No Cable -> CONFIG ABSENT (DEC-001) ---
@@ -141,7 +141,7 @@ def test_dec_g5pjaf3_rear_blanks(ruleset):
     r = classify_row(row, ruleset)
     assert r.entity_type == EntityType.HW
     assert r.state.value == "PRESENT"
-    assert r.hw_type == "blank"
+    assert r.hw_type == "blank_filler"
 
 
 # --- G2ITOYM: BOSS-N1 -> storage_controller (DEC-006) ---
