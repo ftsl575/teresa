@@ -1,0 +1,215 @@
+﻿version: "1.0.0"
+
+state_rules:
+  absent_keywords:
+    - pattern: '(?i)No .+ Selected'
+      state: ABSENT
+      rule_id: STATE-C-001
+  present_override_keywords: []
+
+base_rules:
+  - field: is_bundle_root
+    pattern: '^true$'
+    entity_type: BASE
+    rule_id: BASE-C-001
+
+service_rules: []
+
+config_rules:
+  - field: option_name
+    pattern: '(?i)Dummy PID'
+    entity_type: CONFIG
+    rule_id: CONFIG-C-001
+  - field: option_name
+    pattern: '(?i)OPT.?OUT'
+    entity_type: CONFIG
+    rule_id: CONFIG-C-002
+  - field: option_name
+    pattern: '(?i)Mode selection'
+    entity_type: CONFIG
+    rule_id: CONFIG-C-003
+  - field: option_name
+    pattern: '(?i)select if this product'
+    entity_type: CONFIG
+    rule_id: CONFIG-C-004
+  - field: option_name
+    pattern: '(?i)Edge other deployments'
+    entity_type: CONFIG
+    rule_id: CONFIG-C-005
+
+software_rules:
+  - field: service_duration_months
+    pattern: '^\d+$'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-001
+  - field: option_name
+    pattern: '(?i)\b(DNA|NW-E|Network Essentials|Network Stack)\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-002
+  - field: option_name
+    pattern: '(?i)\blicen[sc]e\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-003
+  - field: option_name
+    pattern: '(?i)UNIVERSAL'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-004
+  - field: option_name
+    pattern: '(?i)\bNX-OS\s+SW\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-005
+  - field: option_name
+    pattern: '(?i)Plug-n-Play'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-006
+  - field: option_name
+    pattern: '(?i)Export Restriction Compliance'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-007
+  - field: option_name
+    pattern: '(?i)\bTE agent\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-008
+  - field: option_name
+    pattern: '(?i)IOS.?XE.*Autonomous'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-C-009
+
+logistic_rules:
+  - field: sku
+    pattern: '^CAB-'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-C-001
+  - field: sku
+    pattern: '^STACK-T'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-C-002
+  - field: option_name
+    pattern: '(?i)power cord|jumper power cord'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-C-003
+  - field: option_name
+    pattern: '(?i)stacking cable'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-C-004
+  - field: option_name
+    pattern: '(?i)cable management guide'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-C-005
+
+note_rules: []
+
+hw_rules:
+  - field: sku
+    pattern: '^(GLC|SFP|QSFP|QDD)'
+    entity_type: HW
+    rule_id: HW-C-001
+  - field: option_name
+    pattern: '(?i)\bfan\b|fantray'
+    entity_type: HW
+    rule_id: HW-C-002
+  - field: sku
+    pattern: '(?i)^(PWR-|NXA-PAC|C\dK?-PWR)'
+    entity_type: HW
+    rule_id: HW-C-003
+  - field: option_name
+    pattern: '(?i)power supply|PSU'
+    entity_type: HW
+    rule_id: HW-C-004
+  - field: sku
+    pattern: '^(MEM-|M\dUSB)'
+    entity_type: HW
+    rule_id: HW-C-005
+  - field: option_name
+    pattern: '(?i)\bDRAM\b|\bmemory\b|USB\s+\d+GB'
+    entity_type: HW
+    rule_id: HW-C-006
+  - field: option_name
+    pattern: '(?i)\bblank\b|filler'
+    entity_type: HW
+    rule_id: HW-C-007
+  - field: sku
+    pattern: '^(FAN-|NXA-FAN|NXK-AF)'
+    entity_type: HW
+    rule_id: HW-C-008
+  - field: option_name
+    pattern: '(?i)rack mount|mounting kit|\bRM-\d'
+    entity_type: HW
+    rule_id: HW-C-009
+  - field: option_name
+    pattern: '(?i)\bRFID\b'
+    entity_type: HW
+    rule_id: HW-C-010
+  - field: option_name
+    pattern: '(?i)accessory kit'
+    entity_type: HW
+    rule_id: HW-C-011
+  - field: option_name
+    pattern: '(?i)rubber feet|screws? for rack'
+    entity_type: HW
+    rule_id: HW-C-012
+  - field: option_name
+    pattern: '(?i)SSD (card|storage)'
+    entity_type: HW
+    rule_id: HW-C-013
+  - field: option_name
+    pattern: '(?i)stack(ing)?\s+(module|kit)'
+    entity_type: HW
+    rule_id: HW-C-014
+
+device_type_rules:
+  applies_to: [HW, LOGISTIC]
+  rules:
+    - field: sku
+      pattern: '^(GLC|SFP|QSFP|QDD)'
+      device_type: sfp_cable
+      rule_id: DT-C-001
+    - field: sku
+      pattern: '(?i)^(PWR-|NXA-PAC|C\dK?-PWR)'
+      device_type: psu
+      rule_id: DT-C-002
+    - field: sku
+      pattern: '^(CAB-|STACK-T)'
+      device_type: power_cord
+      rule_id: DT-C-003
+    - field: option_name
+      pattern: '(?i)\bfan\b|fantray'
+      device_type: fan
+      rule_id: DT-C-004
+
+hw_type_rules:
+  applies_to: [HW]
+  device_type_map:
+    sfp_cable: network_adapter
+    psu: psu
+    fan: fan
+  rule_id_map: {}
+  rules:
+    - field: sku
+      pattern: '^(MEM-|M\dUSB)'
+      hw_type: ram
+      rule_id: HWT-C-001
+    - field: option_name
+      pattern: '(?i)\bDRAM\b'
+      hw_type: ram
+      rule_id: HWT-C-002
+    - field: option_name
+      pattern: '(?i)\bblank\b|filler'
+      hw_type: blank
+      rule_id: HWT-C-003
+    - field: option_name
+      pattern: '(?i)rack mount|mounting|accessory kit|rubber feet|screws'
+      hw_type: mounting_kit
+      rule_id: HWT-C-004
+    - field: option_name
+      pattern: '(?i)SSD'
+      hw_type: ssd
+      rule_id: HWT-C-005
+    - field: option_name
+      pattern: '(?i)stack(ing)?\s+(module|kit)'
+      hw_type: network_adapter
+      rule_id: HWT-C-006
+    - field: option_name
+      pattern: '(?i)\bRFID\b'
+      hw_type: management
+      rule_id: HWT-C-007

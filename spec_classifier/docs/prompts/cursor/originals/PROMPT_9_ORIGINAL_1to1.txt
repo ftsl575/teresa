@@ -1,0 +1,115 @@
+﻿### PROMPT 9 — Golden files + regression tests + CHANGELOG
+
+**[CONTEXT]**
+After P1–P8 all acceptance criteria pass. Golden files reflect pre-fix outputs. Tests must be updated and CHANGELOG written.
+
+**[TASK]**
+
+**Step A** — Regenerate golden files (dl1–dl5):
+```powershell
+# Use project's golden-export mechanism (check main.py --help or Makefile)
+foreach ($n in 1..5) {
+    python main.py --input "test_data\dl$n.xlsx" --output "output\dl${n}_final.xlsx" --export-golden "golden\dl${n}_expected.jsonl"
+}
+```
+Golden files may be updated **ONLY here**. Provide `git diff --stat golden/` before committing.
+
+**Step B** — Add unit tests to `tests/test_state_detector.py`:
+```python
+def test_blank_override_present():
+    from src.core.state_detector import detect_state
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load("rules/dell_rules.yaml")
+    assert detect_state("No OCP - 2 Rear Blanks",
+                        rs.get_state_rules(),
+                        rs.get_state_override_rules()).value == "PRESENT"
+
+def test_no_cable_absent():
+    from src.core.state_detector import detect_state
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load("rules/dell_rules.yaml")
+    assert detect_state("2 OCP - No Cable",
+                        rs.get_state_rules(),
+                        rs.get_state_override_rules()).value == "ABSENT"
+
+def test_boss_blank_present():
+    from src.core.state_detector import detect_state
+    from src.rules.rules_engine import RuleSet
+    rs = RuleSet.load("rules/dell_rules.yaml")
+    assert detect_state("No BOSS card, Rear Blank",
+                        rs.get_state_rules(),
+                        rs.get_state_override_rules()).value == "PRESENT"
+```
+
+**Step C** — Add DEC acceptance tests to `tests/test_dec_acceptance.py` (new file, following existing test structure). Cover all OptionIDs from the QA checklist below. New tests must:
+- Follow existing test file naming and structure.
+- Use deterministic assertions.
+- Not duplicate golden coverage.
+
+**Step D** — Update `CHANGELOG.md`:
+```markdown
+## [1.1.0] — 2026-02-25
+### Fixed
+- DEC-003: "Blanks" plural now recognized; state overridden to PRESENT
+- DEC-001/002: "No Cable" / "No Cables Required" classified as CONFIG+ABSENT
+- DEC-004: Optics and transceivers classified as hw_type=network_adapter
+- DEC-005: PERC Controller rows now have device_type=raid_controller
+- DEC-006: BOSS-N1 → storage_controller; No BOSS Card → CONFIG+ABSENT
+- F1: Hard Drive / 10K rows now classified as hw_type=hdd
+```
+
+**Step E** — Bump `dell_rules.yaml` version to `1.1.0`.
+
+**[PATCH_SCOPE]**
+- `golden/dl1–dl5_expected.jsonl` — regenerate only
+- `tests/test_state_detector.py` — append tests
+- `tests/test_dec_acceptance.py` — new file
+- `CHANGELOG.md` — append entry
+- `dell_rules.yaml` — version bump only
+
+**[ACCEPTANCE]**
+- `pytest tests\ -v` passes with 0 failures, 0 errors.
+- `hw_type_null_count` in latest `run_summary.json` for dl6 = 0.
+- `unknown_count` ≤ baseline across all datasets.
+
+**[COMMANDS]**
+```powershell
+# Full test suite
+python -m pytest tests\ -v --tb=short 2>&1 | Tee-Object -FilePath output\pytest_final.log
+
+# Check golden diff
+git diff --stat golden/
+
+# Check run summary
+python -c "
+import json, glob
+runs = sorted(glob.glob('output/run_*/run_summary.json'))
+if runs:
+    with open(runs[-1]) as f: s = json.load(f)
+    print('hw_type_null_count:', s.get('hw_type_null_count'))
+    print('unknown_count:', s.get('unknown_count'))
+"
+
+# Tag release
+git tag v1.1.0
+```
+
+---
+
+## PART 3 — HUMAN QA SIGN-OFF CHECKLIST
+
+After all 8 prompts applied and `pytest` green, open each annotated xlsx and verify:
+
+| ✅ | OptionID | Expected entity | state | hw_type | device_type |
+|----|----------|----------------|-------|---------|------------|
+| ☐ | GEVNB9T | HW | PRESENT | hdd | — |
+| ☐ | GDIOK4A | CONFIG | ABSENT | NULL | — |
+| ☐ | GN1I836 | CONFIG | ABSENT | NULL | — |
+| ☐ | G0PNZWL | CONFIG | ABSENT | NULL | — |
+| ☐ | G0FVJIE | HW | PRESENT | network_adapter | — |
+| ☐ | GNID9SB | HW | PRESENT | network_adapter | — |
+| ☐ | (PERC+Controller) | HW | PRESENT | storage_controller | raid_controller |
+| ☐ | G5PJAF3 | HW | PRESENT | blank | — |
+| ☐ | G2ITOYM / G937ZBP / GKM2QOA | HW | PRESENT | storage_controller | — |
+| ☐ | GIEP1Z6 | CONFIG | ABSENT | NULL | — |
+| ☐ | All files | — | — | `unknown_count` stable | `hw_type_null_count`=0 (dl6) |
