@@ -3,7 +3,7 @@
 ## 1. Структура репозитория
 
 ```
-dell_spec_classifier/
+spec_classifier/
 ├── main.py                 # Точка входа CLI, оркестрация пайплайна
 ├── config.yaml             # Конфиг (rules_file, cleaned_spec)
 ├── requirements.txt

@@ -1,5 +1,5 @@
 # Dell Spec Classifier — Makefile
-# Run from dell_spec_classifier/ (e.g. make generate_golden).
+# Run from spec_classifier/ (e.g. make generate_golden).
 
 PYTHON ?= python
 DL_FILES = dl1 dl2 dl3 dl4 dl5
