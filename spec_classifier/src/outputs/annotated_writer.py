@@ -1,10 +1,10 @@
-﻿"""
+"""
 Annotated source Excel: same as input but with extra columns — Entity Type, State, device_type, hw_type.
 All rows preserved; no rows removed.
 """
 
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -18,27 +18,21 @@ def generate_annotated_source_excel(
     classification_results: List[ClassificationResult],
     original_excel_path: Path,
     run_folder: Path,
-    header_row_index: int = None,
+    header_row_index: Optional[int] = None,
 ) -> Path:
     """
     Load original Excel, add columns Entity Type, State, device_type, hw_type,
     and save to run_folder/<stem>_annotated.xlsx.
     Row count unchanged; mapping by source_row_index (Excel 1-based).
-    If header_row_index is None, falls back to Dell find_header_row for backward compat.
+    header_row_index from adapter: 0-based row for header labels; None is valid (e.g. Cisco CCW) — no header row highlight/freeze.
     """
     path = Path(original_excel_path)
     if not path.exists():
         raise FileNotFoundError(f"Original Excel not found: {path}")
 
     df = pd.read_excel(path, header=None, engine="openpyxl")
-    if header_row_index is None:
-        try:
-            from src.core.parser import find_header_row as _dell_find
-            header_row_index = _dell_find(str(path))
-        except Exception:
-            pass
-    if header_row_index is None:
-        raise ValueError("header_row_index must be provided or determinable (Dell fallback)")
+    # header_row_index=None is valid (e.g. Cisco CCW): use row 0 for labels, no highlight/freeze
+    label_row = header_row_index if header_row_index is not None else 0
 
     # Map Excel row number (1-based) -> classification result
     row_to_result = {}
@@ -54,7 +48,7 @@ def generate_annotated_source_excel(
     for r in range(len(df)):
         excel_row_1based = r + 1
         result = row_to_result.get(excel_row_1based)
-        if r == header_row_index:
+        if r == label_row:
             entity_col.append("Entity Type")
             state_col.append("State")
             device_type_col.append("device_type")
@@ -84,7 +78,7 @@ def generate_annotated_source_excel(
         line_number_col = []
         svc_duration_col = []
         for r in range(len(df)):
-            if r == header_row_index:
+            if r == label_row:
                 line_number_col.append("line_number")
                 svc_duration_col.append("service_duration_months")
             else:

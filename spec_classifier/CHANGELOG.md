@@ -13,6 +13,30 @@ Versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- feat: add can_parse() to VendorAdapter — batch gracefully skips wrong-vendor files (OUT-001).
+- feat: batch summary: processed/skipped/failed counts + exit code only on real failures.
+
+### Fixed
+- fix: run.log now captures all pipeline stages; FileHandler isolated per file in batch (OUT-002).
+- fix: replace deprecated datetime.utcnow() with timezone-aware alternative (OUT-003).
+
+### Changed
+- docs: fix output paths in TECHNICAL_OVERVIEW, add --output-dir default, update README title for multivendor, assign version 1.2.0 to unreleased section.
+- refactor: delegate vendor_stats to adapter.get_vendor_stats(), main.py vendor-agnostic (CODE-002).
+- fix: remove Dell parser fallback from generic annotated_writer; header_row_index from adapter (CODE-003).
+- chore: bump cisco_rules.yaml version to 1.1.0 (CODE-006).
+- refactor: introduce VENDOR_REGISTRY as single registration point for vendors (CODE-005).
+- refactor: unify run_pipeline_in_memory in test helpers to use adapter pattern (CODE-004).
+- chore: reorganize docs/ — move archive materials to docs/archive/ (FILES-001–004).
+- chore: add CURRENT_STATE.md to root.
+- chore: remove golden/.gitkeep.
+- fix: remove hardcoded Windows user paths from argparse defaults (CODE-001).
+- fix: remove external client name from branded_spec_writer docstring (DOC-006).
+- docs: document recommended INPUT folder structure for multi-vendor batch runs.
+
+## [1.2.0] — 2026-02-28
+
 ### Added (Multivendor — Cisco CCW)
 - VendorAdapter ABC (`src/vendors/base.py`); DellAdapter and CiscoAdapter.
 - Cisco CCW parser (`src/vendors/cisco/parser.py`): sheet "Price Estimate", line_number hierarchy, last-non-empty data-end detection.
@@ -26,6 +50,8 @@ Versioning: [SemVer](https://semver.org/).
 - Cisco test suite: test_cisco_parser, test_cisco_normalizer, test_regression_cisco, test_unknown_threshold_cisco.
 
 ### Changed
+- docs: sync DATA_CONTRACTS hw_type list with HW_TYPE_VOCAB in classifier.py (DOC-001).
+- docs: fix taxonomy header count to match actual HW_TYPE_VOCAB size (DOC-002).
 - **Repo layout:** Removed legacy `dell_spec_classifier/` shim folder. `spec_classifier/` is the only canonical project root. Run CLI and tests from inside `spec_classifier/` (see README).
 
 ### Added

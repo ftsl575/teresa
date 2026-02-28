@@ -1,8 +1,26 @@
-﻿from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 
 class VendorAdapter(ABC):
+    @abstractmethod
+    def get_vendor_stats(self, normalized_rows: list) -> dict:
+        """Vendor-specific stats for run_summary.json (e.g. Cisco: top_level_bundles_count)."""
+        pass
+
+    @abstractmethod
+    def generates_branded_spec(self) -> bool:
+        """Whether this adapter produces branded spec output (e.g. Dell yes, Cisco no)."""
+        pass
+
+    @abstractmethod
+    def can_parse(self, path: str) -> bool:
+        """
+        Cheap check: only sheet names (read_only=True). True if vendor-specific sheet present.
+        Do not catch exceptions — unreadable file should propagate as failure, not skip.
+        """
+        pass
+
     @abstractmethod
     def parse(self, filepath: str) -> Tuple[List[dict], int]:
         """

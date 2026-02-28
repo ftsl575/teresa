@@ -45,7 +45,7 @@ def test_regression(filename):
     if not golden_path.exists():
         pytest.skip(f"Golden file not found: {golden_path}. Run: python main.py --input test_data/{filename} --save-golden")
 
-    normalized, results = run_pipeline_in_memory(input_path, rules_path)
+    normalized, results = run_pipeline_in_memory("dell", input_path, rules_path)
     current = build_golden_rows(normalized, results)
     expected_rows = _load_golden(golden_path)
 

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unknown threshold test: for each dl run pipeline in memory, assert
 unknown_count / item_rows_count <= 0.05. Skip if xlsx not found.
 """
@@ -25,7 +25,7 @@ def test_unknown_ratio_below_threshold(filename):
     rules_path = root / "rules" / "dell_rules.yaml"
     assert rules_path.exists(), f"rules/dell_rules.yaml not found at {rules_path}"
 
-    _, classification_results = run_pipeline_in_memory(input_path, rules_path)
+    _, classification_results = run_pipeline_in_memory("dell", input_path, rules_path)
     stats = collect_stats(classification_results)
 
     unknown_count = stats.get("unknown_count", 0)
