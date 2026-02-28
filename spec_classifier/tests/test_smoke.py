@@ -1,4 +1,4 @@
-﻿"""
+"""
 Smoke test: full pipeline on test_data/dl1–dl5.xlsx; assert all diagnostic artifacts exist.
 """
 
@@ -23,7 +23,7 @@ from conftest import project_root
 
 
 @pytest.mark.parametrize("filename", ["dl1.xlsx", "dl2.xlsx", "dl3.xlsx", "dl4.xlsx", "dl5.xlsx"])
-def test_smoke_full_pipeline_artifacts_created(filename):
+def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
     """Parse filename, normalize, classify, create run folder, save all artifacts; assert files exist."""
     root = project_root()
     input_path = root / "test_data" / filename
@@ -33,14 +33,16 @@ def test_smoke_full_pipeline_artifacts_created(filename):
     rules_path = root / "rules" / "dell_rules.yaml"
     assert rules_path.exists(), f"rules/dell_rules.yaml not found at {rules_path}"
 
-    output_base = root / "output"
+    # Match out.zip layout: output_root / dell_run / run-* /
+    output_root = tmp_path / "output"
+    vendor_base = output_root / "dell_run"
 
     rows_raw = parse_excel(str(input_path))
     rows_normalized = [normalize_row(r) for r in rows_raw]
     ruleset = RuleSet.load(str(rules_path))
     classification_results = [classify_row(r, ruleset) for r in rows_normalized]
 
-    run_folder = create_run_folder(str(output_base), input_path.name)
+    run_folder = create_run_folder(str(vendor_base), input_path.name)
     assert run_folder.exists()
 
     save_rows_raw(rows_raw, run_folder)

@@ -16,28 +16,38 @@ Classification uses YAML rules + regex. No ML. Fully reproducible.
 
 ## Quick Start
 
-```bash
+По умолчанию вход и выход — вне репо: `Desktop\INPUT` и `Desktop\OUTPUT`. Репозиторий остаётся только с кодом.
+
+```powershell
 cd spec_classifier
 pip install -r requirements.txt
 
-# Single file (Dell default)
-python main.py --input test_data/dl1.xlsx
+# Создать папки на рабочем столе (один раз)
+New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\INPUT"
+New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\OUTPUT"
 
-# Cisco CCW export
-python main.py --input data/ccw_quote.xlsx --vendor cisco
+# Положить .xlsx в Desktop\INPUT, затем:
 
-# Batch: process all xlsx in a directory
-python main.py --batch-dir test_data --output-dir output
+# Одиночный Dell
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+
+# Одиночный Cisco CCW
+python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
+
+# Batch: все .xlsx из INPUT
+python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
 ```
+
+**Где искать результат:** `C:\Users\G\Desktop\OUTPUT\dell_run\run-YYYY-MM-DD__HH-MM-SS-<stem>\` (Dell) или `...\OUTPUT\cisco_run\run-...\` (Cisco). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
 
 ---
 
 ## Output
 
-Each run creates a timestamped folder:
+Each run creates a timestamped folder under **output_root** (default `C:\Users\G\Desktop\OUTPUT`). Inside it, vendor subfolders are created:
 
-**Single run:** `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/`
-**Batch:** per-file folders + `output/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`
+**Single run:** `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` or `output_root/cisco_run/run-.../`
+**Batch:** per-file run folders + `output_root/<vendor>_run/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`
 
 ### Per-run artifacts
 
@@ -47,7 +57,7 @@ Each run creates a timestamped folder:
 | `run_summary.json` | Aggregate counts: entity types, states, hw_types, unknown count |
 | `cleaned_spec.xlsx` | Filtered spec (types from config: BASE, HW, SOFTWARE, SERVICE; PRESENT only) |
 | `<stem>_annotated.xlsx` | Original file + 4 added columns: Entity Type, State, device_type, hw_type |
-| `<stem>_branded.xlsx` | Branded spec grouped by server and entity type sections |
+| `<stem>_branded.xlsx` | Branded spec (Dell only; not created for Cisco) |
 | `unknown_rows.csv` | Rows that matched no rule — review these after each run |
 | `rows_raw.json` | Raw parsed rows (debug) |
 | `rows_normalized.json` | Normalized rows with row_kind (debug) |
@@ -69,11 +79,11 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 | `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
 | `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
 | `--config PATH` | `config.yaml` | Config YAML |
-| `--output-dir PATH` | `output` | Base directory for run folders |
+| `--output-dir PATH` | from config `paths.output_root` or `C:\Users\G\Desktop\OUTPUT` | Top-level output root; inside it `dell_run/`, `cisco_run/` and run folders are created |
 | `--save-golden` | — | Save golden/<stem>_expected.jsonl without confirmation |
 | `--update-golden` | — | Overwrite golden with interactive confirmation |
 
-Either `--input` or `--batch-dir` is required. Full reference: `docs/user/CLI_CONFIG_REFERENCE.md`.
+Either `--input`, `--batch-dir`, or `--batch` is required. Full reference: [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md). Paths and I/O layout: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md).
 
 ---
 

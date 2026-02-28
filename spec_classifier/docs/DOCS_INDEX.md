@@ -20,6 +20,7 @@
 | `README.md` | How do I install and run this? |
 | `docs/user/USER_GUIDE.md` | How do I interpret the output? |
 | `docs/user/CLI_CONFIG_REFERENCE.md` | What are all CLI options and config keys? |
+| `docs/user/RUN_PATHS_AND_IO_LAYOUT.md` | Where do inputs/outputs go? Default paths (Desktop INPUT/OUTPUT), vendor run layout, no TEMP. |
 | `docs/schemas/DATA_CONTRACTS.md` | What are the exact output schemas? |
 | `docs/rules/RULES_AUTHORING_GUIDE.md` | How do I add or change a rule safely? |
 | `docs/dev/TESTING_GUIDE.md` | How do I run tests and update golden? |

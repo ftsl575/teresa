@@ -1,4 +1,9 @@
-﻿# Output columns for cleaned_spec.xlsx are fixed in excel_writer.py; no output_columns parameter is used.
+# I/O roots (optional). If not set, defaults below are used. CLI args override these.
+paths:
+  input_root: "C:\\Users\\G\\Desktop\\INPUT"
+  output_root: "C:\\Users\\G\\Desktop\\OUTPUT"
+
+# Output columns for cleaned_spec.xlsx are fixed in excel_writer.py; no output_columns parameter is used.
 cleaned_spec:
   include_types:
     - BASE
