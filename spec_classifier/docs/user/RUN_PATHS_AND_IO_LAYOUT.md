@@ -4,6 +4,10 @@
 
 Все входные и выходные данные прогонов располагаются **вне репозитория**. По умолчанию используются папки на рабочем столе: `INPUT` (вход) и `OUTPUT` (выход). В каталоге `spec_classifier/` не создаются папки `out/`, `output/` и не появляются артефакты прогонов.
 
+### Virtual Environment Policy
+
+The virtual environment is **external** to the repository. Current path: `C:\venv`. The repository must not store virtual environments; this keeps the repo lightweight and clean. Dependency installation is done via `requirements.txt` (install into the external venv after creating it with `python -m venv C:\venv`).
+
 ---
 
 ## Папки по умолчанию

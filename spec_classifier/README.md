@@ -14,6 +14,26 @@ Classification uses YAML rules + regex. No ML. Fully reproducible.
 
 ---
 
+## Virtual Environment
+
+The project uses an **external** virtual environment. The repository must remain code-only; no `.venv` directory is allowed inside the project.
+
+**Current venv location:** `C:\venv`
+
+**Activation (PowerShell):**
+```powershell
+C:\venv\Scripts\Activate.ps1
+```
+
+**Or run without activation:**
+```powershell
+C:\venv\Scripts\python.exe main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+```
+
+Install dependencies into the external venv: `pip install -r requirements.txt` (with the venv activated) or `C:\venv\Scripts\pip.exe install -r requirements.txt`.
+
+---
+
 ## Quick Start
 
 По умолчанию вход и выход — вне репо: `Desktop\INPUT` и `Desktop\OUTPUT`. Репозиторий остаётся только с кодом.

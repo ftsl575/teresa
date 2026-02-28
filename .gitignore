@@ -4,6 +4,7 @@ spec_classifier/test_data/
 spec_classifier/test_data/*.xlsx
 **/__pycache__/
 .venv/
+venv/
 .pytest_cache/
 spec_classifier/output/
 for cursor/
