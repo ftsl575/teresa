@@ -179,10 +179,16 @@ device_type_rules:
       pattern: '(?i)^(PWR-|NXA-PAC|C\dK?-PWR)'
       device_type: psu
       rule_id: DT-C-002
-    - field: sku
-      pattern: '^(CAB-|STACK-T)'
+    - field: option_name
+      pattern: '(?i)power cord|jumper power cord'
       device_type: power_cord
       rule_id: DT-C-003
+
+    - field: option_name
+      pattern: '(?i)stacking cable'
+      device_type: cable
+      rule_id: DT-C-004-STACK
+
     - field: option_name
       pattern: '(?i)\bfan\b|fantray'
       device_type: fan
@@ -200,11 +206,11 @@ hw_type_rules:
   rules:
     - field: sku
       pattern: '^(MEM-|M\dUSB)'
-      hw_type: ram
+      hw_type: memory
       rule_id: HWT-C-001
     - field: option_name
       pattern: '(?i)\bDRAM\b'
-      hw_type: ram
+      hw_type: memory
       rule_id: HWT-C-002
     - field: option_name
       pattern: '(?i)\bblank\b|filler'
@@ -216,7 +222,7 @@ hw_type_rules:
       rule_id: HWT-C-004
     - field: option_name
       pattern: '(?i)SSD'
-      hw_type: ssd
+      hw_type: storage_drive
       rule_id: HWT-C-005
     - field: option_name
       pattern: '(?i)stacking?\s+module'
