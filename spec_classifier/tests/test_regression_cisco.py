@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 
 from conftest import project_root
-from tests.helpers import run_cisco_pipeline_in_memory, build_golden_rows
+from tests.helpers import run_pipeline_in_memory, build_golden_rows
 
 
 def _load_golden(golden_path: Path):
@@ -41,7 +41,7 @@ def test_regression_cisco(filename):
     if not golden_path.exists():
         pytest.skip(f"Golden not found: {golden_path}")
 
-    normalized, results = run_cisco_pipeline_in_memory(input_path, rules_path)
+    normalized, results = run_pipeline_in_memory("cisco", input_path, rules_path)
     current = build_golden_rows(normalized, results)
     expected_rows = _load_golden(golden_path)
 

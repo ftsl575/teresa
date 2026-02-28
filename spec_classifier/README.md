@@ -1,6 +1,6 @@
-# Dell Specification Classifier
+# Spec Classifier (Dell · Cisco)
 
-Deterministic rule-based pipeline for classifying Dell Excel specification files.
+Deterministic rule-based pipeline for classifying Dell and Cisco CCW Excel specification files.
 
 **Excel in → parse → normalize → classify → Excel/JSON/CSV out.**
 Classification uses YAML rules + regex. No ML. Fully reproducible.

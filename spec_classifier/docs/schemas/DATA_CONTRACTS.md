@@ -24,7 +24,7 @@ Data contracts задают точные форматы выходных арт�
 
 **device_type** (полный список): power_cord, sfp_cable, storage_nvme, storage_ssd, psu, nic, raid_controller, hba, cpu.
 
-**hw_type** (20 значений): cpu, ram, ssd, hdd, nvme, storage_controller, psu, fan, cpu_heatsink, network_adapter, riser, gpu, tpm, chassis, cable, management, motherboard, mounting_kit, backplane, blank.
+**hw_type** (25 значений): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory.
 
 ---
 

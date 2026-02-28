@@ -1,6 +1,6 @@
-﻿"""
+"""
 Branded specification document: groups items by server (BASE) and entity type sections.
-Output mirrors YADRO-style format with company brand colors.
+Output mirrors client-brand format with company brand colors.
 """
 
 from pathlib import Path

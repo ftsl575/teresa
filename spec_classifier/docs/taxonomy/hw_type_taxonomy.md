@@ -4,7 +4,7 @@
 **Version:** v1.1.0  
 **Date:** 2026-02-28  
 **Vendors covered:** Dell · HPE · Cisco CCW · Lenovo · xFusion · Huawei (OceanStor + WLAN)  
-**Replaces:** `HW_TYPE_VOCAB` v1.2.0 (20 values) → v2.0.0 (**27 values**)
+**Replaces:** `HW_TYPE_VOCAB` v1.2.0 (20 values) → v2.0.0 (**25 values**)
 
 ---
 
@@ -21,7 +21,7 @@
 
 ---
 
-## Словарь (27 значений hw_type)
+## Словарь (25 значений hw_type)
 
 ### Группа 1 — Основное изделие (только BASE rows)
 
@@ -155,7 +155,7 @@
 
 ---
 
-## Итоговый HW_TYPE_VOCAB (27 значений)
+## Итоговый HW_TYPE_VOCAB (25 значений)
 
 ```python
 HW_TYPE_VOCAB = frozenset({

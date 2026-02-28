@@ -9,9 +9,8 @@
 | `docs/schemas/` | **Normative.** Data contracts: field specs for all output formats. |
 | `docs/rules/` | **Normative.** Rules authoring guide. |
 | `docs/dev/` | **Normative.** Contributing, testing, operational notes. |
-| `docs/roadmap/` | **Reference only.** Completed plans. Not normative. |
-| `docs/prompts/` | **Archival.** AI prompts (Cursor/Claude). Do not treat as specification. |
 | `docs/taxonomy/` | **Normative.** Source of truth for controlled vocabularies (e.g., hw_type). |
+| `docs/archive/` | Замёрзшие материалы: выполненные планы, снепшоты версий, архивные AI-промпты. Не нормативны. |
 
 ## Key Documents
 
@@ -32,7 +31,6 @@
 
 ## Conventions
 
-- **Normative docs** (`product/`, `user/`, `schemas/`, `rules/`, `dev/`): must stay in sync
+- **Normative docs** (`product/`, `user/`, `schemas/`, `rules/`, `dev/`, `taxonomy/`): must stay in sync
   with code. Update docs in the same commit as any behavior change.
-- **Roadmap**: historical reference, status "completed". Do not edit.
-- **Prompts**: archival. Do not use as product specification.
+- **Archive** (`docs/archive/`): frozen materials. Do not edit; not normative.

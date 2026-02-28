@@ -42,7 +42,7 @@ def dl1_stats():
     if not input_path.exists():
         pytest.skip("test_data/dl1.xlsx not found")
     rules_path = root / "rules" / "dell_rules.yaml"
-    _, classification_results = run_pipeline_in_memory(input_path, rules_path)
+    _, classification_results = run_pipeline_in_memory("dell", input_path, rules_path)
     return collect_stats(classification_results)
 
 

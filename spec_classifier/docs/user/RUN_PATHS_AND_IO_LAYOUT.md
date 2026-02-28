@@ -20,6 +20,27 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 
 ---
 
+## Рекомендуемая структура INPUT папки
+
+При работе с несколькими вендорами рекомендуется держать файлы в отдельных подпапках:
+
+```
+INPUT/
+  dell/    <- dl*.xlsx
+  cisco/   <- ccw*.xlsx
+```
+
+Запуск:
+
+```powershell
+python main.py --batch-dir INPUT/dell --vendor dell
+python main.py --batch-dir INPUT/cisco --vendor cisco
+```
+
+Это предотвращает попытку обработать Dell-файлы Cisco-адаптером и наоборот.
+
+---
+
 ## Приоритет конфигурации путей
 
 1. **CLI** — явные аргументы имеют наивысший приоритет:  

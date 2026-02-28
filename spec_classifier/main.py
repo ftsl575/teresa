@@ -8,7 +8,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -32,19 +32,20 @@ from src.diagnostics.stats_collector import collect_stats, save_run_summary, com
 from src.outputs.excel_writer import generate_cleaned_spec
 from src.outputs.annotated_writer import generate_annotated_source_excel
 from src.outputs.branded_spec_writer import generate_branded_spec
+from src.vendors.dell.adapter import DellAdapter
+from src.vendors.cisco.adapter import CiscoAdapter
+
+VENDOR_REGISTRY: dict[str, type] = {
+    "dell": DellAdapter,
+    "cisco": CiscoAdapter,
+}
 
 
 def _get_adapter(vendor: str, config: dict):
-    from src.vendors.dell.adapter import DellAdapter
-    from src.vendors.cisco.adapter import CiscoAdapter
-    adapters = {
-        "dell": lambda: DellAdapter(config),
-        "cisco": lambda: CiscoAdapter(config),
-    }
-    factory = adapters.get(vendor)
-    if not factory:
-        raise ValueError(f"Unknown vendor: {vendor}")
-    return factory()
+    cls = VENDOR_REGISTRY.get(vendor)
+    if cls is None:
+        raise ValueError(f"Unknown vendor: {vendor!r}. Available: {list(VENDOR_REGISTRY)}")
+    return cls(config)
 
 
 def _resolve_path(path: str, base: Path) -> Path:
@@ -52,9 +53,9 @@ def _resolve_path(path: str, base: Path) -> Path:
     return p if p.is_absolute() else (base / p).resolve()
 
 
-# Default I/O roots when not in config (repo stays code-only).
-DEFAULT_INPUT_ROOT = Path(r"C:\Users\G\Desktop\INPUT")
-DEFAULT_OUTPUT_ROOT = Path(r"C:\Users\G\Desktop\OUTPUT")
+# Default I/O roots when not in config (repo stays code-only; cwd-relative).
+DEFAULT_INPUT_ROOT = Path.cwd() / "input"
+DEFAULT_OUTPUT_ROOT = Path.cwd() / "output"
 
 
 def _load_config(config_path: Path) -> dict:
@@ -111,107 +112,99 @@ def _run_single(
         log = logging.getLogger(__name__)
     try:
         adapter = _get_adapter(vendor, config)
-        log.info("Parsing Excel: %s", input_path)
-        raw_rows, header_row_index = adapter.parse(str(input_path))
-        log.info("Normalizing rows (row_kind)...")
-        normalized_rows = adapter.normalize(raw_rows)
-
-        rules_file = adapter.get_rules_file()
-        rules_path = _resolve_path(rules_file, cwd)
-        if not rules_path.exists():
-            print(f"Error: Rules file not found: {rules_path}", file=sys.stderr)
-            return 1
-        log.info("Loading rules: %s", rules_path)
-        ruleset = RuleSet.load(str(rules_path))
-
-        log.info("Classifying rows...")
-        classification_results = [classify_row(r, ruleset) for r in normalized_rows]
-
-        # Output layout per out.zip: output_root / {vendor}_run / run-YYYY-MM-DD__HH-MM-SS-<stem> /
+        # Create run_folder and run.log before first pipeline log so all stages are captured (OUT-002)
         vendor_base = output_dir / f"{vendor}_run"
         run_folder = create_run_folder(str(vendor_base), input_path.name, stamp=session_stamp)
         run_log_path = run_folder / "run.log"
         fh = logging.FileHandler(run_log_path, encoding="utf-8")
         fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
-        logging.getLogger().addHandler(fh)
+        root_logger = logging.getLogger()
+        root_logger.addHandler(fh)
+        try:
+            log.info("Parsing Excel: %s", input_path)
+            raw_rows, header_row_index = adapter.parse(str(input_path))
+            log.info("Normalizing rows (row_kind)...")
+            normalized_rows = adapter.normalize(raw_rows)
 
-        log.info("Saving artifacts to %s", run_folder)
-        save_rows_raw(raw_rows, run_folder)
-        save_rows_normalized(normalized_rows, run_folder)
-        save_classification(classification_results, normalized_rows, run_folder)
-        save_unknown_rows(normalized_rows, classification_results, run_folder)
-        save_header_rows(normalized_rows, run_folder)
+            rules_file = adapter.get_rules_file()
+            rules_path = _resolve_path(rules_file, cwd)
+            if not rules_path.exists():
+                print(f"Error: Rules file not found: {rules_path}", file=sys.stderr)
+                return 1
+            log.info("Loading rules: %s", rules_path)
+            ruleset = RuleSet.load(str(rules_path))
 
-        stats = collect_stats(classification_results)
-        stats["rules_file_hash"] = compute_file_hash(str(rules_path))
-        stats["input_file"] = input_path.name
-        stats["run_timestamp"] = datetime.utcnow().replace(microsecond=0).isoformat()
+            log.info("Classifying rows...")
+            classification_results = [classify_row(r, ruleset) for r in normalized_rows]
 
-        vendor_stats = {}
-        if vendor != "dell":
-            bundle_roots = [r for r in normalized_rows if getattr(r, "is_bundle_root", False)]
-            vendor_stats["top_level_bundles_count"] = len(bundle_roots)
-            svc_rows = [r for r in normalized_rows if getattr(r, "service_duration_months", None) is not None]
-            vendor_stats["rows_with_service_duration"] = len(svc_rows)
-            depths = []
-            for r in normalized_rows:
-                ln = getattr(r, "line_number", "")
-                if ln:
-                    depths.append(len(ln.split(".")))
-            vendor_stats["max_hierarchy_depth"] = max(depths) if depths else 0
-        stats["vendor_stats"] = vendor_stats
+            log.info("Saving artifacts to %s", run_folder)
+            save_rows_raw(raw_rows, run_folder)
+            save_rows_normalized(normalized_rows, run_folder)
+            save_classification(classification_results, normalized_rows, run_folder)
+            save_unknown_rows(normalized_rows, classification_results, run_folder)
+            save_header_rows(normalized_rows, run_folder)
 
-        save_run_summary(stats, run_folder)
+            stats = collect_stats(classification_results)
+            stats["rules_file_hash"] = compute_file_hash(str(rules_path))
+            stats["input_file"] = input_path.name
+            stats["run_timestamp"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
-        generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
-        generate_annotated_source_excel(
-            raw_rows, normalized_rows, classification_results, input_path, run_folder,
-            header_row_index=header_row_index,
-        )
-        if vendor == "dell":
-            branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
-            generate_branded_spec(
-                normalized_rows=normalized_rows,
-                classification_results=classification_results,
-                source_filename=input_path.name,
-                output_path=branded_path,
+            stats["vendor_stats"] = adapter.get_vendor_stats(normalized_rows)
+
+            save_run_summary(stats, run_folder)
+
+            generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
+            generate_annotated_source_excel(
+                raw_rows, normalized_rows, classification_results, input_path, run_folder,
+                header_row_index=header_row_index,
             )
+            if adapter.generates_branded_spec():
+                branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
+                generate_branded_spec(
+                    normalized_rows=normalized_rows,
+                    classification_results=classification_results,
+                    source_filename=input_path.name,
+                    output_path=branded_path,
+                )
 
-        # Copy to TOTAL if batch mode
-        if total_folder is not None:
-            copy_to_total(run_folder, total_folder, input_path.stem)
-            log.info("Copied to TOTAL: %s", total_folder)
+            # Copy to TOTAL if batch mode
+            if total_folder is not None:
+                copy_to_total(run_folder, total_folder, input_path.stem)
+                log.info("Copied to TOTAL: %s", total_folder)
 
-        log.info("Done.")
+            log.info("Done.")
 
-        save_golden_mode = save_golden or update_golden
-        if save_golden_mode:
-            golden_dir = _resolve_path("golden", cwd)
-            stem = input_path.stem
-            golden_path = golden_dir / f"{stem}_expected.jsonl"
-            if update_golden:
-                try:
-                    answer = input("Overwrite golden? [y/N]: ").strip().lower()
-                except EOFError:
-                    answer = "n"
-                if answer != "y":
-                    log.info("Golden not updated (skipped or non-interactive).")
+            save_golden_mode = save_golden or update_golden
+            if save_golden_mode:
+                golden_dir = _resolve_path("golden", cwd)
+                stem = input_path.stem
+                golden_path = golden_dir / f"{stem}_expected.jsonl"
+                if update_golden:
+                    try:
+                        answer = input("Overwrite golden? [y/N]: ").strip().lower()
+                    except EOFError:
+                        answer = "n"
+                    if answer != "y":
+                        log.info("Golden not updated (skipped or non-interactive).")
+                    else:
+                        golden_rows = _build_golden_rows(normalized_rows, classification_results)
+                        _save_golden(golden_rows, golden_path)
+                        log.info("Golden updated: %s", golden_path)
                 else:
                     golden_rows = _build_golden_rows(normalized_rows, classification_results)
                     _save_golden(golden_rows, golden_path)
-                    log.info("Golden updated: %s", golden_path)
-            else:
-                golden_rows = _build_golden_rows(normalized_rows, classification_results)
-                _save_golden(golden_rows, golden_path)
-                log.info("Golden saved: %s", golden_path)
+                    log.info("Golden saved: %s", golden_path)
 
-        print("Summary:")
-        print(f"  total_rows: {stats['total_rows']}")
-        print(f"  header_rows_count: {stats['header_rows_count']}")
-        print(f"  item_rows_count: {stats['item_rows_count']}")
-        print(f"  entity_type_counts: {stats['entity_type_counts']}")
-        print(f"  unknown_count: {stats['unknown_count']}")
-        print(f"  run_folder: {run_folder}")
+            print("Summary:")
+            print(f"  total_rows: {stats['total_rows']}")
+            print(f"  header_rows_count: {stats['header_rows_count']}")
+            print(f"  item_rows_count: {stats['item_rows_count']}")
+            print(f"  entity_type_counts: {stats['entity_type_counts']}")
+            print(f"  unknown_count: {stats['unknown_count']}")
+            print(f"  run_folder: {run_folder}")
+        finally:
+            root_logger.removeHandler(fh)
+            fh.close()
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -237,17 +230,17 @@ def main() -> int:
         help="Process all .xlsx files in this directory (batch mode). "
         "Creates per-run folders + a TOTAL aggregation folder.",
     )
-    parser.add_argument("--vendor", choices=["dell", "cisco"], default="dell", help="Vendor adapter (default: dell)")
+    parser.add_argument("--vendor", choices=list(VENDOR_REGISTRY), default="dell", help="Vendor adapter (default: dell)")
     parser.add_argument("--config", default="config.yaml", help="Path to config YAML (default: config.yaml)")
     parser.add_argument(
         "--output-dir",
-        default=None,
-        help="Output directory for run folders (default: from config paths.output_root or Desktop\\OUTPUT)",
+        default=str(Path.cwd() / "output"),
+        help="Output directory for run folders (default: cwd/output, or config paths.output_root if set)",
     )
     parser.add_argument(
         "--batch",
         action="store_true",
-        help="Batch mode: process all .xlsx in input_root (from config or Desktop\\INPUT). Overrides need for --batch-dir.",
+        help="Batch mode: process all .xlsx in input_root (from config or default). Overrides need for --batch-dir.",
     )
     parser.add_argument("--save-golden", action="store_true", help="Run pipeline and save golden/<stem>_expected.jsonl")
     parser.add_argument("--update-golden", action="store_true", help="Run pipeline and overwrite golden after confirmation (y/n)")
@@ -303,8 +296,21 @@ def main() -> int:
         total_folder = create_total_folder(str(vendor_base), session_stamp)
         log.info("Batch mode: %d files, TOTAL folder: %s", len(xlsx_files), total_folder)
 
-        exit_codes = []
+        adapter = _get_adapter(args.vendor, config)
+        processed = []
+        skipped = []
+        failed = []
         for xlsx_path in xlsx_files:
+            try:
+                if not adapter.can_parse(str(xlsx_path)):
+                    log.warning("Skipping %s: not a %s file", xlsx_path.name, args.vendor)
+                    skipped.append(xlsx_path.name)
+                    continue
+            except Exception as e:
+                log.error("Failed to read %s: %s", xlsx_path.name, e)
+                failed.append(xlsx_path.name)
+                continue
+
             log.info("--- Batch: processing %s ---", xlsx_path.name)
             code = _run_single(
                 input_path=xlsx_path,
@@ -319,11 +325,17 @@ def main() -> int:
                 cwd=cwd,
                 log=log,
             )
-            exit_codes.append(code)
+            if code == 0:
+                processed.append(xlsx_path.name)
+            else:
+                failed.append(xlsx_path.name)
 
-        failed = sum(1 for c in exit_codes if c != 0)
-        print(f"Batch complete: {len(xlsx_files)} files, {failed} failed. TOTAL: {total_folder}")
-        return 1 if failed else 0
+        log.info(
+            "Batch complete: %d processed, %d skipped, %d failed",
+            len(processed), len(skipped), len(failed),
+        )
+        print(f"Batch complete: {len(processed)} processed, {len(skipped)} skipped, {len(failed)} failed. TOTAL: {total_folder}")
+        return 1 if len(failed) > 0 else 0
 
     if not args.input:
         print("Error: either --input, --batch-dir, or --batch is required", file=sys.stderr)

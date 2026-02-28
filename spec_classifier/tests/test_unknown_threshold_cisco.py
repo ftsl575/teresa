@@ -1,10 +1,10 @@
-﻿"""Gate and guardrail tests for Cisco UNKNOWN count."""
+"""Gate and guardrail tests for Cisco UNKNOWN count."""
 
 import pytest
 from pathlib import Path
 
 from conftest import project_root
-from tests.helpers import run_cisco_pipeline_in_memory
+from tests.helpers import run_pipeline_in_memory
 from src.core.normalizer import RowKind
 from src.core.classifier import EntityType
 
@@ -25,7 +25,7 @@ def test_unknown_count_zero_cisco(filename):
     if not rules_path.exists():
         pytest.skip("rules/cisco_rules.yaml not found")
 
-    normalized, results = run_cisco_pipeline_in_memory(input_path, rules_path)
+    normalized, results = run_pipeline_in_memory("cisco", input_path, rules_path)
     unknown_count = sum(
         1 for r in results
         if r.row_kind == RowKind.ITEM and r.entity_type == EntityType.UNKNOWN
@@ -50,7 +50,7 @@ def test_unknown_threshold_cisco(filename):
     if not rules_path.exists():
         pytest.skip("rules/cisco_rules.yaml not found")
 
-    normalized, results = run_cisco_pipeline_in_memory(input_path, rules_path)
+    normalized, results = run_pipeline_in_memory("cisco", input_path, rules_path)
     item_count = sum(1 for r in results if r.row_kind == RowKind.ITEM)
     unknown_count = sum(
         1 for r in results

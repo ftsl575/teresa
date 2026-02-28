@@ -10,7 +10,7 @@
 
 - **Вход:** один Excel-файл (`.xlsx`) с таблицей спецификации (столбцы в том числе: Module Name, Option Name, SKUs, Qty, Option List Price).
 - **Выход:**
-  - папка прогона `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/` с артефактами (JSON, CSV, Excel);
+  - папка прогона `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (например `dell_run/run-2026-02-28__13-24-32-dl1/`) под каталогом output_dir, с артефактами (JSON, CSV, Excel);
   - очищенная спецификация `cleaned_spec.xlsx` (только выбранные типы и состояние);
   - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type);
   - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
@@ -34,7 +34,7 @@
 5. **Классификация** — для каждой нормализованной строки `src.core.classifier.classify_row(row, ruleset)`:
    - если `row_kind == HEADER` → результат с `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
    - иначе: сначала `detect_state(option_name, state_rules)` (PRESENT/ABSENT/DISABLED), затем проверка правил по приоритету: BASE → SERVICE → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW; при отсутствии совпадений → UNKNOWN.
-6. **Создание папки прогона** — создаётся `output/run-YYYY-MM-DD__HH-MM-SS-<stem>/` через `create_run_folder(output_dir, input_filename, stamp)`.
+6. **Создание папки прогона** — создаётся `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` под `output_dir` через `create_run_folder(vendor_base, input_filename, stamp)`, где `vendor_base = output_dir / f"{vendor}_run"` (например `dell_run/run-2026-02-28__13-24-32-dl1/`).
 7. **Сохранение артефактов:**
    - `src.outputs.json_writer`: `save_rows_raw`, `save_rows_normalized`, `save_classification`, `save_unknown_rows`, `save_header_rows`;
    - `src.diagnostics.stats_collector`: `collect_stats(classification_results)` и `save_run_summary(stats, run_folder)`;
@@ -85,11 +85,11 @@
 | `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
 | `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
 | `--vendor` | нет (default: `dell`) | `dell` или `cisco`. Выбирает адаптер парсинга/нормализации и файл правил. |
-| `--output-dir` | нет (по умолчанию `output`) | Каталог для подпапок прогонов. |
+| `--output-dir` | нет (по умолчанию: `config paths.output_root`, иначе `C:\Users\G\Desktop\OUTPUT` — см. `main.py`) | Каталог для подпапок прогонов; внутри создаётся `{vendor}_run/run-.../`. |
 | `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
 | `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
 
-Именование папок прогонов: **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
+Именование папок прогонов: под `output_dir` создаётся подкаталог `{vendor}_run` (например `dell_run`, `cisco_run`), внутри — **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
 
 Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
 
@@ -175,8 +175,11 @@ spec_classifier/
 │   ├── dl5_expected.jsonl
 │   ├── ccw_1_expected.jsonl      # Cisco golden (Price Estimate, 26 строк)
 │   └── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
-├── output/
-│   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов
+├── <output_dir>/                 # по умолчанию из config paths.output_root или C:\Users\G\Desktop\OUTPUT
+│   ├── dell_run/
+│   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Dell
+│   └── cisco_run/
+│       └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Cisco
 └── docs/
     └── TECHNICAL_OVERVIEW.md
 ```

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Shared test helpers for pipeline execution. Imported by test_regression.py and test_unknown_threshold.py.
 """
 
@@ -7,8 +7,6 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 
@@ -54,22 +52,18 @@ def read_annotated_excel(filepath: Union[Path, str]) -> tuple[int, pd.DataFrame]
     return (header_row_index, df)
 
 
-def run_pipeline_in_memory(input_path: Path, rules_path: Path) -> tuple[list, list]:
+def run_pipeline_in_memory(
+    vendor: str,
+    input_path: Path,
+    rules_path: Path,
+    config: Optional[dict] = None,
+) -> tuple[list, list]:
     """Run parse → normalize → classify in memory. Returns (normalized_rows, classification_results). No disk I/O."""
-    raw_rows = parse_excel(str(input_path))
-    normalized = [normalize_row(r) for r in raw_rows]
-    ruleset = RuleSet.load(str(rules_path))
-    results = [classify_row(r, ruleset) for r in normalized]
-    return (normalized, results)
+    from main import _get_adapter
 
-
-def run_cisco_pipeline_in_memory(input_path: Path, rules_path: Path) -> tuple[list, list]:
-    """Run Cisco parse → normalize → classify in memory. Returns (normalized_rows, classification_results)."""
-    from src.vendors.cisco.parser import parse_excel as cisco_parse
-    from src.vendors.cisco.normalizer import normalize_cisco_rows
-
-    raw_rows, _ = cisco_parse(str(input_path))
-    normalized = normalize_cisco_rows(raw_rows)
+    adapter = _get_adapter(vendor, config or {})
+    raw_rows, _ = adapter.parse(str(input_path))
+    normalized = adapter.normalize(raw_rows)
     ruleset = RuleSet.load(str(rules_path))
     results = [classify_row(r, ruleset) for r in normalized]
     return (normalized, results)
