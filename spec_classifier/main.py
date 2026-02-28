@@ -52,6 +52,11 @@ def _resolve_path(path: str, base: Path) -> Path:
     return p if p.is_absolute() else (base / p).resolve()
 
 
+# Default I/O roots when not in config (repo stays code-only).
+DEFAULT_INPUT_ROOT = Path(r"C:\Users\G\Desktop\INPUT")
+DEFAULT_OUTPUT_ROOT = Path(r"C:\Users\G\Desktop\OUTPUT")
+
+
 def _load_config(config_path: Path) -> dict:
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
@@ -122,7 +127,9 @@ def _run_single(
         log.info("Classifying rows...")
         classification_results = [classify_row(r, ruleset) for r in normalized_rows]
 
-        run_folder = create_run_folder(str(output_dir), input_path.name, stamp=session_stamp)
+        # Output layout per out.zip: output_root / {vendor}_run / run-YYYY-MM-DD__HH-MM-SS-<stem> /
+        vendor_base = output_dir / f"{vendor}_run"
+        run_folder = create_run_folder(str(vendor_base), input_path.name, stamp=session_stamp)
         run_log_path = run_folder / "run.log"
         fh = logging.FileHandler(run_log_path, encoding="utf-8")
         fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
@@ -232,7 +239,16 @@ def main() -> int:
     )
     parser.add_argument("--vendor", choices=["dell", "cisco"], default="dell", help="Vendor adapter (default: dell)")
     parser.add_argument("--config", default="config.yaml", help="Path to config YAML (default: config.yaml)")
-    parser.add_argument("--output-dir", default="output", help="Output directory for run folders (default: output)")
+    parser.add_argument(
+        "--output-dir",
+        default=None,
+        help="Output directory for run folders (default: from config paths.output_root or Desktop\\OUTPUT)",
+    )
+    parser.add_argument(
+        "--batch",
+        action="store_true",
+        help="Batch mode: process all .xlsx in input_root (from config or Desktop\\INPUT). Overrides need for --batch-dir.",
+    )
     parser.add_argument("--save-golden", action="store_true", help="Run pipeline and save golden/<stem>_expected.jsonl")
     parser.add_argument("--update-golden", action="store_true", help="Run pipeline and overwrite golden after confirmation (y/n)")
     args = parser.parse_args()
@@ -246,7 +262,6 @@ def main() -> int:
 
     cwd = Path.cwd()
     config_path = _resolve_path(args.config, cwd)
-    output_dir = _resolve_path(args.output_dir, cwd)
 
     try:
         config = _load_config(config_path)
@@ -257,9 +272,24 @@ def main() -> int:
         print(f"Error: Invalid YAML in config: {e}", file=sys.stderr)
         return 1
 
-    # Batch mode: process all xlsx in --batch-dir
+    paths_cfg = config.get("paths") or {}
+    output_dir_raw = (
+        args.output_dir
+        or paths_cfg.get("output_root")
+        or str(DEFAULT_OUTPUT_ROOT)
+    )
+    output_dir = Path(output_dir_raw) if Path(output_dir_raw).is_absolute() else _resolve_path(output_dir_raw, cwd)
+
+    # Batch mode: --batch-dir <path> or --batch (use input_root from config or default)
     if args.batch_dir:
-        batch_dir = _resolve_path(args.batch_dir, cwd)
+        batch_dir = Path(args.batch_dir) if Path(args.batch_dir).is_absolute() else _resolve_path(args.batch_dir, cwd)
+    elif args.batch:
+        batch_dir_raw = paths_cfg.get("input_root") or str(DEFAULT_INPUT_ROOT)
+        batch_dir = Path(batch_dir_raw) if Path(batch_dir_raw).is_absolute() else _resolve_path(batch_dir_raw, cwd)
+    else:
+        batch_dir = None
+
+    if batch_dir is not None:
         if not batch_dir.is_dir():
             print(f"Error: --batch-dir is not a directory: {batch_dir}", file=sys.stderr)
             return 1
@@ -269,7 +299,8 @@ def main() -> int:
             return 1
 
         session_stamp = get_session_stamp()
-        total_folder = create_total_folder(str(output_dir), session_stamp)
+        vendor_base = output_dir / f"{args.vendor}_run"
+        total_folder = create_total_folder(str(vendor_base), session_stamp)
         log.info("Batch mode: %d files, TOTAL folder: %s", len(xlsx_files), total_folder)
 
         exit_codes = []
@@ -295,7 +326,7 @@ def main() -> int:
         return 1 if failed else 0
 
     if not args.input:
-        print("Error: either --input or --batch-dir is required", file=sys.stderr)
+        print("Error: either --input, --batch-dir, or --batch is required", file=sys.stderr)
         return 1
 
     input_path = _resolve_path(args.input, cwd)
