@@ -246,7 +246,7 @@ def main() -> int:
     parser.add_argument("--config", default="config.yaml", help="Path to config YAML (default: config.yaml)")
     parser.add_argument(
         "--output-dir",
-        default=str(Path.cwd() / "output"),
+        default=None,
         help="Output directory for run folders (default: cwd/output, or config paths.output_root if set)",
     )
     parser.add_argument(

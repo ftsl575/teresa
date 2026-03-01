@@ -22,6 +22,7 @@ Versioning: [SemVer](https://semver.org/).
 - feat(hpe): Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe
 
 ### Fixed
+- fix(main): --output-dir default=None, чтобы config.local.yaml → paths.output_root применялся корректно
 - fix(hpe): HW-H-GLOBAL-038 — optical drive (DVD-RW) → HW/STORAGE
 - fix(Makefile): HPE путь выровнен с Dell/Cisco — $(INPUT)/$$f.xlsx вместо $(INPUT)/hpe/$$f.xlsx
 - fix(hpe): добавлена секция hw_rules в hpe_rules.yaml — 37 catch-all правил HW-H-GLOBAL-001…037; устранён UNKNOWN для CPU/RAM/storage/NIC/PSU/fan/transceiver/cable/riser/rail/GPU и др.
