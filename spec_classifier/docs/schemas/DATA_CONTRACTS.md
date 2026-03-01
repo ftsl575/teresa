@@ -1,4 +1,4 @@
-# Контракты данных — Dell Specification Classifier
+# Контракты данных — spec_classifier
 
 ## 1. Введение
 

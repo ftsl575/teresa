@@ -1,12 +1,11 @@
-"""
+﻿"""
 Smoke test: full pipeline on test_data/dl1–dl5.xlsx; assert all diagnostic artifacts exist.
 """
 
 import pytest
 from pathlib import Path
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
+from main import _get_adapter
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.diagnostics.run_manager import create_run_folder
@@ -37,8 +36,9 @@ def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
     output_root = tmp_path / "output"
     vendor_base = output_root / "dell_run"
 
-    rows_raw = parse_excel(str(input_path))
-    rows_normalized = [normalize_row(r) for r in rows_raw]
+    adapter = _get_adapter("dell", {})
+    rows_raw, _ = adapter.parse(str(input_path))
+    rows_normalized = adapter.normalize(rows_raw)
     ruleset = RuleSet.load(str(rules_path))
     classification_results = [classify_row(r, ruleset) for r in rows_normalized]
 
@@ -66,3 +66,4 @@ def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
         path = run_folder / name
         assert path.exists(), f"Expected artifact {name} at {path}"
         assert path.stat().st_size >= 0, f"File {name} should be readable"
+

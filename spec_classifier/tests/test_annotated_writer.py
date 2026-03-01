@@ -1,4 +1,4 @@
-﻿"""
+"""
 Smoke test for annotated source Excel export.
 Uses robust header detection so annotated files with a preamble (e.g. Solution Info) are parsed correctly.
 """
@@ -7,8 +7,7 @@ import pytest
 import pandas as pd
 from pathlib import Path
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
+from main import _get_adapter
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.outputs.annotated_writer import generate_annotated_source_excel
@@ -24,13 +23,15 @@ def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(
     if not input_path.exists():
         pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")
 
-    raw_rows = parse_excel(str(input_path))
-    normalized_rows = [normalize_row(r) for r in raw_rows]
+    adapter = _get_adapter("dell", {})
+    raw_rows, header_row_index = adapter.parse(str(input_path))
+    normalized_rows = adapter.normalize(raw_rows)
     ruleset = RuleSet.load(str(root / "rules" / "dell_rules.yaml"))
     classification_results = [classify_row(r, ruleset) for r in normalized_rows]
 
     out_path = generate_annotated_source_excel(
-        raw_rows, normalized_rows, classification_results, input_path, tmp_path
+        raw_rows, normalized_rows, classification_results, input_path, tmp_path,
+        header_row_index=header_row_index,
     )
 
     assert out_path.exists(), "annotated workbook should exist"
@@ -59,13 +60,15 @@ def test_annotated_header_row_detection_with_preamble(tmp_path):
     if not input_path.exists():
         pytest.skip(f"test_data/dl4.xlsx not found at {input_path}")
 
-    raw_rows = parse_excel(str(input_path))
-    normalized_rows = [normalize_row(r) for r in raw_rows]
+    adapter = _get_adapter("dell", {})
+    raw_rows, header_row_index = adapter.parse(str(input_path))
+    normalized_rows = adapter.normalize(raw_rows)
     ruleset = RuleSet.load(str(root / "rules" / "dell_rules.yaml"))
     classification_results = [classify_row(r, ruleset) for r in normalized_rows]
 
     out_path = generate_annotated_source_excel(
-        raw_rows, normalized_rows, classification_results, input_path, tmp_path
+        raw_rows, normalized_rows, classification_results, input_path, tmp_path,
+        header_row_index=header_row_index,
     )
 
     header_row_index = find_annotated_header_row(out_path)

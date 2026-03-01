@@ -1,0 +1,12 @@
+# config.local.yaml — Personal overrides (NOT committed to git).
+# Copy to config.local.yaml and edit paths for your machine.
+# These override values from config.yaml.
+# CLI arguments (--output-dir, --input, --batch-dir) override everything.
+
+paths:
+  input_root: "C:\\Users\\G\\Desktop\\INPUT"
+  output_root: "C:\\Users\\G\\Desktop\\OUTPUT"
+
+# Where to redirect temporary files (.pytest_cache, __pycache__).
+# Used by scripts/clean.ps1 and scripts/run_full.ps1.
+temp_root: "C:\\Users\\G\\Desktop\\temporary"

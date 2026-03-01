@@ -1,4 +1,4 @@
-# Справка по CLI и config — Dell Specification Classifier
+# Справка по CLI и config — spec_classifier
 
 Подробное описание путей ввода/вывода, приоритетов и структуры каталогов: **[RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md)**.
 
@@ -65,13 +65,10 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --update-golden
 ```yaml
 # Корни ввода/вывода (опционально). CLI --output-dir / --batch-dir переопределяют.
 paths:
-  input_root: "C:\\Users\\G\\Desktop\\INPUT"
-  output_root: "C:\\Users\\G\\Desktop\\OUTPUT"
+  input_root: "input"
+  output_root: "output"
 
-# Путь к файлу правил (относительно CWD или абсолютный)
-rules_file: "rules/dell_rules.yaml"
-
-# Пути к файлам правил по вендору (используется при --vendor cisco)
+# Пути к файлам правил по вендору (используется при --vendor)
 vendor_rules:
   dell: "rules/dell_rules.yaml"
   cisco: "rules/cisco_rules.yaml"

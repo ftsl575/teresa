@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unit tests for cleaned spec Excel generation.
 """
 
@@ -7,8 +7,7 @@ import pandas as pd
 import yaml
 from pathlib import Path
 
-from src.core.parser import parse_excel
-from src.core.normalizer import normalize_row
+from main import _get_adapter
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.core.normalizer import RowKind
@@ -41,8 +40,9 @@ def test_excel_writer_file_exists_no_headers_only_include_types_and_present(conf
     if not input_path.exists():
         pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")
 
-    rows_raw = parse_excel(str(input_path))
-    rows_normalized = [normalize_row(r) for r in rows_raw]
+    adapter = _get_adapter("dell", {})
+    rows_raw, _ = adapter.parse(str(input_path))
+    rows_normalized = adapter.normalize(rows_raw)
     ruleset = RuleSet.load(str(root / "rules" / "dell_rules.yaml"))
     classification_results = [classify_row(r, ruleset) for r in rows_normalized]
 

@@ -1,7 +1,7 @@
 # I/O roots (optional). If not set, defaults below are used. CLI args override these.
 paths:
-  input_root: "C:\\Users\\G\\Desktop\\INPUT"
-  output_root: "C:\\Users\\G\\Desktop\\OUTPUT"
+  input_root: "input"
+  output_root: "output"
 
 # Output columns for cleaned_spec.xlsx are fixed in excel_writer.py; no output_columns parameter is used.
 cleaned_spec:
@@ -11,8 +11,6 @@ cleaned_spec:
     - SOFTWARE
     - SERVICE
   include_only_present: true
-
-rules_file: "rules/dell_rules.yaml"
 
 vendor_rules:
   dell: "rules/dell_rules.yaml"

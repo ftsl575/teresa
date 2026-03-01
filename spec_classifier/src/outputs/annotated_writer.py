@@ -69,28 +69,28 @@ def generate_annotated_source_excel(
     df["device_type"] = device_type_col
     df["hw_type"] = hw_type_col
 
-    has_cisco_fields = any(
-        hasattr(r, "line_number") and getattr(r, "line_number", None)
-        for r in normalized_rows[:5]
-    )
-    if has_cisco_fields:
-        row_to_norm = {r.source_row_index: r for r in normalized_rows}
-        line_number_col = []
-        svc_duration_col = []
+    # --- Vendor extension columns (extensible) ---
+    # Each tuple: (attribute_name_on_NormalizedRow, column_header_in_excel)
+    # When adding a new vendor with extra fields, add tuples here.
+    VENDOR_EXTRA_COLS = [
+        ("line_number", "line_number"),
+        ("service_duration_months", "service_duration_months"),
+    ]
+
+    row_to_norm = {r.source_row_index: r for r in normalized_rows}
+    for attr, col_name in VENDOR_EXTRA_COLS:
+        if not any(getattr(r, attr, None) is not None for r in normalized_rows[:10]):
+            continue
+        col_data = []
         for r in range(len(df)):
             if r == label_row:
-                line_number_col.append("line_number")
-                svc_duration_col.append("service_duration_months")
+                col_data.append(col_name)
             else:
                 excel_row_1based = r + 1
                 norm = row_to_norm.get(excel_row_1based)
-                ln = getattr(norm, "line_number", "") or "" if norm else ""
-                svc = getattr(norm, "service_duration_months", None) if norm else None
-                svc_str = str(svc) if svc is not None else ""
-                line_number_col.append(ln)
-                svc_duration_col.append(svc_str)
-        df["line_number"] = line_number_col
-        df["service_duration_months"] = svc_duration_col
+                val = getattr(norm, attr, None) if norm else None
+                col_data.append(str(val) if val is not None else "")
+        df[col_name] = col_data
 
     run_folder = Path(run_folder)
     stem = path.stem

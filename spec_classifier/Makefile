@@ -1,4 +1,4 @@
-﻿# Dell Spec Classifier — Makefile
+# Spec Classifier — Makefile
 # Run from spec_classifier/ (e.g. make generate_golden).
 
 PYTHON ?= python

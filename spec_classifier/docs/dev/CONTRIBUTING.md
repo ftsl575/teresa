@@ -1,4 +1,4 @@
-# Участие в разработке — Dell Specification Classifier
+# Участие в разработке — spec_classifier (teresa)
 
 ## 1. Структура репозитория
 
