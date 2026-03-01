@@ -14,14 +14,31 @@ Versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- feat: one-button run — scripts/run_full.ps1, run_tests.ps1, clean.ps1; config layering (config.local.yaml); docs/dev/ONE_BUTTON_RUN.md (PROMPT #7).
+
+### Changed
+- config: _load_config() merges config.local.yaml on top of config.yaml (deep merge).
+- .gitignore: config.local.yaml, temporary/, diag/, .coverage, htmlcov/, .ruff_cache/, .mypy_cache/.
+- README: section «One-button run (Windows)»; DOCS_INDEX: ONE_BUTTON_RUN.md; Makefile title → «Spec Classifier — Makefile».
+
+---
+
+## [1.2.1] — 2026-03-01
+
+### Added
 - feat: add can_parse() to VendorAdapter — batch gracefully skips wrong-vendor files (OUT-001).
 - feat: batch summary: processed/skipped/failed counts + exit code only on real failures.
 
 ### Fixed
+- fix: DellAdapter.can_parse() uses positive signature — "Module Name" in first 20 rows of first sheet; no longer accepts any xlsx (e.g. Cisco ccw_1.xlsx in Dell batch) (P0).
+- fix: parse_excel() returns (rows, header_row_index); DellAdapter.parse() delegates to it only — no triple Excel read (BUG-002).
 - fix: run.log now captures all pipeline stages; FileHandler isolated per file in batch (OUT-002).
 - fix: replace deprecated datetime.utcnow() with timezone-aware alternative (OUT-003).
 
 ### Changed
+- config: paths default to `input` / `output`; remove dead `rules_file` key; Dell get_rules_file fallback to `rules/dell_rules.yaml` only (LEAK-001, LEAK-009).
+- docs: replace all `C:\Users\G\Desktop\...` with relative paths in README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE.md; examples use `input/`, `output/`, `mkdir`; add note on config.local.yaml for absolute paths (LEAK-002, LEAK-003, LEAK-004).
+- docs: TECHNICAL_OVERVIEW §1 — «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; source reference — код в src/, main.py, tests/, config.yaml (remove dell_mvp).
 - docs: fix output paths in TECHNICAL_OVERVIEW, add --output-dir default, update README title for multivendor, assign version 1.2.0 to unreleased section.
 - refactor: delegate vendor_stats to adapter.get_vendor_stats(), main.py vendor-agnostic (CODE-002).
 - fix: remove Dell parser fallback from generic annotated_writer; header_row_index from adapter (CODE-003).
@@ -34,6 +51,11 @@ Versioning: [SemVer](https://semver.org/).
 - fix: remove hardcoded Windows user paths from argparse defaults (CODE-001).
 - fix: remove external client name from branded_spec_writer docstring (DOC-006).
 - docs: document recommended INPUT folder structure for multi-vendor batch runs.
+- docs: six doc files H1 → «… — spec_classifier» (LEAK-005); core docstrings vendor-agnostic (LEAK-006); hw_type_taxonomy vendors: Dell · Cisco CCW (active) · HPE/Lenovo/xFusion/Huawei (planned) (DOC-010).
+- refactor: annotated_writer — replace has_cisco_fields with VENDOR_EXTRA_COLS registry (LEAK-007).
+- refactor: test_smoke, test_annotated_writer, test_excel_writer use adapter via _get_adapter (LEAK-008).
+- docs: RULES_AUTHORING_GUIDE — секция «Конвенция именования rule_id» (формат, таблица вендоров, NNN, зарезервированные) (DOC-011).
+- docs: NEW_VENDOR_GUIDE.md — самодостаточное руководство по добавлению вендора (9 шагов, позитивная сигнатура, VENDOR_EXTRA_COLS, чеклист) (DOC-012).
 
 ## [1.2.0] — 2026-02-28
 

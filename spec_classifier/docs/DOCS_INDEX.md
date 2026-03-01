@@ -22,6 +22,8 @@
 | `docs/user/RUN_PATHS_AND_IO_LAYOUT.md` | Where do inputs/outputs go? Default paths (Desktop INPUT/OUTPUT), vendor run layout, no TEMP. |
 | `docs/schemas/DATA_CONTRACTS.md` | What are the exact output schemas? |
 | `docs/rules/RULES_AUTHORING_GUIDE.md` | How do I add or change a rule safely? |
+| `docs/dev/NEW_VENDOR_GUIDE.md` | How do I add a new vendor (adapter, rules, tests)? |
+| `docs/dev/ONE_BUTTON_RUN.md` | How do I run tests and batch with one script (Windows)? |
 | `docs/dev/TESTING_GUIDE.md` | How do I run tests and update golden? |
 | `docs/dev/CONTRIBUTING.md` | How do I work in this repo? |
 | `docs/dev/OPERATIONAL_NOTES.md` | How do I run batch jobs and manage artifacts? |

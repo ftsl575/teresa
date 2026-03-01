@@ -1,4 +1,4 @@
-# Руководство пользователя — Dell Specification Classifier
+# Руководство пользователя — spec_classifier
 
 ## 1. Назначение
 

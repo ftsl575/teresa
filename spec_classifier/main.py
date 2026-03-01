@@ -62,9 +62,19 @@ def _load_config(config_path: Path) -> dict:
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
     with open(config_path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    if data is None:
-        data = {}
+        data = yaml.safe_load(f) or {}
+
+    # Layer 2: config.local.yaml overrides (not committed to git)
+    local_path = config_path.parent / "config.local.yaml"
+    if local_path.exists():
+        with open(local_path, encoding="utf-8") as f:
+            local_data = yaml.safe_load(f) or {}
+        for key, value in local_data.items():
+            if isinstance(value, dict) and isinstance(data.get(key), dict):
+                data[key].update(value)
+            else:
+                data[key] = value
+
     return data
 
 

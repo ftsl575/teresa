@@ -27,7 +27,7 @@ C:\venv\Scripts\Activate.ps1
 
 **Or run without activation:**
 ```powershell
-C:\venv\Scripts\python.exe main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+C:\venv\Scripts\python.exe main.py --input input/dl1.xlsx
 ```
 
 Install dependencies into the external venv: `pip install -r requirements.txt` (with the venv activated) or `C:\venv\Scripts\pip.exe install -r requirements.txt`.
@@ -36,35 +36,50 @@ Install dependencies into the external venv: `pip install -r requirements.txt` (
 
 ## Quick Start
 
-По умолчанию вход и выход — вне репо: `Desktop\INPUT` и `Desktop\OUTPUT`. Репозиторий остаётся только с кодом.
+По умолчанию вход и выход — каталоги `input` и `output` относительно текущей директории (или из config). Репозиторий остаётся только с кодом.
 
-```powershell
+```bash
 cd spec_classifier
 pip install -r requirements.txt
 
-# Создать папки на рабочем столе (один раз)
-New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\INPUT"
-New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\OUTPUT"
+# Создать папки (один раз)
+mkdir input
+mkdir output
 
-# Положить .xlsx в Desktop\INPUT, затем:
+# Положить .xlsx в input/, затем:
 
 # Одиночный Dell
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+python main.py --input input/dl1.xlsx
 
 # Одиночный Cisco CCW
-python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
+python main.py --input input/ccw_1.xlsx --vendor cisco
 
-# Batch: все .xlsx из INPUT
-python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
+# Batch: все .xlsx из input
+python main.py --batch-dir input
 ```
 
-**Где искать результат:** `C:\Users\G\Desktop\OUTPUT\dell_run\run-YYYY-MM-DD__HH-MM-SS-<stem>\` (Dell) или `...\OUTPUT\cisco_run\run-...\` (Cisco). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
+**Где искать результат:** `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (Dell) или `output/cisco_run/run-.../` (Cisco). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
+
+---
+
+## One-button run (Windows)
+
+```powershell
+.\scripts\run_full.ps1
+```
+
+Запускает тесты + batch-прогон всех вендоров. Логи в `diag/runs/<timestamp>/`.
+
+- Только тесты: `.\scripts\run_tests.ps1`
+- Чистка мусора: `.\scripts\clean.ps1`
+
+Настройка путей: скопировать `config.local.yaml.example` → `config.local.yaml`, задать свои пути. Подробнее: [docs/dev/ONE_BUTTON_RUN.md](docs/dev/ONE_BUTTON_RUN.md).
 
 ---
 
 ## Output
 
-Each run creates a timestamped folder under **output_root** (default `C:\Users\G\Desktop\OUTPUT`). Inside it, vendor subfolders are created:
+Each run creates a timestamped folder under **output_root** (default `output` relative to cwd). Inside it, vendor subfolders are created:
 
 **Single run:** `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` or `output_root/cisco_run/run-.../`
 **Batch:** per-file run folders + `output_root/<vendor>_run/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`
@@ -99,7 +114,7 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 | `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
 | `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
 | `--config PATH` | `config.yaml` | Config YAML |
-| `--output-dir PATH` | from config `paths.output_root` or `C:\Users\G\Desktop\OUTPUT` | Top-level output root; inside it `dell_run/`, `cisco_run/` and run folders are created |
+| `--output-dir PATH` | from config `paths.output_root` or `cwd/output` | Top-level output root; inside it `dell_run/`, `cisco_run/` and run folders are created |
 | `--save-golden` | — | Save golden/<stem>_expected.jsonl without confirmation |
 | `--update-golden` | — | Overwrite golden with interactive confirmation |
 

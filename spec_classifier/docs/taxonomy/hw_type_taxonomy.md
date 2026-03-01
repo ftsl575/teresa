@@ -3,7 +3,7 @@
 
 **Version:** v1.1.0  
 **Date:** 2026-02-28  
-**Vendors covered:** Dell · HPE · Cisco CCW · Lenovo · xFusion · Huawei (OceanStor + WLAN)  
+**Vendors covered:** Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)  
 **Replaces:** `HW_TYPE_VOCAB` v1.2.0 (20 values) → v2.0.0 (**25 values**)
 
 ---

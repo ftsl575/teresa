@@ -1,10 +1,10 @@
-﻿"""
-Excel parser for Dell specification files.
+"""
+Excel parser for Dell-format specification files (used by DellAdapter).
 Finds header row by 'Module Name', then parses data with __row_index__ = Excel row number.
 """
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import pandas as pd
 
@@ -30,14 +30,15 @@ def find_header_row(filepath: str) -> Optional[int]:
     return None
 
 
-def parse_excel(filepath: str) -> List[dict]:
+def parse_excel(filepath: str) -> Tuple[List[dict], int]:
     """
-    Parse Excel file into a list of row dicts.
+    Parse Excel file into a list of row dicts and the header row index.
 
-    - Uses find_header_row() to detect header row.
+    - Uses find_header_row() once to detect header row.
     - Removes column 'Unnamed: 0' if present.
     - Does NOT drop empty rows (they may be HEADER rows for later processing).
     - Adds __row_index__ = Excel sheet row number (1-based): pandas_idx + header_row_index + 2.
+    - Returns (list of row dicts, header_row_index) so callers avoid re-reading the file.
     """
     path = Path(filepath)
     if not path.exists():
@@ -61,7 +62,7 @@ def parse_excel(filepath: str) -> List[dict]:
         row_dict["__row_index__"] = int(pandas_idx) + header_row_index + 2
         result.append(row_dict)
 
-    return result
+    return (result, header_row_index)
 
 
 if __name__ == "__main__":
@@ -70,5 +71,5 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python -m src.core.parser <filepath>")
         sys.exit(1)
-    rows = parse_excel(sys.argv[1])
+    rows, _ = parse_excel(sys.argv[1])
     print(f"Rows: {len(rows)}")

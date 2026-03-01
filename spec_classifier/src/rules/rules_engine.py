@@ -1,5 +1,5 @@
-﻿"""
-Rules engine: load Dell rules from YAML and match rows against entity rules.
+"""
+Rules engine: load classification rules from YAML and match rows against entity rules.
 """
 
 import logging

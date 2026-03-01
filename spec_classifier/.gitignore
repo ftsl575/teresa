@@ -1,11 +1,27 @@
-﻿.venv/
-venv/
-env/
+# Python
 __pycache__/
 *.pyc
 *.pyo
+.venv/
+venv/
+env/
+
+# Testing
 .pytest_cache/
-output/
-test_data/*.xlsx
+.coverage
+htmlcov/
+
+# Linting / type checking
+.ruff_cache/
+.mypy_cache/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Project
+output/
+test_data/*.xlsx
+config.local.yaml
+temporary/
+diag/

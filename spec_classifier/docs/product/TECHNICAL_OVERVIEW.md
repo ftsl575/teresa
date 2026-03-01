@@ -1,12 +1,12 @@
 # Spec Classifier — Technical Overview (Multivendor)
 
-Документ описывает **фактическую** реализацию проекта (код в репозитории). Источники: спецификация `dell_mvp_technical_spec.md`, код в `src/`, `main.py`, тесты в `tests/`, `config.yaml`, `README.md`.
+Документ описывает **фактическую** реализацию проекта (код в репозитории). Источники: код в `src/`, `main.py`, тесты в `tests/`, `config.yaml`.
 
 ---
 
 ## 1. Назначение системы
 
-Система — **MVP-пайплайн** для классификации Dell-спецификаций в формате Excel:
+Система — **пайплайн** для классификации вендорных спецификаций (Dell, Cisco CCW) в формате Excel:
 
 - **Вход:** один Excel-файл (`.xlsx`) с таблицей спецификации (столбцы в том числе: Module Name, Option Name, SKUs, Qty, Option List Price).
 - **Выход:**
@@ -85,7 +85,7 @@
 | `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
 | `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
 | `--vendor` | нет (default: `dell`) | `dell` или `cisco`. Выбирает адаптер парсинга/нормализации и файл правил. |
-| `--output-dir` | нет (по умолчанию: `config paths.output_root`, иначе `C:\Users\G\Desktop\OUTPUT` — см. `main.py`) | Каталог для подпапок прогонов; внутри создаётся `{vendor}_run/run-.../`. |
+| `--output-dir` | нет (по умолчанию: `config paths.output_root`, иначе `cwd/output` — см. `main.py`) | Каталог для подпапок прогонов; внутри создаётся `{vendor}_run/run-.../`. |
 | `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
 | `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
 
@@ -175,7 +175,7 @@ spec_classifier/
 │   ├── dl5_expected.jsonl
 │   ├── ccw_1_expected.jsonl      # Cisco golden (Price Estimate, 26 строк)
 │   └── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
-├── <output_dir>/                 # по умолчанию из config paths.output_root или C:\Users\G\Desktop\OUTPUT
+├── <output_dir>/                 # по умолчанию из config paths.output_root или cwd/output
 │   ├── dell_run/
 │   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Dell
 │   └── cisco_run/

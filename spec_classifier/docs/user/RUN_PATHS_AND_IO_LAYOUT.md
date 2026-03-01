@@ -1,8 +1,8 @@
-# Run Paths & I/O Layout — External roots (Desktop INPUT/OUTPUT)
+# Run Paths & I/O Layout — Input/Output roots
 
 ## Цель: репозиторий только с кодом
 
-Все входные и выходные данные прогонов располагаются **вне репозитория**. По умолчанию используются папки на рабочем столе: `INPUT` (вход) и `OUTPUT` (выход). В каталоге `spec_classifier/` не создаются папки `out/`, `output/` и не появляются артефакты прогонов.
+Все входные и выходные данные прогонов по умолчанию используют относительные каталоги `input/` (вход) и `output/` (выход). В каталоге `spec_classifier/` не создаются папки `out/`, `output/` и не появляются артефакты прогонов, если не указать `--output-dir output` из корня репо. Абсолютные пути можно задать через `config.local.yaml` (не коммитится в git).
 
 ### Virtual Environment Policy
 
@@ -14,8 +14,8 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 
 | Назначение | Путь по умолчанию |
 |------------|-------------------|
-| **INPUT**  | `C:\Users\G\Desktop\INPUT`  — каталог с входными .xlsx (одиночный файл задаётся путём к файлу; для batch — каталог с файлами). |
-| **OUTPUT** | `C:\Users\G\Desktop\OUTPUT` — верхний корень вывода; внутри создаются `dell_run/`, `cisco_run/`, затем папки прогонов. |
+| **INPUT**  | `input/` (относительно cwd) — каталог с входными .xlsx (одиночный файл задаётся путём к файлу; для batch — каталог с файлами). |
+| **OUTPUT** | `output/` (относительно cwd) — верхний корень вывода; внутри создаются `dell_run/`, `cisco_run/`, затем папки прогонов. |
 | **TEMP**   | **Не используется.** Пайплайн работает в памяти (parse → normalize → classify) и пишет только в итоговую run-папку. Отдельная временная директория не требуется. В будущем TEMP может понадобиться только при появлении промежуточной записи на диск (например, распаковка больших архивов или кэширование нормализованных данных). |
 
 ---
@@ -25,16 +25,16 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 При работе с несколькими вендорами рекомендуется держать файлы в отдельных подпапках:
 
 ```
-INPUT/
+input/
   dell/    <- dl*.xlsx
   cisco/   <- ccw*.xlsx
 ```
 
 Запуск:
 
-```powershell
-python main.py --batch-dir INPUT/dell --vendor dell
-python main.py --batch-dir INPUT/cisco --vendor cisco
+```bash
+python main.py --batch-dir input/dell --vendor dell
+python main.py --batch-dir input/cisco --vendor cisco
 ```
 
 Это предотвращает попытку обработать Dell-файлы Cisco-адаптером и наоборот.
@@ -48,19 +48,19 @@ python main.py --batch-dir INPUT/cisco --vendor cisco
 2. **config.yaml** — секция `paths`:  
    `paths.input_root`, `paths.output_root` (используются, если соответствующий CLI-аргумент не передан).
 3. **Дефолты** — если в config нет `paths` или ключа:  
-   `C:\Users\G\Desktop\INPUT`, `C:\Users\G\Desktop\OUTPUT`.
+   `input`, `output` (относительно текущей директории).
 
 ---
 
 ## Точное дерево вывода (соответствует out.zip)
 
-Верхний уровень — **output_root** (по умолчанию `C:\Users\G\Desktop\OUTPUT`). Под ним создаются подпапки по вендору и затем папки прогонов.
+Верхний уровень — **output_root** (по умолчанию `output/`). Под ним создаются подпапки по вендору и затем папки прогонов.
 
 ### Dell
 
 ```
-OUTPUT\
-  dell_run\
+output/
+  dell_run/
     run-YYYY-MM-DD__HH-MM-SS-<stem>\
       rows_raw.json
       rows_normalized.json
@@ -79,8 +79,8 @@ OUTPUT\
 ### Cisco
 
 ```
-OUTPUT\
-  cisco_run\
+output/
+  cisco_run/
     run-YYYY-MM-DD__HH-MM-SS-<stem>\
       rows_raw.json
       rows_normalized.json
@@ -102,46 +102,46 @@ OUTPUT\
 
 ---
 
-## Примеры команд (PowerShell, полные пути)
+## Примеры команд
 
 ### Создание папок INPUT и OUTPUT
 
-```powershell
-New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\INPUT"
-New-Item -ItemType Directory -Force -Path "C:\Users\G\Desktop\OUTPUT"
+```bash
+mkdir input
+mkdir output
 ```
 
 ### Одиночный прогон Dell
 
-```powershell
-cd C:\Users\G\Desktop\teresa\spec_classifier
-# Положите dl1.xlsx в Desktop\INPUT, затем:
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
-# Результат: C:\Users\G\Desktop\OUTPUT\dell_run\run-YYYY-MM-DD__HH-MM-SS-dl1\
+```bash
+cd spec_classifier
+# Положите dl1.xlsx в input/, затем:
+python main.py --input input/dl1.xlsx
+# Результат: output/dell_run/run-YYYY-MM-DD__HH-MM-SS-dl1/
 ```
 
 ### Одиночный прогон Cisco
 
-```powershell
-cd C:\Users\G\Desktop\teresa\spec_classifier
-python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
-# Результат: C:\Users\G\Desktop\OUTPUT\cisco_run\run-YYYY-MM-DD__HH-MM-SS-ccw_1\
+```bash
+cd spec_classifier
+python main.py --input input/ccw_1.xlsx --vendor cisco
+# Результат: output/cisco_run/run-YYYY-MM-DD__HH-MM-SS-ccw_1/
 ```
 
-### Batch (все .xlsx из INPUT)
+### Batch (все .xlsx из input)
 
-```powershell
-cd C:\Users\G\Desktop\teresa\spec_classifier
-python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
+```bash
+cd spec_classifier
+python main.py --batch-dir input
 # или, если в config.yaml задан paths.input_root:
-python main.py --batch
-# Результат: OUTPUT\dell_run\run-...-<stem>\ для каждого файла + run-...-TOTAL\
+python main.py --batch-dir input
+# Результат: output/dell_run/run-...-<stem>/ для каждого файла + run-...-TOTAL/
 ```
 
 ### Запуск тестов
 
-```powershell
-cd C:\Users\G\Desktop\teresa\spec_classifier
+```bash
+cd spec_classifier
 python -m pytest tests/ -v --tb=short
 ```
 
@@ -156,7 +156,7 @@ python -m pytest tests/ -v --tb=short
 
 ## Чеклист: «ничего не пишется в репо»
 
-После прогона без явного `--output-dir` (или с `--output-dir C:\Users\G\Desktop\OUTPUT`):
+После прогона без явного `--output-dir` (или с `--output-dir output`):
 
 1. Выполните `git status` — в списке изменённых/новых файлов не должно быть папок вывода и артефактов.
 2. Убедитесь, что в корне репозитория и в `spec_classifier/` нет новых каталогов `out/`, `output/` с run-папками.
