@@ -22,8 +22,14 @@ function Invoke-Native {
         [string]$TeePath = "",
         [switch]$AppendTee
     )
-    $output = & $Executable @Arguments 2>&1
-    $exitCode = $LASTEXITCODE
+    $prevEap = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $output = & $Executable @Arguments 2>&1
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
     # Normalize: in PS 5.1, stderr lines from 2>&1 can be ErrorRecord; convert to string for display/log
     $lines = $output | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.ToString() } else { $_ } }
     # Stream merged stdout+stderr to console (do not treat as PowerShell errors)
