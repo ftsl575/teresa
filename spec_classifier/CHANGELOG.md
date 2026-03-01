@@ -17,6 +17,10 @@ Versioning: [SemVer](https://semver.org/).
 - feat: one-button run — scripts/run_full.ps1, run_tests.ps1, clean.ps1; config layering (config.local.yaml); docs/dev/ONE_BUTTON_RUN.md (PROMPT #7).
 
 ### Changed
+- docs: DATA_CONTRACTS §2 — device_type описан как расширяемый словарь по вендорам (Dell/Cisco примеры); источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`; новые значения при добавлении вендора — MINOR по разделу 7. Жёсткий список в коде не вводится.
+- docs: parser.py и rules_engine.RuleSet — docstrings приведены к vendor-agnostic формулировкам (column-based / sentinel column / vendor YAML); без изменения логики.
+- Makefile: добавлены CCW_FILES (ccw_1, ccw_2); generate_golden — второй цикл по CCW_FILES с --vendor cisco; цели test-regression-cisco, test-unknown-cisco, generate_golden_cisco; test объединяет Dell и Cisco регрессию и unknown-threshold.
+- annotated_writer.py: комментарии и docstring приведены к vendor-agnostic формулировкам (убраны упоминания «Cisco CCW» для header_row_index=None); без изменения логики.
 - config: _load_config() merges config.local.yaml on top of config.yaml (deep merge).
 - .gitignore: config.local.yaml, temporary/, diag/, .coverage, htmlcov/, .ruff_cache/, .mypy_cache/.
 - README: section «One-button run (Windows)»; DOCS_INDEX: ONE_BUTTON_RUN.md; Makefile title → «Spec Classifier — Makefile».

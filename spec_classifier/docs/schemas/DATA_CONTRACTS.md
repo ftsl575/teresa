@@ -22,7 +22,11 @@ Data contracts задают точные форматы выходных арт�
 | hw_type | string \| null | да | Заполняется для ITEM с entity_type HW при разрешении; иначе null. |
 | warnings | array of string | да | Обычно []; при неразрешённом hw_type для HW — например ["hw_type unresolved for HW row"]. |
 
-**device_type** (полный список): power_cord, sfp_cable, storage_nvme, storage_ssd, psu, nic, raid_controller, hba, cpu.
+**device_type** (расширяемый словарь; значения определяются правилами вендора):
+- Dell: power_cord, sfp_cable, storage_nvme, storage_ssd, psu, nic, raid_controller, hba, cpu
+- Cisco: fan, transceiver, cable, psu, power_cord
+
+Источник истины — секция `device_type_rules` в `rules/<vendor>_rules.yaml`. Новые значения при добавлении вендора — MINOR-изменение по правилам стабильности (раздел 7).
 
 **hw_type** (25 значений): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory.
 

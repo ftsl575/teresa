@@ -24,14 +24,14 @@ def generate_annotated_source_excel(
     Load original Excel, add columns Entity Type, State, device_type, hw_type,
     and save to run_folder/<stem>_annotated.xlsx.
     Row count unchanged; mapping by source_row_index (Excel 1-based).
-    header_row_index from adapter: 0-based row for header labels; None is valid (e.g. Cisco CCW) — no header row highlight/freeze.
+    header_row_index from adapter: 0-based row for header labels; None is valid (e.g. formats with no fixed header row) — no header row highlight/freeze.
     """
     path = Path(original_excel_path)
     if not path.exists():
         raise FileNotFoundError(f"Original Excel not found: {path}")
 
     df = pd.read_excel(path, header=None, engine="openpyxl")
-    # header_row_index=None is valid (e.g. Cisco CCW): use row 0 for labels, no highlight/freeze
+    # header_row_index=None is valid (format has no header row): use row 0 for labels, no highlight/freeze
     label_row = header_row_index if header_row_index is not None else 0
 
     # Map Excel row number (1-based) -> classification result

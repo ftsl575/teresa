@@ -14,6 +14,9 @@
 - unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2)
 - hw_type_null_count = 0
 
+## Документация — device_type (DATA_CONTRACTS)
+- **device_type** описан как расширяемый словарь по вендорам; источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`. Новые значения при добавлении вендора — MINOR по разделу 7. Жёсткий список в коде не вводится.
+
 ## Известные проблемы
 - Смотри CHANGELOG.md [Unreleased]
 
@@ -30,10 +33,10 @@
 - README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`; личные пути `C:\Users\G\...` удалены. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; источник — код и config, без dell_mvp.
 
 ## Документация — заголовки и ядро (P1, LEAK-005, LEAK-006, DOC-010)
-- Шесть doc-файлов: H1 заменён на «… — spec_classifier» (LEAK-005). Docstrings core: normalizer, rules_engine, parser, state_detector — без «Dell specification», «load Dell rules» (LEAK-006). Taxonomy: «Vendors covered: Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)» (DOC-010).
+- Шесть doc-файлов: H1 заменён на «… — spec_classifier» (LEAK-005). Docstrings core: normalizer, rules_engine, parser, state_detector — без «Dell specification», «load Dell rules» (LEAK-006). parser.py: «column-based specification files», «sentinel column value», «1-based Excel row number»; rules_engine.RuleSet: «Loaded classification rules from a vendor YAML file». Taxonomy: «Vendors covered: Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)» (DOC-010).
 
 ## Annotated writer и тесты (P1, LEAK-007, LEAK-008)
-- annotated_writer: проверка `has_cisco_fields` заменена на расширяемый реестр VENDOR_EXTRA_COLS (LEAK-007). test_smoke, test_annotated_writer, test_excel_writer: используют _get_adapter("dell", {}), adapter.parse(), adapter.normalize() вместо прямых вызовов parse_excel/normalize_row (LEAK-008).
+- annotated_writer: проверка `has_cisco_fields` заменена на расширяемый реестр VENDOR_EXTRA_COLS (LEAK-007). Комментарии и docstring — без упоминания «Cisco CCW» (header_row_index=None описан как «formats with no fixed header row» / «format has no header row»). test_smoke, test_annotated_writer, test_excel_writer: используют _get_adapter("dell", {}), adapter.parse(), adapter.normalize() вместо прямых вызовов parse_excel/normalize_row (LEAK-008).
 
 ## P2 — документация (DOC-011, DOC-012)
 - RULES_AUTHORING_GUIDE: добавлена секция «Конвенция rule_id» — формат PREFIX-NUMBER[-SUFFIX], мультивендор (-C- для Cisco), уникальность, связь с golden (DOC-011).
@@ -58,4 +61,4 @@ Claude проводит аудит после каждого набора изм
 - **.gitignore:** добавлены config.local.yaml, temporary/, diag/, .coverage, htmlcov/, .ruff_cache/, .mypy_cache/.
 - **Скрипты (scripts/):** run_full.ps1 (pytest + batch по вендорам), run_tests.ps1 (только pytest), clean.ps1 (очистка __pycache__ и .pytest_cache). Логи run_full → diag/runs/\<timestamp\>/.
 - **Документация:** docs/dev/ONE_BUTTON_RUN.md; README — секция «One-button run (Windows)»; DOCS_INDEX — ссылка на ONE_BUTTON_RUN.
-- **Makefile:** заголовок изменён на «Spec Classifier — Makefile».
+- **Makefile:** заголовок изменён на «Spec Classifier — Makefile». Переменные DL_FILES (dl1–dl5), CCW_FILES (ccw_1, ccw_2). Цель `test` включает test-regression-cisco и test-unknown-cisco. `generate_golden` генерирует golden и для Dell, и для Cisco (второй цикл по CCW_FILES с --vendor cisco). Отдельная цель `generate_golden_cisco` — только Cisco.
