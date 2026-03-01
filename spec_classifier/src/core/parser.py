@@ -1,6 +1,7 @@
 """
-Excel parser for Dell-format specification files (used by DellAdapter).
-Finds header row by 'Module Name', then parses data with __row_index__ = Excel row number.
+Excel parser for column-based specification files (used by DellAdapter).
+Finds header row by a sentinel column value ('Module Name'), then parses data rows
+with __row_index__ = 1-based Excel row number.
 """
 
 from pathlib import Path

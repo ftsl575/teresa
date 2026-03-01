@@ -107,7 +107,7 @@ def match_hw_type_rule(row: NormalizedRow, rules: List[dict]) -> Optional[dict]:
 
 class RuleSet:
     """
-    Loaded Dell classification rules from YAML.
+    Loaded classification rules from a vendor YAML file.
     Exposes state_rules list and entity rule lists (base_rules, service_rules, ...).
     """
 
