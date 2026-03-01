@@ -1,7 +1,5 @@
 
-# Local test data
-spec_classifier/test_data/
-spec_classifier/test_data/*.xlsx
+# Local test data (kept outside repo — see config.local.yaml)
 **/__pycache__/
 .venv/
 venv/

@@ -14,7 +14,7 @@ from src.core.normalizer import RowKind
 from src.core.state_detector import State
 from src.outputs.excel_writer import generate_cleaned_spec
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell
 
 
 @pytest.fixture
@@ -36,9 +36,9 @@ def config():
 def test_excel_writer_file_exists_no_headers_only_include_types_and_present(config, tmp_path):
     """Run pipeline on dl1.xlsx, generate cleaned spec; assert file exists, no HEADER, only include_types, only PRESENT."""
     root = project_root()
-    input_path = root / "test_data" / "dl1.xlsx"
+    input_path = get_input_root_dell() / "dl1.xlsx"
     if not input_path.exists():
-        pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
 
     adapter = _get_adapter("dell", {})
     rows_raw, _ = adapter.parse(str(input_path))

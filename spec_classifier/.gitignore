@@ -21,7 +21,7 @@ Thumbs.db
 
 # Project
 output/
-test_data/*.xlsx
+test_data/
 config.local.yaml
 temporary/
 diag/

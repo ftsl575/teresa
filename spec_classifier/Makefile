@@ -4,8 +4,9 @@
 PYTHON ?= python
 DL_FILES = dl1 dl2 dl3 dl4 dl5
 CCW_FILES = ccw_1 ccw_2
+HP_FILES = hp1 hp2 hp3 hp4 hp5 hp6 hp7 hp8
 
-.PHONY: generate_golden generate_golden_cisco test test-unit test-smoke test-regression test-regression-cisco test-unknown test-unknown-cisco
+.PHONY: generate_golden generate_golden_cisco generate_golden_hpe test test-unit test-smoke test-regression test-regression-cisco test-regression-hpe test-unknown test-unknown-cisco test-unknown-hpe
 
 generate_golden:
 	@for d in $(DL_FILES); do \
@@ -26,6 +27,15 @@ generate_golden:
 			echo "Skipping $$f: $$xlsx not found"; \
 		fi; \
 	done
+	@for f in $(HP_FILES); do \
+		xlsx="input/hpe/$$f.xlsx"; \
+		if [ -f "$$xlsx" ]; then \
+			echo "Generating golden for $$f (HPE)..."; \
+			$(PYTHON) main.py --save-golden --vendor hpe --input "$$xlsx" || exit 1; \
+		else \
+			echo "Skipping $$f: $$xlsx not found (expected at input/hpe/ or paths.input_root/hpe/)"; \
+		fi; \
+	done
 	@echo "Done. Golden files in golden/"
 
 generate_golden_cisco:
@@ -40,7 +50,20 @@ generate_golden_cisco:
 	done
 	@echo "Done. Cisco golden files in golden/"
 
-test: test-unit test-smoke test-regression test-regression-cisco test-unknown test-unknown-cisco
+# HPE: XLSX from paths.input_root/hpe/ (config). Default relative path input/hpe/ (no test_data).
+generate_golden_hpe:
+	@for f in $(HP_FILES); do \
+		xlsx="input/hpe/$$f.xlsx"; \
+		if [ -f "$$xlsx" ]; then \
+			echo "Generating golden for $$f (HPE)..."; \
+			$(PYTHON) main.py --save-golden --vendor hpe --input "$$xlsx" || exit 1; \
+		else \
+			echo "Skipping $$f: $$xlsx not found (set paths.input_root in config.local.yaml or use input/hpe/)"; \
+		fi; \
+	done
+	@echo "Done. HPE golden files in golden/"
+
+test: test-unit test-smoke test-regression test-regression-cisco test-regression-hpe test-unknown test-unknown-cisco test-unknown-hpe
 
 test-unit:
 	$(PYTHON) -m pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v
@@ -59,3 +82,9 @@ test-regression-cisco:
 
 test-unknown-cisco:
 	$(PYTHON) -m pytest tests/test_unknown_threshold_cisco.py -v
+
+test-regression-hpe:
+	$(PYTHON) -m pytest tests/test_regression_hpe.py -v
+
+test-unknown-hpe:
+	$(PYTHON) -m pytest tests/test_unknown_threshold_hpe.py -v

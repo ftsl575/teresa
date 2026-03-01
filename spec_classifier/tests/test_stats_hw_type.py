@@ -4,7 +4,7 @@ Tests for hw_type_counts in collect_stats and run_summary.json.
 
 import pytest
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell
 from tests.helpers import run_pipeline_in_memory
 from src.diagnostics.stats_collector import collect_stats
 from src.core.classifier import HW_TYPE_VOCAB
@@ -38,9 +38,10 @@ def test_hw_type_vocab():
 def dl1_stats():
     """Run pipeline on dl1.xlsx, call collect_stats, return stats dict."""
     root = project_root()
-    input_path = root / "test_data" / "dl1.xlsx"
+    input_root = get_input_root_dell()
+    input_path = input_root / "dl1.xlsx"
     if not input_path.exists():
-        pytest.skip("test_data/dl1.xlsx not found")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
     rules_path = root / "rules" / "dell_rules.yaml"
     _, classification_results = run_pipeline_in_memory("dell", input_path, rules_path)
     return collect_stats(classification_results)

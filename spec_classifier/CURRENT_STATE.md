@@ -9,6 +9,7 @@
 ## Активные вендоры
 - Dell (spec export)
 - Cisco (CCW — Commerce Workspace)
+- HPE (QuoteBuilder BOM) — адаптер, правила (hpe_rules.yaml), регистрация в VENDOR_REGISTRY, config.yaml, annotated_writer (5 колонок), Makefile (HP_FILES, golden/тесты)
 
 ## Статус классификации
 - unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2)
@@ -20,10 +21,16 @@
 ## Известные проблемы
 - Смотри CHANGELOG.md [Unreleased]
 
+## HPE (Step 1–2)
+- **src/vendors/hpe/:** созданы parser.py (BOM, col_map по имени, Total/EOF), normalizer.py (HPENormalizedRow + vendor extensions), adapter.py (HPEAdapter). can_parse: лист BOM + заголовки "Product #", "Product Description".
+- **rules/hpe_rules.yaml:** создан (version 1.0.0) — base_rules, service_rules, logistic_rules, config_rules, software_rules, device_type_rules (82 правила), hw_type_rules.device_type_map.
+- **Интеграция (Step 3):** main.py — VENDOR_REGISTRY["hpe"] = HPEAdapter; config.yaml — hpe: rules/hpe_rules.yaml; annotated_writer — VENDOR_EXTRA_COLS + 5 HPE колонок, skip по первым 10 строкам убран; Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe. Тесты test_regression_hpe и test_unknown_threshold_hpe — отдельный шаг (файлы тестов и golden).
+
 ## Adapter can_parse (P0)
 - DellAdapter: положительная сигнатура — ячейка "Module Name" в первых 20 строках первого листа.
 - CiscoAdapter: положительная сигнатура — лист "Price Estimate" в wb.sheetnames.
-- В смешанном batch (Dell + Cisco) каждый адаптер отклоняет чужие файлы по своей сигнатуре.
+- HPEAdapter: положительная сигнатура — лист "BOM" в wb.sheetnames и в строке 1 наличие "Product #" и "Product Description".
+- В смешанном batch каждый адаптер отклоняет чужие файлы по своей сигнатуре.
 
 ## I/O и парсинг (P1)
 - `parse_excel()` (core) возвращает `(rows, header_row_index)` — один проход по файлу; DellAdapter.parse() делегирует ему, без повторного find_header_row() (BUG-002).
@@ -59,6 +66,7 @@ Claude проводит аудит после каждого набора изм
 - **Config layering:** main.py загружает config.yaml, затем поверх — config.local.yaml (если есть); глубокое слияние по ключам.
 - **config.local.yaml.example** в корне; config.local.yaml в .gitignore.
 - **.gitignore:** добавлены config.local.yaml, temporary/, diag/, .coverage, htmlcov/, .ruff_cache/, .mypy_cache/.
-- **Скрипты (scripts/):** run_full.ps1 (pytest + batch по вендорам), run_tests.ps1 (только pytest), clean.ps1 (очистка __pycache__ и .pytest_cache). Логи run_full → diag/runs/\<timestamp\>/.
+- **temp_root/diag:** Логи run_full и все временные артефакты (diag/runs/\<timestamp\>/, .ruff_cache, .mypy_cache, __pycache__, .pytest_cache) пишутся в temp_root из config.local.yaml; репо не засоряется. clean.ps1 удаляет их из temp_root и при необходимости из рабочего дерева (старый diag/ в репо удалён).
+- **Скрипты (scripts/):** run_full.ps1 (pytest + batch по вендорам), run_tests.ps1 (только pytest), clean.ps1 (очистка __pycache__, .pytest_cache, .ruff_cache, .mypy_cache, diag/). Логи run_full → temp_root/diag/runs/\<timestamp\>/.
 - **Документация:** docs/dev/ONE_BUTTON_RUN.md; README — секция «One-button run (Windows)»; DOCS_INDEX — ссылка на ONE_BUTTON_RUN.
 - **Makefile:** заголовок изменён на «Spec Classifier — Makefile». Переменные DL_FILES (dl1–dl5), CCW_FILES (ccw_1, ccw_2). Цель `test` включает test-regression-cisco и test-unknown-cisco. `generate_golden` генерирует golden и для Dell, и для Cisco (второй цикл по CCW_FILES с --vendor cisco). Отдельная цель `generate_golden_cisco` — только Cisco.

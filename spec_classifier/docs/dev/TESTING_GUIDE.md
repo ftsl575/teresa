@@ -3,7 +3,7 @@
 ## 1. Тестовая стратегия
 
 - **Unit (без xlsx):** test_rules_unit, test_state_detector, test_normalizer — не требуют тестовых Excel.
-- **Integration (с xlsx):** прогон пайплайна на test_data/dlN.xlsx; проверка артефактов (test_smoke, test_excel_writer, test_annotated_writer, test_cli).
+- **Integration (с xlsx):** прогон пайплайна на dlN.xlsx из `C:\Users\G\Desktop\INPUT\`; проверка артефактов (test_smoke, test_excel_writer, test_annotated_writer, test_cli).
 - **Regression (xlsx + golden):** test_regression — построчное сравнение с golden/<stem>_expected.jsonl.
 - **Acceptance:** test_unknown_threshold (лимит unknown), test_dec_acceptance и др. по необходимости.
 - **Cisco Unit:** test_cisco_parser — parse_excel на ccw_1/ccw_2 (26 и 82 строки); test_cisco_normalizer — bundle_id, parent_line_number, is_bundle_root, module_name, standalone.
@@ -21,7 +21,7 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 # С xlsx (smoke + CLI)
 pytest tests/test_smoke.py tests/test_cli.py -v
 
-# Регрессия (нужны test_data и golden)
+# Регрессия (нужны входные файлы в INPUT\ и golden\)
 pytest tests/test_regression.py -v
 
 # Вся батарея
@@ -36,17 +36,17 @@ pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
 
 ## 3. Тестовые данные
 
-Файлы `test_data/dl1.xlsx` … `dl5.xlsx`, `ccw_1.xlsx`, `ccw_2.xlsx` не хранятся в git. Размещайте их в `spec_classifier/test_data/`. При отсутствии файла тесты, зависящие от него, пропускаются (skip) с сообщением.
+Входные xlsx не хранятся в git. Размещайте их в `C:\Users\G\Desktop\INPUT\` (или укажите свой путь в `config.local.yaml → paths.input_root`). При отсутствии файла тесты пропускаются (skip) с сообщением.
 
 ---
 
 ## 4. Golden-файлы
 
-- **Генерация:** `python main.py --input test_data/dl1.xlsx --save-golden` → создаётся `golden/dl1_expected.jsonl`.
+- **Генерация:** `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden` → создаётся `golden/dl1_expected.jsonl`.
 - **Обновление:** `--update-golden` с интерактивным подтверждением (y/N). В CI — `--save-golden`.
 - **Сравниваемые поля:** entity_type, state, matched_rule_id, device_type, hw_type, skus (и другие, заданные в тесте).
 - **Политика:** обновлять golden только осознанно после изменения правил/логики; в PR обязательно описание diff и ревью.
-- **Cisco golden:** `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`. Генерация: `python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden` (аналогично для ccw_2). После изменения `cisco_rules.yaml` — обновить оба Cisco golden.
+- **Cisco golden:** `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`. Генерация: `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden` (аналогично для ccw_2). После изменения `cisco_rules.yaml` — обновить оба Cisco golden.
 
 ---
 
@@ -66,7 +66,7 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
        tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v --tb=short
 ```
 
-При отсутствии test_data или golden часть тестов будет пропущена; unit-тесты и регрессия (если файлы есть) должны быть зелёными.
+При отсутствии входных файлов или golden часть тестов будет пропущена; unit-тесты и регрессия (если файлы есть) должны быть зелёными.
 
 ---
 
@@ -78,8 +78,8 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 
 ## 8. Работа с новым датасетом
 
-1. Скопировать xlsx в test_data/dlN.xlsx.
-2. Запустить `python main.py --input test_data/dlN.xlsx --save-golden`.
+1. Положить xlsx в `C:\Users\G\Desktop\INPUT\dlN.xlsx`.
+2. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\dlN.xlsx" --save-golden`.
 3. Проверить unknown_rows.csv и run_summary.
 4. При необходимости добавить правила и повторить.
 5. Добавить параметр в parametrize в test_regression.py (и при необходимости в другие тесты).
@@ -88,10 +88,10 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 
 ### Новый Cisco датасет (ccwN.xlsx)
 
-1. Скопировать в `test_data/ccw_N.xlsx`.
-2. Запустить `python main.py --input test_data/ccw_N.xlsx --vendor cisco`.
+1. Положить в `C:\Users\G\Desktop\INPUT\ccw_N.xlsx`.
+2. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco`.
 3. Проверить `unknown_rows.csv` и `run_summary.json` (цель: `unknown_count = 0`).
 4. При `unknown > 0`: добавить правила в `rules/cisco_rules.yaml`, повторить шаг 2.
-5. Запустить `python main.py --input test_data/ccw_N.xlsx --vendor cisco --save-golden`.
+5. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`.
 6. Добавить `ccw_N` в `@pytest.mark.parametrize` в `test_regression_cisco.py`.
 7. Запустить `pytest tests/ -v` и закоммитить `golden/ccw_N_expected.jsonl`.

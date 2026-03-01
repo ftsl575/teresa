@@ -94,9 +94,9 @@
 Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
 
 ```bash
-python main.py --input test_data/dl1.xlsx
-python main.py --input test_data/dl1.xlsx --save-golden
-python main.py --input test_data/dl1.xlsx --update-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --update-golden
 ```
 
 ---
@@ -118,7 +118,7 @@ python main.py --input test_data/dl1.xlsx --update-golden
 
 **Регрессионные тесты** — `tests/test_regression.py`. Параметризация по имени файла (`dl1.xlsx`, `dl2.xlsx`). Для каждого файла:
 
-- если нет `test_data/<filename>` — тест пропускается;
+- если нет входного файла в paths.input_root — тест пропускается;
 - если нет `golden/<stem>_expected.jsonl` — тест пропускается с сообщением про `--save-golden`;
 - иначе: в тесте выполняется тот же пайплайн (parse → normalize → load RuleSet → classify), строится список записей в формате golden и построчно сравнивается с загруженным golden по полям `entity_type`, `state`, `matched_rule_id`, `skus`; при расхождении — падение с выводом номера строки и отличий.
 
@@ -190,9 +190,9 @@ spec_classifier/
 
 ## 8. Тестовая стратегия
 
-- **Smoke** (`tests/test_smoke.py`): один прогон на `test_data/dl1.xlsx`, проверка создания всех перечисленных артефактов в папке прогона (в т.ч. `rows_raw.json`, `rows_normalized.json`, `classification.jsonl`, `unknown_rows.csv`, `header_rows.csv`, `run_summary.json`). При отсутствии файла — skip.
+- **Smoke** (`tests/test_smoke.py`): один прогон на dl1.xlsx (из paths.input_root), проверка создания всех перечисленных артефактов в папке прогона (в т.ч. `rows_raw.json`, `rows_normalized.json`, `classification.jsonl`, `unknown_rows.csv`, `header_rows.csv`, `run_summary.json`). При отсутствии файла — skip.
 - **Cisco-тесты**:
-  - `test_cisco_parser.py` — `parse_excel` на `test_data/ccw_1.xlsx` и `test_data/ccw_2.xlsx` (ожидается 26 и 82 строки соответственно).
+  - `test_cisco_parser.py` — `parse_excel` на `ccw_1.xlsx` и `ccw_2.xlsx` из paths.input_root (ожидается 26 и 82 строки соответственно).
   - `test_cisco_normalizer.py` — проверка полей `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone` для нормализованных Cisco-строк.
   - `test_regression_cisco.py` — построчная регрессия по `golden/ccw_1_expected.jsonl` и `golden/ccw_2_expected.jsonl`.
   - `test_unknown_threshold_cisco.py` — проверка, что `unknown_count == 0` для обоих CCW-файлов.
@@ -205,7 +205,7 @@ spec_classifier/
 - **CLI** (`test_cli.py`): запуск `main.py --input ... --config config.yaml --output-dir output` через subprocess; проверка exit code 0, наличия в stdout подстроки `total_rows`, наличия в `output/run-*` файлов `cleaned_spec.xlsx` и `run_summary.json`.
 - **Regression** (`test_regression.py`): см. раздел 5; при отличии выводится diff по строкам.
 
-Зависимости тестов: при отсутствии `test_data/dl1.xlsx` или соответствующих golden файлов тесты помечаются как skip, где это реализовано.
+Зависимости тестов: при отсутствии входного файла (paths.input_root) или golden тесты помечаются как skip, где это реализовано.
 
 ---
 
@@ -231,8 +231,8 @@ spec_classifier/
 Cisco-правила: файл `rules/cisco_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`, `is_bundle_root` (строки `"true"`/`"false"` в нижнем регистре), `service_duration_months`. После изменения `rules/cisco_rules.yaml` рекомендуется запускать:
 
 ```bash
-python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden
-python main.py --input test_data/ccw_2.xlsx --vendor cisco --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
 pytest tests/test_regression_cisco.py -v
 ```
 

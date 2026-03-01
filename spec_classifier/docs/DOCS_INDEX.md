@@ -10,7 +10,6 @@
 | `docs/rules/` | **Normative.** Rules authoring guide. |
 | `docs/dev/` | **Normative.** Contributing, testing, operational notes. |
 | `docs/taxonomy/` | **Normative.** Source of truth for controlled vocabularies (e.g., hw_type). |
-| `docs/archive/` | Замёрзшие материалы: выполненные планы, снепшоты версий, архивные AI-промпты. Не нормативны. |
 
 ## Key Documents
 
@@ -35,4 +34,3 @@
 
 - **Normative docs** (`product/`, `user/`, `schemas/`, `rules/`, `dev/`, `taxonomy/`): must stay in sync
   with code. Update docs in the same commit as any behavior change.
-- **Archive** (`docs/archive/`): frozen materials. Do not edit; not normative.

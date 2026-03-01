@@ -12,7 +12,7 @@
 2. Перенаправляет .pytest_cache и __pycache__ в temp_root (из config.local.yaml или ./temporary)
 3. Запускает pytest
 4. Запускает batch-прогон для каждого вендора (если есть файлы)
-5. Сохраняет логи в diag/runs/<timestamp>/
+5. Сохраняет логи в temp_root/diag/runs/<timestamp>/
 6. Печатает итог
 
 ## Конфигурация путей
@@ -36,5 +36,5 @@ copy config.local.yaml.example config.local.yaml
 .\scripts\clean.ps1
 ```
 
-Удаляет __pycache__, .pytest_cache из temp_root и рабочего дерева.  
-Не трогает: golden, test_data, diag, output.
+Удаляет __pycache__, .pytest_cache, .ruff_cache, .mypy_cache и diag/ из temp_root и рабочего дерева.  
+Не трогает: golden, output.

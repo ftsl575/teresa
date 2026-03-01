@@ -29,6 +29,8 @@ spec_classifier/
 └── output/                 # Папки прогонов (не в git)
 ```
 
+**Примечание:** `diag/` — в .gitignore; логи прогонов пишутся в `temp_root/diag/` (см. config.local.yaml).
+
 ---
 
 ## 2. Definition of Done для PR
@@ -43,7 +45,7 @@ spec_classifier/
 
 ## 3. Запреты
 
-- Не коммитить xlsx в git (test_data/*.xlsx в .gitignore).
+- Не коммитить xlsx в git (входные файлы вне репо; см. .gitignore и config.local.yaml).
 - Не коммитить output/ в git.
 - Не менять rule_id без обновления golden и явного описания в CHANGELOG.
 - Не менять `cisco_rules.yaml` без обновления Cisco golden (`ccw_1_expected.jsonl`, `ccw_2_expected.jsonl`).

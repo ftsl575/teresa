@@ -11,6 +11,28 @@ Versioning: [SemVer](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Added
+- feat(hpe): src/vendors/hpe/ — parser, normalizer, adapter (HPEAdapter)
+- feat(hpe): rules/hpe_rules.yaml — 82 device_type правила, BASE/SERVICE/LOGISTIC/SOFTWARE/CONFIG секции
+- feat(hpe): HPEAdapter зарегистрирован в VENDOR_REGISTRY (main.py)
+- feat(hpe): config.yaml — hpe: rules/hpe_rules.yaml
+- feat(hpe): annotated_writer.py — 5 HPE vendor extension колонок в VENDOR_EXTRA_COLS; skip-оптимизация по первым 10 строкам удалена
+- feat(hpe): Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe
+
+### Fixed
+- fix: redirect diag/runs and ruff/mypy caches to temp_root (scripts/run_full.ps1, scripts/clean.ps1)
+
+### Changed
+- docs: ONE_BUTTON_RUN.md — diag path updated to temp_root/diag/runs/<timestamp>/
+- docs: CONTRIBUTING.md — diag/ отмечен как gitignored, пишется в temp_root
+- refactor(tests): все тесты Dell/Cisco переведены с `test_data/` на `get_input_root_dell()` / `get_input_root_cisco()` — единое соглашение с HPE; test_stats_hw_type.py включён
+- docs: OPERATIONAL_NOTES, TESTING_GUIDE, NEW_VENDOR_GUIDE, ONE_BUTTON_RUN, TECHNICAL_OVERVIEW, RULES_AUTHORING_GUIDE, USER_GUIDE, README — `test_data/` заменён на `C:\Users\G\Desktop\INPUT\` во всех примерах команд
+- fix(.gitignore): `test_data/*.xlsx` расширен до `test_data/` (целиком)
+
+---
+
 ## [1.2.2] — 2026-03-01
 
 ### Added

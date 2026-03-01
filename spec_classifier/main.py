@@ -34,10 +34,12 @@ from src.outputs.annotated_writer import generate_annotated_source_excel
 from src.outputs.branded_spec_writer import generate_branded_spec
 from src.vendors.dell.adapter import DellAdapter
 from src.vendors.cisco.adapter import CiscoAdapter
+from src.vendors.hpe.adapter import HPEAdapter
 
 VENDOR_REGISTRY: dict[str, type] = {
     "dell": DellAdapter,
     "cisco": CiscoAdapter,
+    "hpe": HPEAdapter,
 }
 
 
