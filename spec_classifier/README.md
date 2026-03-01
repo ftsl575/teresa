@@ -68,7 +68,7 @@ python main.py --batch-dir input
 .\scripts\run_full.ps1
 ```
 
-Запускает тесты + batch-прогон всех вендоров. Логи в `diag/runs/<timestamp>/`.
+Запускает тесты + batch-прогон всех вендоров. Логи в `temp_root/diag/runs/<timestamp>/` (temp_root из config.local.yaml).
 
 - Только тесты: `.\scripts\run_tests.ps1`
 - Чистка мусора: `.\scripts\clean.ps1`

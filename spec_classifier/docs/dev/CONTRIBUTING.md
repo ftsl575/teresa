@@ -29,6 +29,8 @@ spec_classifier/
 └── output/                 # Папки прогонов (не в git)
 ```
 
+**Примечание:** `diag/` — в .gitignore; логи прогонов пишутся в `temp_root/diag/` (см. config.local.yaml).
+
 ---
 
 ## 2. Definition of Done для PR

@@ -11,6 +11,17 @@ Versioning: [SemVer](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- fix: redirect diag/runs and ruff/mypy caches to temp_root (scripts/run_full.ps1, scripts/clean.ps1)
+
+### Changed
+- docs: ONE_BUTTON_RUN.md — diag path updated to temp_root/diag/runs/<timestamp>/
+- docs: CONTRIBUTING.md — diag/ отмечен как gitignored, пишется в temp_root
+
+---
+
 ## [1.2.2] — 2026-03-01
 
 ### Added

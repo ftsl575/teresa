@@ -76,7 +76,7 @@ $env:PYTHONPYCACHEPREFIX = $PyCacheDir
 if (-not (Test-Path $TempRoot)) { New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null }
 
 # d) Timestamped diag folder
-$DiagDir = Join-Path $RepoRoot "diag\runs\$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+$DiagDir = Join-Path $TempRoot "diag\runs\$(Get-Date -Format 'yyyyMMdd_HHmmss')"
 New-Item -ItemType Directory -Path $DiagDir -Force | Out-Null
 
 # e) Pytest (stderr merged to stdout via Invoke-Native so warnings do not trigger NativeCommandError)
