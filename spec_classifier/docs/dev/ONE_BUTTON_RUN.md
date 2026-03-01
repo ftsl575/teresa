@@ -37,4 +37,4 @@ copy config.local.yaml.example config.local.yaml
 ```
 
 Удаляет __pycache__, .pytest_cache, .ruff_cache, .mypy_cache и diag/ из temp_root и рабочего дерева.  
-Не трогает: golden, test_data, output.
+Не трогает: golden, output.

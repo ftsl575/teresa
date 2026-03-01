@@ -75,12 +75,19 @@ def generate_annotated_source_excel(
     VENDOR_EXTRA_COLS = [
         ("line_number", "line_number"),
         ("service_duration_months", "service_duration_months"),
+        # HPE vendor extension columns (empty for Dell/Cisco rows)
+        ("product_type", "product_type"),
+        ("extended_price", "extended_price"),
+        ("lead_time", "lead_time"),
+        ("config_name", "config_name"),
+        ("is_factory_integrated", "is_factory_integrated"),
     ]
 
     row_to_norm = {r.source_row_index: r for r in normalized_rows}
     for attr, col_name in VENDOR_EXTRA_COLS:
-        if not any(getattr(r, attr, None) is not None for r in normalized_rows[:10]):
-            continue
+        # NOTE: do NOT skip columns based on first-10-rows check — HPE columns may be
+        # empty in early rows but populated later (e.g. files without Config Name header).
+        # Columns are always added; empty values written as "".
         col_data = []
         for r in range(len(df)):
             if r == label_row:

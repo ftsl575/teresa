@@ -1,0 +1,582 @@
+version: "1.0.0"
+
+state_rules:
+  absent_keywords: []
+  present_override_keywords: []
+
+base_rules:
+  - field: option_name
+    pattern: '(?i)configure-to-order\s+server'
+    entity_type: BASE
+    rule_id: BASE-H-001
+
+  - field: option_name
+    pattern: '(?i)\bcto\s+svr\b'
+    entity_type: BASE
+    rule_id: BASE-H-002
+
+  - field: option_name
+    pattern: '(?i)gpu\s+configure-to-order'
+    entity_type: BASE
+    rule_id: BASE-H-003
+
+service_rules:
+  # Заглушки для будущих файлов — в hp1–hp8 не встречаются
+  - field: option_name
+    pattern: '(?i)\b(care\s*pack|procare|warranty\s+service|on-?site\s+service)\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-H-001
+
+logistic_rules:
+  # Заглушки для будущих файлов — в hp1–hp8 не встречаются
+  - field: option_name
+    pattern: '(?i)\b(delivery|shipping|freight|installation\s+service)\b'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-H-001
+
+config_rules:
+  # КРИТИЧНО: Factory Integrated — entity_type назначается здесь, НЕ в коде парсера
+  - field: option_name
+    pattern: '^Factory Integrated$'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-001
+
+  - field: option_name
+    pattern: '(?i)\bfio\s+enablement\s+kit\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-002
+
+  - field: option_name
+    pattern: '(?i)\bfio\s+configuration\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-003
+
+  - field: option_name
+    pattern: '(?i)\bfio\s+enablement\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-004
+
+  - field: option_name
+    pattern: '(?i)\benabl(ement|ing)\s+kit\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-005
+
+  - field: option_name
+    pattern: '(?i)configuration\s+tracking'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-006
+
+  - field: option_name
+    pattern: '(?i)localization\s+fio\s+kit'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-007
+
+  - field: option_name
+    pattern: '(?i)ce\s+mark\s+removal'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-008
+
+  - field: option_name
+    pattern: '(?i)\benabl(ement|ing)\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-H-009
+
+software_rules:
+  - field: option_name
+    pattern: '(?i)\bsaas\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-H-001
+
+  - field: option_name
+    pattern: '(?i)\blicen[sc]e\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-H-002
+
+  - field: option_name
+    pattern: '(?i)\bltu\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-H-003
+
+  - field: option_name
+    pattern: '(?i)\bilo\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-H-004
+
+  - field: option_name
+    pattern: '(?i)\boneview\b'
+    entity_type: SOFTWARE
+    rule_id: SOFTWARE-H-005
+
+device_type_rules:
+  applies_to: [HW, LOGISTIC]
+
+  rules:
+    # ── PSU (специфичные до generic 'power supply') ───────────────────────
+    - field: option_name
+      pattern: '(?i)flex\s+slot.*power\s+supply'
+      device_type: psu
+      rule_id: HW-H-001
+
+    - field: option_name
+      pattern: '(?i)hot.?plug\s+power\s+supply'
+      device_type: psu
+      rule_id: HW-H-002
+
+    - field: option_name
+      pattern: '(?i)power\s+supply'
+      device_type: psu
+      rule_id: HW-H-003
+
+    # ── Power Cord ────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)c13.*c14'
+      device_type: power_cord
+      rule_id: HW-H-004
+
+    - field: option_name
+      pattern: '(?i)c19.*c20'
+      device_type: power_cord
+      rule_id: HW-H-005
+
+    # ── CPU ───────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)processor\s+for\s+hpe'
+      device_type: cpu
+      rule_id: HW-H-006
+
+    - field: option_name
+      pattern: '(?i)\bxeon\b'
+      device_type: cpu
+      rule_id: HW-H-007
+
+    - field: option_name
+      pattern: '(?i)\bepyc\b'
+      device_type: cpu
+      rule_id: HW-H-008
+
+    # ── Memory ────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)dimm\s+blank'
+      device_type: blank_filler
+      rule_id: HW-H-009
+
+    - field: option_name
+      pattern: '(?i)smart\s+memory\s+kit'
+      device_type: ram
+      rule_id: HW-H-010
+
+    - field: option_name
+      pattern: '(?i)registered.*memory\s+kit'
+      device_type: ram
+      rule_id: HW-H-011
+
+    - field: option_name
+      pattern: '(?i)\bddr5\b'
+      device_type: ram
+      rule_id: HW-H-012
+
+    - field: option_name
+      pattern: '(?i)\bddr4\b'
+      device_type: ram
+      rule_id: HW-H-013
+
+    # ── Storage NVMe (до generic SSD) ────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)nvme.*ssd'
+      device_type: storage_nvme
+      rule_id: HW-H-014
+
+    - field: option_name
+      pattern: '(?i)nvme.*boot\s+optimized'
+      device_type: storage_nvme
+      rule_id: HW-H-015
+
+    - field: option_name
+      pattern: '(?i)\bnvme\b'
+      device_type: storage_nvme
+      rule_id: HW-H-016
+
+    # ── Storage SATA SSD ──────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)sata.*ssd'
+      device_type: storage_ssd
+      rule_id: HW-H-017
+
+    - field: option_name
+      pattern: '(?i)\bssd\b'
+      device_type: storage_ssd
+      rule_id: HW-H-018
+
+    # ── Storage HDD ───────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)sas.*mission\s+critical'
+      device_type: storage_hdd
+      rule_id: HW-H-019
+
+    - field: option_name
+      pattern: '(?i)hard\s+drive'
+      device_type: storage_hdd
+      rule_id: HW-H-020
+
+    - field: option_name
+      pattern: '(?i)\bhdd\b'
+      device_type: storage_hdd
+      rule_id: HW-H-021
+
+    # ── HBA (до RAID Controller) ──────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)fibre\s+channel\s+host\s+bus\s+adapter'
+      device_type: hba
+      rule_id: HW-H-022
+
+    - field: option_name
+      pattern: '(?i)\bfc\s+hba\b'
+      device_type: hba
+      rule_id: HW-H-023
+
+    - field: option_name
+      pattern: '(?i)securehba'
+      device_type: hba
+      rule_id: HW-H-024
+
+    - field: option_name
+      pattern: '(?i)\bsn1610\b'
+      device_type: hba
+      rule_id: HW-H-025
+
+    - field: option_name
+      pattern: '(?i)\bsn1620\b'
+      device_type: hba
+      rule_id: HW-H-026
+
+    # ── RAID Controller ───────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\bmr216i\b'
+      device_type: raid_controller
+      rule_id: HW-H-027
+
+    - field: option_name
+      pattern: '(?i)\bmr408i\b'
+      device_type: raid_controller
+      rule_id: HW-H-028
+
+    - field: option_name
+      pattern: '(?i)\bmr416i\b'
+      device_type: raid_controller
+      rule_id: HW-H-029
+
+    - field: option_name
+      pattern: '(?i)\bsr932i\b'
+      device_type: raid_controller
+      rule_id: HW-H-030
+
+    - field: option_name
+      pattern: '(?i)smart\s+array'
+      device_type: raid_controller
+      rule_id: HW-H-031
+
+    - field: option_name
+      pattern: '(?i)storage\s+controller'
+      device_type: raid_controller
+      rule_id: HW-H-032
+
+    # ── NVLink / GPU Accessory (специфичные до generic gpu) ───────────────
+    - field: option_name
+      pattern: '(?i)nvlink\s+bridge'
+      device_type: gpu
+      rule_id: HW-H-033
+
+    - field: option_name
+      pattern: '(?i)pcie\s+accelerator'
+      device_type: gpu
+      rule_id: HW-H-034
+
+    - field: option_name
+      pattern: '(?i)graphics\s+accelerator'
+      device_type: gpu
+      rule_id: HW-H-035
+
+    - field: option_name
+      pattern: '(?i)nvidia.*accelerator'
+      device_type: gpu
+      rule_id: HW-H-036
+
+    # ── Fiber Cable (до generic cable и до transceiver) ───────────────────
+    - field: option_name
+      pattern: '(?i)lc/lc.*fib(er|re)'
+      device_type: fiber_cable
+      rule_id: HW-H-037
+
+    - field: option_name
+      pattern: '(?i)premier\s+flex.*cable'
+      device_type: fiber_cable
+      rule_id: HW-H-038
+
+    - field: option_name
+      pattern: '(?i)fib(er|re).*cable'
+      device_type: fiber_cable
+      rule_id: HW-H-039
+
+    - field: option_name
+      pattern: '(?i)optical\s+cable'
+      device_type: fiber_cable
+      rule_id: HW-H-040
+
+    # ── Cable Kit / Cable ─────────────────────────────────────────────────
+    # КРИТИЧНО: стоит ДО gpu и storage_controller.
+    # "GPU Power Cable Kit" → cable (не gpu)
+    # "Storage Controller Enablement Cable Kit" → cable (не raid_controller)
+    - field: option_name
+      pattern: '(?i)cable\s+kit'
+      device_type: cable
+      rule_id: HW-H-041
+
+    - field: option_name
+      pattern: '(?i)cable\s+management\s+arm'
+      device_type: cable
+      rule_id: HW-H-042
+
+    - field: option_name
+      pattern: '(?i)\bcable\b'
+      device_type: cable
+      rule_id: HW-H-043
+
+    # ── NIC / Network Adapter ─────────────────────────────────────────────
+    # Стоит ДО generic transceiver — ethernet.*adapter ловит адаптеры с портами
+    - field: option_name
+      pattern: '(?i)ocp3\s+adapter'
+      device_type: nic
+      rule_id: HW-H-044
+
+    - field: option_name
+      pattern: '(?i)ethernet.*adapter'
+      device_type: nic
+      rule_id: HW-H-045
+
+    - field: option_name
+      pattern: '(?i)e810-cqda2'
+      device_type: nic
+      rule_id: HW-H-046
+
+    - field: option_name
+      pattern: '(?i)e810-xxvda2'
+      device_type: nic
+      rule_id: HW-H-047
+
+    - field: option_name
+      pattern: '(?i)\bbcm574\d{2}\b'
+      device_type: nic
+      rule_id: HW-H-048
+
+    - field: option_name
+      pattern: '(?i)\bbcm5719\b'
+      device_type: nic
+      rule_id: HW-H-049
+
+    - field: option_name
+      pattern: '(?i)\bmcx631\b'
+      device_type: nic
+      rule_id: HW-H-050
+
+    - field: option_name
+      pattern: '(?i)infiniband.*adapter'
+      device_type: nic
+      rule_id: HW-H-051
+
+    - field: option_name
+      pattern: '(?i)network\s+adapter'
+      device_type: nic
+      rule_id: HW-H-052
+
+    # ── Transceiver (standalone оптика) ───────────────────────────────────
+    # Стоит ПОСЛЕ ethernet.*adapter — адаптеры с SFP28 портами уже пойманы выше
+    - field: option_name
+      pattern: '(?i)\btransceiver\b'
+      device_type: transceiver
+      rule_id: HW-H-053
+
+    - field: option_name
+      pattern: '(?i)\bosfp\b'
+      device_type: transceiver
+      rule_id: HW-H-054
+
+    - field: option_name
+      pattern: '(?i)\bsfp28\b'
+      device_type: transceiver
+      rule_id: HW-H-055
+
+    - field: option_name
+      pattern: '(?i)\bsfp\+'
+      device_type: transceiver
+      rule_id: HW-H-056
+
+    - field: option_name
+      pattern: '(?i)\bqsfp28\b'
+      device_type: transceiver
+      rule_id: HW-H-057
+
+    # ── GPU generic (после cable — "GPU Power Cable" уже поймано выше) ────
+    - field: option_name
+      pattern: '(?i)\bgpu\b'
+      device_type: gpu
+      rule_id: HW-H-058
+
+    # ── Riser ─────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)primary\s+riser'
+      device_type: riser
+      rule_id: HW-H-059
+
+    - field: option_name
+      pattern: '(?i)secondary\s+riser'
+      device_type: riser
+      rule_id: HW-H-060
+
+    - field: option_name
+      pattern: '(?i)tertiary\s+riser'
+      device_type: riser
+      rule_id: HW-H-061
+
+    - field: option_name
+      pattern: '(?i)riser\s+kit'
+      device_type: riser
+      rule_id: HW-H-062
+
+    # ── Rail ──────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)easy\s+install\s+rail'
+      device_type: rail
+      rule_id: HW-H-063
+
+    - field: option_name
+      pattern: '(?i)ball\s+bearing\s+rail'
+      device_type: rail
+      rule_id: HW-H-064
+
+    - field: option_name
+      pattern: '(?i)rail\s+kit'
+      device_type: rail
+      rule_id: HW-H-065
+
+    # ── Drive Cage ────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)drive\s+cage'
+      device_type: drive_cage
+      rule_id: HW-H-066
+
+    # ── Backplane ─────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)backplane\s+kit'
+      device_type: backplane
+      rule_id: HW-H-067
+
+    - field: option_name
+      pattern: '(?i)\bbackplane\b'
+      device_type: backplane
+      rule_id: HW-H-068
+
+    # ── Fan ───────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)fan\s+kit'
+      device_type: fan
+      rule_id: HW-H-069
+
+    - field: option_name
+      pattern: '(?i)performance\s+fan'
+      device_type: fan
+      rule_id: HW-H-070
+
+    - field: option_name
+      pattern: '(?i)standard\s+fan'
+      device_type: fan
+      rule_id: HW-H-071
+
+    # ── Heatsink / Cooling ────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)heat\s+sink'
+      device_type: heatsink
+      rule_id: HW-H-072
+
+    - field: option_name
+      pattern: '(?i)\bheatsink\b'
+      device_type: heatsink
+      rule_id: HW-H-073
+
+    - field: option_name
+      pattern: '(?i)air\s+baffle'
+      device_type: heatsink
+      rule_id: HW-H-074
+
+    # ── Bezel ─────────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)bezel\s+kit'
+      device_type: bezel
+      rule_id: HW-H-075
+
+    # ── Battery / Capacitor ───────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)lithium.ion\s+battery'
+      device_type: battery
+      rule_id: HW-H-076
+
+    - field: option_name
+      pattern: '(?i)hybrid\s+capacitor'
+      device_type: battery
+      rule_id: HW-H-077
+
+    - field: option_name
+      pattern: '(?i)smart\s+storage.*battery'
+      device_type: battery
+      rule_id: HW-H-078
+
+    # ── Accessory ─────────────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)media\s+bay'
+      device_type: accessory
+      rule_id: HW-H-079
+
+    - field: option_name
+      pattern: '(?i)power\s+distribution\s+board'
+      device_type: accessory
+      rule_id: HW-H-080
+
+    - field: option_name
+      pattern: '(?i)optical\s+drive'
+      device_type: accessory
+      rule_id: HW-H-081
+
+    - field: option_name
+      pattern: '(?i)\bdvd\b'
+      device_type: accessory
+      rule_id: HW-H-082
+
+hw_type_rules:
+  # Ключ device_type_map — точное название в схеме движка (не hw_type_map)
+  # См. docs/rules/RULES_AUTHORING_GUIDE.md §7
+  # Допустимые значения hw_type: docs/schemas/DATA_CONTRACTS.md §2
+  device_type_map:
+    cpu: cpu
+    ram: memory
+    blank_filler: blank_filler
+    storage_nvme: storage_drive
+    storage_ssd: storage_drive
+    storage_hdd: storage_drive
+    psu: psu
+    power_cord: cable
+    raid_controller: storage_controller
+    hba: hba
+    nic: network_adapter
+    transceiver: transceiver
+    fiber_cable: cable
+    cable: cable
+    riser: riser
+    rail: rail
+    drive_cage: chassis
+    backplane: backplane
+    fan: fan
+    heatsink: heatsink
+    bezel: chassis
+    battery: accessory
+    accessory: accessory
+    gpu: gpu
+    server: server

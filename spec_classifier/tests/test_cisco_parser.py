@@ -1,4 +1,4 @@
-﻿"""Unit tests for Cisco CCW parser."""
+"""Unit tests for Cisco CCW parser."""
 
 import pytest
 import pandas as pd
@@ -52,11 +52,11 @@ def test_find_data_end_empty():
 
 def test_row_index_1based():
     """First data row __row_index__ = header_row_index + 2."""
-    from conftest import project_root
+    from conftest import project_root, get_input_root_cisco
     root = project_root()
-    path = root / "test_data" / "ccw_1.xlsx"
+    path = get_input_root_cisco() / "ccw_1.xlsx"
     if not path.exists():
-        pytest.skip("test_data/ccw_1.xlsx not found")
+        pytest.skip(f"Input not found: {path} (set paths.input_root in config.local.yaml)")
     rows, hdr = parse_excel(str(path))
     assert len(rows) >= 1
     assert rows[0]["__row_index__"] == hdr + 2
@@ -64,11 +64,11 @@ def test_row_index_1based():
 
 def test_parse_returns_tuple():
     """parse_excel returns (list, int)."""
-    from conftest import project_root
+    from conftest import project_root, get_input_root_cisco
     root = project_root()
-    path = root / "test_data" / "ccw_1.xlsx"
+    path = get_input_root_cisco() / "ccw_1.xlsx"
     if not path.exists():
-        pytest.skip("test_data/ccw_1.xlsx not found")
+        pytest.skip(f"Input not found: {path} (set paths.input_root in config.local.yaml)")
     result = parse_excel(str(path))
     assert isinstance(result, tuple)
     assert len(result) == 2
@@ -79,11 +79,11 @@ def test_parse_returns_tuple():
 @pytest.mark.parametrize("filename,expected_rows,expected_header", [("ccw_1.xlsx", 26, 17), ("ccw_2.xlsx", 82, 17)])
 def test_parse_ccw_real(filename, expected_rows, expected_header):
     """Real files: ccw_1 26 rows header 17, ccw_2 82 rows header 17."""
-    from conftest import project_root
+    from conftest import project_root, get_input_root_cisco
     root = project_root()
-    path = root / "test_data" / filename
+    path = get_input_root_cisco() / filename
     if not path.exists():
-        pytest.skip(f"test_data/{filename} not found")
+        pytest.skip(f"Input not found: {path} (set paths.input_root in config.local.yaml)")
     rows, hdr = parse_excel(str(path))
     assert hdr == expected_header, f"header expected {expected_header}, got {hdr}"
     assert len(rows) == expected_rows, f"rows expected {expected_rows}, got {len(rows)}"

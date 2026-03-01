@@ -1,5 +1,5 @@
-﻿"""
-Smoke test: full pipeline on test_data/dl1–dl5.xlsx; assert all diagnostic artifacts exist.
+"""
+Smoke test: full pipeline on dl1–dl5.xlsx (from paths.input_root); assert all diagnostic artifacts exist.
 """
 
 import pytest
@@ -18,16 +18,17 @@ from src.outputs.json_writer import (
 )
 from src.diagnostics.stats_collector import collect_stats, save_run_summary
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell, get_input_root_cisco
 
 
 @pytest.mark.parametrize("filename", ["dl1.xlsx", "dl2.xlsx", "dl3.xlsx", "dl4.xlsx", "dl5.xlsx"])
 def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
     """Parse filename, normalize, classify, create run folder, save all artifacts; assert files exist."""
     root = project_root()
-    input_path = root / "test_data" / filename
+    input_root = get_input_root_dell()
+    input_path = input_root / filename
     if not input_path.exists():
-        pytest.skip(f"test_data/{filename} not found at {input_path}")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
 
     rules_path = root / "rules" / "dell_rules.yaml"
     assert rules_path.exists(), f"rules/dell_rules.yaml not found at {rules_path}"

@@ -12,16 +12,16 @@ from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
 from src.outputs.annotated_writer import generate_annotated_source_excel
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell
 from tests.helpers import find_annotated_header_row, read_annotated_excel
 
 
 def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(tmp_path):
     """Run pipeline on dl1.xlsx, generate annotated Excel; assert file exists, row count matches, has Entity Type/State columns, ITEM rows filled."""
     root = project_root()
-    input_path = root / "test_data" / "dl1.xlsx"
+    input_path = get_input_root_dell() / "dl1.xlsx"
     if not input_path.exists():
-        pytest.skip(f"test_data/dl1.xlsx not found at {input_path}")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
 
     adapter = _get_adapter("dell", {})
     raw_rows, header_row_index = adapter.parse(str(input_path))
@@ -56,9 +56,9 @@ def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(
 def test_annotated_header_row_detection_with_preamble(tmp_path):
     """Regression: annotated xlsx with preamble (e.g. dl4) — parser must find header and read by Option ID."""
     root = project_root()
-    input_path = root / "test_data" / "dl4.xlsx"
+    input_path = get_input_root_dell() / "dl4.xlsx"
     if not input_path.exists():
-        pytest.skip(f"test_data/dl4.xlsx not found at {input_path}")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
 
     adapter = _get_adapter("dell", {})
     raw_rows, header_row_index = adapter.parse(str(input_path))

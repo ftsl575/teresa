@@ -88,8 +88,8 @@
 3. Выбрать категорию и место в YAML (после более специфичных правил).
 4. Добавить правило с уникальным rule_id.
 5. Запустить пайплайн на всех тестовых файлах вендора:
-   - Dell: `python main.py --input test_data/dl1.xlsx` (и dl2..dl5)
-   - Cisco: `python main.py --input test_data/ccw_1.xlsx --vendor cisco` (и ccw_2)
+   - Dell: `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"` (и dl2..dl5)
+   - Cisco: `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco` (и ccw_2)
 6. Проверить unknown_rows.csv и run_summary.json.
 7. При необходимости добавить unit-тест в test_rules_unit.py или test_device_type.py.
 8. Обновить golden (`--save-golden`) и прогнать test_regression.py.
@@ -130,7 +130,7 @@
 - **После изменений:**
 
 ```bash
-python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden
-python main.py --input test_data/ccw_2.xlsx --vendor cisco --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
 pytest tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 ```

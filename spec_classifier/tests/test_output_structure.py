@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell, get_input_root_cisco
 
 # Run folder pattern: run-YYYY-MM-DD__HH-MM-SS-<stem> or run-...-<stem>_N for collision
 RUN_FOLDER_PATTERN = re.compile(r"^run-\d{4}-\d{2}-\d{2}__\d{2}-\d{2}-\d{2}-(.+)$")
@@ -36,9 +36,10 @@ REQUIRED_ARTIFACTS = [
 def test_output_tree_shape_dell_run(tmp_path):
     """Dell: output_root/dell_run/run-*-<stem>/ with all artifacts including branded."""
     root = project_root()
-    input_xlsx = root / "test_data" / "dl1.xlsx"
+    input_root = get_input_root_dell()
+    input_xlsx = input_root / "dl1.xlsx"
     if not input_xlsx.exists():
-        pytest.skip("test_data/dl1.xlsx not found")
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml, files expected at INPUT\\ or INPUT\\dell\\)")
 
     output_root = tmp_path / "output"
     output_root.mkdir(parents=True, exist_ok=True)
@@ -80,9 +81,9 @@ def test_output_tree_shape_dell_run(tmp_path):
 def test_output_tree_shape_cisco_run(tmp_path):
     """Cisco: output_root/cisco_run/run-*-<stem>/ with artifacts; NO branded.xlsx."""
     root = project_root()
-    input_xlsx = root / "test_data" / "ccw_1.xlsx"
+    input_xlsx = get_input_root_cisco() / "ccw_1.xlsx"
     if not input_xlsx.exists():
-        pytest.skip("test_data/ccw_1.xlsx not found")
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml)")
 
     output_root = tmp_path / "output"
     output_root.mkdir(parents=True, exist_ok=True)
@@ -123,9 +124,9 @@ def test_output_tree_shape_cisco_run(tmp_path):
 def test_output_root_configurable_via_cli(tmp_path):
     """Output root is overridden by --output-dir; run dir is under output_root/<vendor>_run/."""
     root = project_root()
-    input_xlsx = root / "test_data" / "dl1.xlsx"
+    input_xlsx = get_input_root_dell() / "dl1.xlsx"
     if not input_xlsx.exists():
-        pytest.skip("test_data/dl1.xlsx not found")
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml)")
 
     output_root = tmp_path / "custom_out"
     result = subprocess.run(

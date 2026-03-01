@@ -12,7 +12,7 @@
 - `rules/<vendor>_rules.yaml` — правила классификации
 - `tests/test_regression_<vendor>.py` (по образцу test_regression_cisco.py)
 - `tests/test_unknown_threshold_<vendor>.py` (по образцу test_unknown_threshold_cisco.py)
-- Тестовые данные в `test_data/` (например `<vendor>_1.xlsx`)
+- Тестовые данные в `C:\Users\G\Desktop\INPUT\` (например `<vendor>_1.xlsx`); в репо не хранятся
 - Golden: `golden/<stem>_expected.jsonl` (генерируются через `--save-golden`)
 
 **Изменить:**
@@ -80,7 +80,7 @@
 Для каждого тестового файла:
 
 ```bash
-python main.py --save-golden --input test_data/<file>.xlsx --vendor <vendor>
+python main.py --save-golden --input "C:\Users\G\Desktop\INPUT\<file>.xlsx" --vendor <vendor>
 ```
 
 Положить/проверить golden в `golden/<stem>_expected.jsonl`.

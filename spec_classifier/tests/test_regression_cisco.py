@@ -4,7 +4,7 @@ import json
 import pytest
 from pathlib import Path
 
-from conftest import project_root
+from conftest import project_root, get_input_root_cisco
 from tests.helpers import run_pipeline_in_memory, build_golden_rows
 
 
@@ -31,9 +31,10 @@ def _compare_row(expected: dict, actual: dict) -> list:
 @pytest.mark.parametrize("filename", ["ccw_1.xlsx", "ccw_2.xlsx"])
 def test_regression_cisco(filename):
     root = project_root()
-    input_path = root / "test_data" / filename
+    input_root = get_input_root_cisco()
+    input_path = input_root / filename
     if not input_path.exists():
-        pytest.skip(f"test_data/{filename} not found")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
     rules_path = root / "rules" / "cisco_rules.yaml"
     if not rules_path.exists():
         pytest.skip("rules/cisco_rules.yaml not found")

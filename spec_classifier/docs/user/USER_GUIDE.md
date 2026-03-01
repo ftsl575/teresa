@@ -29,7 +29,7 @@
 
 ```bash
 cd spec_classifier
-python main.py --input test_data/dl1.xlsx
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 ```
 
 Результат — папка `output/run-YYYY-MM-DD__HH-MM-SS-dl1/` (или с суффиксом `_1`, `_2` при коллизии). В ней — все артефакты прогона. Итоги смотрите в `run_summary.json` и `unknown_rows.csv`.
@@ -80,10 +80,10 @@ python main.py --input test_data/dl1.xlsx
 
 ## 7. Рекомендованный рабочий процесс
 
-1. Запустить прогон: `python main.py --input test_data/dl1.xlsx`.
+1. Запустить прогон: `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"`.
 2. Проверить `unknown_rows.csv`.
 3. Если `unknown_count > 0`: добавить или скорректировать правило в `dell_rules.yaml` → запустить снова → проверить diff в классификации.
-4. При принятии изменений: `python main.py --input test_data/dl1.xlsx --save-golden` и `pytest tests/test_regression.py -v`.
+4. При принятии изменений: `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden` и `pytest tests/test_regression.py -v`.
 5. Если `unknown_count = 0` и регрессия зелёная — готово.
 
 Для Cisco CCW: шаги аналогичны, но с `--vendor cisco` и правилами в `rules/cisco_rules.yaml`. Цель — `unknown_count = 0` на `ccw_1` и `ccw_2`.

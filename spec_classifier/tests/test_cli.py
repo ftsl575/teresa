@@ -9,15 +9,15 @@ from pathlib import Path
 
 import pytest
 
-from conftest import project_root
+from conftest import project_root, get_input_root_dell
 
 
 def test_cli_exit_code_stdout_artifacts(tmp_path):
     """Run main.py with dl1.xlsx; assert exit 0, stdout has total_rows, run folder has cleaned_spec.xlsx and run_summary.json."""
     root = project_root()
-    input_xlsx = root / "test_data" / "dl1.xlsx"
+    input_xlsx = get_input_root_dell() / "dl1.xlsx"
     if not input_xlsx.exists():
-        pytest.skip(f"test_data/dl1.xlsx not found at {input_xlsx}")
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml)")
 
     output_dir = tmp_path / "out"
     output_dir.mkdir(parents=True, exist_ok=True)

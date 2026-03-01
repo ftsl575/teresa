@@ -144,8 +144,9 @@ vendor_rules:
 
 ## Test Data
 
-Test files (`test_data/dl1.xlsx` … `dl5.xlsx` (Dell) and `ccw_1.xlsx`, `ccw_2.xlsx` (Cisco CCW)) are **not in git**.
-Place them under `spec_classifier/test_data/`.
+Test files (dl1–dl5.xlsx for Dell, ccw_1.xlsx/ccw_2.xlsx for Cisco, hp1–hp8.xlsx for HPE)
+are **not stored in git**. Place them in `C:\Users\G\Desktop\INPUT\`
+(or configure `paths.input_root` in `config.local.yaml`).
 Smoke, regression, and threshold tests skip automatically if files are absent.
 
 ---
@@ -156,7 +157,7 @@ Smoke, regression, and threshold tests skip automatically if files are absent.
 # Unit tests only (no xlsx needed)
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v
 
-# Full suite (requires test_data/ + golden/)
+# Full suite (requires INPUT\ files + golden/)
 pytest tests/ -v --tb=short
 
 # Regression only
@@ -172,9 +173,9 @@ pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
 ## Updating Golden (after rule changes)
 
 ```bash
-python main.py --input test_data/dl1.xlsx --save-golden
+python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden
 # Repeat for dl2..dl5 as needed
-# Cisco: python main.py --input test_data/ccw_1.xlsx --vendor cisco --save-golden (and ccw_2)
+# Cisco: python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden (and ccw_2)
 pytest tests/test_regression.py -v
 ```
 
