@@ -22,9 +22,14 @@ Versioning: [SemVer](https://semver.org/).
 - feat(hpe): Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe
 
 ### Fixed
+- fix(hpe): HW-H-GLOBAL-038 — optical drive (DVD-RW) → HW/STORAGE
+- fix(Makefile): HPE путь выровнен с Dell/Cisco — $(INPUT)/$$f.xlsx вместо $(INPUT)/hpe/$$f.xlsx
+- fix(hpe): добавлена секция hw_rules в hpe_rules.yaml — 37 catch-all правил HW-H-GLOBAL-001…037; устранён UNKNOWN для CPU/RAM/storage/NIC/PSU/fan/transceiver/cable/riser/rail/GPU и др.
+- fix(hpe): добавлено hw_type_rules.applies_to: [HW] — hw_type теперь заполняется для всех HW rows
 - fix: redirect diag/runs and ruff/mypy caches to temp_root (scripts/run_full.ps1, scripts/clean.ps1)
 
 ### Changed
+- refactor(Makefile): INPUT переменная вместо test_data/ и input/hpe/; generate_golden_dell выделен отдельной целью; все три вендора через $(INPUT)/
 - docs: ONE_BUTTON_RUN.md — diag path updated to temp_root/diag/runs/<timestamp>/
 - docs: CONTRIBUTING.md — diag/ отмечен как gitignored, пишется в temp_root
 - refactor(tests): все тесты Dell/Cisco переведены с `test_data/` на `get_input_root_dell()` / `get_input_root_cisco()` — единое соглашение с HPE; test_stats_hw_type.py включён

@@ -12,8 +12,8 @@
 - HPE (QuoteBuilder BOM) — адаптер, правила (hpe_rules.yaml), регистрация в VENDOR_REGISTRY, config.yaml, annotated_writer (5 колонок), Makefile (HP_FILES, golden/тесты)
 
 ## Статус классификации
-- unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2)
-- hw_type_null_count = 0
+- unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2, hp1–hp8)
+- hw_type_null_count = 0 на всех датасетах
 
 ## Документация — device_type (DATA_CONTRACTS)
 - **device_type** описан как расширяемый словарь по вендорам; источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`. Новые значения при добавлении вендора — MINOR по разделу 7. Жёсткий список в коде не вводится.
@@ -70,3 +70,4 @@ Claude проводит аудит после каждого набора изм
 - **Скрипты (scripts/):** run_full.ps1 (pytest + batch по вендорам), run_tests.ps1 (только pytest), clean.ps1 (очистка __pycache__, .pytest_cache, .ruff_cache, .mypy_cache, diag/). Логи run_full → temp_root/diag/runs/\<timestamp\>/.
 - **Документация:** docs/dev/ONE_BUTTON_RUN.md; README — секция «One-button run (Windows)»; DOCS_INDEX — ссылка на ONE_BUTTON_RUN.
 - **Makefile:** заголовок изменён на «Spec Classifier — Makefile». Переменные DL_FILES (dl1–dl5), CCW_FILES (ccw_1, ccw_2). Цель `test` включает test-regression-cisco и test-unknown-cisco. `generate_golden` генерирует golden и для Dell, и для Cisco (второй цикл по CCW_FILES с --vendor cisco). Отдельная цель `generate_golden_cisco` — только Cisco.
+- Makefile: INPUT ?= C:/Users/G/Desktop/INPUT — единый корень для Dell/Cisco/HPE; generate_golden_dell отдельная цель

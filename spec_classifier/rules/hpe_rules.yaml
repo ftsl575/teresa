@@ -107,6 +107,222 @@ software_rules:
     entity_type: SOFTWARE
     rule_id: SOFTWARE-H-005
 
+hw_rules:
+  # HPE-специфичные — catch-all по option_name
+  # Правила идут от наиболее специфичных к наиболее общим
+  # rule_id: HW-H-GLOBAL-NNN
+
+  # Processor / CPU
+  - field: option_name
+    pattern: '(?i)\bprocessor\s+for\s+hpe\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-001
+
+  - field: option_name
+    pattern: '(?i)\b(xeon|epyc)\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-002
+
+  # Memory
+  - field: option_name
+    pattern: '(?i)\bDDR[45]\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-003
+
+  - field: option_name
+    pattern: '(?i)\bregistered\s+smart\s+memory\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-004
+
+  # Storage — NVMe / SSD / HDD
+  - field: option_name
+    pattern: '(?i)\bnvme\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-005
+
+  - field: option_name
+    pattern: '(?i)\b(sata|sas)\s+\d+G\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-006
+
+  - field: option_name
+    pattern: '(?i)\b(ssd|hdd)\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-007
+
+  - field: option_name
+    pattern: '(?i)multi\s+vendor\s+(ssd|hdd)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-008
+
+  # PSU / Power
+  - field: option_name
+    pattern: '(?i)flex\s+slot.*power\s+supply'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-009
+
+  - field: option_name
+    pattern: '(?i)hot.?plug\s+power\s+supply'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-010
+
+  - field: option_name
+    pattern: '(?i)power\s+supply'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-011
+
+  # Power cord
+  - field: option_name
+    pattern: '(?i)c13.*c14|c19.*c20'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-012
+
+  # RAID / Storage controller
+  - field: option_name
+    pattern: '(?i)\b(mr\d{3}i[-op]|smart\s+array|storage\s+controller)\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-013
+
+  - field: option_name
+    pattern: '(?i)\bspdm\s+storage\s+controller\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-014
+
+  # HBA / Fibre Channel
+  - field: option_name
+    pattern: '(?i)\b(hba|fibre\s+channel|host\s+bus\s+adapter)\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-015
+
+  - field: option_name
+    pattern: '(?i)\bsn\d+[qe]\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-016
+
+  # NIC / Ethernet adapter
+  - field: option_name
+    pattern: '(?i)ethernet\s+\d+.?gb.*adapter'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-017
+
+  - field: option_name
+    pattern: '(?i)(ocp3?|ocp\s+adapter)\s+adapter'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-018
+
+  - field: option_name
+    pattern: '(?i)network\s+adapter'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-019
+
+  # Transceiver
+  - field: option_name
+    pattern: '(?i)\btransceiver\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-020
+
+  # GPU / Accelerator
+  - field: option_name
+    pattern: '(?i)\b(gpu|accelerator)\s+for\s+hpe\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-021
+
+  - field: option_name
+    pattern: '(?i)\b(nvidia|nvlink)\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-022
+
+  # Fan / Heatsink / Thermal
+  - field: option_name
+    pattern: '(?i)fan\s+kit'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-023
+
+  - field: option_name
+    pattern: '(?i)heat\s+sink\s+kit'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-024
+
+  - field: option_name
+    pattern: '(?i)air\s+baffle'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-025
+
+  # Riser
+  - field: option_name
+    pattern: '(?i)riser\s+kit'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-026
+
+  # Rail
+  - field: option_name
+    pattern: '(?i)(easy\s+install\s+rail|ball\s+bearing\s+rail|rail\s+kit)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-027
+
+  # Drive cage / Backplane
+  - field: option_name
+    pattern: '(?i)drive\s+cage'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-028
+
+  - field: option_name
+    pattern: '(?i)\bbackplane\b'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-029
+
+  # Cables
+  - field: option_name
+    pattern: '(?i)(cable\s+kit|cable\s+assembly)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-030
+
+  - field: option_name
+    pattern: '(?i)premier\s+flex\s+(lc|mpo)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-031
+
+  # Battery / Capacitor
+  - field: option_name
+    pattern: '(?i)(lithium.ion\s+battery|hybrid\s+capacitor|smart\s+storage.*battery)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-032
+
+  # Bezel / Chassis accessories
+  - field: option_name
+    pattern: '(?i)bezel\s+kit'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-033
+
+  - field: option_name
+    pattern: '(?i)power\s+distribution\s+board'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-034
+
+  # Smart Storage (catch-all для контроллеров кеша)
+  - field: option_name
+    pattern: '(?i)smart\s+storage'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-035
+
+  # Опционный kit (catch-all последний) — любой ProLiant kit не пойманный выше
+  - field: option_name
+    pattern: '(?i)proliant.*kit'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-036
+
+  # Broadcom / Intel / Mellanox adapter (catch-all для сетевых карт)
+  - field: option_name
+    pattern: '(?i)\b(broadcom|mellanox|intel\s+e\d{3})\b.*adapter'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-037
+
+  # Optical drive (DVD-RW, CD-ROM, Blu-ray)
+  - field: option_name
+    pattern: '(?i)(dvd|optical drive|cd-rom|blu-ray)'
+    entity_type: HW
+    rule_id: HW-H-GLOBAL-038
+
 device_type_rules:
   applies_to: [HW, LOGISTIC]
 
@@ -551,6 +767,7 @@ device_type_rules:
       rule_id: HW-H-082
 
 hw_type_rules:
+  applies_to: [HW]
   # Ключ device_type_map — точное название в схеме движка (не hw_type_map)
   # См. docs/rules/RULES_AUTHORING_GUIDE.md §7
   # Допустимые значения hw_type: docs/schemas/DATA_CONTRACTS.md §2
