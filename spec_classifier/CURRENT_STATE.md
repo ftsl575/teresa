@@ -1,7 +1,7 @@
 # Current State — spec_classifier (teresa)
 
 ## Версия
-1.2.0
+1.2.2
 
 ## Дата последнего аудита
 2026-03-01

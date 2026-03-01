@@ -11,7 +11,7 @@ Versioning: [SemVer](https://semver.org/).
 
 ---
 
-## [Unreleased]
+## [1.2.2] — 2026-03-01
 
 ### Added
 - feat: one-button run — scripts/run_full.ps1, run_tests.ps1, clean.ps1; config layering (config.local.yaml); docs/dev/ONE_BUTTON_RUN.md (PROMPT #7).
