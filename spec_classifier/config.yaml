@@ -1,4 +1,8 @@
-# I/O roots (optional). If not set, defaults below are used. CLI args override these.
+# ⚠ IMPORTANT: these are relative FALLBACK paths for CI/portability.
+# They resolve INSIDE the repo dir, which VIOLATES the code-only policy.
+# For local development: ALWAYS create config.local.yaml with absolute
+# paths (copy from config.local.yaml.example).
+# See docs/user/RUN_PATHS_AND_IO_LAYOUT.md § Data Isolation Policy.
 paths:
   input_root: "input"
   output_root: "output"

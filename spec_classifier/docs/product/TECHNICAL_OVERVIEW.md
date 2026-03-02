@@ -6,7 +6,7 @@
 
 ## 1. Назначение системы
 
-Система — **пайплайн** для классификации вендорных спецификаций (Dell, Cisco CCW) в формате Excel:
+Система — **пайплайн** для классификации вендорных спецификаций (Dell, Cisco CCW, HPE) в формате Excel:
 
 - **Вход:** один Excel-файл (`.xlsx`) с таблицей спецификации (столбцы в том числе: Module Name, Option Name, SKUs, Qty, Option List Price).
 - **Выход:**
@@ -15,7 +15,7 @@
   - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type);
   - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
 
-Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED). Поддерживаемые вендоры: **Dell** (формат Dell spec export, заголовок "Module Name") и **Cisco CCW** (формат Cisco Commerce Workspace export, лист "Price Estimate", заголовок "Line Number" + "Part Number"). Вендор задаётся флагом `--vendor {dell,cisco}`.
+Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED). Поддерживаемые вендоры: **Dell** (формат Dell spec export, заголовок "Module Name"), **Cisco CCW** (формат Cisco Commerce Workspace export, лист "Price Estimate", заголовок "Line Number" + "Part Number") и **HPE** (формат QuoteBuilder BOM, лист "BOM", колонки Product #, Product Description). Вендор задаётся флагом `--vendor {dell,cisco,hpe}`.
 
 ---
 
@@ -23,7 +23,7 @@
 
 Реализованная последовательность в `main.py`:
 
-1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся через `adapter.get_rules_file()`, который возвращает значение из `config["vendor_rules"][vendor]` (или fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`.
+1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся через `adapter.get_rules_file()`, который возвращает значение из `config["vendor_rules"][vendor]` (или fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`; HPE: `rules/hpe_rules.yaml`.
 2. **Парсинг Excel** — `adapter.parse(str(input_path))` (vendor-specific):
    - Dell: ищет строку заголовка по ячейке `"Module Name"` в первых 20 строках (`src.vendors.dell.adapter` → `src.core.parser`);
    - Cisco: ищет строку заголовка по одновременному наличию `"Line Number"` и `"Part Number"` на листе `"Price Estimate"` (`src.vendors.cisco.parser`).
@@ -84,12 +84,12 @@
 | `--input` | обязателен в single-file режиме | Путь к входному Excel. |
 | `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
 | `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
-| `--vendor` | нет (default: `dell`) | `dell` или `cisco`. Выбирает адаптер парсинга/нормализации и файл правил. |
+| `--vendor` | нет (default: `dell`) | `dell`, `cisco` или `hpe`. Выбирает адаптер парсинга/нормализации и файл правил. |
 | `--output-dir` | нет (по умолчанию: `config paths.output_root`, иначе `cwd/output` — см. `main.py`) | Каталог для подпапок прогонов; внутри создаётся `{vendor}_run/run-.../`. |
 | `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
 | `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
 
-Именование папок прогонов: под `output_dir` создаётся подкаталог `{vendor}_run` (например `dell_run`, `cisco_run`), внутри — **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
+Именование папок прогонов: под `output_dir` создаётся подкаталог `{vendor}_run` (например `dell_run`, `cisco_run`, `hpe_run`), внутри — **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
 
 Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
 
@@ -211,7 +211,7 @@ spec_classifier/
 
 ## 9. Ограничения и допущения
 
-- **Два вендора:** Dell (`rules/dell_rules.yaml`) и Cisco (`rules/cisco_rules.yaml`). Cisco читает лист `"Price Estimate"` (строго, без fallback). Заголовок Cisco определяется по одновременному наличию `"Line Number"` и `"Part Number"`. SKU в Cisco: trailing-часть удаляется. Branded spec для Cisco не создаётся.
+- **Три вендора:** Dell (`rules/dell_rules.yaml`), Cisco (`rules/cisco_rules.yaml`), HPE (`rules/hpe_rules.yaml`). Cisco читает лист `"Price Estimate"` (строго, без fallback). Заголовок Cisco определяется по одновременному наличию `"Line Number"` и `"Part Number"`. SKU в Cisco: trailing-часть удаляется. HPE читает лист `"BOM"` с колонками Product #, Product Description. Branded spec для Cisco и HPE не создаётся.
 - **Один лист:** парсер и аннотированный экспорт работают с первым листом Excel.
 - **Заголовок:** строка заголовка ищется по точному совпадению ячейки с `"Module Name"` в первых 20 строках; при отсутствии — `find_header_row` возвращает `None`, `parse_excel` бросает `ValueError`.
 - **Кодировки:** конфиг и YAML правил читаются в UTF-8; CSV пишутся в UTF-8-sig для корректного открытия в Excel.

@@ -4,7 +4,7 @@ import json
 import pytest
 from pathlib import Path
 
-from conftest import project_root, get_input_root, load_config
+from conftest import project_root, get_input_root_hpe, load_config
 from tests.helpers import run_pipeline_in_memory, build_golden_rows
 
 HP_FILES = ["hp1.xlsx", "hp2.xlsx", "hp3.xlsx", "hp4.xlsx", "hp5.xlsx", "hp6.xlsx", "hp7.xlsx", "hp8.xlsx"]
@@ -34,10 +34,10 @@ def _compare_row(expected: dict, actual: dict) -> list:
 def test_regression_hpe(filename):
     """Run HPE pipeline; compare to golden. Input from config paths.input_root/hpe/, golden from golden/."""
     root = project_root()
-    input_root = get_input_root()
+    input_root = get_input_root_hpe()
     input_path = input_root / filename
     if not input_path.exists():
-        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml, HPE files at input_root/hpe/)")
     rules_path = root / "rules" / "hpe_rules.yaml"
     if not rules_path.exists():
         pytest.skip("rules/hpe_rules.yaml not found")

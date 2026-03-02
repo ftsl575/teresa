@@ -1,7 +1,11 @@
 version: "1.0.0"
 
 state_rules:
+  # HPE BOMs (hp1–hp8) do not contain deselected/absent items.
+  # All rows are PRESENT by design. If future BOMs include absent
+  # markers, add keywords here (e.g. "Not Selected", "Различие").
   absent_keywords: []
+  # No override keywords; HPE BOM does not use present-override semantics.
   present_override_keywords: []
 
 base_rules:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Spec Classifier — multivendor CLI entry point (Dell, Cisco CCW).
+Spec Classifier — multivendor CLI entry point (Dell, Cisco CCW, HPE).
 Pipeline: Excel → parse → normalize → classify → artifacts + cleaned spec.
 """
 

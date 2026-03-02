@@ -54,7 +54,7 @@ Vendor Extension (Cisco-only, additive):
 
 - **Поля:** total_rows (int), header_rows_count (int), item_rows_count (int), entity_type_counts (dict), state_counts (dict), unknown_count (int), rules_stats (dict), device_type_counts (dict), hw_type_counts (dict), hw_type_null_count (int), rules_file_hash (str, hex), input_file (str), run_timestamp (str, ISO), vendor_stats (dict). Все поля присутствуют после прогона.
 
-`vendor_stats` — всегда присутствует. Для Dell: `{}`. Для Cisco: `{"top_level_bundles_count": int, "rows_with_service_duration": int, "max_hierarchy_depth": int}`.
+`vendor_stats` — всегда присутствует. Для Dell: `{}`. Для Cisco: `{"top_level_bundles_count": int, "rows_with_service_duration": int, "max_hierarchy_depth": int}`. Для HPE: `{"factory_integrated_count": int}` (или `{}` если пусто).
 
 ---
 

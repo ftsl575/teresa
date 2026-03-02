@@ -1,4 +1,4 @@
-﻿"""
+"""
 Generate cleaned spec Excel: only ITEM rows of included types and (optionally) PRESENT state.
 """
 
@@ -17,7 +17,10 @@ COLUMNS = [
     "Option Name",
     "SKUs",
     "Qty",
-    "Option List Price",
+    "Option ID",
+    "Unit Price",
+    "Device Type",
+    "HW Type",
     "Entity Type",
     "State",
 ]
@@ -56,7 +59,10 @@ def generate_cleaned_spec(
             "Option Name": row.option_name,
             "SKUs": ", ".join(row.skus) if row.skus else "",
             "Qty": row.qty,
-            "Option List Price": row.option_price,
+            "Option ID": getattr(row, "option_id", None) or "",
+            "Unit Price": row.option_price,
+            "Device Type": result.device_type or "",
+            "HW Type": getattr(result, "hw_type", None) or "",
             "Entity Type": result.entity_type.value,
             "State": result.state.value if result.state else "",
         })

@@ -52,18 +52,18 @@ if (-not (Test-Path $MainPy)) {
 }
 Set-Location $RepoRoot
 
-# b) Read temp_root from config.local.yaml (simple regex), default: $RepoRoot/temporary
+# b) Read temp_root, input_root, output_root from config.local.yaml (supports top-level or paths: nested)
 $TempRoot = Join-Path $RepoRoot "temporary"
 $ConfigLocal = Join-Path $RepoRoot "config.local.yaml"
 if (Test-Path $ConfigLocal) {
     $content = Get-Content $ConfigLocal -Raw -Encoding UTF8
-    if ($content -match 'temp_root:\s*["'']([^"'']+)["'']') {
+    if ($content -match '(?m)^\s*(?:temporary_root|temp_root):\s*["'']([^"'']+)["'']\s*$') {
         $TempRoot = $Matches[1].Trim()
     }
-    if (-not $InputRoot -and ($content -match 'input_root:\s*["'']([^"'']+)["'']')) {
+    if (-not $InputRoot -and ($content -match '(?m)^\s*input_root:\s*["'']([^"'']+)["'']\s*$')) {
         $InputRoot = $Matches[1].Trim()
     }
-    if (-not $OutputRoot -and ($content -match 'output_root:\s*["'']([^"'']+)["'']')) {
+    if (-not $OutputRoot -and ($content -match '(?m)^\s*output_root:\s*["'']([^"'']+)["'']\s*$')) {
         $OutputRoot = $Matches[1].Trim()
     }
 }
@@ -95,6 +95,7 @@ if (-not $TestsOnly) {
     } else {
         if (Test-Path (Join-Path $InputRoot "dell")) { $vendorsToRun += "dell" }
         if (Test-Path (Join-Path $InputRoot "cisco")) { $vendorsToRun += "cisco" }
+        if (Test-Path (Join-Path $InputRoot "hpe")) { $vendorsToRun += "hpe" }
     }
     $batchLog = Join-Path $DiagDir "batch.log"
     foreach ($v in $vendorsToRun) {

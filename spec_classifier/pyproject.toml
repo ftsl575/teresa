@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+cache_dir = "../../temporary/.pytest_cache"
+
+# __pycache__ redirection requires PYTHONPYCACHEPREFIX env var.
+# Set it in your shell profile or use scripts/run_full.ps1.
+# pyproject.toml cannot redirect __pycache__ (only env var can).
+[tool.python]

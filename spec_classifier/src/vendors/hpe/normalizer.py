@@ -122,10 +122,16 @@ def normalize_hpe_rows(raw_rows: List[dict]) -> List[HPENormalizedRow]:
         # NOTE: entity_type = CONFIG is assigned by YAML rule CONFIG-H-001, NOT here
         is_factory_integrated = (option_name == "Factory Integrated")
 
+        # HEADER detection: empty Product # and Product Description → separator/header row
+        if option_id is None and option_name == "":
+            row_kind = RowKind.HEADER
+        else:
+            row_kind = RowKind.ITEM
+
         result.append(
             HPENormalizedRow(
                 source_row_index=source_row_index,
-                row_kind=RowKind.ITEM,
+                row_kind=row_kind,
                 group_name=group_name,
                 group_id=group_id,
                 product_name=None,  # no separate product name field in HPE BOM
