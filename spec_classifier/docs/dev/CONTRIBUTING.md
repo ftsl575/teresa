@@ -13,7 +13,7 @@ spec_classifier/
 ├── src/
 │   ├── core/               # Парсер (Dell), нормализатор (Dell), классификатор, state_detector
 │   ├── rules/              # Загрузка и сопоставление правил (RuleSet)
-│   ├── vendors/            # Vendor adapters (Dell, Cisco)
+│   ├── vendors/            # Vendor adapters (Dell, Cisco, HPE)
 │   │   ├── base.py         # VendorAdapter ABC
 │   │   ├── dell/
 │   │   │   └── adapter.py  # DellAdapter (wraps core parser/normalizer)
@@ -23,13 +23,17 @@ spec_classifier/
 │   │       └── adapter.py  # CiscoAdapter
 │   ├── outputs/            # JSON/Excel-запись (json_writer, excel_writer, annotated_writer, branded_spec_writer)
 │   └── diagnostics/        # run_manager, stats_collector
-├── tests/                  # Unit, integration, regression (Dell + Cisco)
+├── tests/                  # Unit, integration, regression (Dell, Cisco, HPE)
 ├── golden/                 # Ожидаемые JSONL для регрессии (в git)
 ├── docs/                   # Документация
 └── output/                 # Папки прогонов (не в git)
 ```
 
 **Примечание:** `diag/` — в .gitignore; логи прогонов пишутся в `temp_root/diag/` (см. config.local.yaml).
+
+### Обязательно: config.local.yaml
+
+Перед первым запуском создайте config.local.yaml по образцу config.local.yaml.example. Без него ВСЕ данные (input, output, кеши) будут писаться ВНУТРЬ папки с кодом, нарушая Data Isolation Policy. См. docs/user/RUN_PATHS_AND_IO_LAYOUT.md.
 
 ---
 
@@ -62,4 +66,4 @@ spec_classifier/
 
 ## 5. Версионирование
 
-- SemVer. При изменении правил обновлять поле **version** в соответствующем файле: `dell_rules.yaml` (для Dell) или `cisco_rules.yaml` (для Cisco). MAJOR — ломающие изменения контрактов вывода/CLI; MINOR — новые поля, новые опции; PATCH — правки правил, тесты, документация.
+- SemVer. При изменении правил обновлять поле **version** в соответствующем файле: `dell_rules.yaml` (для Dell), `cisco_rules.yaml` (для Cisco) или `hpe_rules.yaml` (для HPE). MAJOR — ломающие изменения контрактов вывода/CLI; MINOR — новые поля, новые опции; PATCH — правки правил, тесты, документация.

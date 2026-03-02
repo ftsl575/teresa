@@ -60,3 +60,13 @@ def get_input_root_cisco() -> Path:
     base = p if p.is_absolute() else project_root() / p
     sub = base / "cisco"
     return sub if sub.exists() else base
+
+
+def get_input_root_hpe() -> Path:
+    """Resolve input path for HPE files: paths.input_root/hpe or INPUT directly."""
+    config = load_config()
+    raw = (config.get("paths") or {}).get("input_root") or "input"
+    p = Path(raw)
+    base = p if p.is_absolute() else project_root() / p
+    sub = base / "hpe"
+    return sub if sub.exists() else base

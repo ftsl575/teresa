@@ -1,6 +1,6 @@
-# Spec Classifier (Dell · Cisco)
+# Spec Classifier (Dell · Cisco · HPE)
 
-Deterministic rule-based pipeline for classifying Dell and Cisco CCW Excel specification files.
+Deterministic rule-based pipeline for classifying Dell, Cisco CCW, and HPE Excel specification files.
 
 **Excel in → parse → normalize → classify → Excel/JSON/CSV out.**
 Classification uses YAML rules + regex. No ML. Fully reproducible.
@@ -58,7 +58,7 @@ python main.py --input input/ccw_1.xlsx --vendor cisco
 python main.py --batch-dir input
 ```
 
-**Где искать результат:** `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (Dell) или `output/cisco_run/run-.../` (Cisco). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
+**Где искать результат:** `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (Dell), `output/cisco_run/run-.../` (Cisco) или `output/hpe_run/run-.../` (HPE). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
 
 ---
 
@@ -81,7 +81,7 @@ python main.py --batch-dir input
 
 Each run creates a timestamped folder under **output_root** (default `output` relative to cwd). Inside it, vendor subfolders are created:
 
-**Single run:** `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` or `output_root/cisco_run/run-.../`
+**Single run:** `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/`, `output_root/cisco_run/run-.../` or `output_root/hpe_run/run-.../`
 **Batch:** per-file run folders + `output_root/<vendor>_run/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`
 
 ### Per-run artifacts
@@ -92,7 +92,7 @@ Each run creates a timestamped folder under **output_root** (default `output` re
 | `run_summary.json` | Aggregate counts: entity types, states, hw_types, unknown count |
 | `cleaned_spec.xlsx` | Filtered spec (types from config: BASE, HW, SOFTWARE, SERVICE; PRESENT only) |
 | `<stem>_annotated.xlsx` | Original file + 4 added columns: Entity Type, State, device_type, hw_type |
-| `<stem>_branded.xlsx` | Branded spec (Dell only; not created for Cisco) |
+| `<stem>_branded.xlsx` | Branded spec (Dell only; not created for Cisco or HPE) |
 | `unknown_rows.csv` | Rows that matched no rule — review these after each run |
 | `rows_raw.json` | Raw parsed rows (debug) |
 | `rows_normalized.json` | Normalized rows with row_kind (debug) |
@@ -110,11 +110,11 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 
 | Option | Default | Description |
 |---|---|---|
-| `--vendor {dell,cisco}` | `dell` | Vendor adapter: Dell spec export or Cisco CCW export |
+| `--vendor {dell,cisco,hpe}` | `dell` | Vendor adapter: Dell spec export, Cisco CCW export, or HPE BOM |
 | `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
 | `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
 | `--config PATH` | `config.yaml` | Config YAML |
-| `--output-dir PATH` | from config `paths.output_root` or `cwd/output` | Top-level output root; inside it `dell_run/`, `cisco_run/` and run folders are created |
+| `--output-dir PATH` | from config `paths.output_root` or `cwd/output` | Top-level output root; inside it `dell_run/`, `cisco_run/`, `hpe_run/` and run folders are created |
 | `--save-golden` | — | Save golden/<stem>_expected.jsonl without confirmation |
 | `--update-golden` | — | Overwrite golden with interactive confirmation |
 
@@ -126,6 +126,7 @@ Either `--input`, `--batch-dir`, or `--batch` is required. Full reference: [docs
 
 - **Dell (default):** Parses Dell export (header row by "Module Name"). All artifacts including branded spec. Use `--vendor dell` or omit.
 - **Cisco CCW:** Parses Cisco Commerce Workspace export (sheet **"Price Estimate"**). Same pipeline; annotated Excel gets extra columns (line_number, service_duration_months). Branded spec is not generated for Cisco. `run_summary.json` includes `vendor_stats` (e.g. top_level_bundles_count, max_hierarchy_depth).
+- **HPE:** Parses HPE QuoteBuilder BOM (sheet **"BOM"**, columns Product #, Product Description). Same pipeline; annotated Excel gets HPE vendor columns. Branded spec is not generated for HPE. `run_summary.json` includes `vendor_stats` (e.g. factory_integrated_count).
 
 **Config:** Rules per vendor in `config.yaml`:
 
@@ -133,6 +134,7 @@ Either `--input`, `--batch-dir`, or `--batch` is required. Full reference: [docs
 vendor_rules:
   dell: "rules/dell_rules.yaml"
   cisco: "rules/cisco_rules.yaml"
+  hpe: "rules/hpe_rules.yaml"
 ```
 
 **Cisco parser limitations:**

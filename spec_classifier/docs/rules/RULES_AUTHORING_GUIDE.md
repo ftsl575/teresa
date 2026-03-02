@@ -2,7 +2,7 @@
 
 ## 1. Обзор
 
-Правила хранятся в `rules/dell_rules.yaml` (Dell) и `rules/cisco_rules.yaml` (Cisco). Файл выбирается через `--vendor {dell,cisco}` и секцию `vendor_rules` в `config.yaml`. Классификация детерминирована; для каждой ITEM-строки применяется первое совпадение (first-match) в заданном порядке категорий и внутри каждой категории; семантика одинакова для обоих вендоров.
+Правила хранятся в `rules/dell_rules.yaml` (Dell), `rules/cisco_rules.yaml` (Cisco) и `rules/hpe_rules.yaml` (HPE). Файл выбирается через `--vendor {dell,cisco,hpe}` и секцию `vendor_rules` в `config.yaml`. Классификация детерминирована; для каждой ITEM-строки применяется первое совпадение (first-match) в заданном порядке категорий и внутри каждой категории; семантика одинакова для всех вендоров.
 
 ---
 
@@ -118,7 +118,7 @@
 
 ## 12. Версионирование правил
 
-При изменении правил обновлять поле **version** в `dell_rules.yaml`. То же применяется к `cisco_rules.yaml` — поле **version** обновлять при любом изменении Cisco-правил. SHA-256 файла правил записывается в run_summary.json (rules_file_hash) для воспроизводимости.
+При изменении правил обновлять поле **version** в `dell_rules.yaml`, `cisco_rules.yaml` или `hpe_rules.yaml` соответственно. SHA-256 файла правил записывается в run_summary.json (rules_file_hash) для воспроизводимости.
 
 ---
 

@@ -178,6 +178,14 @@ def _apply_device_type(row: NormalizedRow, result: ClassificationResult, ruleset
     return result
 
 
+def _validate_hw_type_vocab(result: ClassificationResult) -> ClassificationResult:
+    """If hw_type is set and not in HW_TYPE_VOCAB, add warning (no raise)."""
+    hw_type = getattr(result, "hw_type", None)
+    if hw_type is not None and hw_type not in HW_TYPE_VOCAB:
+        return replace(result, warnings=result.warnings + [f"hw_type '{hw_type}' not in HW_TYPE_VOCAB"])
+    return result
+
+
 def _apply_hw_type(
     row: NormalizedRow,
     result: ClassificationResult,
@@ -195,16 +203,16 @@ def _apply_hw_type(
 
     # Layer 1: device_type → hw_type
     if result.device_type and result.device_type in ruleset.hw_type_device_type_map:
-        return replace(result, hw_type=ruleset.hw_type_device_type_map[result.device_type])
+        return _validate_hw_type_vocab(replace(result, hw_type=ruleset.hw_type_device_type_map[result.device_type]))
 
     # Layer 2: rule_id → hw_type
     if result.matched_rule_id in ruleset.hw_type_rule_id_map:
-        return replace(result, hw_type=ruleset.hw_type_rule_id_map[result.matched_rule_id])
+        return _validate_hw_type_vocab(replace(result, hw_type=ruleset.hw_type_rule_id_map[result.matched_rule_id]))
 
     # Layer 3: regex rules (first match wins)
     match = match_hw_type_rule(row, ruleset.hw_type_rules)
     if match and match.get("hw_type"):
-        return replace(result, hw_type=match["hw_type"])
+        return _validate_hw_type_vocab(replace(result, hw_type=match["hw_type"]))
 
     if result.entity_type and result.entity_type.value in ruleset.hw_type_applies_to:
         return replace(result, warnings=result.warnings + ["hw_type unresolved for HW row"])

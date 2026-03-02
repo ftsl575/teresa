@@ -2,7 +2,30 @@
 
 ## Цель: репозиторий только с кодом
 
-Все входные и выходные данные прогонов по умолчанию используют относительные каталоги `input/` (вход) и `output/` (выход). В каталоге `spec_classifier/` не создаются папки `out/`, `output/` и не появляются артефакты прогонов, если не указать `--output-dir output` из корня репо. Абсолютные пути можно задать через `config.local.yaml` (не коммитится в git).
+Папка teresa/ (spec_classifier/) содержит ТОЛЬКО исходный код, правила, документацию и тесты. Входные данные, результаты прогонов, кеши и временные файлы ВСЕГДА хранятся СНАРУЖИ.
+
+## Data Isolation Policy
+
+Четыре директории ВСЕГДА раздельные:
+
+| Роль      | Путь                           | Содержимое                          |
+|-----------|--------------------------------|-------------------------------------|
+| CODE      | C:\Users\G\Desktop\teresa      | Только .py, .yaml, .md, .ps1, тесты |
+| INPUT     | C:\Users\G\Desktop\INPUT       | Исходные .xlsx с конфигуратора      |
+| OUTPUT    | C:\Users\G\Desktop\OUTPUT      | Результаты прогонов (run folders)   |
+| TEMPORARY | C:\Users\G\Desktop\temporary  | __pycache__, .pytest_cache, diag/   |
+
+Как это обеспечивается:
+
+1. config.local.yaml задаёт абсолютные пути (не коммитится).
+2. pyproject.toml редиректит .pytest_cache в ../../temporary/ (из spec_classifier → Desktop\temporary\.pytest_cache).
+3. Скрипты (run_full.ps1, run_tests.ps1) выставляют PYTHONPYCACHEPREFIX для __pycache__.
+4. .gitignore блокирует input/, output/, temporary/, __pycache__/, .pytest_cache/.
+5. clean.ps1 удаляет любой просочившийся мусор из repo.
+
+ОБЯЗАТЕЛЬНО перед распространением (zip, отправка): запустить `scripts\clean.ps1` для удаления кешей из repo.
+
+---
 
 ### Virtual Environment Policy
 
@@ -15,7 +38,7 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 | Назначение | Путь по умолчанию |
 |------------|-------------------|
 | **INPUT**  | `input/` (относительно cwd) — каталог с входными .xlsx (одиночный файл задаётся путём к файлу; для batch — каталог с файлами). |
-| **OUTPUT** | `output/` (относительно cwd) — верхний корень вывода; внутри создаются `dell_run/`, `cisco_run/`, затем папки прогонов. |
+| **OUTPUT** | `output/` (относительно cwd) — верхний корень вывода; внутри создаются `dell_run/`, `cisco_run/`, `hpe_run/`, затем папки прогонов. |
 | **TEMP**   | **Не используется.** Пайплайн работает в памяти (parse → normalize → classify) и пишет только в итоговую run-папку. Отдельная временная директория не требуется. В будущем TEMP может понадобиться только при появлении промежуточной записи на диск (например, распаковка больших архивов или кэширование нормализованных данных). |
 
 ---
@@ -151,17 +174,17 @@ python -m pytest tests/ -v --tb=short
 
 - **Не указывайте `--output-dir output` при запуске из репозитория** — тогда артефакты появятся в `spec_classifier/output/` и засорят репо.
 - **Не коммитьте** каталоги `.venv/`, `__pycache__/`, `.pytest_cache/`, а также любые `out/`, `output/` с результатами прогонов.
+- **Не запускайте pipeline без config.local.yaml** — relative defaults создадут input/ и output/ внутри repo.
+- **Не запускайте `python -m pytest` напрямую без скриптов** — используйте `scripts\run_tests.ps1` (редиректит все кеши). Если IDE запускает pytest напрямую — pyproject.toml перенаправит .pytest_cache, но __pycache__ всё равно появится (удалить через clean.ps1).
 
 ---
 
 ## Чеклист: «ничего не пишется в репо»
 
-После прогона без явного `--output-dir` (или с `--output-dir output`):
-
-1. Выполните `git status` — в списке изменённых/новых файлов не должно быть папок вывода и артефактов.
-2. Убедитесь, что в корне репозитория и в `spec_classifier/` нет новых каталогов `out/`, `output/` с run-папками.
-
-Если оба пункта выполнены — вывод действительно идёт только во внешний OUTPUT.
+1. Запустите `scripts\clean.ps1`.
+2. Проверьте: `dir spec_classifier` — нет __pycache__, .pytest_cache, input/, output/, temporary/, diag/.
+3. Проверьте: config.local.yaml НЕ должен попадать в архив/отправку (он в .gitignore).
+4. В .gitignore присутствуют: input/, output/, temporary/, __pycache__/, .pytest_cache/, config.local.yaml.
 
 ---
 

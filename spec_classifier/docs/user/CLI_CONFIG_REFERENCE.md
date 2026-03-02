@@ -8,9 +8,9 @@
 |----------|------------|--------------|----------|
 | `--input PATH` | Да (single-file) | — | Путь к входному .xlsx. |
 | `--batch-dir PATH` | Да (batch) | — | Директория с .xlsx; обрабатываются все файлы по алфавиту. |
-| `--vendor PATH` | Нет | `dell` | Вендор: `dell` (spec export) или `cisco` (CCW export). Выбирает адаптер парсинга и файл правил. |
+| `--vendor PATH` | Нет | `dell` | Вендор: `dell` (spec export), `cisco` (CCW export) или `hpe` (BOM). Выбирает адаптер парсинга и файл правил. |
 | `--config PATH` | Нет | `config.yaml` | Путь к YAML-конфигу. |
-| `--output-dir PATH` | Нет | из config `paths.output_root` или `C:\Users\G\Desktop\OUTPUT` | Верхний корень вывода. Внутри создаются подпапки по вендору: `dell_run/`, `cisco_run/`, а в них — папки прогонов `run-YYYY-MM-DD__HH-MM-SS-<stem>/`. |
+| `--output-dir PATH` | Нет | из config `paths.output_root` или `C:\Users\G\Desktop\OUTPUT` | Верхний корень вывода. Внутри создаются подпапки по вендору: `dell_run/`, `cisco_run/`, `hpe_run/`, а в них — папки прогонов `run-YYYY-MM-DD__HH-MM-SS-<stem>/`. |
 | `--batch` | Нет | — | Batch: все .xlsx из input_root (config или Desktop\\INPUT). |
 | `--save-golden` | Нет | — | Сохранить golden без подтверждения. |
 | `--update-golden` | Нет | — | Перезаписать golden с подтверждением (y/N). |
@@ -25,6 +25,7 @@
 
 - `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для Dell (в т.ч. `<stem>_branded.xlsx`, `run.log`)
 - `output_root/cisco_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для Cisco (без branded, с `run.log`)
+- `output_root/hpe_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для HPE (без branded, с `run.log`)
 
 Без `--output-dir` используется `paths.output_root` из config или `C:\Users\G\Desktop\OUTPUT`; в репозитории артефакты не создаются. Полное описание: [RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md).
 

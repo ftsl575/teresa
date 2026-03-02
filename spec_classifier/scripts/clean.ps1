@@ -57,3 +57,10 @@ if ($removed.Count -gt 0) {
 } else {
     Write-Host "Nothing to remove."
 }
+
+# Reminder: config.local.yaml should not be distributed
+$localCfg = Join-Path $RepoRoot "config.local.yaml"
+if (Test-Path $localCfg) {
+    Write-Host ""
+    Write-Host "REMINDER: config.local.yaml exists. Do NOT include it in zip/distribution." -ForegroundColor Yellow
+}

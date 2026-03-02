@@ -3,7 +3,7 @@
 import pytest
 from pathlib import Path
 
-from conftest import project_root, get_input_root, load_config
+from conftest import project_root, get_input_root_hpe, load_config
 from tests.helpers import run_pipeline_in_memory
 from src.core.normalizer import RowKind
 from src.core.classifier import EntityType
@@ -15,10 +15,10 @@ HP_FILES = ["hp1.xlsx", "hp2.xlsx", "hp3.xlsx", "hp4.xlsx", "hp5.xlsx", "hp6.xls
 def test_unknown_count_zero_hpe(filename):
     """Gate: unknown_count must be 0 for golden HPE files. If file missing at input_root/hpe/ → skip."""
     root = project_root()
-    input_root = get_input_root()
+    input_root = get_input_root_hpe()
     input_path = input_root / filename
     if not input_path.exists():
-        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml, HPE files at input_root/hpe/)")
     rules_path = root / "rules" / "hpe_rules.yaml"
     if not rules_path.exists():
         pytest.skip("rules/hpe_rules.yaml not found")
@@ -39,10 +39,10 @@ def test_unknown_count_zero_hpe(filename):
 def test_unknown_threshold_hpe(filename):
     """Guardrail: UNKNOWN ≤ 5% for HPE files. If file missing at input_root/hpe/ → skip."""
     root = project_root()
-    input_root = get_input_root()
+    input_root = get_input_root_hpe()
     input_path = input_root / filename
     if not input_path.exists():
-        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml, HPE files at input_root/hpe/)")
     rules_path = root / "rules" / "hpe_rules.yaml"
     if not rules_path.exists():
         pytest.skip("rules/hpe_rules.yaml not found")

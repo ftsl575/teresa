@@ -1,4 +1,4 @@
-﻿"""
+"""
 Save pipeline artifacts: raw rows, normalized rows, classification (JSON/JSONL), unknown/header rows (CSV).
 """
 
@@ -32,6 +32,7 @@ def _normalized_row_to_dict(row) -> dict:
         "parent_line_number", "service_duration_months",
         "smart_account_mandatory", "lead_time_days",
         "unit_net_price", "disc_pct", "extended_net_price",
+        "product_type", "extended_price", "lead_time", "config_name", "is_factory_integrated",
     ]
     for f in _VENDOR_FIELDS:
         val = getattr(row, f, None)
