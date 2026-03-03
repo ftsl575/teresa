@@ -5,7 +5,7 @@ HPE BOM row normalization: raw dicts → HPENormalizedRow (core contract + vendo
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from src.core.normalizer import RowKind
+from src.core.normalizer import NormalizedRow, RowKind
 
 
 def _is_empty(value) -> bool:
@@ -18,21 +18,8 @@ def _is_empty(value) -> bool:
 
 
 @dataclass
-class HPENormalizedRow:
-    """HPE normalized row — duck-type compatible with core NormalizedRow contract."""
-
-    # === Core Contract ===
-    source_row_index: int = 0
-    row_kind: RowKind = RowKind.ITEM
-    group_name: Optional[str] = None
-    group_id: Optional[str] = None
-    product_name: Optional[str] = None
-    module_name: str = ""
-    option_name: str = ""
-    option_id: Optional[str] = None
-    skus: List[str] = field(default_factory=list)
-    qty: int = 1
-    option_price: float = 0.0  # strictly float; 0.0 when empty (never None)
+class HPENormalizedRow(NormalizedRow):
+    """HPE normalized row: explicit subtype of core NormalizedRow contract."""
 
     # === Vendor Extension ===
     product_type: str = ""              # HW/SW from 'Product Type' col (optional)

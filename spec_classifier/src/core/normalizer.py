@@ -72,7 +72,7 @@ def normalize_row(raw_row: dict) -> NormalizedRow:
 
     - Determines row_kind via detect_row_kind().
     - SKUs: split by comma, strip each, list of non-empty strings.
-    - Qty -> int (default 0), Option List Price -> float (default 0.0).
+    - Qty -> int (default 1 when empty), Option List Price -> float (default 0.0).
     """
     row_kind = detect_row_kind(raw_row)
 
@@ -84,7 +84,7 @@ def normalize_row(raw_row: dict) -> NormalizedRow:
 
     try:
         qty_val = raw_row.get("Qty")
-        qty = int(qty_val) if qty_val is not None and not _is_empty(qty_val) else 0
+        qty = int(qty_val) if qty_val is not None and not _is_empty(qty_val) else 1
     except (TypeError, ValueError):
         qty = 0
 

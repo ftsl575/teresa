@@ -1,4 +1,4 @@
-﻿"""
+"""
 Tests for branded_spec_writer: file creation, absent block, title, multiple BASE blocks, UNKNOWN.
 Build NormalizedRow and ClassificationResult manually; do not run pipeline.
 """
@@ -238,3 +238,79 @@ def test_branded_spec_unknown_entity_type(tmp_path):
     values = _all_cell_values(ws)
     wb.close()
     assert "UnknownOption" in values
+
+
+# ── Test 8: ITEM rows before first BASE are rendered in preamble block ──────
+def test_branded_spec_preamble_rows_before_base(tmp_path):
+    """HW + SERVICE before BASE must be included in preamble section."""
+    normalized_rows = [
+        _nrow(1, "Pre HW", skus=["SKU-PRE-HW"], qty=1),
+        _nrow(2, "Pre Service", skus=["SKU-PRE-SRV"], qty=1),
+        _nrow(3, "Server", skus=["SKU-BASE"], qty=1),
+        _nrow(4, "Post HW", skus=["SKU-POST-HW"], qty=1),
+    ]
+    classification_results = [
+        ClassificationResult(RowKind.ITEM, EntityType.HW, State.PRESENT, "HW-001"),
+        ClassificationResult(RowKind.ITEM, EntityType.SERVICE, State.PRESENT, "SVC-001"),
+        ClassificationResult(RowKind.ITEM, EntityType.BASE, State.PRESENT, "BASE-001"),
+        ClassificationResult(RowKind.ITEM, EntityType.HW, State.PRESENT, "HW-002"),
+    ]
+    out_path = tmp_path / "branded.xlsx"
+    generate_branded_spec(
+        normalized_rows=normalized_rows,
+        classification_results=classification_results,
+        source_filename="test.xlsx",
+        output_path=out_path,
+    )
+    wb = openpyxl.load_workbook(out_path)
+    ws = wb.active
+    values = _all_cell_values(ws)
+    wb.close()
+
+    assert "Позиции без привязки к серверу" in values
+    assert "Pre HW" in values
+    assert "Pre Service" in values
+    assert "Server" in values
+    assert "Post HW" in values
+
+
+def test_branded_spec_contains_price_column_and_format(tmp_path):
+    normalized_rows = [
+        _nrow(1, "Server", skus=["SKU-BASE"], qty=1, option_price=100.0),
+        _nrow(2, "Item HW", skus=["SKU-HW"], qty=1, option_price=0.0),
+    ]
+    classification_results = [
+        ClassificationResult(RowKind.ITEM, EntityType.BASE, State.PRESENT, "BASE-001"),
+        ClassificationResult(RowKind.ITEM, EntityType.HW, State.PRESENT, "HW-001"),
+    ]
+    out_path = tmp_path / "branded.xlsx"
+    generate_branded_spec(
+        normalized_rows=normalized_rows,
+        classification_results=classification_results,
+        source_filename="test.xlsx",
+        output_path=out_path,
+    )
+
+    wb = openpyxl.load_workbook(out_path)
+    ws = wb.active
+
+    header_row = None
+    for r in range(1, 20):
+        if ws.cell(row=r, column=2).value == "Артикул":
+            header_row = r
+            break
+    assert header_row is not None
+    assert ws.cell(row=header_row, column=5).value == "Цена"
+
+    item_price_row = None
+    for r in range(header_row + 1, ws.max_row + 1):
+        if ws.cell(row=r, column=3).value == "Item HW":
+            item_price_row = r
+            break
+    assert item_price_row is not None
+
+    price_cell = ws.cell(row=item_price_row, column=5)
+    assert price_cell.number_format == "0.00"
+    assert price_cell.value == 0.0
+
+    wb.close()

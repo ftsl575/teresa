@@ -143,7 +143,7 @@ def save_unknown_rows(
     """Write only ITEM rows classified as UNKNOWN to unknown_rows.csv (utf-8-sig for Excel)."""
     path = Path(run_folder) / "unknown_rows.csv"
     fieldnames = [
-        "source_row_index", "module_name", "option_name", "skus", "qty", "option_price", "matched_rule_id"
+        "source_row_index", "option_id", "module_name", "option_name", "skus", "qty", "option_price", "matched_rule_id"
     ]
     rows_to_write = []
     for row, result in zip(normalized_rows, classification_results):
@@ -151,6 +151,7 @@ def save_unknown_rows(
             continue
         rows_to_write.append({
             "source_row_index": row.source_row_index,
+            "option_id": getattr(row, "option_id", None) or "",
             "module_name": row.module_name,
             "option_name": row.option_name,
             "skus": ",".join(row.skus) if row.skus else "",

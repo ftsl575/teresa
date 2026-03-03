@@ -13,6 +13,8 @@ from src.core.state_detector import State
 
 
 COLUMNS = [
+    "Group Name",
+    "Group ID",
     "Module Name",
     "Option Name",
     "SKUs",
@@ -55,6 +57,8 @@ def generate_cleaned_spec(
         if include_only_present and (result.state is None or result.state != State.PRESENT):
             continue
         rows.append({
+            "Group Name": row.group_name or "",
+            "Group ID": row.group_id or "",
             "Module Name": row.module_name,
             "Option Name": row.option_name,
             "SKUs": ", ".join(row.skus) if row.skus else "",

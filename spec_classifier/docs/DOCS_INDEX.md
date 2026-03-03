@@ -1,4 +1,4 @@
-# Documentation Index — Spec Classifier (Dell + Cisco CCW)
+# Documentation Index — Spec Classifier (Dell + Cisco CCW + HPE)
 
 ## Structure
 

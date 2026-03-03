@@ -1,10 +1,17 @@
 """
 Shared pytest configuration and helpers.
 project_root() returns spec_classifier/ based on __file__, not CWD.
+
+MAX_SKIP_RATIO controls CI/data-availability guard:
+pytest session fails when skipped/total > MAX_SKIP_RATIO
+or when passed == 0 while total > 0.
 """
 
 import yaml
+import pytest
 from pathlib import Path
+
+MAX_SKIP_RATIO = 0.50
 
 
 def project_root() -> Path:
@@ -70,3 +77,78 @@ def get_input_root_hpe() -> Path:
     base = p if p.is_absolute() else project_root() / p
     sub = base / "hpe"
     return sub if sub.exists() else base
+
+
+def _resolve_input_root_for_skip_guard():
+    """Resolve input_root with precedence: config.local.yaml, then config.yaml.
+
+    Returns Path when resolved, or None when config cannot be read/parsed.
+    """
+    root = project_root()
+    local_cfg = root / "config.local.yaml"
+    base_cfg = root / "config.yaml"
+    cfg_path = local_cfg if local_cfg.exists() else base_cfg
+
+    if not cfg_path.exists():
+        return root / "input"
+
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        if not isinstance(data, dict):
+            return None
+        paths_cfg = data.get("paths") or {}
+        if not isinstance(paths_cfg, dict):
+            return None
+        raw = paths_cfg.get("input_root") or "input"
+        p = Path(raw)
+        return p if p.is_absolute() else (root / raw)
+    except Exception:
+        # Keep current behavior when config is malformed/unreadable.
+        return None
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """Fail session if too many tests were skipped due to missing data."""
+    terminal = session.config.pluginmanager.get_plugin("terminalreporter")
+    stats = getattr(terminal, "stats", {}) if terminal else {}
+
+    total = int(getattr(session, "testscollected", 0) or 0)
+    passed = len(stats.get("passed", []))
+    skipped = len(stats.get("skipped", []))
+    failed = len(stats.get("failed", []))
+
+    if total == 0:
+        return
+
+    skip_ratio = skipped / total
+    input_root = _resolve_input_root_for_skip_guard()
+    missing_input_root = (
+        input_root is not None
+        and (not input_root.exists())
+        and (skipped > 0 or passed == 0)
+    )
+    should_fail = missing_input_root or (skip_ratio > MAX_SKIP_RATIO) or (passed == 0)
+    if not should_fail:
+        return
+
+    if missing_input_root:
+        message = (
+            f"Skip guard triggered: input_root is missing: {input_root}. "
+            f"skipped={skipped}, total={total}, passed={passed}, failed={failed}, "
+            f"threshold={MAX_SKIP_RATIO:.2f}. "
+            "Restore input_root or point paths.input_root to the correct directory (config.local.yaml)."
+        )
+    else:
+        message = (
+            f"Skip guard triggered: skipped={skipped}, total={total}, passed={passed}, "
+            f"failed={failed}, threshold={MAX_SKIP_RATIO:.2f}. "
+            "Too many tests were skipped or no tests passed. "
+            "Please provide input/*.xlsx or set paths.input_root."
+        )
+    if terminal:
+        terminal.write_line(f"ERROR: {message}", red=True, bold=True)
+    else:
+        print(f"ERROR: {message}")
+
+    session.exitstatus = 1

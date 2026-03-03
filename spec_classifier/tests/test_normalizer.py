@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unit tests for row normalizer and row_kind detection.
 """
 
@@ -138,3 +138,17 @@ def test_normalize_row_nan_handling():
     assert row.row_kind == RowKind.HEADER
     assert row.skus == []
     assert row.source_row_index == 2
+
+
+def test_normalize_row_empty_qty_defaults_to_one():
+    """Empty Qty should normalize to 1 by default."""
+    raw = {
+        "__row_index__": 8,
+        "Module Name": "Base",
+        "Option Name": "PowerEdge R760 Server",
+        "SKUs": "210-BDZY",
+        "Qty": "",
+        "Option List Price": 4709.0,
+    }
+    row = normalize_row(raw)
+    assert row.qty == 1

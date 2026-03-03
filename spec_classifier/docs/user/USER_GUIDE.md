@@ -2,7 +2,7 @@
 
 ## 1. Назначение
 
-Система классифицирует строки спецификаций (Dell и Cisco CCW) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
+Система классифицирует строки спецификаций (Dell, Cisco CCW и HPE QuoteBuilder BOM) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
 
 ---
 
@@ -20,6 +20,13 @@
 - Строка заголовка: ищется по одновременному наличию `"Line Number"` и `"Part Number"` в первых 100 строках.
 - Ожидаемые столбцы: Line Number, Part Number, Description, Qty, Unit List Price, Unit Net Price, Disc(%), Extended Net Price, Service Duration (Months), Smart Account Mandatory, Estimated Lead Time (Days).
 - Особенности: trailing `=` в Part Number удаляется автоматически; пустой Part Number внутри данных допустим (конец данных определяется по последней непустой ячейке Part Number).
+
+**HPE QuoteBuilder BOM (`--vendor hpe`):**
+
+- Формат: `.xlsx`, лист `"BOM"` (строго, без fallback).
+- Строка заголовка: строго первая строка листа (row 0), no preamble.
+- Ожидаемые столбцы: Product #, Product Description, Qty, Unit Price (USD), Config Name. Опционально: Product Type, Extended List Price (USD), Estimated Availability Lead Time.
+- Особенности: `Product #` используется полностью как `option_id`; базовый SKU (до первого пробела) записывается в `skus[0]`. Колонка `Config Name` отображается в `group_name` и `module_name`. Строка `"Factory Integrated"` классифицируется как `CONFIG` (правило `CONFIG-H-001`). Конец данных: первая строка, у которой первая непустая ячейка = `"total"` (без учёта регистра).
 
 ---
 
@@ -72,7 +79,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 - **entity_type:** один из 8 типов. Примеры: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, Power Cord), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives), UNKNOWN (ни одно правило не сработало).
 - **state:** PRESENT — опция присутствует; ABSENT — не установлена (например «No TPM», «No HDD», «Empty»); DISABLED — отключена (например «Disabled»).
 - **device_type:** уточнение для HW/LOGISTIC. Значения: power_cord, sfp_cable, storage_nvme, storage_ssd, psu, nic, raid_controller, hba, cpu. Может быть null, если правило не назначило device_type.
-- **hw_type:** тип железа для HW-строк. 20 значений: cpu, ram, ssd, hdd, nvme, storage_controller, psu, fan, cpu_heatsink, network_adapter, riser, gpu, tpm, chassis, cable, management, motherboard, mounting_kit, backplane, blank. Для не-HW или неразрешённых HW — null.
+- **hw_type:** тип железа для HW-строк. 25 значений (v2.0.0): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. Для не-HW или неразрешённых HW — null.
 - **matched_rule_id:** идентификатор сработавшего правила (например HW-002, SERVICE-001). UNKNOWN-000 — совпадений нет.
 - **warnings:** список предупреждений (например «hw_type unresolved for HW row»); обычно пуст.
 
@@ -88,11 +95,19 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 
 Для Cisco CCW: шаги аналогичны, но с `--vendor cisco` и правилами в `rules/cisco_rules.yaml`. Цель — `unknown_count = 0` на `ccw_1` и `ccw_2`.
 
+Для HPE: шаги аналогичны, но с `--vendor hpe` и правилами в `rules/hpe_rules.yaml`. Входные файлы рекомендуется хранить в `INPUT\hpe\`. Цель — `unknown_count = 0` на всех BOM-файлах (hp1–hp8).
+
+```powershell
+python main.py --vendor hpe --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx"
+```
+
 ---
 
 ## 8. cleaned_spec.xlsx
 
-Включаются только ITEM-строки с entity_type из `config.cleaned_spec.include_types` (по умолчанию BASE, HW, SOFTWARE, SERVICE). При `include_only_present: true` — только строки с state PRESENT. Колонки: Module Name, Option Name, SKUs, Qty, Option List Price, Entity Type, State. HEADER и остальные типы/состояния в файл не попадают.
+Включаются только ITEM-строки с entity_type из `config.cleaned_spec.include_types` (по умолчанию BASE, HW, SOFTWARE, SERVICE). При `include_only_present: true` — только строки с state PRESENT. Колонки: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. HEADER и остальные типы/состояния в файл не попадают.
+
+Для HPE: колонки Group Name / Group ID заполняются из `Config Name` (название конфигурации сервера). Это позволяет идентифицировать принадлежность строки к конкретному серверу в multi-config BOM.
 
 ---
 
