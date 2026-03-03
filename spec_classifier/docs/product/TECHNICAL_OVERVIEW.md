@@ -70,9 +70,9 @@
 | `unknown_rows.csv` | Только ITEM-строки с `entity_type == UNKNOWN`; кодировка UTF-8-sig. |
 | `header_rows.csv` | Только строки с `row_kind == HEADER`; UTF-8-sig. |
 | `run_summary.json` | Агрегаты: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
-| `cleaned_spec.xlsx` | Подмножество ITEM: типы из `config["cleaned_spec"]["include_types"]`, при `include_only_present` только state PRESENT. Колонки: Module Name, Option Name, SKUs, Qty, Option List Price, Entity Type, State. |
+| `cleaned_spec.xlsx` | Подмножество ITEM: типы из `config["cleaned_spec"]["include_types"]`, при `include_only_present` только state PRESENT. Колонки: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. |
 | `<stem>_annotated.xlsx` | Копия исходного листа (построчно), добавлены четыре колонки: Entity Type, State, device_type, hw_type; строки не удаляются; запись с `header=False`. |
-| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по типу сущности; из `src.outputs.branded_spec_writer.py`. |
+| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по типу сущности; колонки SKU, Option Name, Qty, Price. Строки до первого BASE выводятся в preamble-блок. Только Dell. |
 | `run.log` | Текстовый лог этапов пайплайна. |
 
 Типы сущностей в коде: `EntityType` в `src/core/classifier.py` — BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN. Состояния: `State` в `src/core/state_detector.py` — PRESENT, ABSENT, DISABLED.

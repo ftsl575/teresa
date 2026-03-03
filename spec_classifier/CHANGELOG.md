@@ -11,7 +11,7 @@ Versioning: [SemVer](https://semver.org/).
 
 ---
 
-## [Unreleased]
+## [1.3.0] — 2026-03-03
 
 ### Added
 - feat(hpe): src/vendors/hpe/ — parser, normalizer, adapter (HPEAdapter)
@@ -20,6 +20,7 @@ Versioning: [SemVer](https://semver.org/).
 - feat(hpe): config.yaml — hpe: rules/hpe_rules.yaml
 - feat(hpe): annotated_writer.py — 5 HPE vendor extension колонок в VENDOR_EXTRA_COLS; skip-оптимизация по первым 10 строкам удалена
 - feat(hpe): Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe
+- feat(tests): HPE unit tests — test_hpe_parser.py, test_hpe_normalizer.py, test_hpe_rules_unit.py (audit_1G P1-5)
 
 ### Fixed
 - fix(main): --output-dir default=None, чтобы config.local.yaml → paths.output_root применялся корректно
@@ -37,6 +38,14 @@ Versioning: [SemVer](https://semver.org/).
 - refactor(tests): все тесты Dell/Cisco переведены с `test_data/` на `get_input_root_dell()` / `get_input_root_cisco()` — единое соглашение с HPE; test_stats_hw_type.py включён
 - docs: OPERATIONAL_NOTES, TESTING_GUIDE, NEW_VENDOR_GUIDE, ONE_BUTTON_RUN, TECHNICAL_OVERVIEW, RULES_AUTHORING_GUIDE, USER_GUIDE, README — `test_data/` заменён на `C:\Users\G\Desktop\INPUT\` во всех примерах команд
 - fix(.gitignore): `test_data/*.xlsx` расширен до `test_data/` (целиком)
+- fix(json_writer): добавлен option_id в unknown_rows.csv (audit_1G P0-1)
+- fix(excel_writer): добавлены Group Name, Group ID в cleaned_spec.xlsx (audit_1G P0-2)
+- fix(branded_spec): строки до первого BASE сохраняются в preamble-блок вместо silent drop (audit_1G P0-3)
+- fix(conftest): skip guard — CI fail при 0 тестах вместо ложного зелёного (audit_1G P0-4)
+- fix(branded_spec): добавлена колонка price (option_price) в вывод (audit_1G P1-1)
+- fix(rules_engine): _get_field_value поддерживает option_id для матчинга правил (audit_1G P1-2)
+- fix(hpe): HPENormalizedRow наследует от NormalizedRow (audit_1G P1-3)
+- fix(normalizer): qty default изменён с 0 на 1 для пустых/отсутствующих значений (audit_1G P1-4)
 
 ---
 
