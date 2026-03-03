@@ -1,10 +1,10 @@
 # Current State — spec_classifier (teresa)
 
 ## Версия
-1.2.2
+1.3.0
 
 ## Дата последнего аудита
-2026-03-01
+2026-03-03 (audit_1G PASS — 181 tests, 0 fail)
 
 ## Активные вендоры
 - Dell (spec export)
@@ -20,6 +20,7 @@
 
 ## Известные проблемы
 - Смотри CHANGELOG.md [Unreleased]
+- audit_1G (2026-03-03) — PASS: option_id в unknown_rows.csv, Group Name/Group ID в cleaned_spec.xlsx, preamble-блок в branded_spec, qty default 0→1, skip guard в CI, HPE unit tests добавлены.
 
 ## HPE (Step 1–2)
 - **src/vendors/hpe/:** созданы parser.py (BOM, col_map по имени, Total/EOF), normalizer.py (HPENormalizedRow + vendor extensions), adapter.py (HPEAdapter). can_parse: лист BOM + заголовки "Product #", "Product Description".
@@ -35,6 +36,7 @@
 ## I/O и парсинг (P1)
 - `parse_excel()` (core) возвращает `(rows, header_row_index)` — один проход по файлу; DellAdapter.parse() делегирует ему, без повторного find_header_row() (BUG-002).
 - config.yaml: пути по умолчанию `input` / `output`; ключ `rules_file` удалён; правила вендоров только в `vendor_rules` (LEAK-001, LEAK-009).
+- Нормализация qty: при пустом или отсутствующем значении используется default = 1 (ранее 0).
 
 ## Документация — пути (P1, LEAK-002–004)
 - README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`; личные пути `C:\Users\G\...` удалены. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; источник — код и config, без dell_mvp.

@@ -45,7 +45,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 | `cleaned_spec.xlsx` | Отфильтрованная спецификация: типы из конфига (BASE, HW, SOFTWARE, SERVICE), только PRESENT (если `include_only_present: true`). |
 | `<stem>_annotated.xlsx` | Исходный файл + 4 колонки: Entity Type, State, device_type, hw_type. Все строки сохранены. |
 | `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по entity_type; блок «Не установлено» для ABSENT при необходимости. ⚠️ Не создаётся для Cisco CCW прогонов. |
-| `unknown_rows.csv` | Строки, для которых не сработало ни одно правило (entity_type = UNKNOWN). Ревизия после каждого прогона. |
+| `unknown_rows.csv` | Строки с entity_type = UNKNOWN. Колонки: source_row_index, option_id, module_name, option_name, skus, qty, option_price, matched_rule_id. Ревизия после каждого прогона. |
 | `rows_raw.json` | Сырые строки после парсера (отладка). |
 | `rows_normalized.json` | Нормализованные строки с row_kind (отладка). |
 | `header_rows.csv` | Строки-разделители секций (HEADER). |
@@ -98,7 +98,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 
 ## 9. branded_spec.xlsx
 
-Структура: сначала BASE-строка (сервер), затем секции по entity_type. Внутри секций — сгруппированные позиции. Может быть блок «Не установлено» для ABSENT-строк, если это предусмотрено выводом. Файл предназначен для презентации клиенту.
+Структура: сначала BASE-строка (сервер), затем секции по entity_type. Внутри секций — сгруппированные позиции с колонками SKU, Option Name, Qty, Price. Может быть блок «Не установлено» для ABSENT-строк. Если в спецификации есть ITEM-строки до первого BASE, они выводятся в блоке «Позиции без привязки к серверу» (preamble). Файл предназначен для презентации клиенту. ⚠️ Не создаётся для Cisco CCW и HPE прогонов.
 
 ---
 
