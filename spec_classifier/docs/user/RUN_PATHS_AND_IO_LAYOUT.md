@@ -51,16 +51,20 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 input/
   dell/    <- dl*.xlsx
   cisco/   <- ccw*.xlsx
+  hpe/     <- hp*.xlsx
 ```
+
+Подпапки `dell/`, `cisco/`, `hpe/` используются системой как стандартные пути при вызове `get_input_root_dell()` / `get_input_root_cisco()` / `get_input_root_hpe()` (см. `conftest.py`). Если подпапка отсутствует, используется корень `input_root`.
 
 Запуск:
 
 ```bash
 python main.py --batch-dir input/dell --vendor dell
 python main.py --batch-dir input/cisco --vendor cisco
+python main.py --batch-dir input/hpe --vendor hpe
 ```
 
-Это предотвращает попытку обработать Dell-файлы Cisco-адаптером и наоборот.
+Это предотвращает попытку обработать файлы одного вендора адаптером другого.
 
 ---
 
@@ -118,6 +122,25 @@ output/
 
 - Для Cisco **нет** файла `<stem>_branded.xlsx` — только перечисленные выше. **run.log** есть в каждом run.
 
+### HPE
+
+```
+output/
+  hpe_run/
+    run-YYYY-MM-DD__HH-MM-SS-<stem>\
+      rows_raw.json
+      rows_normalized.json
+      classification.jsonl
+      cleaned_spec.xlsx
+      header_rows.csv
+      unknown_rows.csv
+      run_summary.json
+      run.log
+      <stem>_annotated.xlsx
+```
+
+- Для HPE **нет** файла `<stem>_branded.xlsx` — только перечисленные выше. **run.log** есть в каждом run.
+
 ### Batch (TOTAL)
 
 В режиме batch дополнительно создаётся папка агрегации:  
@@ -149,6 +172,14 @@ python main.py --input input/dl1.xlsx
 cd spec_classifier
 python main.py --input input/ccw_1.xlsx --vendor cisco
 # Результат: output/cisco_run/run-YYYY-MM-DD__HH-MM-SS-ccw_1/
+```
+
+### Одиночный прогон HPE
+
+```bash
+cd spec_classifier
+python main.py --input input/hpe/hp1.xlsx --vendor hpe
+# Результат: output/hpe_run/run-YYYY-MM-DD__HH-MM-SS-hp1/
 ```
 
 ### Batch (все .xlsx из input)

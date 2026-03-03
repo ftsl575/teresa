@@ -14,7 +14,7 @@ from src.core.normalizer import NormalizedRow
 _log = logging.getLogger(__name__)
 
 _KNOWN_FIELDS = frozenset({
-    "module_name", "option_name", "sku",
+    "module_name", "option_name", "option_id", "sku",
     "is_bundle_root", "service_duration_months",
 })
 
@@ -31,6 +31,8 @@ def _get_field_value(row, field: str):
         return str(row.module_name or "")
     elif field == "option_name":
         return str(row.option_name or "")
+    elif field == "option_id":
+        return str(getattr(row, "option_id", None) or "")
     elif field == "sku":
         return str(row.skus[0]) if row.skus else ""
     elif field == "is_bundle_root":

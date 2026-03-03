@@ -30,6 +30,7 @@ Versioning: [SemVer](https://semver.org/).
 - fix: redirect diag/runs and ruff/mypy caches to temp_root (scripts/run_full.ps1, scripts/clean.ps1)
 
 ### Changed
+- docs(P1-6): batch docs update — DOCS_INDEX заголовок → "Dell + Cisco CCW + HPE"; USER_GUIDE §1/2/7/8 + HPE раздел; CLI_CONFIG_REFERENCE §3 +HPE пример, §4 vendor_rules +hpe; RUN_PATHS_AND_IO_LAYOUT INPUT подпапка hpe/, OUTPUT секция HPE, пример команды HPE; TECHNICAL_OVERVIEW §2/3/7/8/10 +HPE; DATA_CONTRACTS §2 device_type +HPE, §4 +HPE vendor extensions; hw_type обновлён до 25 значений (v2.0.0) во всех документах
 - refactor(Makefile): INPUT переменная вместо test_data/ и input/hpe/; generate_golden_dell выделен отдельной целью; все три вендора через $(INPUT)/
 - docs: ONE_BUTTON_RUN.md — diag path updated to temp_root/diag/runs/<timestamp>/
 - docs: CONTRIBUTING.md — diag/ отмечен как gitignored, пишется в temp_root

@@ -26,10 +26,12 @@
 1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся через `adapter.get_rules_file()`, который возвращает значение из `config["vendor_rules"][vendor]` (или fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`; HPE: `rules/hpe_rules.yaml`.
 2. **Парсинг Excel** — `adapter.parse(str(input_path))` (vendor-specific):
    - Dell: ищет строку заголовка по ячейке `"Module Name"` в первых 20 строках (`src.vendors.dell.adapter` → `src.core.parser`);
-   - Cisco: ищет строку заголовка по одновременному наличию `"Line Number"` и `"Part Number"` на листе `"Price Estimate"` (`src.vendors.cisco.parser`).
+   - Cisco: ищет строку заголовка по одновременному наличию `"Line Number"` и `"Part Number"` на листе `"Price Estimate"` (`src.vendors.cisco.parser`);
+   - HPE: читает лист `"BOM"`, строго первая строка — заголовок (no preamble); детектирует конец данных по sentinel `"total"` (`src.vendors.hpe.parser`).
 3. **Нормализация** — `adapter.normalize(raw_rows)` (vendor-specific):
    - Dell: `src.core.normalizer.normalize_row` → `NormalizedRow`;
-   - Cisco: `src.vendors.cisco.normalizer.normalize_cisco_rows` → `CiscoNormalizedRow` (duck-type compatible с NormalizedRow, содержит дополнительные Cisco-поля).
+   - Cisco: `src.vendors.cisco.normalizer.normalize_cisco_rows` → `CiscoNormalizedRow` (duck-type compatible с NormalizedRow, содержит дополнительные Cisco-поля);
+   - HPE: `src.vendors.hpe.normalizer.normalize_hpe_rows` → `HPENormalizedRow` (duck-type compatible с NormalizedRow; vendor-поля: `product_type`, `extended_price`, `lead_time`, `config_name`, `is_factory_integrated`).
 4. **Загрузка правил** — `src.rules.rules_engine.RuleSet.load(rules_path)` (YAML, UTF-8). Правила разложены по атрибутам: `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, плюс `get_state_rules()` из `state_rules.absent_keywords`.
 5. **Классификация** — для каждой нормализованной строки `src.core.classifier.classify_row(row, ruleset)`:
    - если `row_kind == HEADER` → результат с `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
@@ -53,8 +55,10 @@
 
 **Вход**
 
-- **Excel:** первый лист, строка заголовка определяется по ячейке с текстом `"Module Name"`. Ожидаемые столбцы (после парсера): Module Name, Option Name, SKUs, Qty, Option List Price и др. (наличие Group Name, Group ID, Product Name, Option ID опционально). Колонка `Unnamed: 0` при чтении удаляется.
-- **Конфиг:** `config.yaml` — ключи `cleaned_spec` (в т.ч. `include_types`, `include_only_present`, `exclude_headers`) и `rules_file`.
+- **Dell:** первый лист, строка заголовка определяется по ячейке `"Module Name"` в первых 20 строках. Ожидаемые столбцы: Module Name, Option Name, SKUs, Qty, Option List Price (Group Name, Group ID, Product Name, Option ID опционально).
+- **Cisco CCW:** лист `"Price Estimate"`, строка заголовка — по одновременному наличию `"Line Number"` + `"Part Number"` в первых 100 строках.
+- **HPE:** лист `"BOM"`, первая строка — заголовок (no preamble). Ожидаемые столбцы: Product #, Product Description, Qty, Unit Price (USD), Config Name.
+- **Конфиг:** `config.yaml` — ключи `cleaned_spec` (в т.ч. `include_types`, `include_only_present`, `exclude_headers`) и `vendor_rules`.
 
 **Выход (в `run_folder`)**
 
@@ -147,7 +151,8 @@ spec_classifier/
 ├── config.yaml
 ├── rules/
 │   ├── dell_rules.yaml
-│   └── cisco_rules.yaml          # Cisco rules (service_duration_months, bundles, etc.)
+│   ├── cisco_rules.yaml          # Cisco rules (service_duration_months, bundles, etc.)
+│   └── hpe_rules.yaml            # HPE rules (82 device_type rules, BASE/HW/SERVICE/CONFIG/SOFTWARE/LOGISTIC)
 ├── src/
 │   ├── core/                     # parser, normalizer, classifier, state_detector
 │   ├── rules/                    # rules_engine.py
@@ -157,16 +162,25 @@ spec_classifier/
 │       ├── base.py               # VendorAdapter ABC
 │       ├── dell/
 │       │   └── adapter.py        # DellAdapter
-│       └── cisco/
-│           ├── parser.py         # CCW parser
-│           ├── normalizer.py     # CiscoNormalizedRow
-│           └── adapter.py        # CiscoAdapter
+│       ├── cisco/
+│       │   ├── parser.py         # CCW parser
+│       │   ├── normalizer.py     # CiscoNormalizedRow
+│       │   └── adapter.py        # CiscoAdapter
+│       └── hpe/
+│           ├── parser.py         # HPE BOM parser (sheet "BOM", no preamble)
+│           ├── normalizer.py     # HPENormalizedRow
+│           └── adapter.py        # HPEAdapter
 ├── tests/
 │   ├── (все существующие Dell-тесты)
 │   ├── test_cisco_parser.py      # CCW parse_excel на ccw_1/ccw_2
 │   ├── test_cisco_normalizer.py  # CiscoNormalizedRow / Cisco normalizer
 │   ├── test_regression_cisco.py  # регрессия Cisco по golden
-│   └── test_unknown_threshold_cisco.py  # unknown_threshold для Cisco
+│   ├── test_unknown_threshold_cisco.py  # unknown_threshold для Cisco
+│   ├── test_hpe_parser.py        # HPE parser unit (in-memory)
+│   ├── test_hpe_normalizer.py    # HPENormalizedRow unit (in-memory)
+│   ├── test_hpe_rules_unit.py    # classify_row на HPE строках (in-memory)
+│   ├── test_regression_hpe.py    # регрессия HPE по golden (skip при отсутствии файлов)
+│   └── test_unknown_threshold_hpe.py  # unknown_threshold для HPE (hp1–hp8)
 ├── golden/
 │   ├── dl1_expected.jsonl
 │   ├── dl2_expected.jsonl
@@ -178,8 +192,10 @@ spec_classifier/
 ├── <output_dir>/                 # по умолчанию из config paths.output_root или cwd/output
 │   ├── dell_run/
 │   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Dell
-│   └── cisco_run/
-│       └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Cisco
+│   ├── cisco_run/
+│   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Cisco
+│   └── hpe_run/
+│       └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов HPE
 └── docs/
     └── TECHNICAL_OVERVIEW.md
 ```
@@ -196,6 +212,12 @@ spec_classifier/
   - `test_cisco_normalizer.py` — проверка полей `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone` для нормализованных Cisco-строк.
   - `test_regression_cisco.py` — построчная регрессия по `golden/ccw_1_expected.jsonl` и `golden/ccw_2_expected.jsonl`.
   - `test_unknown_threshold_cisco.py` — проверка, что `unknown_count == 0` для обоих CCW-файлов.
+- **HPE-тесты**:
+  - `test_hpe_parser.py` — unit-тесты HPE BOM parser (in-memory workbooks: валидный BOM, пустой файл, отсутствие листа BOM, FileNotFoundError).
+  - `test_hpe_normalizer.py` — unit-тесты HPENormalizedRow: маппинг полей, empty/NaN, `is_factory_integrated`, fallback qty/price, option_id/sku split.
+  - `test_hpe_rules_unit.py` — `classify_row` на HPE строках: HW, SERVICE, LOGISTIC, UNKNOWN, CONFIG (Factory Integrated).
+  - `test_regression_hpe.py` — построчная регрессия по golden (hp1–hp8); skip при отсутствии файлов.
+  - `test_unknown_threshold_hpe.py` — gate (`unknown_count == 0`) и guardrail (≤5%) для hp1–hp8; skip при отсутствии файлов.
 - **Unit-тесты:**
   - `test_normalizer.py` — `detect_row_kind` (HEADER/ITEM), `normalize_row` (SKUs, qty, option_price, NaN/пустоты).
   - `test_state_detector.py` — `detect_state` по правилам из YAML (ABSENT, DISABLED, PRESENT по умолчанию).
@@ -234,6 +256,14 @@ Cisco-правила: файл `rules/cisco_rules.yaml`. Доступные по
 python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
 python main.py --input "C:\Users\G\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
 pytest tests/test_regression_cisco.py -v
+```
+
+HPE-правила: файл `rules/hpe_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`. Все classify-правила HPE ориентированы на `option_name` (BOM не содержит отдельного module_name). После изменения `rules/hpe_rules.yaml` рекомендуется запускать:
+
+```bash
+python main.py --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe --save-golden
+pytest tests/test_regression_hpe.py -v
+pytest tests/test_hpe_rules_unit.py -v
 ```
 
 ---

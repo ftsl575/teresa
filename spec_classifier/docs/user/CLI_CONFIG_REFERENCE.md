@@ -52,6 +52,12 @@ python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
 # Cisco batch
 python main.py --batch-dir "C:\Users\G\Desktop\INPUT" --vendor cisco
 
+# HPE одиночный прогон (результат: OUTPUT\hpe_run\run-...-<stem>\)
+python main.py --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe
+
+# HPE batch
+python main.py --batch-dir "C:\Users\G\Desktop\INPUT\hpe" --vendor hpe
+
 # Сохранить golden (в репо: golden/<stem>_expected.jsonl)
 python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden
 
@@ -73,6 +79,7 @@ paths:
 vendor_rules:
   dell: "rules/dell_rules.yaml"
   cisco: "rules/cisco_rules.yaml"
+  hpe: "rules/hpe_rules.yaml"
 
 cleaned_spec:
   # Типы сущностей для cleaned_spec.xlsx
