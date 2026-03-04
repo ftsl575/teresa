@@ -542,6 +542,22 @@ device_type_rules:
       device_type: fiber_cable
       rule_id: HW-H-040
 
+    # ── Battery / Capacitor (до cable — "Battery with...Cable Kit" → battery)
+    - field: option_name
+      pattern: '(?i)lithium.ion\s+battery'
+      device_type: battery
+      rule_id: HW-H-076
+
+    - field: option_name
+      pattern: '(?i)hybrid\s+capacitor'
+      device_type: battery
+      rule_id: HW-H-077
+
+    - field: option_name
+      pattern: '(?i)smart\s+storage.*battery'
+      device_type: battery
+      rule_id: HW-H-078
+
     # ── Cable Kit / Cable ─────────────────────────────────────────────────
     # КРИТИЧНО: стоит ДО gpu и storage_controller.
     # "GPU Power Cable Kit" → cable (не gpu)
@@ -635,6 +651,17 @@ device_type_rules:
       device_type: transceiver
       rule_id: HW-H-057
 
+    # ── Backplane (до generic GPU — "GPU...Backplane Kit" → backplane) ──
+    - field: option_name
+      pattern: '(?i)backplane\s+kit'
+      device_type: backplane
+      rule_id: HW-H-067
+
+    - field: option_name
+      pattern: '(?i)\bbackplane\b'
+      device_type: backplane
+      rule_id: HW-H-068
+
     # ── GPU generic (после cable — "GPU Power Cable" уже поймано выше) ────
     - field: option_name
       pattern: '(?i)\bgpu\b'
@@ -684,17 +711,6 @@ device_type_rules:
       device_type: drive_cage
       rule_id: HW-H-066
 
-    # ── Backplane ─────────────────────────────────────────────────────────
-    - field: option_name
-      pattern: '(?i)backplane\s+kit'
-      device_type: backplane
-      rule_id: HW-H-067
-
-    - field: option_name
-      pattern: '(?i)\bbackplane\b'
-      device_type: backplane
-      rule_id: HW-H-068
-
     # ── Fan ───────────────────────────────────────────────────────────────
     - field: option_name
       pattern: '(?i)fan\s+kit'
@@ -732,22 +748,6 @@ device_type_rules:
       pattern: '(?i)bezel\s+kit'
       device_type: bezel
       rule_id: HW-H-075
-
-    # ── Battery / Capacitor ───────────────────────────────────────────────
-    - field: option_name
-      pattern: '(?i)lithium.ion\s+battery'
-      device_type: battery
-      rule_id: HW-H-076
-
-    - field: option_name
-      pattern: '(?i)hybrid\s+capacitor'
-      device_type: battery
-      rule_id: HW-H-077
-
-    - field: option_name
-      pattern: '(?i)smart\s+storage.*battery'
-      device_type: battery
-      rule_id: HW-H-078
 
     # ── Accessory ─────────────────────────────────────────────────────────
     - field: option_name
