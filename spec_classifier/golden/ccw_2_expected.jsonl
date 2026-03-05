@@ -10,7 +10,7 @@
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-004", "device_type": null, "hw_type": null, "skus": ["SC8KAESUK9-1712"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-009", "device_type": null, "hw_type": null, "skus": ["IOSXE-AUTO-MODE"]}
 {"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-CH1-400WAC"]}
-{"source_row_index": 31, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C13-CBN"]}
+{"source_row_index": 31, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C13-CBN"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["C9500-48Y4C-E"]}
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-002", "device_type": null, "hw_type": null, "skus": ["C9500-DNA-48Y4C-E"]}
 {"source_row_index": 34, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-001", "device_type": null, "hw_type": null, "skus": ["C9500-DNA-E-3Y"]}
@@ -23,7 +23,7 @@
 {"source_row_index": 41, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": null, "hw_type": "storage_drive", "skus": ["C9500-SSD-NONE"]}
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-010", "device_type": null, "hw_type": "management", "skus": ["C9500-RFID-NONE"]}
 {"source_row_index": 43, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-006", "device_type": null, "hw_type": null, "skus": ["NETWORK-PNP-LIC"]}
-{"source_row_index": 44, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C13-CBN"]}
+{"source_row_index": 44, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C13-CBN"]}
 {"source_row_index": 45, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": null, "hw_type": null, "skus": ["C9300L-48P-4X-E"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-002", "device_type": null, "hw_type": null, "skus": ["C9300L-DNA-E-48"]}
 {"source_row_index": 47, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-001", "device_type": null, "hw_type": null, "skus": ["C9300L-DNA-E-48-3Y"]}
@@ -33,7 +33,7 @@
 {"source_row_index": 51, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-002", "device_type": "fan", "hw_type": "fan", "skus": ["FAN-T2"]}
 {"source_row_index": 52, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-715WAC-P"]}
 {"source_row_index": 53, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-715WAC-P/2"]}
-{"source_row_index": 54, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
+{"source_row_index": 54, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": null, "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 56, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-SCR-4"]}
@@ -48,7 +48,7 @@
 {"source_row_index": 66, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-002", "device_type": "fan", "hw_type": "fan", "skus": ["FAN-T2"]}
 {"source_row_index": 67, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-350WAC-P"]}
 {"source_row_index": 68, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-350WAC-P/2"]}
-{"source_row_index": 69, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
+{"source_row_index": 69, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
 {"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": null, "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 71, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 72, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-SCR-4"]}
@@ -63,7 +63,7 @@
 {"source_row_index": 81, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-002", "device_type": "fan", "hw_type": "fan", "skus": ["FAN-T2"]}
 {"source_row_index": 82, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-350WAC-P"]}
 {"source_row_index": 83, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["PWR-C1-350WAC-P/2"]}
-{"source_row_index": 84, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
+{"source_row_index": 84, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-C15-CBN"]}
 {"source_row_index": 85, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": null, "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 86, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 87, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": null, "hw_type": "rail", "skus": ["C9K-ACC-SCR-4"]}

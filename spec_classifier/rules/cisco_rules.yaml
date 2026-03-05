@@ -77,17 +77,13 @@ software_rules:
 
 logistic_rules:
   - field: sku
-    pattern: '^CAB-'
+    pattern: '^CAB-(?!9K|C13|C15|TA-|2Q)'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-C-001
   - field: sku
     pattern: '^STACK-T'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-C-002
-  - field: option_name
-    pattern: '(?i)power cord|jumper power cord'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-C-003
   - field: option_name
     pattern: '(?i)stacking cable'
     entity_type: LOGISTIC
@@ -156,6 +152,10 @@ hw_rules:
     pattern: '(?i)stack(ing)?\s+(module|kit)'
     entity_type: HW
     rule_id: HW-C-014
+  - field: option_name
+    pattern: '(?i)power cord|jumper power cord'
+    entity_type: HW
+    rule_id: HW-C-020-POWER-CORD
 
 device_type_rules:
   applies_to: [HW, LOGISTIC]
