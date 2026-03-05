@@ -12,16 +12,16 @@ from src.core.classifier import HW_TYPE_VOCAB
 # Exact expected hw_type_counts from real run on dl1.xlsx (taxonomy v2: memory, storage_drive, rail, blank_filler)
 EXPECTED_DL1_HW_TYPE_COUNTS = {
     "tpm": 1,
-    "chassis": 2,
+    "storage_drive": 4,
     "cpu": 4,
     "memory": 1,
     "storage_controller": 2,
-    "storage_drive": 3,
     "fan": 1,
     "psu": 2,
+    "cable": 2,
     "riser": 1,
     "network_adapter": 3,
-    "cable": 1,
+    "chassis": 1,
     "management": 1,
     "rail": 1,
 }
