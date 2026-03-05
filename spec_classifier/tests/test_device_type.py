@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unit tests for device_type assignment (Phase 2 rules: LOGISTIC-004-CORD, HW-005–009, LOGISTIC-005-SFP-CABLE).
 Covers MUST-FIX SKUs from vnext_plan1.md and edge cases (UNKNOWN → device_type None; non-HW/LOGISTIC → None).
 """
@@ -51,28 +51,28 @@ def _row(
     )
 
 
-# --- Power Cords (LOGISTIC-004-CORD) ---
+# --- Power Cords (HW-010-POWER-CORD) ---
 def test_power_cord_rack_c13_c14(ruleset):
     row = _row(option_name="Rack Power Cord 2M (C13/C14 10A)", skus=["450-AADY"])
     r = classify_row(row, ruleset)
-    assert r.entity_type == EntityType.LOGISTIC
-    assert r.matched_rule_id == "LOGISTIC-004-CORD"
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-010-POWER-CORD"
     assert r.device_type == "power_cord"
 
 
 def test_power_cord_c19_c20(ruleset):
     row = _row(option_name="C19 to C20, 250V, 0.6m Power Cord", skus=["450-AAXT"])
     r = classify_row(row, ruleset)
-    assert r.entity_type == EntityType.LOGISTIC
-    assert r.matched_rule_id == "LOGISTIC-004-CORD"
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-010-POWER-CORD"
     assert r.device_type == "power_cord"
 
 
 def test_power_cord_jumper(ruleset):
     row = _row(option_name="Jumper Cord - C13/C14, 0,6M, 250V, 10A (US,EUR)", skus=["450-AADX"])
     r = classify_row(row, ruleset)
-    assert r.entity_type == EntityType.LOGISTIC
-    assert r.matched_rule_id == "LOGISTIC-004-CORD"
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-010-POWER-CORD"
     assert r.device_type == "power_cord"
 
 
@@ -248,10 +248,10 @@ def test_header_row_no_device_type(ruleset):
     assert r.device_type is None
 
 
-# --- Edge: BASE/SERVICE (non-HW/LOGISTIC) → device_type None ---
-def test_base_row_no_device_type(ruleset):
+# --- BASE row should receive device_type=server ---
+def test_base_row_gets_server_device_type(ruleset):
     row = _row(module_name="Base", option_name="", skus=[])
     r = classify_row(row, ruleset)
     assert r.entity_type == EntityType.BASE
     assert r.matched_rule_id == "BASE-001"
-    assert r.device_type is None
+    assert r.device_type == "server"

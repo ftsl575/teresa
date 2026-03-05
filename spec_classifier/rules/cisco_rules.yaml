@@ -17,7 +17,7 @@ service_rules: []
 
 config_rules:
   - field: option_name
-    pattern: '(?i)Dummy PID'
+    pattern: '(?i)Dummy PID(?!.*Airflow)'
     entity_type: CONFIG
     rule_id: CONFIG-C-001
   - field: option_name
@@ -80,14 +80,6 @@ logistic_rules:
     pattern: '^CAB-(?!9K|C13|C15|TA-|2Q)'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-C-001
-  - field: sku
-    pattern: '^STACK-T'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-C-002
-  - field: option_name
-    pattern: '(?i)stacking cable'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-C-004
   - field: option_name
     pattern: '(?i)cable management guide'
     entity_type: LOGISTIC
@@ -156,10 +148,28 @@ hw_rules:
     pattern: '(?i)power cord|jumper power cord'
     entity_type: HW
     rule_id: HW-C-020-POWER-CORD
+  - field: option_name
+    pattern: '(?i)Dummy PID.*Airflow'
+    entity_type: HW
+    rule_id: HW-C-021-AIRFLOW
+  - field: sku
+    pattern: '^STACK-T'
+    entity_type: HW
+    rule_id: HW-C-022-STACK-SKU
+  - field: option_name
+    pattern: '(?i)stacking cable'
+    entity_type: HW
+    rule_id: HW-C-023-STACK-CABLE
 
 device_type_rules:
-  applies_to: [HW, LOGISTIC]
+  applies_to: [HW, LOGISTIC, BASE]
   rules:
+    # BASE: switch
+    - field: is_bundle_root
+      pattern: '^true$'
+      device_type: switch
+      rule_id: BASE-C-DT-001
+
     # Пассивный медный DAC/twinax кабель — по SKU (самый специфичный первым)
     - field: sku
       pattern: '(?i)-CU\d'
@@ -182,7 +192,12 @@ device_type_rules:
     - field: option_name
       pattern: '(?i)power cord|jumper power cord'
       device_type: power_cord
-      rule_id: DT-C-003
+      rule_id: DT-C-020-POWER-CORD
+
+    - field: option_name
+      pattern: '(?i)Dummy PID.*Airflow'
+      device_type: accessory
+      rule_id: DT-C-021-AIRFLOW
 
     - field: option_name
       pattern: '(?i)stacking cable'
@@ -194,6 +209,53 @@ device_type_rules:
       device_type: fan
       rule_id: DT-C-004
 
+    # ── Memory ───────────────────────────────────────────────
+    - field: sku
+      pattern: '^(MEM-|M\dUSB)'
+      device_type: ram
+      rule_id: DT-C-010-MEM-SKU
+
+    - field: option_name
+      pattern: '(?i)\b(DRAM|memory)\b'
+      device_type: ram
+      rule_id: DT-C-010-MEM-OPT
+
+    # ── Blank Filler ─────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\b(blank|filler)\b'
+      device_type: blank_filler
+      rule_id: DT-C-011-BLANK
+
+    # ── Rail / Mounting ──────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)(rack mount|mounting kit)'
+      device_type: rail
+      rule_id: DT-C-012-RAIL
+
+    # ── SSD ──────────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\bSSD\b'
+      device_type: storage_ssd
+      rule_id: DT-C-013-SSD
+
+    # ── Stacking Module ──────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)stack(ing)?\s+(module|kit)'
+      device_type: accessory
+      rule_id: DT-C-014-STACK
+
+    # ── Management (RFID) ────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\bRFID\b'
+      device_type: management
+      rule_id: DT-C-015-MGMT
+
+    # ── Accessory Kit ────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)accessory kit|rubber feet|screws'
+      device_type: accessory
+      rule_id: DT-C-016-ACCESSORY
+
 hw_type_rules:
   applies_to: [HW]
   device_type_map:
@@ -202,6 +264,14 @@ hw_type_rules:
     sfp_cable: cable
     psu: psu
     fan: fan
+    power_cord: cable
+    ram: memory
+    blank_filler: blank_filler
+    rail: rail
+    storage_ssd: storage_drive
+    accessory: accessory
+    management: management
+    switch: switch
   rule_id_map: {}
   rules:
     - field: sku

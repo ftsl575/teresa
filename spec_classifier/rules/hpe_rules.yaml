@@ -328,9 +328,15 @@ hw_rules:
     rule_id: HW-H-GLOBAL-038
 
 device_type_rules:
-  applies_to: [HW, LOGISTIC]
+  applies_to: [HW, LOGISTIC, BASE]
 
   rules:
+    # BASE: server
+    - field: option_name
+      pattern: '(?i)(configure-to-order\s+server|cto\s+svr|proliant|synergy\s+compute)'
+      device_type: server
+      rule_id: BASE-H-DT-001
+
     # ── PSU (специфичные до generic 'power supply') ───────────────────────
     - field: option_name
       pattern: '(?i)flex\s+slot.*power\s+supply'
@@ -399,6 +405,12 @@ device_type_rules:
       pattern: '(?i)\bddr4\b'
       device_type: ram
       rule_id: HW-H-013
+
+    # NVMe Cable Kit — кабель, не накопитель
+    - field: option_name
+      pattern: '(?i)nvme.*cable\s+kit'
+      device_type: cable
+      rule_id: HW-H-090
 
     # ── Storage NVMe (до generic SSD) ────────────────────────────────────
     - field: option_name
@@ -503,7 +515,7 @@ device_type_rules:
     # ── NVLink / GPU Accessory (специфичные до generic gpu) ───────────────
     - field: option_name
       pattern: '(?i)nvlink\s+bridge'
-      device_type: gpu
+      device_type: accessory
       rule_id: HW-H-033
 
     - field: option_name
