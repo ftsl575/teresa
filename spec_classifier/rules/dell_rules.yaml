@@ -97,11 +97,6 @@ logistic_rules:
     entity_type: LOGISTIC
     rule_id: LOGISTIC-003
 
-  # Power Cords (C13/C14, C19/C20, Jumper/Rack cord)
-  - field: option_name
-    pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-004-CORD
 
 # SOFTWARE (PRIORITY 4) — РАСШИРЕНО
 software_rules:
@@ -258,19 +253,31 @@ hw_rules:
     entity_type: HW
     rule_id: HW-009-CPU-CUS
 
+  # Power Cord — физический кабель, HW (не LOGISTIC)
+  - field: option_name
+    pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'
+    entity_type: HW
+    rule_id: HW-010-POWER-CORD
+
 # ============================================================
 # DEVICE TYPE (second pass: only for ITEM rows with entity_type HW or LOGISTIC)
 # First match wins. device_type appears only when matched_rule_id != UNKNOWN-000.
 # ============================================================
 device_type_rules:
-  applies_to: [HW, LOGISTIC]
+  applies_to: [HW, LOGISTIC, BASE]
 
   rules:
+    # BASE: server
+    - field: module_name
+      pattern: '(?i)(^Base$|^PowerEdge)'
+      device_type: server
+      rule_id: BASE-D-DT-001
+
     # LOGISTIC
     - field: option_name
       pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'
       device_type: power_cord
-      rule_id: LOGISTIC-004-CORD
+      rule_id: HW-010-POWER-CORD
 
     - field: option_name
       pattern: '(?i)(sfp|twinax|dac).*(cable|direct\s+attach)'
@@ -336,6 +343,167 @@ device_type_rules:
       device_type: cpu
       rule_id: HW-009-CPU-CUS
 
+    # ── CPU ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\b(Processor|Additional\s+Processor)\b'
+      device_type: cpu
+      rule_id: DT-D-010-CPU-MODULE
+
+    - field: option_name
+      pattern: '(?i)\b(Xeon|EPYC|Intel\s+Processor)\b'
+      device_type: cpu
+      rule_id: DT-D-010-CPU-OPT
+
+    # ── RAM ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bMemory\s+Capacity\b'
+      device_type: ram
+      rule_id: DT-D-011-RAM-MODULE
+
+    - field: option_name
+      pattern: '(?i)\b(DDR[45]|DIMM|RDIMM|LRDIMM)\b'
+      device_type: ram
+      rule_id: DT-D-011-RAM-OPT
+
+    # ── Backplane (до NVMe generic) ─────────────────────────
+    - field: module_name
+      pattern: '(?i)\bBACKPLANE\b'
+      device_type: backplane
+      rule_id: DT-D-026-BACKPLANE
+
+    - field: option_name
+      pattern: '(?i)\bBackplane\b'
+      device_type: backplane
+      rule_id: DT-D-026-BACKPLANE-OPT
+
+    # ── Storage NVMe ─────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\bNVMe\b'
+      device_type: storage_nvme
+      rule_id: DT-D-013-NVME
+
+    # ── Storage SSD ──────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
+      device_type: storage_ssd
+      rule_id: DT-D-012-SSD
+
+    # ── Storage HDD ──────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\b(HDD|Hard\s+Drive)\b'
+      device_type: storage_hdd
+      rule_id: DT-D-014-HDD
+
+    # ── GPU ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)^(GPU|FPGA)\b'
+      device_type: gpu
+      rule_id: DT-D-015-GPU-MODULE
+
+    - field: option_name
+      pattern: '(?i)\b(NVIDIA|GPU|Tesla|A100|H100|L40)\b'
+      device_type: gpu
+      rule_id: DT-D-015-GPU-OPT
+
+    # ── Fan ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bFans?\b'
+      device_type: fan
+      rule_id: DT-D-016-FAN
+
+    - field: option_name
+      pattern: '(?i)\bFan\b'
+      device_type: fan
+      rule_id: DT-D-016-FAN-OPT
+
+    # ── Heatsink ─────────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\bHeatsink\b'
+      device_type: heatsink
+      rule_id: DT-D-017-HEATSINK
+
+    # ── PSU ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bPower\s+Supply\b'
+      device_type: psu
+      rule_id: DT-D-018-PSU
+
+    # ── Riser ────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\b(PCIe|Riser)\b'
+      device_type: riser
+      rule_id: DT-D-019-RISER
+
+    # ── Rail ─────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bRack\s+Rails\b'
+      device_type: rail
+      rule_id: DT-D-020-RAIL
+
+    - field: option_name
+      pattern: '(?i)\bReadyRails\b'
+      device_type: rail
+      rule_id: DT-D-020-RAIL-OPT
+
+    # ── Blank Filler ─────────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\b(Blanks?|Filler|Dummy|Slot\s+Filler)\b'
+      device_type: blank_filler
+      rule_id: DT-D-022-BLANK
+
+    # ── NIC ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bNetwork\s+(Adapter|Cards?)\b'
+      device_type: nic
+      rule_id: DT-D-021-NIC
+
+    - field: option_name
+      pattern: '(?i)\b(Broadcom|Mellanox|Intel\s+E\d{3}|OCP)\b.*\b(Adapter|NIC)\b'
+      device_type: nic
+      rule_id: DT-D-021-NIC-OPT
+
+    # ── Bezel ────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bBezel\b'
+      device_type: bezel
+      rule_id: DT-D-023-BEZEL
+
+    # ── TPM ──────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\b(TPM|Trusted\s+Platform)\b'
+      device_type: tpm
+      rule_id: DT-D-024-TPM
+
+    # ── Chassis ──────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)^Chassis\s+Configuration$'
+      device_type: chassis
+      rule_id: DT-D-025-CHASSIS
+
+    # ── RAID Controller ──────────────────────────────────────
+    - field: option_name
+      pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel)\b'
+      device_type: raid_controller
+      rule_id: DT-D-027-RAID
+
+    # ── Management ───────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\b(KVM|BMC|Quick\s+Sync)\b'
+      device_type: management
+      rule_id: DT-D-028-MGMT
+
+    # ── Cable ────────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bCables?\b'
+      device_type: cable
+      rule_id: DT-D-029-CABLE
+
+    # ── Accessory ────────────────────────────────────────────
+    - field: module_name
+      pattern: '(?i)\bServer\s+Accessories\b'
+      device_type: accessory
+      rule_id: DT-D-030-ACCESSORY
+
 # ============================================================
 # HW TYPE (third pass: only for ITEM rows with entity_type HW)
 # Priority: device_type_map > rule_id_map > regex rules > null
@@ -348,11 +516,29 @@ hw_type_rules:
   device_type_map:
     cpu: cpu
     psu: psu
+    power_cord: cable
     nic: network_adapter
     storage_nvme: storage_drive
     storage_ssd: storage_drive
+    storage_hdd: storage_drive
     raid_controller: storage_controller
     hba: hba
+    sfp_cable: cable
+    fan: fan
+    heatsink: heatsink
+    riser: riser
+    rail: rail
+    bezel: chassis
+    blank_filler: blank_filler
+    tpm: tpm
+    backplane: backplane
+    cable: cable
+    gpu: gpu
+    management: management
+    chassis: chassis
+    accessory: accessory
+    server: server
+    ram: memory
 
   # Layer 2: matched_rule_id → hw_type (HW-004→nvme removed for DEC-006; BOSS option_name drives type)
   rule_id_map:
