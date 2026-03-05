@@ -331,9 +331,9 @@ device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
 
   rules:
-    # BASE: server
+    # BASE: server (only rows that are BASE by base_rules — do not match every "ProLiant" HW row)
     - field: option_name
-      pattern: '(?i)(configure-to-order\s+server|cto\s+svr|proliant|synergy\s+compute)'
+      pattern: '(?i)(configure-to-order\s+server|cto\s+svr|gpu\s+configure-to-order)'
       device_type: server
       rule_id: BASE-H-DT-001
 
