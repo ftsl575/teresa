@@ -198,6 +198,76 @@ pytest tests/test_regression.py -v
 
 ---
 
+## Audit & Cluster Analysis
+
+Two scripts extend Teresa with post-run quality checks and pattern discovery.
+
+### batch_audit.py — Rule & AI Audit
+
+Checks all `*_annotated.xlsx` outputs for classification errors (E-codes) 
+and AI mismatches.
+```bash
+# Rule-based only (fast, no API key needed)
+python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+
+# Full audit with AI validation
+$env:OPENAI_API_KEY="sk-..."
+python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+```
+
+Outputs: `audit_report.json`, `audit_summary.xlsx`, `*_audited.xlsx` per file.
+
+---
+
+### cluster_audit.py — Pattern Mining
+
+Clusters unclassified rows to discover new YAML rules. 
+Reads `*_audited.xlsx` (or `*_annotated.xlsx`) from output dir.
+```bash
+# Preview candidates without clustering
+python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --dry-run
+
+# Full clustering run
+python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+
+# Filter by vendor
+python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --vendor hpe
+
+# Custom cluster parameters
+python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --min-cluster-size 5 --max-clusters 30
+```
+
+| Argument | Default | Description |
+|---|---|---|
+| `--output-dir` | required | Path to folder with *_audited.xlsx or *_annotated.xlsx |
+| `--vendor` | all | Filter by vendor: dell / hpe / cisco |
+| `--min-cluster-size` | 3 | Minimum rows to form a cluster |
+| `--max-clusters` | 50 | Maximum number of clusters |
+| `--dry-run` | off | Show candidate counts and exit |
+
+Outputs: `cluster_summary.xlsx` + updates `audit_report.json` with `clusters` section.
+
+---
+
+### Recommended Workflow
+```bash
+# 1. Run Teresa
+python main.py --batch-dir C:\Users\G\Desktop\INPUT
+
+# 2. Rule-based audit
+python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+
+# 3. Cluster unclassified rows
+python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+
+# 4. Review cluster_summary.xlsx → write YAML rules
+
+# 5. Re-run Teresa + audit → verify E2/E17 reduction
+python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+```
+
+---
+
 ## Documentation
 
 Full documentation: [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md)
