@@ -40,11 +40,12 @@ def generate_annotated_source_excel(
         excel_row = normalized_rows[i].source_row_index
         row_to_result[excel_row] = classification_results[i]
 
-    # Add four columns (same length as df)
+    # Add five columns (same length as df)
     entity_col = []
     state_col = []
     device_type_col = []
     hw_type_col = []
+    row_kind_col = []
     for r in range(len(df)):
         excel_row_1based = r + 1
         result = row_to_result.get(excel_row_1based)
@@ -53,21 +54,25 @@ def generate_annotated_source_excel(
             state_col.append("State")
             device_type_col.append("device_type")
             hw_type_col.append("hw_type")
+            row_kind_col.append("row_kind")
         elif result and result.row_kind == RowKind.ITEM:
             entity_col.append(result.entity_type.value if result.entity_type else "")
             state_col.append(result.state.value if result.state else "")
             device_type_col.append(result.device_type or "")
             hw_type_col.append(result.hw_type or "")
+            row_kind_col.append(result.row_kind.value)
         else:
             entity_col.append("")
             state_col.append("")
             device_type_col.append("")
             hw_type_col.append("")
+            row_kind_col.append(result.row_kind.value if result and result.row_kind else "")
 
     df["Entity Type"] = entity_col
     df["State"] = state_col
     df["device_type"] = device_type_col
     df["hw_type"] = hw_type_col
+    df["row_kind"] = row_kind_col
 
     # --- Vendor extension columns (extensible) ---
     # Each tuple: (attribute_name_on_NormalizedRow, column_header_in_excel)

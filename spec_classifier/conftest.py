@@ -110,6 +110,10 @@ def _resolve_input_root_for_skip_guard():
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """Fail session if too many tests were skipped due to missing data."""
+    # collect-only mode never executes tests; passed==0 is not an error here.
+    if getattr(session.config.option, "collect_only", False):
+        return
+
     terminal = session.config.pluginmanager.get_plugin("terminalreporter")
     stats = getattr(terminal, "stats", {}) if terminal else {}
 
@@ -119,6 +123,11 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     failed = len(stats.get("failed", []))
 
     if total == 0:
+        return
+
+    # Nothing actually ran (e.g. -k filter matched nothing, deselected all).
+    # passed==0 is not actionable in that case.
+    if passed + skipped + failed == 0:
         return
 
     skip_ratio = skipped / total

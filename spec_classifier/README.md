@@ -190,7 +190,7 @@ pytest tests/test_regression.py -v
 | `Input file not found` | Wrong `--input` path | Use absolute path or run from `spec_classifier/` |
 | `Config file not found` | Wrong `--config` path | Default is `config.yaml` in CWD |
 | `No header row found` | Excel missing `"Module Name"` cell | Verify first sheet has `Module Name` header in first 20 rows |
-| `Rules file not found` | `rules_file` in config invalid | Check `config.yaml` → `rules_file` path |
+| `Rules file not found` | `vendor_rules` in config invalid | Check `config.yaml` → `vendor_rules` path |
 | Regression test fails | Rules changed without golden update | Run `--save-golden`, review diff carefully |
 | `unknown_rows.csv` not empty | Input has rows matching no rule | Review patterns; add rules per `docs/rules/RULES_AUTHORING_GUIDE.md` |
 | `Sheet 'Price Estimate' not found` | Cisco файл содержит другой лист | Убедитесь что загружен именно CCW export; список листов будет в сообщении об ошибке |

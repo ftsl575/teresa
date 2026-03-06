@@ -516,7 +516,6 @@ hw_type_rules:
   device_type_map:
     cpu: cpu
     psu: psu
-    power_cord: cable
     nic: network_adapter
     storage_nvme: storage_drive
     storage_ssd: storage_drive

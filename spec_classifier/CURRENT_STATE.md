@@ -4,7 +4,7 @@
 1.3.0
 
 ## Дата последнего аудита
-2026-03-03 (audit_1G PASS — 181 tests, 0 fail)
+2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail)
 
 ## Активные вендоры
 - Dell (spec export)
@@ -19,7 +19,8 @@
 - **device_type** описан как расширяемый словарь по вендорам; источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`. Новые значения при добавлении вендора — MINOR по разделу 7. Жёсткий список в коде не вводится.
 
 ## Известные проблемы
-- Смотри CHANGELOG.md [Unreleased]
+- Смотри CHANGELOG.md [Unreleased] для актуального списка изменений.
+- audit_2G (2026-03-06) — PASS: E6/E10 false positives устранены, HPE aliases в batch_audit, row_kind колонка в annotated output, E18 check, taxonomy P1-7 (power_cord hw_type=None, applies_to=[HW]), conftest skip guard исправлен, cleaned_spec HPE extensions, test coverage расширена (batch_audit, cluster_audit, hpe_rules_unit).
 - audit_1G (2026-03-03) — PASS: option_id в unknown_rows.csv, Group Name/Group ID в cleaned_spec.xlsx, preamble-блок в branded_spec, qty default 0→1, skip guard в CI, HPE unit tests добавлены.
 
 ## HPE (Step 1–2)

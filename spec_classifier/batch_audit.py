@@ -361,7 +361,7 @@ def validate_row(row: dict, vendor: str) -> list[str]:
         issues.append(f"E5:hw_type_on_non_hw[entity:{entity}]")
 
     # E6 — device_type on wrong entity
-    if entity not in ("HW", "LOGISTIC") and device_type:
+    if entity not in ("HW", "LOGISTIC", "BASE") and device_type:
         issues.append(f"E6:device_type_on_wrong_entity[entity:{entity}]")
 
     # E7 — hw_type not in vocab
@@ -386,8 +386,8 @@ def validate_row(row: dict, vendor: str) -> list[str]:
     if entity == "BASE":
         if hw_type:
             issues.append(f"E10:hw_type_on_base[{hw_type}]")
-        if device_type:
-            issues.append(f"E10:device_type_on_base[{device_type}]")
+        # device_type on BASE is valid — set by BASE-*-DT-* YAML rules.
+        # Removed device_type sub-check (was producing false positives).
 
     # E11 — hw_type on CONFIG
     if entity == "CONFIG" and hw_type:
@@ -493,7 +493,10 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
     df_work = df.rename(columns=col_map)
 
     # Build data rows, normalizing vendor-specific column aliases
-    _ALIASES = {"description": "option_name", "product_description": "option_name", "part_number": "skus"}
+    _ALIASES = {"description": "option_name",
+                "product_description": "option_name",
+                "part_number": "skus",
+                "config_name": "module_name"}
     data_rows = []
     for row in df_work.to_dict("records"):
         for src, dst in _ALIASES.items():
@@ -791,8 +794,8 @@ def _generate_human_report(report_files: list, output_dir: str, llm_model: str) 
                         if sv == "device_type": cols["device"] = j
                         if sv == "hw_type": cols["hw"] = j
                         if sv in ("option_name","description","product_description"): cols["option"] = j
-                        if sv in ("module_name","module name"): cols["module"] = j
-                        if sv in ("skus","sku","part_number"): cols["sku"] = j
+                        if sv in ("module_name","module name","config_name"): cols["module"] = j
+                        if sv in ("skus","sku","part_number","product_#"): cols["sku"] = j
                         if sv == "state": cols["state"] = j
                     break
 

@@ -14,10 +14,10 @@
 |---|--------|---------|
 | 1 | hba vs storage_controller — разделять? | **Да.** `hba` = FC HBA + SAS HBA (любой host bus adapter без встроенного RAID). `storage_controller` = только RAID с кешем/батареей (PERC/Smart Array/BOSS/MegaRAID). |
 | 2 | transceiver выделять из sfp_cable? | **Да.** SFP/SFP28/QSFP **модули** → `transceiver`. DAC/AOC/patch cord → `cable`. |
-| 3 | BASE rows нужен hw_type? | **Да.** `hw_type_applies_to: [HW, BASE]`. Без явного правила BASE → `hw_type: None` (не warning, не ошибка). |
+| 3 | BASE rows нужен hw_type? | **Нет.** `hw_type_applies_to: [HW]`. BASE rows не получают `hw_type` — тип изделия читается из `device_type`. |
 | 4 | enablement_kit — hw_type или device_type? | **Только `device_type`.** `entity_type=HW`, `device_type=enablement_kit`, `hw_type=None`. В `HW_TYPE_VOCAB` **не входит**. |
-| 5 | software_license/service в hw_type? | **Нет.** `hw_type_applies_to` = `[HW, BASE]`. SOFTWARE/SERVICE — только `entity_type`. |
-| 6 | power_cord — hw_type или device_type? | **Только `device_type`.** `hw_type_applies_to` остаётся `[HW, BASE]`. Строки `power_cord` имеют `entity_type=HW`, `hw_type=None`. |
+| 5 | software_license/service в hw_type? | **Нет.** `hw_type_applies_to` = `[HW]`. SOFTWARE/SERVICE — только `entity_type`. |
+| 6 | power_cord — hw_type или device_type? | **Только `device_type`.** `hw_type_applies_to` = `[HW]`. Строки `power_cord` имеют `entity_type=HW`, `hw_type=None`. |
 
 ---
 
@@ -32,7 +32,7 @@
 | `storage_system` | Storage System | Система хранения данных | OceanStor Dorado 5000 V6 NVMe Controller Enclosure |
 | `wireless_ap` | Wireless AP / Controller | Точка доступа Wi-Fi / Контроллер | AirEngine 9700-M1, AirEngine 5761R-11, AC6805 |
 
-> `hw_type_applies_to: [HW, BASE]`. Если тип BASE-изделия не распознан — `hw_type: None` (не warning).
+> `hw_type_applies_to: [HW]`. BASE rows используют `device_type` для идентификации изделия; `hw_type` не присваивается.
 
 ---
 
@@ -258,9 +258,9 @@ HW_TYPE_VOCAB = frozenset({
 ## YAML-контракт (шпаргалка для правил)
 
 ```yaml
-# hw_type_rules.applies_to — HW и BASE, LOGISTIC намеренно не включается
+# hw_type_rules.applies_to — только HW; BASE и LOGISTIC намеренно не включаются
 hw_type_rules:
-  applies_to: [HW, BASE]
+  applies_to: [HW]
 
 # device_type_rules.applies_to — без изменений
 device_type_rules:

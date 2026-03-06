@@ -11,6 +11,31 @@ Versioning: [SemVer](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- fix(batch_audit): E6 false positive — added "BASE" to allowed entity set; BASE rows with device_type set by BASE-*-DT-* rules no longer emit E6 (was: 132 false positives across all vendors).
+- fix(batch_audit): E10 false positive — removed device_type sub-check from BASE guard; device_type on BASE is valid per BASE-*-DT-* YAML rules.
+
+### Added
+- feat(batch_audit): config_name → module_name alias in _ALIASES dict; HPE LLM payload now carries module context (was always empty string, causing ~78% AI_MISMATCH baseline).
+- feat(batch_audit): "product_#" added to SKU column detection in audit_summary writer; HPE audit_summary now shows populated SKU column.
+- feat(batch_audit): "config_name" added to Module Name column detection in audit_summary writer; HPE audit_summary now shows populated Module Name column.
+- feat(batch_audit): E18 check — LOGISTIC rows with physical keyword (cord/cable/rail/bracket/mount/kit/rack/pdu/ups) and no device_type are now flagged.
+- feat(annotated_writer): row_kind column added to annotated xlsx output ("ITEM"/"HEADER"); batch_audit HEADER guard is now functional.
+- feat(tests): tests/test_batch_audit.py — ≥45 test cases covering E1–E18 via validate_row() and REAL_BUG/_generate_report logic.
+- feat(tests): tests/test_cluster_audit.py — 30 test cases covering _detect_vendor_from_path, _is_empty, _collect_xlsx_files, normalize_text, analyze_clusters, heuristic_mapping, write_cluster_summary, print_dry_run_report, build_parser.
+- feat(tests): tests/test_hpe_rules_unit.py expanded — 25 parametrized device_type/hw_type cases covering all 25 unique HPE device_types.
+- feat(excel_writer): cleaned_spec for HPE now includes 5 vendor extension columns: Config Name, Lead Time, Extended Price, Product Type, Factory Integrated. Dell/Cisco output unchanged.
+- feat(hpe_rules): note_rules: [] placeholder section added to hpe_rules.yaml (consistent with dell_rules.yaml and cisco_rules.yaml).
+
+### Changed
+- fix(taxonomy/rules P1-7): power_cord hw_type mapping removed from all three vendor YAML files (dell_rules, cisco_rules, hpe_rules). power_cord rows: entity_type=HW, device_type=power_cord, hw_type=None (taxonomy decision is authoritative).
+- fix(taxonomy P1-7): hw_type_rules.applies_to narrowed from [HW, BASE] to [HW] in all three vendor YAML files and hw_type_taxonomy.md (code was correct, taxonomy was wrong).
+- fix(conftest): pytest_sessionfinish skip guard — no longer fires during --co (collect-only) mode; added early-return when passed+skipped+failed==0 (deselect/no-run edge case).
+
+---
+
 ## [1.3.0] — 2026-03-03
 
 ### Added

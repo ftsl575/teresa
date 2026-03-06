@@ -264,7 +264,6 @@ hw_type_rules:
     sfp_cable: cable
     psu: psu
     fan: fan
-    power_cord: cable
     ram: memory
     blank_filler: blank_filler
     rail: rail
