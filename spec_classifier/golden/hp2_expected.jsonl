@@ -18,7 +18,7 @@
 {"source_row_index": 19, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P26256-B21"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-009", "device_type": "psu", "hw_type": "psu", "skus": ["P03178-B21"]}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P03178-B21"]}
-{"source_row_index": 22, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-012", "device_type": "power_cord", "hw_type": "cable", "skus": ["P78145-B21"]}
+{"source_row_index": 22, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-012", "device_type": "power_cord", "hw_type": null, "skus": ["P78145-B21"]}
 {"source_row_index": 23, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-H-003", "device_type": null, "hw_type": null, "skus": ["E5Y43A"]}
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-030", "device_type": "server", "hw_type": "server", "skus": ["P72203-B21"]}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P72203-B21"]}

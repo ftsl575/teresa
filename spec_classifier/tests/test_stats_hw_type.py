@@ -18,7 +18,7 @@ EXPECTED_DL1_HW_TYPE_COUNTS = {
     "storage_controller": 2,
     "fan": 1,
     "psu": 2,
-    "cable": 2,
+    "cable": 1,
     "riser": 1,
     "network_adapter": 3,
     "chassis": 1,

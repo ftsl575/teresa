@@ -6,7 +6,7 @@
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-002", "device_type": "fan", "hw_type": "fan", "skus": ["NXA-FAN-35CFM-PE"]}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-002", "device_type": null, "hw_type": null, "skus": ["MEM-UPG-OPT-OUT"]}
 {"source_row_index": 26, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["NXA-PAC-650W-PE"]}
-{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["CAB-9K10A-EU"]}
+{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-9K10A-EU"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-004", "device_type": null, "hw_type": null, "skus": ["DCN-OTHER"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-002", "device_type": null, "hw_type": null, "skus": ["C1-SUBS-OPTOUT"]}
 {"source_row_index": 30, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["N9K-C9336C-FX2"]}
@@ -16,7 +16,7 @@
 {"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-002", "device_type": "fan", "hw_type": "fan", "skus": ["NXA-FAN-65CFM-PE"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-008", "device_type": "accessory", "hw_type": "accessory", "skus": ["NXK-AF-PE"]}
 {"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-003", "device_type": "psu", "hw_type": "psu", "skus": ["NXA-PAC-750W-PE"]}
-{"source_row_index": 37, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["CAB-9K10A-EU"]}
+{"source_row_index": 37, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-020-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["CAB-9K10A-EU"]}
 {"source_row_index": 38, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-004", "device_type": null, "hw_type": null, "skus": ["DCN-OTHER"]}
 {"source_row_index": 39, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-C-002", "device_type": null, "hw_type": null, "skus": ["C1-SUBS-OPTOUT"]}
 {"source_row_index": 40, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-001", "device_type": "transceiver", "hw_type": "transceiver", "skus": ["SFP-10G-SR-S"]}
