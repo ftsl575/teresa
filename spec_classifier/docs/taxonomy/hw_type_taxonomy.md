@@ -262,9 +262,9 @@ HW_TYPE_VOCAB = frozenset({
 hw_type_rules:
   applies_to: [HW]
 
-# device_type_rules.applies_to — без изменений
+# device_type_rules.applies_to — для текущих YAML: HW, LOGISTIC, BASE
 device_type_rules:
-  applies_to: [HW, LOGISTIC]
+  applies_to: [HW, LOGISTIC, BASE]
 
 # device_type_map — исправить hba:
 device_type_map:

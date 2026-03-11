@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unit tests for classification rules (entity type and rule_id).
 """
 
@@ -326,3 +326,28 @@ def test_match_rule_is_bundle_root_lowercase():
 
     val = _get_field_value(FakeRow(), "is_bundle_root")
     assert val == "true", f"Expected 'true', got '{val}'"
+
+
+# ---------------------------------------------------------------------------
+# Dell device_type / hw_type matrix
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("module_name, option_name, exp_device_type, exp_hw_type", [
+    ("Processor", "Intel Xeon Gold 6526Y 2.8G, 16C/32T", "cpu", "cpu"),
+    ("Memory Capacity", "64GB DDR5 RDIMM", "ram", "memory"),
+    ("Power Supply", "1100W Titanium Power Supply", "psu", "psu"),
+    ("Network Adapter", "Broadcom 57416 Dual Port 10GbE Adapter", "nic", "network_adapter"),
+    ("Hard Drives", "1.92TB SSD SATA Read Intensive 6Gbps", "storage_ssd", "storage_drive"),
+    ("Hard Drives", "1.6TB NVMe Mixed Use Express Flash", "storage_nvme", "storage_drive"),
+    ("RAID Controllers", "PERC H965i Front Controller", "raid_controller", "storage_controller"),
+    ("", "HBA355e Adapter Full Height", "hba", "hba"),
+    ("Fans", "Standard Fan for R760", "fan", "fan"),
+    ("Thermal", "Standard Heatsink", "heatsink", "heatsink"),
+    ("GPU", "NVIDIA A100 80GB PCIe", "gpu", "gpu"),
+    ("", "Power Cord C13 to C14 2m", "power_cord", None),
+])
+def test_dell_device_type_and_hw_type(ruleset, module_name, option_name, exp_device_type, exp_hw_type):
+    row = _row(module_name=module_name, option_name=option_name)
+    result = classify_row(row, ruleset)
+    assert result.device_type == exp_device_type
+    assert result.hw_type == exp_hw_type

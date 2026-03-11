@@ -268,6 +268,27 @@ pytest tests/test_hpe_rules_unit.py -v
 
 ---
 
+### 10.1 Аудит после изменения правил
+
+После добавления или изменения правил в YAML рекомендуется:
+
+1. Прогнать пайплайн по всем файлам изменённого вендора:
+   `python main.py --batch-dir INPUT/<vendor> --vendor <vendor>`
+2. Запустить batch_audit:
+   `python batch_audit.py --output-dir OUTPUT [--vendor <vendor>]`
+3. Проверить `audit_report.json`: количество `REAL_BUG` должно уменьшиться.
+4. Опционально — кластеризация нераспознанных строк:
+   `python cluster_audit.py --output-dir OUTPUT`
+5. Итерировать правки YAML до приемлемого уровня `REAL_BUG`.
+
+> **Примечание:** `REAL_BUG` и другие audit labels — диагностическая эвристика,
+> а не абсолютный ground truth. Результаты нужно интерпретировать вместе
+> с конкретными примерами строк и regression tests.
+
+Подробнее о workflow: `prompts/06_BATCH-AUDIT-MASTER-PLAN.md`.
+
+---
+
 ## 11. Known Limitations and Risks
 
 - **First-match rule sensitivity:** Entity classification and device_type assignment use first-match semantics within each rule category. Overlapping regex patterns between rules in the same category may cause shadowing: a rule placed earlier in the YAML will match instead of a more specific rule placed later. There is no automated overlap detection. Mitigation: when adding rules, run all 5 test datasets and inspect golden diffs before committing.
