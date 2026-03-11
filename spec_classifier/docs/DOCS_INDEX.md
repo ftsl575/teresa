@@ -32,6 +32,9 @@
 | `batch_audit.py` | How do I run post-pipeline rule checks (E1–E18) and LLM verification across all vendor outputs? |
 | `cluster_audit.py` | How do I cluster unclassified/UNKNOWN rows to discover new rules? |
 
+| `CLAUDE.md` | Project context for Cowork / Claude Desktop sessions |
+| `prompts/README.md` | Prompt library — step templates for dev cycle |
+
 ## Conventions
 
 - **Normative docs** (`product/`, `user/`, `schemas/`, `rules/`, `dev/`, `taxonomy/`): must stay in sync

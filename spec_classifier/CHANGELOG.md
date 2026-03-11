@@ -29,6 +29,13 @@ Versioning: [SemVer](https://semver.org/).
 - feat(excel_writer): cleaned_spec for HPE now includes 5 vendor extension columns: Config Name, Lead Time, Extended Price, Product Type, Factory Integrated. Dell/Cisco output unchanged.
 - feat(hpe_rules): note_rules: [] placeholder section added to hpe_rules.yaml (consistent with dell_rules.yaml and cisco_rules.yaml).
 
+### Fixed
+- fix: golden files updated after power_cord hw_type=None taxonomy change (11 golden + test_stats_hw_type.py cable count); reverted stray runtime schema validation in rules_engine.py.
+
+### Added
+- docs: CLAUDE.md — project context file for Cowork and Claude Desktop.
+- docs: prompts/ — prompt library with 8 step templates + COWORK_OPUS_FULL_AUDIT.md.
+
 ### Changed
 - fix(taxonomy/rules P1-7): power_cord hw_type mapping removed from all three vendor YAML files (dell_rules, cisco_rules, hpe_rules). power_cord rows: entity_type=HW, device_type=power_cord, hw_type=None (taxonomy decision is authoritative).
 - fix(taxonomy P1-7): hw_type_rules.applies_to narrowed from [HW, BASE] to [HW] in all three vendor YAML files and hw_type_taxonomy.md (code was correct, taxonomy was wrong).

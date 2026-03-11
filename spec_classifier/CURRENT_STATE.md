@@ -4,7 +4,7 @@
 1.3.0
 
 ## Дата последнего аудита
-2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail)
+2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail); 2026-03-07 (audit_1G FAIL — 7 P0); 2026-03-11 (recovery: golden sync, stray revert)
 
 ## Активные вендоры
 - Dell (spec export)
@@ -20,6 +20,7 @@
 
 ## Известные проблемы
 - Смотри CHANGELOG.md [Unreleased] для актуального списка изменений.
+- 2026-03-11 recovery: golden files synced after power_cord hw_type=None change. Stray Cowork runtime schema validation in rules_engine.py reverted. prompts/ and CLAUDE.md added to repo.
 - audit_2G (2026-03-06) — PASS: E6/E10 false positives устранены, HPE aliases в batch_audit, row_kind колонка в annotated output, E18 check, taxonomy P1-7 (power_cord hw_type=None, applies_to=[HW]), conftest skip guard исправлен, cleaned_spec HPE extensions, test coverage расширена (batch_audit, cluster_audit, hpe_rules_unit).
 - audit_1G (2026-03-03) — PASS: option_id в unknown_rows.csv, Group Name/Group ID в cleaned_spec.xlsx, preamble-блок в branded_spec, qty default 0→1, skip guard в CI, HPE unit tests добавлены.
 
