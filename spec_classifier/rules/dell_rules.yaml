@@ -287,7 +287,7 @@ device_type_rules:
     - field: module_name
       pattern: '(?i)sfp\s+module'
       device_type: sfp_cable
-      rule_id: LOGISTIC-005-SFP-CABLE
+      rule_id: LOGISTIC-005-SFP-CABLE-MOD
 
     # DEC-010: DAC/Twinax direct-attach cable option_name (HW rows from SFP Modules (Multi))
     - field: option_name
@@ -304,7 +304,7 @@ device_type_rules:
     - field: option_name
       pattern: '(?i)(ssd|sata).*(cus(tomer)?\s+kit|ck)'
       device_type: storage_ssd
-      rule_id: HW-005-STORAGE-CUS
+      rule_id: HW-005-STORAGE-CUS-MOD
 
     - field: option_name
       pattern: '(?i)power\s+supply.*(cus(tomer)?\s+kit|ck)'
@@ -324,7 +324,7 @@ device_type_rules:
     - field: option_name
       pattern: '(?i)(hba|fibre\s+channel|fc\s+hba).*(dib|ck|full\s+height|low\s+profile)'
       device_type: hba
-      rule_id: HW-008-HBA-PERC-CUS
+      rule_id: HW-008-HBA-PERC-CUS-MOD
 
     # DEC-005: PERC + Controller (broader match, no suffix required)
     - field: option_name

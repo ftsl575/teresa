@@ -8,10 +8,15 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import openpyxl
+import pandas as pd
+
 from cluster_audit import (
     _detect_vendor_from_path,
     _is_empty,
     _collect_xlsx_files,
+    _load_xlsx,
+    load_candidate_rows,
     normalize_text,
     analyze_clusters,
     heuristic_mapping,
@@ -19,6 +24,17 @@ from cluster_audit import (
     print_dry_run_report,
     build_parser,
 )
+
+
+def _make_xlsx(path, columns, rows):
+    """Create a minimal xlsx file for testing."""
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(columns)
+    for row in rows:
+        ws.append(row)
+    wb.save(path)
+    wb.close()
 
 
 # ---------------------------------------------------------------------------
@@ -279,3 +295,150 @@ def test_build_parser_defaults():
     assert args.max_clusters == 50
     assert args.vendor is None
     assert args.dry_run is False
+
+
+# ---------------------------------------------------------------------------
+# load_candidate_rows
+# ---------------------------------------------------------------------------
+
+def test_load_candidate_rows_empty_dir(tmp_path):
+    """Empty directory returns empty list."""
+    assert load_candidate_rows(tmp_path) == []
+
+
+def test_load_candidate_rows_audited_E2(tmp_path):
+    """Audited xlsx with E2 pipeline_check → exactly one row."""
+    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir.mkdir(parents=True)
+
+    path = run_dir / "test_annotated_audited.xlsx"
+    _make_xlsx(
+        path,
+        ["option_name", "entity_type", "device_type", "hw_type", "pipeline_check"],
+        [["Some Widget", "UNKNOWN", "", "", "E2: UNKNOWN entity_type"]],
+    )
+
+    rows = load_candidate_rows(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]["option_name"] == "Some Widget"
+    assert rows[0]["vendor"] == "dell"
+
+
+def test_load_candidate_rows_annotated_unknown(tmp_path):
+    """Annotated xlsx (no pipeline_check) with UNKNOWN entity → included."""
+    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir.mkdir(parents=True)
+
+    path = run_dir / "test_annotated.xlsx"
+    _make_xlsx(
+        path,
+        ["option_name", "entity_type", "device_type", "hw_type"],
+        [["Mystery Part", "UNKNOWN", "", ""]],
+    )
+
+    rows = load_candidate_rows(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]["entity_type"] == "UNKNOWN"
+    assert rows[0]["option_name"] == "Mystery Part"
+
+
+def test_load_candidate_rows_filters_ok(tmp_path):
+    """Audited xlsx with OK pipeline_check → zero rows."""
+    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir.mkdir(parents=True)
+
+    path = run_dir / "test_annotated_audited.xlsx"
+    _make_xlsx(
+        path,
+        ["option_name", "entity_type", "device_type", "hw_type", "pipeline_check"],
+        [["Good Part", "HW", "cpu", "cpu", "OK"]],
+    )
+
+    rows = load_candidate_rows(tmp_path)
+
+    assert rows == []
+
+
+def test_load_candidate_rows_vendor_filter(tmp_path):
+    """Vendor filter returns only matching vendor."""
+    for vendor in ("dell", "hpe"):
+        run_dir = tmp_path / f"{vendor}_run" / f"run-2026-01-01__00-00-00-{vendor}"
+        run_dir.mkdir(parents=True)
+
+        path = run_dir / f"{vendor}_test_annotated.xlsx"
+        _make_xlsx(
+            path,
+            ["option_name", "entity_type", "device_type", "hw_type"],
+            [[f"{vendor} Part", "UNKNOWN", "", ""]],
+        )
+
+    rows = load_candidate_rows(tmp_path, vendor_filter="hpe")
+
+    assert len(rows) == 1
+    assert rows[0]["vendor"] == "hpe"
+    assert "hpe" in rows[0]["option_name"].lower()
+
+
+def test_load_candidate_rows_hw_no_types(tmp_path):
+    """HW row without device_type and hw_type → included."""
+    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir.mkdir(parents=True)
+
+    path = run_dir / "test_annotated.xlsx"
+    _make_xlsx(
+        path,
+        ["option_name", "entity_type", "device_type", "hw_type"],
+        [["Bare HW Item", "HW", "", ""]],
+    )
+
+    rows = load_candidate_rows(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]["entity_type"] == "HW"
+    assert rows[0]["device_type"] == ""
+    assert rows[0]["hw_type"] == ""
+
+
+# ---------------------------------------------------------------------------
+# _load_xlsx — robustness
+# ---------------------------------------------------------------------------
+
+def test_load_xlsx_no_known_columns(tmp_path):
+    """XLSX with no known columns → fallback header=0, returns valid DataFrame."""
+    path = tmp_path / "unknown_cols.xlsx"
+    _make_xlsx(path, ["A", "B", "C"], [["1", "2", "3"]])
+    df = _load_xlsx(path)
+    assert isinstance(df, pd.DataFrame)
+    assert len(df) == 1
+    assert len(df.columns) == 3
+
+
+def test_load_xlsx_with_known_columns(tmp_path):
+    """XLSX with known columns → auto-detected header, columns accessible."""
+    path = tmp_path / "known_cols.xlsx"
+    _make_xlsx(path, ["entity_type", "option_name", "device_type"],
+               [["HW", "CPU Xeon", "cpu"]])
+    df = _load_xlsx(path)
+    assert isinstance(df, pd.DataFrame)
+    cols_lower = {c.strip().lower() for c in df.columns}
+    assert "entity_type" in cols_lower
+    assert len(df) == 1
+
+
+def test_load_xlsx_corrupt_file(tmp_path):
+    """Corrupt file → raises any Exception (caught by load_candidate_rows)."""
+    path = tmp_path / "bad.xlsx"
+    path.write_bytes(b"this is not a valid xlsx file at all")
+    with pytest.raises(Exception):
+        _load_xlsx(path)
+
+
+def test_load_xlsx_empty_data_rows(tmp_path):
+    """XLSX with header but zero data rows → returns DataFrame with 0 rows."""
+    path = tmp_path / "empty_data.xlsx"
+    _make_xlsx(path, ["entity_type", "option_name"], [])
+    df = _load_xlsx(path)
+    assert isinstance(df, pd.DataFrame)
+    assert len(df) == 0

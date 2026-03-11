@@ -170,6 +170,7 @@ def _apply_device_type(row: NormalizedRow, result: ClassificationResult, ruleset
     """
     if result.entity_type is None or result.matched_rule_id == "UNKNOWN-000":
         return result
+    # P0-1 verified: entity_type is None returns early (line 171) before .value access
     if result.entity_type.value not in ruleset.device_type_applies_to:
         return result
     match = match_device_type_rule(row, ruleset.device_type_rules)
@@ -198,6 +199,7 @@ def _apply_hw_type(
     """
     if result.entity_type is None or result.matched_rule_id == "UNKNOWN-000":
         return result
+    # P0-1 verified: entity_type is None returns early (line 199) before .value access
     if result.entity_type.value not in ruleset.hw_type_applies_to:
         return result
 

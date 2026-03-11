@@ -101,6 +101,7 @@ def generate_annotated_source_excel(
                 excel_row_1based = r + 1
                 norm = row_to_norm.get(excel_row_1based)
                 val = getattr(norm, attr, None) if norm else None
+                # P0-4 verified: "" for absent fields; downstream _is_empty() treats "" as empty
                 col_data.append(str(val) if val is not None else "")
         df[col_name] = col_data
 

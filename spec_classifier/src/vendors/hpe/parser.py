@@ -47,6 +47,7 @@ def parse_excel(filepath: str) -> Tuple[List[dict], int]:
                 col_map[str(val).strip()] = idx
 
         rows: List[dict] = []
+        # P0-3 verified: missing columns → None in row_dict → normalizer provides safe defaults
         excel_row_number = 2  # header is row 1 (1-based), data starts at row 2
 
         for raw_row in rows_iter:

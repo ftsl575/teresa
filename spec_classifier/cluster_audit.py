@@ -98,7 +98,10 @@ def _load_xlsx(path: Path) -> pd.DataFrame:
     """
     known_cols = {"pipeline_check", "entity_type", "option_name", "device_type"}
     for header in range(45):
-        df = pd.read_excel(path, engine="openpyxl", dtype=str, header=header)
+        try:
+            df = pd.read_excel(path, engine="openpyxl", dtype=str, header=header)
+        except Exception:
+            break
         cols_norm = {c.strip().lower().replace(" ", "_") for c in df.columns}
         if cols_norm & known_cols:
             return df

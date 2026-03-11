@@ -58,6 +58,7 @@ def generate_cleaned_spec(
     include_types = set(cleaned.get("include_types") or ["BASE", "HW", "SOFTWARE", "SERVICE"])
     include_only_present = cleaned.get("include_only_present", True)
 
+    # P0-2 verified: isinstance checks Python type (not row data); bool() guards empty list
     is_hpe = bool(normalized_rows) and isinstance(normalized_rows[0], HPENormalizedRow)
 
     rows = []
