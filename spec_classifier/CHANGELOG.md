@@ -14,6 +14,11 @@ Versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- device_type mismatches: HPE proliant catch-all (BASE-H-DT-001 → BASE-H-DT-999),
+  Dell heatsink/chassis/bezel/backplane/fan_foam classification order,
+  all vendors power_cord missing hw_type (E8+E9),
+  Dell BOSS-N1 device_type (DT-D-033-BOSS-N1),
+  Cisco M2USB → storage_ssd (DT-C-011-M2USB-SSD)
 - fix(batch_audit): E6 false positive — added "BASE" to allowed entity set; BASE rows with device_type set by BASE-*-DT-* rules no longer emit E6 (was: 132 false positives across all vendors).
 - fix(batch_audit): E10 false positive — removed device_type sub-check from BASE guard; device_type on BASE is valid per BASE-*-DT-* YAML rules.
 

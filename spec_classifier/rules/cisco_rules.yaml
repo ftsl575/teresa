@@ -209,6 +209,13 @@ device_type_rules:
       device_type: fan
       rule_id: DT-C-004
 
+    # BUGFIX: M2USB (M2USB-16G — Cisco M.2 USB flash drive) совпадал с
+    # M\dUSB в DT-C-010-MEM-SKU → ram. Это storage_ssd. Стоит ДО MEM-SKU.
+    - field: sku
+      pattern: '^M2USB'
+      device_type: storage_ssd
+      rule_id: DT-C-011-M2USB-SSD
+
     # ── Memory ───────────────────────────────────────────────
     - field: sku
       pattern: '^(MEM-|M\dUSB)'
@@ -262,6 +269,7 @@ hw_type_rules:
     transceiver: transceiver
     cable: cable
     sfp_cable: cable
+    power_cord: cable    # BUGFIX E8: power_cord не имел hw_type маппинга
     psu: psu
     fan: fan
     ram: memory

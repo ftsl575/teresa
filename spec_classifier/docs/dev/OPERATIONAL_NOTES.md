@@ -25,6 +25,8 @@ python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
 
 Содержит агрегированные презентационные файлы по всем обработанным в сессии файлам: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_spec.xlsx`. Используется для передачи клиенту или консолидации одной сессии. Для Cisco прогонов `<stem>_branded.xlsx` не копируется (файл не создаётся).
 
+**Важно:** `batch_audit.py` автоматически исключает TOTAL-папки из обработки (`-TOTAL` в имени родительской папки). Это предотвращает двойной счёт строк в `audit_report.json`.
+
 ---
 
 ## 4. Именование папок прогонов
@@ -61,3 +63,22 @@ python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
 4. При `unknown_count > 0`: добавить правила в `rules/cisco_rules.yaml`, повторить.
 5. `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`
 6. Добавить `ccw_N` в регрессионный тест; `pytest tests/ -v`.
+
+---
+
+## 7. Полный прогон (пайплайн + аудит + кластеризация)
+
+Скрипт-запускалка: `run_audit.ps1` в корне репо (`C:\Users\G\Desktop\teresa\run_audit.ps1`).
+
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\Users\G\Desktop\teresa\run_audit.ps1
+```
+
+Выполняет по порядку:
+1. Пайплайн для всех трёх вендоров (dell → hpe → cisco)
+2. `batch_audit.py` с AI (`--model gpt-4o-mini`)
+3. `cluster_audit.py`
+
+Для быстрой проверки без AI (только E-коды, без токенов) — добавить `--no-ai` в строку `batch_audit.py` внутри скрипта.
+
+> **Примечание:** PowerShell не поддерживает вставку многострочного блока с `&&` — команды выполняются в обратном порядке. Поэтому команды оформлены в `.ps1` скрипт.

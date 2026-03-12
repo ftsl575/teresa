@@ -296,8 +296,9 @@ device_type_rules:
       rule_id: DEC-010-SFP-DAC-CABLE
 
     # HW — order matters: more specific first
+    # BUGFIX: \bck\b предотвращает ложное срабатывание в "Backplane"
     - field: option_name
-      pattern: '(?i)nvme.*(cus(tomer)?\s+kit|ck)'
+      pattern: '(?i)nvme.*(cus(tomer)?\s+kit|\bck\b)'
       device_type: storage_nvme
       rule_id: HW-005-STORAGE-CUS
 
@@ -343,6 +344,14 @@ device_type_rules:
       device_type: cpu
       rule_id: HW-009-CPU-CUS
 
+    # ── Heatsink (ДО CPU-MODULE) ──────────────────────────────────────────
+    # BUGFIX: module "Processor Thermal Configuration" совпадал с DT-D-010-CPU-MODULE.
+    # option_name явно содержит Heatsink — перехватываем здесь.
+    - field: option_name
+      pattern: '(?i)\b(Heatsink|Heat\s+Sink)\b'
+      device_type: heatsink
+      rule_id: DT-D-017B-HEATSINK-OPT
+
     # ── CPU ──────────────────────────────────────────────────
     - field: module_name
       pattern: '(?i)\b(Processor|Additional\s+Processor)\b'
@@ -376,6 +385,13 @@ device_type_rules:
       device_type: backplane
       rule_id: DT-D-026-BACKPLANE-OPT
 
+    # ── Chassis (ДО NVMe/SSD rules) ──────────────────────────────────────
+    # BUGFIX: NVMe/SATA в option_name chassis-строк перехватывали DT-D-013/DT-D-012.
+    - field: option_name
+      pattern: '(?i)\bChassis\b'
+      device_type: chassis
+      rule_id: DT-D-025B-CHASSIS-OPT
+
     # ── Storage NVMe ─────────────────────────────────────────
     - field: option_name
       pattern: '(?i)\bNVMe\b'
@@ -387,6 +403,12 @@ device_type_rules:
       pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
       device_type: storage_ssd
       rule_id: DT-D-012-SSD
+
+    # BUGFIX: "Fan Foam, HDD 2U" содержало 'HDD' → storage_hdd. Это аксессуар.
+    - field: option_name
+      pattern: '(?i)\bFan\s+Foam\b'
+      device_type: accessory
+      rule_id: DT-D-032-FAN-FOAM
 
     # ── Storage HDD ──────────────────────────────────────────
     - field: option_name
@@ -462,6 +484,12 @@ device_type_rules:
       device_type: nic
       rule_id: DT-D-021-NIC-OPT
 
+    # BUGFIX: "No Bezel" ловилось DT-D-023-BEZEL по module_name='Bezel' → bezel.
+    - field: option_name
+      pattern: '(?i)\bNo\s+Bezel\b'
+      device_type: blank_filler
+      rule_id: DT-D-031-NO-BEZEL
+
     # ── Bezel ────────────────────────────────────────────────
     - field: module_name
       pattern: '(?i)\bBezel\b'
@@ -485,6 +513,14 @@ device_type_rules:
       pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel)\b'
       device_type: raid_controller
       rule_id: DT-D-027-RAID
+
+    # DEC-006 device_type: BOSS-N1 → raid_controller
+    # hw_type уже выставлен через rule_id_map (HW-BOSS-001 → storage_controller).
+    # raid_controller → device_type_map → storage_controller (согласовано).
+    - field: option_name
+      pattern: '(?i)(?=.*BOSS-N1)(?=.*controller\s+card).*'
+      device_type: raid_controller
+      rule_id: DT-D-033-BOSS-N1
 
     # ── Management ───────────────────────────────────────────
     - field: module_name
@@ -523,6 +559,7 @@ hw_type_rules:
     raid_controller: storage_controller
     hba: hba
     sfp_cable: cable
+    power_cord: cable    # BUGFIX E8+E9: power_cord не имел hw_type маппинга
     fan: fan
     heatsink: heatsink
     riser: riser

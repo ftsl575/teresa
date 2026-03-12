@@ -1090,6 +1090,8 @@ def find_annotated_files(output_dir: Path, vendor_filter: str | None,
     files = sorted(output_dir.rglob("*_annotated.xlsx"))
     # Exclude already-audited files
     files = [f for f in files if "_audited" not in f.name]
+    # Exclude TOTAL aggregation folders (contain duplicates of per-run files)
+    files = [f for f in files if "-TOTAL" not in f.parent.name]
     if vendor_filter:
         files = [f for f in files if vendor_filter in str(f).lower()]
     if since:
