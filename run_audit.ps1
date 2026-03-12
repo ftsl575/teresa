@@ -5,8 +5,11 @@ python main.py --batch-dir C:\Users\G\Desktop\INPUT\dell --vendor dell --output-
 python main.py --batch-dir C:\Users\G\Desktop\INPUT\hpe --vendor hpe --output-dir C:\Users\G\Desktop\OUTPUT
 python main.py --batch-dir C:\Users\G\Desktop\INPUT\cisco --vendor cisco --output-dir C:\Users\G\Desktop\OUTPUT
 
-# 2) Аудит с AI
-$env:OPENAI_API_KEY="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"
+# 2) Аудит с AI — запрос ключа перед запуском
+$key = Read-Host "OpenAI API Key" -AsSecureString
+$env:OPENAI_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($key)
+)
 python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --model gpt-4o-mini
 
 # 3) Кластеризация
