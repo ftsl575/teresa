@@ -34,11 +34,11 @@
 {"source_row_index": 41, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["528-CTIC"]}
 {"source_row_index": 43, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "DISABLED", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["379-BFXT", "634-CYDF"]}
-{"source_row_index": 44, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-003", "device_type": "management", "hw_type": "management", "skus": ["350-BBYX"]}
+{"source_row_index": 44, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOQUICKSYNC-001", "device_type": null, "hw_type": null, "skus": ["350-BBYX"]}
 {"source_row_index": 45, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-004", "device_type": null, "hw_type": null, "skus": ["379-BCSG"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "DISABLED", "matched_rule_id": "SOFTWARE-004", "device_type": null, "hw_type": null, "skus": ["379-BCQY"]}
 {"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-003", "device_type": "rail", "hw_type": "rail", "skus": ["770-BDZP"]}
-{"source_row_index": 48, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "ABSENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["631-AACK"]}
+{"source_row_index": 48, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NODOC-001", "device_type": null, "hw_type": null, "skus": ["631-AACK"]}
 {"source_row_index": 49, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["340-DDHI"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["340-DCXY"]}
 {"source_row_index": 51, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["389-EFMJ"]}

@@ -37,7 +37,7 @@
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 56, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-SCR-4"]}
-{"source_row_index": 58, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": null, "hw_type": null, "skus": ["CAB-GUIDE-1RU"]}
+{"source_row_index": 58, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-024-CAB-GUIDE", "device_type": "accessory", "hw_type": "accessory", "skus": ["CAB-GUIDE-1RU"]}
 {"source_row_index": 59, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-006", "device_type": null, "hw_type": null, "skus": ["NETWORK-PNP-LIC"]}
 {"source_row_index": 60, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["C9300L-48T-4X-E"]}
 {"source_row_index": 61, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-002", "device_type": null, "hw_type": null, "skus": ["C9300L-DNA-E-48"]}
@@ -52,7 +52,7 @@
 {"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 71, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 72, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-SCR-4"]}
-{"source_row_index": 73, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": null, "hw_type": null, "skus": ["CAB-GUIDE-1RU"]}
+{"source_row_index": 73, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-024-CAB-GUIDE", "device_type": "accessory", "hw_type": "accessory", "skus": ["CAB-GUIDE-1RU"]}
 {"source_row_index": 74, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-006", "device_type": null, "hw_type": null, "skus": ["NETWORK-PNP-LIC"]}
 {"source_row_index": 75, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["C9300L-24T-4X-E"]}
 {"source_row_index": 76, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-002", "device_type": null, "hw_type": null, "skus": ["C9300L-DNA-E-24"]}
@@ -67,7 +67,7 @@
 {"source_row_index": 85, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-C-013", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["C9300L-SSD-NONE"]}
 {"source_row_index": 86, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-RBFT"]}
 {"source_row_index": 87, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-SCR-4"]}
-{"source_row_index": 88, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-C-001", "device_type": null, "hw_type": null, "skus": ["CAB-GUIDE-1RU"]}
+{"source_row_index": 88, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-024-CAB-GUIDE", "device_type": "accessory", "hw_type": "accessory", "skus": ["CAB-GUIDE-1RU"]}
 {"source_row_index": 89, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-006", "device_type": null, "hw_type": null, "skus": ["NETWORK-PNP-LIC"]}
 {"source_row_index": 90, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["C9300L-STACK-KIT2"]}
 {"source_row_index": 91, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-014", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9300L-STACK-A"]}

@@ -23,7 +23,7 @@
 {"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "nic", "hw_type": "network_adapter", "skus": ["540-BCRX"]}
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOCABLE-001", "device_type": null, "hw_type": null, "skus": ["780-BCZQ"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-004", "device_type": null, "hw_type": null, "skus": ["379-BETF"]}
-{"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["350-BBBW", "350-BCYM"]}
+{"source_row_index": 33, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBEZEL-001", "device_type": null, "hw_type": null, "skus": ["350-BBBW", "350-BCYM"]}
 {"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "cable", "hw_type": "cable", "skus": ["470-AEYU"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOGPU-001", "device_type": null, "hw_type": null, "skus": ["470-AEYU"]}
 {"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-NOBOSS-BLANK-001", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["470-BCHP"]}
@@ -60,7 +60,7 @@
 {"source_row_index": 67, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-002", "device_type": null, "hw_type": null, "skus": ["384-BDXZ"]}
 {"source_row_index": 68, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOCABLE-001", "device_type": null, "hw_type": null, "skus": ["780-BCZQ"]}
 {"source_row_index": 69, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-008-HBA-PERC-CUS", "device_type": "hba", "hw_type": "hba", "skus": ["405-BBDC"]}
-{"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["350-BBBW", "350-BDDF"]}
+{"source_row_index": 70, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBEZEL-001", "device_type": null, "hw_type": null, "skus": ["350-BBBW", "350-BDDF"]}
 {"source_row_index": 71, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-NOBOSS-BLANK-001", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["470-BCHP"]}
 {"source_row_index": 72, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 73, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}
