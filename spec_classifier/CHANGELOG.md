@@ -14,6 +14,18 @@ Versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- Dell "No Bezel", "No HBM", "No Quick Sync", "No Systems Documentation" → CONFIG
+  (CONFIG-NOBEZEL-001, CONFIG-NOHBM-001, CONFIG-NOQUICKSYNC-001, CONFIG-NODOC-001)
+- Dell DT-D-031-NO-BEZEL удалён (был ошибочным фиксом из плана 2)
+- Cisco CAB-GUIDE-1RU → HW/accessory (HW-C-024-CAB-GUIDE, DT-C-015-CAB-GUIDE)
+- Dell 631-AACK "No Systems Documentation" → CONFIG
+  (убран токен Documentation из LOGISTIC-001, удалён LOGISTIC-002)
+
+### Known issues (deferred)
+- Cisco C9300L-STACK-KIT2= остаётся entity=BASE — фикс требует изменения classifier.py,
+  отложен до отдельного плана
+
+### Fixed
 - device_type mismatches: HPE proliant catch-all (BASE-H-DT-001 → BASE-H-DT-999),
   Dell heatsink/chassis/bezel/backplane/fan_foam classification order,
   all vendors power_cord missing hw_type (E8+E9),

@@ -76,14 +76,11 @@ software_rules:
     rule_id: SOFTWARE-C-009
 
 logistic_rules:
+  # BUGFIX: CAB-GUIDE добавлен в исключения — физический органайзер кабелей, не логистика.
   - field: sku
-    pattern: '^CAB-(?!9K|C13|C15|TA-|2Q)'
+    pattern: '^CAB-(?!9K|C13|C15|TA-|2Q|GUIDE)'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-C-001
-  - field: option_name
-    pattern: '(?i)cable management guide'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-C-005
 
 note_rules: []
 
@@ -160,6 +157,11 @@ hw_rules:
     pattern: '(?i)stacking cable'
     entity_type: HW
     rule_id: HW-C-023-STACK-CABLE
+  # BUGFIX: Cable Management Guide — физический монтажный лоток, не логистика.
+  - field: option_name
+    pattern: '(?i)cable management guide'
+    entity_type: HW
+    rule_id: HW-C-024-CAB-GUIDE
 
 device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
@@ -244,6 +246,12 @@ device_type_rules:
       pattern: '(?i)\bSSD\b'
       device_type: storage_ssd
       rule_id: DT-C-013-SSD
+
+    # BUGFIX: Cable Management Guide → accessory.
+    - field: option_name
+      pattern: '(?i)cable management guide'
+      device_type: accessory
+      rule_id: DT-C-015-CAB-GUIDE
 
     # ── Stacking Module ──────────────────────────────────────
     - field: option_name

@@ -82,15 +82,12 @@ service_rules:
 
 # LOGISTIC (PRIORITY 3)
 logistic_rules:
+  # BUGFIX: Documentation убран — "No Systems Documentation" должен быть CONFIG, не LOGISTIC.
+  # Проверено: все остальные LOGISTIC-001 строки попадают через Shipping/Regulatory/ECCN.
   - field: module_name
-    pattern: '\b(Shipping|Regulatory|ECCN|Documentation|Box\s+Labels)\b'
+    pattern: '\b(Shipping|Regulatory|ECCN|Box\s+Labels)\b'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-001
-
-  - field: module_name
-    pattern: '^System\s+Documentation$'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-002
 
   - field: module_name
     pattern: '^Shipping\s+Material$'
@@ -156,6 +153,31 @@ config_rules:
     pattern: '(?i)^(?!.*Rear\s+Blank).*No\s+BOSS\s+Card'
     entity_type: CONFIG
     rule_id: CONFIG-NOBOSS-001
+
+  # "No Bezel" / "No Bezel for...Chassis" — отрицательная опция, панель не поставляется.
+  # Отличие от HW/blank_filler: там 'Blank Filler' или 'Rear Blank' = физическая заглушка.
+  - field: option_name
+    pattern: '(?i)\bNo\s+Bezel\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOBEZEL-001
+
+  # "No HBM" — HBM не используется, физического компонента нет.
+  - field: option_name
+    pattern: '(?i)\bNo\s+HBM\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOHBM-001
+
+  # "No Quick Sync" — модуль Quick Sync не включён, физического компонента нет.
+  - field: option_name
+    pattern: '(?i)\bNo\s+Quick\s+Sync\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOQUICKSYNC-001
+
+  # "No Systems Documentation" — отсутствие документации в комплекте.
+  - field: option_name
+    pattern: '(?i)No\s+Systems?\s+Documen'
+    entity_type: CONFIG
+    rule_id: CONFIG-NODOC-001
 
   - field: module_name
     pattern: '\b(RAID\s+Configuration|BIOS.*Settings?|Memory.*Type|Advanced\s+System\s+Configurations)\b'
@@ -484,11 +506,6 @@ device_type_rules:
       device_type: nic
       rule_id: DT-D-021-NIC-OPT
 
-    # BUGFIX: "No Bezel" ловилось DT-D-023-BEZEL по module_name='Bezel' → bezel.
-    - field: option_name
-      pattern: '(?i)\bNo\s+Bezel\b'
-      device_type: blank_filler
-      rule_id: DT-D-031-NO-BEZEL
 
     # ── Bezel ────────────────────────────────────────────────
     - field: module_name
