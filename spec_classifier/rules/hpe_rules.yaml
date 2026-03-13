@@ -333,9 +333,11 @@ device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
 
   rules:
-    # BASE: server
+    # BASE: server — только однозначные маркеры.
+    # 'proliant' убран: перекрывал fan/cable/rail/riser/heatsink/drive_cage/backplane.
+    # Proliant catch-all → BASE-H-DT-999 (последнее правило секции).
     - field: option_name
-      pattern: '(?i)(configure-to-order\s+server|cto\s+svr|proliant|synergy\s+compute)'
+      pattern: '(?i)(configure-to-order\s+server|cto\s+svr|synergy\s+compute)'
       device_type: server
       rule_id: BASE-H-DT-001
 
@@ -784,6 +786,14 @@ device_type_rules:
       device_type: accessory
       rule_id: HW-H-082
 
+    # ── Server catch-all (ПОСЛЕДНЕЕ правило в device_type_rules) ──────────
+    # 'proliant' вынесен сюда из BASE-H-DT-001. Срабатывает только если
+    # ни одно специфичное правило выше не совпало. НЕ поднимать выше.
+    - field: option_name
+      pattern: '(?i)\bproliant\b'
+      device_type: server
+      rule_id: BASE-H-DT-999
+
 hw_type_rules:
   applies_to: [HW]
   # Ключ device_type_map — точное название в схеме движка (не hw_type_map)
@@ -802,6 +812,7 @@ hw_type_rules:
     nic: network_adapter
     transceiver: transceiver
     fiber_cable: cable
+    power_cord: cable    # BUGFIX E8+E9: power_cord не имел hw_type маппинга
     cable: cable
     riser: riser
     rail: rail

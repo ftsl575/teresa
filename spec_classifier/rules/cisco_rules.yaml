@@ -76,14 +76,11 @@ software_rules:
     rule_id: SOFTWARE-C-009
 
 logistic_rules:
+  # BUGFIX: CAB-GUIDE добавлен в исключения — физический органайзер кабелей, не логистика.
   - field: sku
-    pattern: '^CAB-(?!9K|C13|C15|TA-|2Q)'
+    pattern: '^CAB-(?!9K|C13|C15|TA-|2Q|GUIDE)'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-C-001
-  - field: option_name
-    pattern: '(?i)cable management guide'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-C-005
 
 note_rules: []
 
@@ -160,6 +157,11 @@ hw_rules:
     pattern: '(?i)stacking cable'
     entity_type: HW
     rule_id: HW-C-023-STACK-CABLE
+  # BUGFIX: Cable Management Guide — физический монтажный лоток, не логистика.
+  - field: option_name
+    pattern: '(?i)cable management guide'
+    entity_type: HW
+    rule_id: HW-C-024-CAB-GUIDE
 
 device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
@@ -209,6 +211,13 @@ device_type_rules:
       device_type: fan
       rule_id: DT-C-004
 
+    # BUGFIX: M2USB (M2USB-16G — Cisco M.2 USB flash drive) совпадал с
+    # M\dUSB в DT-C-010-MEM-SKU → ram. Это storage_ssd. Стоит ДО MEM-SKU.
+    - field: sku
+      pattern: '^M2USB'
+      device_type: storage_ssd
+      rule_id: DT-C-011-M2USB-SSD
+
     # ── Memory ───────────────────────────────────────────────
     - field: sku
       pattern: '^(MEM-|M\dUSB)'
@@ -238,6 +247,12 @@ device_type_rules:
       device_type: storage_ssd
       rule_id: DT-C-013-SSD
 
+    # BUGFIX: Cable Management Guide → accessory.
+    - field: option_name
+      pattern: '(?i)cable management guide'
+      device_type: accessory
+      rule_id: DT-C-015-CAB-GUIDE
+
     # ── Stacking Module ──────────────────────────────────────
     - field: option_name
       pattern: '(?i)stack(ing)?\s+(module|kit)'
@@ -262,6 +277,7 @@ hw_type_rules:
     transceiver: transceiver
     cable: cable
     sfp_cable: cable
+    power_cord: cable    # BUGFIX E8: power_cord не имел hw_type маппинга
     psu: psu
     fan: fan
     ram: memory

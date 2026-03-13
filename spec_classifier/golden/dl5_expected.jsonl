@@ -1,8 +1,8 @@
 {"source_row_index": 8, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-002", "device_type": "server", "hw_type": null, "skus": ["210-BNRK"]}
-{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-001", "device_type": "storage_nvme", "hw_type": "storage_drive", "skus": ["321-BLMP", "750-BBPB"]}
+{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-001", "device_type": "chassis", "hw_type": "chassis", "skus": ["321-BLMP", "750-BBPB"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "cpu", "hw_type": "cpu", "skus": ["338-CRCD"]}
-{"source_row_index": 12, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "cpu", "hw_type": "cpu", "skus": ["412-BBLB"]}
+{"source_row_index": 12, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "heatsink", "hw_type": "heatsink", "skus": ["412-BBLB"]}
 {"source_row_index": 13, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["370-AHLL"]}
 {"source_row_index": 14, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["370-BCCX"]}
 {"source_row_index": 15, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "ram", "hw_type": "memory", "skus": ["370-BCCZ"]}
@@ -15,12 +15,12 @@
 {"source_row_index": 22, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 23, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BDTT"]}
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-BCXC"]}
-{"source_row_index": 25, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
+{"source_row_index": 25, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
 {"source_row_index": 26, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BCZX"]}
 {"source_row_index": 27, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-002", "device_type": null, "hw_type": null, "skus": ["329-BLJB"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "nic", "hw_type": "network_adapter", "skus": ["540-BFNV"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOCABLE-001", "device_type": null, "hw_type": null, "skus": ["780-BCZQ"]}
-{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "bezel", "hw_type": "chassis", "skus": ["321-BLFQ", "350-BBBW"]}
+{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOBEZEL-001", "device_type": null, "hw_type": null, "skus": ["321-BLFQ", "350-BBBW"]}
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-NOBOSS-BLANK-001", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["470-BCHP"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["611-BBBF"]}
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "ABSENT", "matched_rule_id": "SOFTWARE-003", "device_type": null, "hw_type": null, "skus": ["605-BBFN"]}

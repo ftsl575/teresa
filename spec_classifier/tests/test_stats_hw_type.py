@@ -12,20 +12,21 @@ from src.core.classifier import HW_TYPE_VOCAB
 # Exact expected hw_type_counts from real run on dl1.xlsx (taxonomy v2: memory, storage_drive, rail, blank_filler)
 EXPECTED_DL1_HW_TYPE_COUNTS = {
     "tpm": 1,
-    "storage_drive": 4,
-    "cpu": 4,
+    "storage_drive": 2,
+    "cpu": 2,
     "memory": 1,
     "storage_controller": 2,
     "fan": 1,
     "psu": 2,
-    "cable": 1,
+    "cable": 2,
     "riser": 1,
     "network_adapter": 3,
-    "chassis": 1,
-    "management": 1,
+    "chassis": 2,
     "rail": 1,
+    "heatsink": 1,
+    "accessory": 1,
 }
-EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 23
+EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 21
 
 
 def test_hw_type_vocab():

@@ -82,15 +82,12 @@ service_rules:
 
 # LOGISTIC (PRIORITY 3)
 logistic_rules:
+  # BUGFIX: Documentation убран — "No Systems Documentation" должен быть CONFIG, не LOGISTIC.
+  # Проверено: все остальные LOGISTIC-001 строки попадают через Shipping/Regulatory/ECCN.
   - field: module_name
-    pattern: '\b(Shipping|Regulatory|ECCN|Documentation|Box\s+Labels)\b'
+    pattern: '\b(Shipping|Regulatory|ECCN|Box\s+Labels)\b'
     entity_type: LOGISTIC
     rule_id: LOGISTIC-001
-
-  - field: module_name
-    pattern: '^System\s+Documentation$'
-    entity_type: LOGISTIC
-    rule_id: LOGISTIC-002
 
   - field: module_name
     pattern: '^Shipping\s+Material$'
@@ -156,6 +153,31 @@ config_rules:
     pattern: '(?i)^(?!.*Rear\s+Blank).*No\s+BOSS\s+Card'
     entity_type: CONFIG
     rule_id: CONFIG-NOBOSS-001
+
+  # "No Bezel" / "No Bezel for...Chassis" — отрицательная опция, панель не поставляется.
+  # Отличие от HW/blank_filler: там 'Blank Filler' или 'Rear Blank' = физическая заглушка.
+  - field: option_name
+    pattern: '(?i)\bNo\s+Bezel\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOBEZEL-001
+
+  # "No HBM" — HBM не используется, физического компонента нет.
+  - field: option_name
+    pattern: '(?i)\bNo\s+HBM\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOHBM-001
+
+  # "No Quick Sync" — модуль Quick Sync не включён, физического компонента нет.
+  - field: option_name
+    pattern: '(?i)\bNo\s+Quick\s+Sync\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-NOQUICKSYNC-001
+
+  # "No Systems Documentation" — отсутствие документации в комплекте.
+  - field: option_name
+    pattern: '(?i)No\s+Systems?\s+Documen'
+    entity_type: CONFIG
+    rule_id: CONFIG-NODOC-001
 
   - field: module_name
     pattern: '\b(RAID\s+Configuration|BIOS.*Settings?|Memory.*Type|Advanced\s+System\s+Configurations)\b'
@@ -296,8 +318,9 @@ device_type_rules:
       rule_id: DEC-010-SFP-DAC-CABLE
 
     # HW — order matters: more specific first
+    # BUGFIX: \bck\b предотвращает ложное срабатывание в "Backplane"
     - field: option_name
-      pattern: '(?i)nvme.*(cus(tomer)?\s+kit|ck)'
+      pattern: '(?i)nvme.*(cus(tomer)?\s+kit|\bck\b)'
       device_type: storage_nvme
       rule_id: HW-005-STORAGE-CUS
 
@@ -343,6 +366,14 @@ device_type_rules:
       device_type: cpu
       rule_id: HW-009-CPU-CUS
 
+    # ── Heatsink (ДО CPU-MODULE) ──────────────────────────────────────────
+    # BUGFIX: module "Processor Thermal Configuration" совпадал с DT-D-010-CPU-MODULE.
+    # option_name явно содержит Heatsink — перехватываем здесь.
+    - field: option_name
+      pattern: '(?i)\b(Heatsink|Heat\s+Sink)\b'
+      device_type: heatsink
+      rule_id: DT-D-017B-HEATSINK-OPT
+
     # ── CPU ──────────────────────────────────────────────────
     - field: module_name
       pattern: '(?i)\b(Processor|Additional\s+Processor)\b'
@@ -376,6 +407,13 @@ device_type_rules:
       device_type: backplane
       rule_id: DT-D-026-BACKPLANE-OPT
 
+    # ── Chassis (ДО NVMe/SSD rules) ──────────────────────────────────────
+    # BUGFIX: NVMe/SATA в option_name chassis-строк перехватывали DT-D-013/DT-D-012.
+    - field: option_name
+      pattern: '(?i)\bChassis\b'
+      device_type: chassis
+      rule_id: DT-D-025B-CHASSIS-OPT
+
     # ── Storage NVMe ─────────────────────────────────────────
     - field: option_name
       pattern: '(?i)\bNVMe\b'
@@ -387,6 +425,12 @@ device_type_rules:
       pattern: '(?i)\b(SSD|SATA)\b(?!.*NVMe)'
       device_type: storage_ssd
       rule_id: DT-D-012-SSD
+
+    # BUGFIX: "Fan Foam, HDD 2U" содержало 'HDD' → storage_hdd. Это аксессуар.
+    - field: option_name
+      pattern: '(?i)\bFan\s+Foam\b'
+      device_type: accessory
+      rule_id: DT-D-032-FAN-FOAM
 
     # ── Storage HDD ──────────────────────────────────────────
     - field: option_name
@@ -462,6 +506,7 @@ device_type_rules:
       device_type: nic
       rule_id: DT-D-021-NIC-OPT
 
+
     # ── Bezel ────────────────────────────────────────────────
     - field: module_name
       pattern: '(?i)\bBezel\b'
@@ -485,6 +530,14 @@ device_type_rules:
       pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel)\b'
       device_type: raid_controller
       rule_id: DT-D-027-RAID
+
+    # DEC-006 device_type: BOSS-N1 → raid_controller
+    # hw_type уже выставлен через rule_id_map (HW-BOSS-001 → storage_controller).
+    # raid_controller → device_type_map → storage_controller (согласовано).
+    - field: option_name
+      pattern: '(?i)(?=.*BOSS-N1)(?=.*controller\s+card).*'
+      device_type: raid_controller
+      rule_id: DT-D-033-BOSS-N1
 
     # ── Management ───────────────────────────────────────────
     - field: module_name
@@ -523,6 +576,7 @@ hw_type_rules:
     raid_controller: storage_controller
     hba: hba
     sfp_cable: cable
+    power_cord: cable    # BUGFIX E8+E9: power_cord не имел hw_type маппинга
     fan: fan
     heatsink: heatsink
     riser: riser

@@ -344,7 +344,7 @@ def test_match_rule_is_bundle_root_lowercase():
     ("Fans", "Standard Fan for R760", "fan", "fan"),
     ("Thermal", "Standard Heatsink", "heatsink", "heatsink"),
     ("GPU", "NVIDIA A100 80GB PCIe", "gpu", "gpu"),
-    ("", "Power Cord C13 to C14 2m", "power_cord", None),
+    ("", "Power Cord C13 to C14 2m", "power_cord", "cable"),
 ])
 def test_dell_device_type_and_hw_type(ruleset, module_name, option_name, exp_device_type, exp_hw_type):
     row = _row(module_name=module_name, option_name=option_name)
