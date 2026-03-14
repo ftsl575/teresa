@@ -16,8 +16,10 @@ base_rules:
 service_rules: []
 
 config_rules:
+  # Все Dummy PID строки — виртуальные конфигурационные PIDs (airflow, mode selection и др.)
+  # Физический компонент не поставляется → CONFIG.
   - field: option_name
-    pattern: '(?i)Dummy PID(?!.*Airflow)'
+    pattern: '(?i)Dummy PID'
     entity_type: CONFIG
     rule_id: CONFIG-C-001
   - field: option_name
@@ -145,10 +147,6 @@ hw_rules:
     pattern: '(?i)power cord|jumper power cord'
     entity_type: HW
     rule_id: HW-C-020-POWER-CORD
-  - field: option_name
-    pattern: '(?i)Dummy PID.*Airflow'
-    entity_type: HW
-    rule_id: HW-C-021-AIRFLOW
   - field: sku
     pattern: '^STACK-T'
     entity_type: HW
@@ -195,11 +193,6 @@ device_type_rules:
       pattern: '(?i)power cord|jumper power cord'
       device_type: power_cord
       rule_id: DT-C-020-POWER-CORD
-
-    - field: option_name
-      pattern: '(?i)Dummy PID.*Airflow'
-      device_type: accessory
-      rule_id: DT-C-021-AIRFLOW
 
     - field: option_name
       pattern: '(?i)stacking cable'
@@ -262,7 +255,7 @@ device_type_rules:
     # ── Management (RFID) ────────────────────────────────────
     - field: option_name
       pattern: '(?i)\bRFID\b'
-      device_type: management
+      device_type: accessory
       rule_id: DT-C-015-MGMT
 
     # ── Accessory Kit ────────────────────────────────────────
@@ -323,5 +316,5 @@ hw_type_rules:
       rule_id: HWT-C-006-SKU
     - field: option_name
       pattern: '(?i)\bRFID\b'
-      hw_type: management
+      hw_type: accessory
       rule_id: HWT-C-007

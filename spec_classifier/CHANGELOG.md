@@ -14,6 +14,12 @@ Versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- Cisco NXK-AF-PE "Dummy PID Airflow" → CONFIG
+  (CONFIG-C-001 расширен на все Dummy PID; HW-C-021-AIRFLOW и DT-C-021-AIRFLOW удалены)
+- Dell E16 подавлен для 412-AASK и 470-BCHP (NIC/BOSS blank fillers, не drive bay)
+- E14: убран токен `airflow selection` из паттерна (Cisco Dummy PID Airflow → CONFIG, не blank_filler)
+- E14: SKU-исключение для NXK-AF-PE (Dummy PID Airflow → намеренно CONFIG без device_type)
+- Cisco C-RFID-1R: device_type management → accessory (RFID-метка — физическая наклейка, не management)
 - Dell "No Bezel", "No HBM", "No Quick Sync", "No Systems Documentation" → CONFIG
   (CONFIG-NOBEZEL-001, CONFIG-NOHBM-001, CONFIG-NOQUICKSYNC-001, CONFIG-NODOC-001)
 - Dell DT-D-031-NO-BEZEL удалён (был ошибочным фиксом из плана 2)
