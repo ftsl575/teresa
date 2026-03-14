@@ -403,7 +403,11 @@ def validate_row(row: dict, vendor: str) -> list[str]:
 
     # E14 — CONFIG with Dummy/Blank in name but no device_type
     if entity == "CONFIG" and not device_type:
-        if re.search(r"\b(dummy|blank|filler|airflow\s+selection)\b", option_name, re.IGNORECASE):
+        # ИСКЛЮЧЕНИЕ: NXK-AF-PE — Dummy PID для airflow selection, намеренно CONFIG без device_type
+        _E14_EXCLUDE_SKUS = {"NXK-AF-PE"}
+        _e14_sku_raw = row.get("skus") or row.get("sku") or row.get("part_number") or ""
+        _e14_skus = {_e14_sku_raw} if isinstance(_e14_sku_raw, str) else set(_e14_sku_raw or [])
+        if re.search(r"\b(dummy|blank|filler)\b", option_name, re.IGNORECASE) and not _E14_EXCLUDE_SKUS.intersection(_e14_skus):
             issues.append("E14:config_looks_like_blank_filler[suggest:device_type=blank_filler]")
 
     # E15 — BASE without device_type (info, not error)
@@ -412,7 +416,12 @@ def validate_row(row: dict, vendor: str) -> list[str]:
 
     # E16 — blank_filler + ABSENT: слот занят заглушкой, диск отсутствует
     # Не ошибка — но важно видеть: заглушка физически есть, диска нет
-    if device_type == "blank_filler" and state == "ABSENT":
+    # ИСКЛЮЧЕНИЕ: 412-AASK (NIC-slot blank) и 470-BCHP (BOSS-slot blank) —
+    # не drive bay fillers, E16 семантически неприменим. Узкое SKU-исключение.
+    _E16_EXCLUDE_SKUS = {"412-AASK", "470-BCHP"}
+    _sku_value = row.get("skus") or row.get("part_number") or row.get("sku")
+    _row_skus = {_sku_value} if isinstance(_sku_value, str) else set(_sku_value or [])
+    if device_type == "blank_filler" and state == "ABSENT" and not _E16_EXCLUDE_SKUS.intersection(_row_skus):
         issues.append("E16:info_slot_has_filler_no_drive")
 
     # E17 — HW строка без device_type и без hw_type (пайплайн не определил тип)
