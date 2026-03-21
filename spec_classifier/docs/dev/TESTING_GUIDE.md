@@ -1,4 +1,4 @@
-# Руководство по тестированию — Spec Classifier (Dell + Cisco CCW)
+# Руководство по тестированию — Spec Classifier (Dell + Cisco CCW + HPE)
 
 ## 1. Тестовая стратегия
 
@@ -9,6 +9,9 @@
 - **Cisco Unit:** test_cisco_parser — parse_excel на ccw_1/ccw_2 (26 и 82 строки); test_cisco_normalizer — bundle_id, parent_line_number, is_bundle_root, module_name, standalone.
 - **Cisco Regression:** test_regression_cisco — построчное сравнение с golden/ccw_1_expected.jsonl и ccw_2_expected.jsonl.
 - **Cisco Threshold:** test_unknown_threshold_cisco — unknown_count = 0 для ccw_1 и ccw_2.
+- **HPE Unit:** test_hpe_parser — parse на hp1–hp8 (лист BOM, col_map); test_hpe_normalizer — HPENormalizedRow vendor extensions; test_hpe_rules_unit — 25 параметризованных device_type/hw_type кейсов по всем HPE device_types.
+- **HPE Regression:** test_regression_hpe — построчное сравнение с golden/hp1–hp8_expected.jsonl.
+- **HPE Threshold:** test_unknown_threshold_hpe — unknown_count = 0 для hp1–hp8.
 
 ---
 
@@ -30,6 +33,11 @@ pytest tests/ -v --tb=short
 # Cisco тесты
 pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
        tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
+
+# HPE тесты
+pytest tests/test_hpe_parser.py tests/test_hpe_normalizer.py \
+       tests/test_hpe_rules_unit.py \
+       tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py -v
 ```
 
 ---
@@ -63,7 +71,9 @@ pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
 ```bash
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py \
        tests/test_regression.py tests/test_unknown_threshold.py \
-       tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v --tb=short
+       tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py \
+       tests/test_hpe_parser.py tests/test_hpe_normalizer.py tests/test_hpe_rules_unit.py \
+       tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py -v --tb=short
 ```
 
 При отсутствии входных файлов или golden часть тестов будет пропущена; unit-тесты и регрессия (если файлы есть) должны быть зелёными.
@@ -95,3 +105,14 @@ pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normaliz
 5. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`.
 6. Добавить `ccw_N` в `@pytest.mark.parametrize` в `test_regression_cisco.py`.
 7. Запустить `pytest tests/ -v` и закоммитить `golden/ccw_N_expected.jsonl`.
+
+### Новый HPE датасет (hpN.xlsx)
+
+1. Положить в директорию, указанную в `config.local.yaml → paths.input_root`.
+2. Запустить `python main.py --input ".../hpN.xlsx" --vendor hpe`.
+3. Проверить `unknown_rows.csv` и `run_summary.json` (цель: `unknown_count = 0`).
+4. При `unknown > 0`: добавить правила в `rules/hpe_rules.yaml`, повторить шаг 2.
+   **Внимание:** при изменении `hpe_rules.yaml` обязательно обновить HPE golden (hp1–hp8).
+5. Запустить `python main.py --input ".../hpN.xlsx" --vendor hpe --save-golden`.
+6. Добавить `hpN` в `@pytest.mark.parametrize` в `test_regression_hpe.py`.
+7. Запустить `pytest tests/ -v` и закоммитить `golden/hpN_expected.jsonl`.

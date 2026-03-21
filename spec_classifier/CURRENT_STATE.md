@@ -4,7 +4,7 @@
 1.3.0
 
 ## Дата последнего аудита
-2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail); 2026-03-07 (audit_1G FAIL — 7 P0); 2026-03-11 (recovery: golden sync, stray revert)
+2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail); 2026-03-07 (audit_1G FAIL — 7 P0); 2026-03-11 (recovery: golden sync, stray revert); 2026-03-15 (batch audit review — FAIL, 3 P0 / 10 P1)
 
 ## Активные вендоры
 - Dell (spec export)
@@ -41,7 +41,7 @@
 - Нормализация qty: при пустом или отсутствующем значении используется default = 1 (ранее 0).
 
 ## Документация — пути (P1, LEAK-002–004)
-- README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`; личные пути `C:\Users\G\...` удалены. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; источник — код и config, без dell_mvp.
+- README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`. Пути задаются через config.local.yaml. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; источник — код и config, без dell_mvp.
 
 ## Документация — заголовки и ядро (P1, LEAK-005, LEAK-006, DOC-010)
 - Шесть doc-файлов: H1 заменён на «… — spec_classifier» (LEAK-005). Docstrings core: normalizer, rules_engine, parser, state_detector — без «Dell specification», «load Dell rules» (LEAK-006). parser.py: «column-based specification files», «sentinel column value», «1-based Excel row number»; rules_engine.RuleSet: «Loaded classification rules from a vendor YAML file». Taxonomy: «Vendors covered: Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)» (DOC-010).

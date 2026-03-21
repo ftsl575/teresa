@@ -26,6 +26,8 @@ COLUMNS = [
     "HW Type",
     "Entity Type",
     "State",
+    "Source Row",
+    "Rule ID",
 ]
 
 # Extra columns emitted only when the input is an HPE BOM.
@@ -84,6 +86,8 @@ def generate_cleaned_spec(
             "HW Type": getattr(result, "hw_type", None) or "",
             "Entity Type": result.entity_type.value,
             "State": result.state.value if result.state else "",
+            "Source Row": row.source_row_index,
+            "Rule ID": result.matched_rule_id if result.matched_rule_id else "",
         }
         if is_hpe:
             record["Config Name"] = getattr(row, "config_name", "") or ""

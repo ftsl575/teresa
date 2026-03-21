@@ -20,6 +20,7 @@ Requirements:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime
@@ -30,9 +31,11 @@ import openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
+if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding \
+        and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-if sys.stderr.encoding and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
+if hasattr(sys.stderr, "reconfigure") and sys.stderr.encoding \
+        and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -482,7 +485,7 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
             break
     if header_row_idx is None:
         print(f"  ⚠ Не найден заголовок в {source_path.name}, пропуск")
-        return False, []
+        return False, [], []
 
     df = df_raw.copy()
     raw_cols = [str(v).strip() for v in df_raw.iloc[header_row_idx].values]
@@ -505,6 +508,7 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
     _ALIASES = {"description": "option_name",
                 "product_description": "option_name",
                 "part_number": "skus",
+                "product_#": "skus",
                 "config_name": "module_name"}
     data_rows = []
     for row in df_work.to_dict("records"):
@@ -533,6 +537,8 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
             parts.append(ai_str)
 
         all_results.append("; ".join(parts) if parts else "OK")
+
+    option_names = [str(row.get("option_name") or "").strip() for row in data_rows]
 
     # Write to Excel
     wb = openpyxl.load_workbook(source_path)
@@ -563,7 +569,7 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
     _write_summary_sheet(wb, all_results, vendor, source_path.name,
                           has_ai=ai_predictions is not None)
     wb.save(out_path)
-    return True, all_results
+    return True, all_results, option_names
 
 
 def _write_summary_sheet(wb, all_results: list[str], vendor: str,
@@ -889,6 +895,82 @@ def _generate_human_report(report_files: list, output_dir: str, llm_model: str) 
     print(f"📊 Сводный отчёт: {out_path}  ({total_written} строк)")
 
 
+# Known false-positive cases. Each entry must specify vendor + condition.
+# Do NOT add broad transition-only patterns — they mask future vendor bugs.
+KNOWN_FP_CASES = [
+    # HPE Cable Kit: AI says accessory, but Cable Kit = cable per business rules.
+    # Matches: "OCPA Cable Kit", "GPU Power Cable Kit", "NVMe to Tri-Mode OCP FIO Cable Kit"
+    {
+        "vendor": "hpe",
+        "kind": "device_mismatch",
+        "transition": "cable→accessory",
+        "option_name_pattern": r"(?i)cable\s+(kit|assembly)",
+    },
+    # HPE Hybrid Capacitor: AI says accessory, but Capacitor = battery per business rules.
+    # Matches: "HPE Smart Storage Hybrid Capacitor with 260mm/145mm Cable Kit"
+    {
+        "vendor": "hpe",
+        "kind": "device_mismatch",
+        "transition": "battery→accessory",
+        "option_name_pattern": r"(?i)hybrid\s+capacitor",
+    },
+    # HPE Rail Kit: AI says accessory, but Rail Kit = rail per business rules.
+    # Matches: "HPE ProLiant DL3XX Gen11 Easy Install Rail 3 Kit"
+    {
+        "vendor": "hpe",
+        "kind": "device_mismatch",
+        "transition": "rail→accessory",
+        "option_name_pattern": r"(?i)(rail\s+kit|easy\s+install\s+rail)",
+    },
+    # HPE NVLink Bridge: GPU interconnect accessory, not a GPU itself.
+    # Matches: "NVIDIA 4-way NVLink Bridge for H200 NVL"
+    {
+        "vendor": "hpe",
+        "kind": "device_mismatch",
+        "transition": "accessory→gpu",
+        "option_name_pattern": r"(?i)nvlink\s+bridge",
+    },
+    # HPE Cable Management Arm: AI says cable, but it's a mounting accessory.
+    # Matches: "HPE DL38X Gen10 Plus 2U Cable Management Arm for Rail Kit"
+    {
+        "vendor": "hpe",
+        "kind": "device_mismatch",
+        "transition": "accessory→cable",
+        "option_name_pattern": r"(?i)cable\s+management\s+arm",
+    },
+    # HPE BASE server CTO rows: AI thinks NOTE/HW/LOGISTIC, but BASE is correct.
+    # Matches: "HPE ProLiant DL380 Gen11 ... Configure-to-order Server"
+    {
+        "vendor": "hpe",
+        "kind": "entity_mismatch",
+        "transition": "BASE→NOTE",
+        "option_name_pattern": r"(?i)(?:configure[- ]to[- ]order|cto)\s+(?:server|svr)\b",
+    },
+    {
+        "vendor": "hpe",
+        "kind": "entity_mismatch",
+        "transition": "BASE→LOGISTIC",
+        "option_name_pattern": r"(?i)(?:configure[- ]to[- ]order|cto)\s+(?:server|svr)\b",
+    },
+]
+
+
+def _is_known_fp(bug_items: list[dict], kind: str, transition: str) -> bool:
+    """Check if ALL items in a bug pattern match a known FP case."""
+    for case in KNOWN_FP_CASES:
+        if case["kind"] != kind or case["transition"] != transition:
+            continue
+        pattern = re.compile(case["option_name_pattern"])
+        vendor = case["vendor"]
+        if all(
+            i.get("vendor") == vendor
+            and pattern.search(i.get("option_name", ""))
+            for i in bug_items
+        ):
+            return True
+    return False
+
+
 def _generate_report(report_files: list, output_dir: str, llm_model: str,
                      tok_in: int, tok_out: int, use_ai: bool) -> None:
     """Generate audit_report.json next to OUTPUT dir."""
@@ -910,17 +992,21 @@ def _generate_report(report_files: list, output_dir: str, llm_model: str,
 
     # Re-read audited files to get row-level detail
     for fdata in report_files:
-        # results is list of pipeline_check values (strings)
-        for val in fdata.get("results", []):
+        opt_names = fdata.get("option_names", [])
+        for idx, val in enumerate(fdata.get("results", [])):
             if not val or val == "OK":
                 continue
+            opt_name = opt_names[idx] if idx < len(opt_names) else ""
             for tag in str(val).split(";"):
                 tag = tag.strip()
                 if not tag:
                     continue
                 prefix = tag.split(":")[0].strip()
                 tag_counter[prefix] += 1
-                all_issues.append({"file": fdata["file"], "vendor": fdata["vendor"], "tag": tag})
+                all_issues.append({
+                    "file": fdata["file"], "vendor": fdata["vendor"],
+                    "tag": tag, "option_name": opt_name,
+                })
 
     # ── Real bugs: AI_MISMATCH patterns ──────────────────────────────────────
     mismatch_groups = defaultdict(list)
@@ -956,7 +1042,10 @@ def _generate_report(report_files: list, output_dir: str, llm_model: str,
         }
 
         unique_files = len(set(i["file"] for i in items))
-        if kind == "entity_mismatch" and f"{from_val}→{to_val}" in fp_patterns:
+        transition = f"{from_val}→{to_val}"
+        if _is_known_fp(items, kind, transition):
+            bug_type = "FALSE_POSITIVE"
+        elif kind == "entity_mismatch" and transition in fp_patterns:
             bug_type = "FALSE_POSITIVE"
         elif kind == "device_mismatch":
             if len(items) >= 3 or (len(items) >= 2 and unique_files >= 2):
@@ -1115,7 +1204,10 @@ def detect_vendor_from_path(path: Path) -> str:
         return "hpe"
     if "cisco_run" in s:
         return "cisco"
-    return "dell"
+    if "dell_run" in s:
+        return "dell"
+    print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
+    return "unknown"
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -1228,7 +1320,7 @@ def main():
                     df = df.iloc[header_row_idx + 1:].reset_index(drop=True)
                     col_map = {c: c.lower().replace(" ", "_") for c in df.columns}
                     df_work = df.rename(columns=col_map)
-                    _AL = {"description": "option_name", "product_description": "option_name", "part_number": "skus"}
+                    _AL = {"description": "option_name", "product_description": "option_name", "part_number": "skus", "product_#": "skus"}
                     data_rows = []
                     for row in df_work.to_dict("records"):
                         for src, dst in _AL.items():
@@ -1242,7 +1334,7 @@ def main():
                 print(f"    ⚠ LLM prep error: {e}")
 
         try:
-            success, results = write_audited_excel(f, out_path, vendor, ai_predictions)
+            success, results, option_names = write_audited_excel(f, out_path, vendor, ai_predictions)
             if success:
                 issue_count = sum(1 for r in results if r != "OK")
                 ai_count = sum(1 for r in results if "AI_MISMATCH" in r)
@@ -1266,6 +1358,7 @@ def main():
                     "tokens": f_tok_in + f_tok_out,
                     "cost_usd": round(file_cost, 4),
                     "results": results,
+                    "option_names": option_names,
                 })
             else:
                 failed += 1

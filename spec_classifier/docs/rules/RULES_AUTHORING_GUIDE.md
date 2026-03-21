@@ -22,11 +22,11 @@
 |-----------|-----------|----------|
 | 1 | BASE | Базовая система (Base, PowerEdge R6xx). |
 | 2 | SERVICE | Услуги (ProSupport, Warranty). |
-| 3 | LOGISTIC | Логистика (Shipping, Power Cord, Cables). |
+| 3 | LOGISTIC | Логистика (Shipping, упаковка, документы, доставка). |
 | 4 | SOFTWARE | ПО (Embedded Systems Management, OS). |
 | 5 | NOTE | Информационные заметки. |
 | 6 | CONFIG | Конфигурация (No Cable, RAID). |
-| 7 | HW | Железо (Processor, Memory, Drives). |
+| 7 | HW | Железо (Processor, Memory, Drives, Power Cord, кабели). |
 | 8 | UNKNOWN | Нет совпадений. |
 
 ---

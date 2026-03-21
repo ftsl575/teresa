@@ -8,7 +8,7 @@
 |----------|------------|--------------|----------|
 | `--input PATH` | Да (single-file) | — | Путь к входному .xlsx. |
 | `--batch-dir PATH` | Да (batch) | — | Директория с .xlsx; обрабатываются все файлы по алфавиту. |
-| `--vendor PATH` | Нет | `dell` | Вендор: `dell` (spec export), `cisco` (CCW export) или `hpe` (BOM). Выбирает адаптер парсинга и файл правил. |
+| `--vendor VENDOR` | Нет | `dell` | Вендор: `dell` (spec export), `cisco` (CCW export) или `hpe` (BOM). Выбирает адаптер парсинга и файл правил. |
 | `--config PATH` | Нет | `config.yaml` | Путь к YAML-конфигу. |
 | `--output-dir PATH` | Нет | из config `paths.output_root` или `C:\Users\G\Desktop\OUTPUT` | Верхний корень вывода. Внутри создаются подпапки по вендору: `dell_run/`, `cisco_run/`, `hpe_run/`, а в них — папки прогонов `run-YYYY-MM-DD__HH-MM-SS-<stem>/`. |
 | `--batch` | Нет | — | Batch: все .xlsx из input_root (config или Desktop\\INPUT). |
@@ -98,9 +98,8 @@ cleaned_spec:
 
 ## 5. Гарантии совместимости
 
-- Ключи `rules_file`, `cleaned_spec.include_types`, `include_only_present` стабильны с v1.0.0.
-- `vendor_rules` — маппинг `vendor` → путь к YAML-правилам. Если `--vendor cisco` задан, `vendor_rules.cisco` имеет приоритет над `rules_file`.
-- `vendor_rules` добавлен как additive в multivendor baseline; `rules_file` сохранён для обратной совместимости.
+- Ключи `cleaned_spec.include_types`, `include_only_present` стабильны с v1.0.0.
+- `vendor_rules` — маппинг `vendor` → путь к YAML-правилам; определяет файл правил для каждого вендора.
 - Неизвестные ключи в config.yaml игнорируются (forward-compatible).
 - Пути разрешаются относительно текущей рабочей директории (CWD), а не от расположения config-файла.
 - Изменения, ломающие контракт конфига, отражаются в MAJOR версии и в CHANGELOG.

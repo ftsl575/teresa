@@ -92,7 +92,7 @@ python main.py --save-golden --input "C:\Users\G\Desktop\INPUT\<file>.xlsx" --ve
 
 ### Шаг 9: Дополнительные колонки в annotated Excel
 
-Если адаптер добавляет поля к нормализованной строке (как Cisco: line_number, service_duration_months), добавить соответствующие tuple в **VENDOR_EXTRA_COLS** в `src/outputs/annotated_writer.py`. Колонка появится в annotated xlsx только если хотя бы у одной из первых 10 строк атрибут задан.
+Если адаптер добавляет поля к нормализованной строке (как Cisco: line_number, service_duration_months), добавить соответствующие tuple в **VENDOR_EXTRA_COLS** в `src/outputs/annotated_writer.py`. Vendor extension columns are always added to annotated output.
 
 ---
 

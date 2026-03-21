@@ -91,7 +91,7 @@ Each run creates a timestamped folder under **output_root** (default `output` re
 | `classification.jsonl` | Classification result per row (entity_type, state, device_type, hw_type) |
 | `run_summary.json` | Aggregate counts: entity types, states, hw_types, unknown count |
 | `cleaned_spec.xlsx` | Filtered spec (types from config: BASE, HW, SOFTWARE, SERVICE; PRESENT only) |
-| `<stem>_annotated.xlsx` | Original file + 4 added columns: Entity Type, State, device_type, hw_type |
+| `<stem>_annotated.xlsx` | Original file + 5 added columns: Entity Type, State, device_type, hw_type, row_kind |
 | `<stem>_branded.xlsx` | Branded spec (Dell only; not created for Cisco or HPE) |
 | `unknown_rows.csv` | Rows that matched no rule — review these after each run |
 | `rows_raw.json` | Raw parsed rows (debug) |
