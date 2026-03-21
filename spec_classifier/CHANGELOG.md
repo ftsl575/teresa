@@ -26,12 +26,6 @@ Versioning: [SemVer](https://semver.org/).
 - Cisco CAB-GUIDE-1RU → HW/accessory (HW-C-024-CAB-GUIDE, DT-C-015-CAB-GUIDE)
 - Dell 631-AACK "No Systems Documentation" → CONFIG
   (убран токен Documentation из LOGISTIC-001, удалён LOGISTIC-002)
-
-### Known issues (deferred)
-- Cisco C9300L-STACK-KIT2= остаётся entity=BASE — фикс требует изменения classifier.py,
-  отложен до отдельного плана
-
-### Fixed
 - device_type mismatches: HPE proliant catch-all (BASE-H-DT-001 → BASE-H-DT-999),
   Dell heatsink/chassis/bezel/backplane/fan_foam classification order,
   all vendors power_cord missing hw_type (E8+E9),
@@ -39,30 +33,41 @@ Versioning: [SemVer](https://semver.org/).
   Cisco M2USB → storage_ssd (DT-C-011-M2USB-SSD)
 - fix(batch_audit): E6 false positive — added "BASE" to allowed entity set; BASE rows with device_type set by BASE-*-DT-* rules no longer emit E6 (was: 132 false positives across all vendors).
 - fix(batch_audit): E10 false positive — removed device_type sub-check from BASE guard; device_type on BASE is valid per BASE-*-DT-* YAML rules.
+- fix: golden files updated after power_cord hw_type taxonomy sync (11 golden + test_stats_hw_type.py cable count); reverted stray runtime schema validation in rules_engine.py.
+- fix(taxonomy/rules P1-7): power_cord hw_type=cable confirmed (device_type_map: power_cord→cable) in all three vendor YAML files (dell_rules, cisco_rules, hpe_rules). power_cord rows: entity_type=HW, device_type=power_cord, hw_type=cable.
+- fix(taxonomy P1-7): hw_type_rules.applies_to narrowed from [HW, BASE] to [HW] in all three vendor YAML files and hw_type_taxonomy.md (code was correct, taxonomy was wrong).
+- fix(conftest): pytest_sessionfinish skip guard — no longer fires during --co (collect-only) mode; added early-return when passed+skipped+failed==0 (deselect/no-run edge case).
+- fix(hpe_rules): Air Baffle Kit heatsink→accessory (HW-H-074); Cable Management Arm cable→accessory (HW-H-042).
+- fix(batch_audit): known-case FP suppression — KNOWN_FP_CASES with vendor+keyword check, not global transition patterns.
+- fix(batch_audit): detect_vendor_from_path returns "unknown" for unrecognized paths (was: silently returning "dell").
+- fix(batch_audit + cluster_audit): hasattr guard for sys.stdout/stderr.reconfigure (Windows encoding fix).
+- fix(conftest): silent-skip risk warning when input_root exists but contains no recognizable .xlsx fixtures.
+- fix(docs): RUN_PATHS — --input-dir → --output-dir; removed phantom audit/ subdirectory and cluster_rules_suggestions.json.
 
 ### Added
 - feat(batch_audit): config_name → module_name alias in _ALIASES dict; HPE LLM payload now carries module context (was always empty string, causing ~78% AI_MISMATCH baseline).
-- feat(batch_audit): "product_#" added to SKU column detection in audit_summary writer; HPE audit_summary now shows populated SKU column.
+- feat(batch_audit): "product_#" added to SKU column detection (_ALIASES and _AL); HPE audit_summary now shows populated SKU column.
 - feat(batch_audit): "config_name" added to Module Name column detection in audit_summary writer; HPE audit_summary now shows populated Module Name column.
 - feat(batch_audit): E18 check — LOGISTIC rows with physical keyword (cord/cable/rail/bracket/mount/kit/rack/pdu/ups) and no device_type are now flagged.
 - feat(annotated_writer): row_kind column added to annotated xlsx output ("ITEM"/"HEADER"); batch_audit HEADER guard is now functional.
-- feat(tests): tests/test_batch_audit.py — ≥45 test cases covering E1–E18 via validate_row() and REAL_BUG/_generate_report logic.
+- feat(tests): tests/test_batch_audit.py — ≥60 test cases covering E1–E18, known-case suppression, vendor detection, issue_color, E18 edges.
 - feat(tests): tests/test_cluster_audit.py — 30 test cases covering _detect_vendor_from_path, _is_empty, _collect_xlsx_files, normalize_text, analyze_clusters, heuristic_mapping, write_cluster_summary, print_dry_run_report, build_parser.
 - feat(tests): tests/test_hpe_rules_unit.py expanded — 25 parametrized device_type/hw_type cases covering all 25 unique HPE device_types.
 - feat(excel_writer): cleaned_spec for HPE now includes 5 vendor extension columns: Config Name, Lead Time, Extended Price, Product Type, Factory Integrated. Dell/Cisco output unchanged.
+- feat(excel_writer): Source Row and Rule ID columns added to cleaned_spec.xlsx for all vendors.
 - feat(hpe_rules): note_rules: [] placeholder section added to hpe_rules.yaml (consistent with dell_rules.yaml and cisco_rules.yaml).
-
-### Fixed
-- fix: golden files updated after power_cord hw_type=None taxonomy change (11 golden + test_stats_hw_type.py cable count); reverted stray runtime schema validation in rules_engine.py.
-
-### Added
+- feat(cluster_audit): sku_examples and module_examples columns added to cluster_summary.xlsx.
 - docs: CLAUDE.md — project context file for Cowork and Claude Desktop.
 - docs: prompts/ — prompt library with 8 step templates + COWORK_OPUS_FULL_AUDIT.md.
 
+### Known issues (deferred)
+- Cisco C9300L-STACK-KIT2= остаётся entity=BASE — фикс требует изменения classifier.py,
+  отложен до отдельного плана
+
 ### Changed
-- fix(taxonomy/rules P1-7): power_cord hw_type mapping removed from all three vendor YAML files (dell_rules, cisco_rules, hpe_rules). power_cord rows: entity_type=HW, device_type=power_cord, hw_type=None (taxonomy decision is authoritative).
-- fix(taxonomy P1-7): hw_type_rules.applies_to narrowed from [HW, BASE] to [HW] in all three vendor YAML files and hw_type_taxonomy.md (code was correct, taxonomy was wrong).
-- fix(conftest): pytest_sessionfinish skip guard — no longer fires during --co (collect-only) mode; added early-return when passed+skipped+failed==0 (deselect/no-run edge case).
+- docs: hw_type_taxonomy.md — power_cord hw_type synced to cable (device_type_map); LEGACY frozenset entries removed; annotated column count updated to 5 (added row_kind).
+- docs: TESTING_GUIDE, CONTRIBUTING — HPE добавлен (тесты, golden hp1–hp8, запрет на изменение hpe_rules без golden update, дерево src/vendors/hpe/).
+- docs: RUN_PATHS_AND_IO_LAYOUT — исправлены флаги CLI и убрана phantom-секция audit/.
 
 ---
 

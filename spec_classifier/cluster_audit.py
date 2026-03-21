@@ -19,6 +19,13 @@ import json
 
 import pandas as pd
 
+if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding \
+        and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure") and sys.stderr.encoding \
+        and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
@@ -186,6 +193,13 @@ def load_candidate_rows(output_dir: Path, vendor_filter: str | None = None) -> l
                 or ""
             )
             pipeline_check = get("pipeline_check") if has_pipeline_check else None
+            skus = (
+                get("skus") or get("sku") or get("part_number")
+                or get("product_#") or ""
+            )
+            module_name = (
+                get("module_name") or get("config_name") or ""
+            )
 
             if has_pipeline_check:
                 # Case 1: use pipeline_check codes
@@ -215,6 +229,8 @@ def load_candidate_rows(output_dir: Path, vendor_filter: str | None = None) -> l
                 "device_type":    device_type,
                 "hw_type":        hw_type,
                 "pipeline_check": pipeline_check,
+                "skus":           skus,
+                "module_name":    module_name,
             })
 
     return candidates
@@ -281,12 +297,14 @@ def analyze_clusters(rows: list[dict], labels: list[int]) -> list[dict]:
         top_terms = [w for w, _ in Counter(all_words).most_common(5)]
 
         result.append({
-            "cluster_id":   label,
-            "count":        len(members),
-            "vendors":      sorted(set(m["vendor"] for m in members)),
-            "source_files": sorted(set(m["source_file"] for m in members)),
-            "examples":     [m["option_name"] for m in members[:3]],
-            "top_terms":    top_terms,
+            "cluster_id":    label,
+            "count":         len(members),
+            "vendors":       sorted(set(m["vendor"] for m in members)),
+            "source_files":  sorted(set(m["source_file"] for m in members)),
+            "examples":      [m["option_name"] for m in members[:3]],
+            "sku_examples":  [m.get("skus", "") for m in members[:3]],
+            "module_examples": [m.get("module_name", "") for m in members[:3]],
+            "top_terms":     top_terms,
         })
 
     result.sort(key=lambda c: c["count"], reverse=True)
@@ -381,6 +399,8 @@ def write_cluster_summary(clusters: list[dict], output_dir: Path, min_cluster_si
     rows = []
     for c in clusters:
         examples = c.get("examples", [])
+        sku_ex   = c.get("sku_examples", [])
+        mod_ex   = c.get("module_examples", [])
         rows.append({
             "cluster_id":          c.get("cluster_id", ""),
             "count":               c.get("count", 0),
@@ -391,6 +411,8 @@ def write_cluster_summary(clusters: list[dict], output_dir: Path, min_cluster_si
             "example_1":           examples[0] if len(examples) > 0 else "",
             "example_2":           examples[1] if len(examples) > 1 else "",
             "example_3":           examples[2] if len(examples) > 2 else "",
+            "sku_examples":        " | ".join(s for s in sku_ex if s),
+            "module_examples":     " | ".join(m for m in mod_ex if m),
             "suggested_yaml_rule": c.get("suggested_yaml_rule", ""),
         })
 

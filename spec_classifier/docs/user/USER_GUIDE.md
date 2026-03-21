@@ -50,7 +50,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 | `classification.jsonl` | Одна строка — один JSON с полями классификации по каждой строке (entity_type, state, device_type, hw_type, matched_rule_id и др.). |
 | `run_summary.json` | Сводка: total_rows, entity_type_counts, state_counts, unknown_count, device_type_counts, hw_type_counts, rules_file_hash, input_file, run_timestamp. |
 | `cleaned_spec.xlsx` | Отфильтрованная спецификация: типы из конфига (BASE, HW, SOFTWARE, SERVICE), только PRESENT (если `include_only_present: true`). |
-| `<stem>_annotated.xlsx` | Исходный файл + 4 колонки: Entity Type, State, device_type, hw_type. Все строки сохранены. |
+| `<stem>_annotated.xlsx` | Исходный файл + 5 колонок: Entity Type, State, device_type, hw_type, row_kind. Все строки сохранены. |
 | `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по entity_type; блок «Не установлено» для ABSENT при необходимости. ⚠️ Не создаётся для Cisco CCW прогонов. |
 | `unknown_rows.csv` | Строки с entity_type = UNKNOWN. Колонки: source_row_index, option_id, module_name, option_name, skus, qty, option_price, matched_rule_id. Ревизия после каждого прогона. |
 | `rows_raw.json` | Сырые строки после парсера (отладка). |
@@ -119,4 +119,4 @@ python main.py --vendor hpe --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx"
 
 ## 10. annotated.xlsx
 
-Исходный лист без удаления строк; добавлены 4 колонки: Entity Type, State, device_type, hw_type. Соответствие строке листа — по source_row_index (1-based). Все строки сохранены для аудита и ручной проверки.
+Исходный лист без удаления строк; добавлены 5 колонок: Entity Type, State, device_type, hw_type, row_kind. Соответствие строке листа — по source_row_index (1-based). Все строки сохранены для аудита и ручной проверки.

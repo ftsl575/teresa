@@ -132,6 +132,30 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
 
     skip_ratio = skipped / total
     input_root = _resolve_input_root_for_skip_guard()
+
+    # Silent-skip risk detection: warn if input_root exists but looks empty.
+    if (
+        input_root is not None
+        and input_root.exists()
+        and skipped > 0
+    ):
+        vendor_names = ["dell", "cisco", "hpe"]
+        has_vendor_subdirs = any(
+            (input_root / v).exists() and any((input_root / v).glob("*.xlsx"))
+            for v in vendor_names
+        )
+        has_flat_fixtures = any(input_root.glob("*.xlsx"))
+        if not has_vendor_subdirs and not has_flat_fixtures:
+            msg = (
+                f"WARNING: input_root ({input_root}) exists but contains neither "
+                f"vendor subdirectories with .xlsx files nor flat .xlsx fixtures. "
+                f"{skipped} tests were skipped — this may indicate missing test data."
+            )
+            if terminal:
+                terminal.write_line(f"WARNING: {msg}", yellow=True)
+            else:
+                print(f"WARNING: {msg}")
+
     missing_input_root = (
         input_root is not None
         and (not input_root.exists())

@@ -585,7 +585,7 @@ device_type_rules:
 
     - field: option_name
       pattern: '(?i)cable\s+management\s+arm'
-      device_type: cable
+      device_type: accessory
       rule_id: HW-H-042
 
     - field: option_name
@@ -756,7 +756,7 @@ device_type_rules:
 
     - field: option_name
       pattern: '(?i)air\s+baffle'
-      device_type: heatsink
+      device_type: accessory
       rule_id: HW-H-074
 
     # ── Bezel ─────────────────────────────────────────────────────────────

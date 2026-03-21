@@ -111,7 +111,7 @@ python main.py --update-golden
 
 - **LOGISTIC** = только упаковка, документы, доставка, freight
 - **Power cord, stacking cable, rail, bracket** → HW, не LOGISTIC
-- **power_cord**: `hw_type=None` ← таксономия победила (изменено в последнем цикле)
+- **power_cord**: `hw_type=cable` (через device_type_map power_cord→cable во всех YAML)
 - **BASE** без device_type → норма (E15 = инфо, не баг)
 - **BASE с device_type** → валидно (BASE-*-DT-* YAML rules), E6/E10 НЕ должны срабатывать
 - **blank_filler + state=ABSENT** → заглушка в слоте, не ошибка (E16 = инфо)

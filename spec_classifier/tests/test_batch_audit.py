@@ -8,7 +8,10 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from batch_audit import validate_row, _generate_report
+from batch_audit import (
+    validate_row, _generate_report, detect_vendor_from_path,
+    issue_color, _is_known_fp, KNOWN_FP_CASES,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -351,3 +354,135 @@ class TestRealBugClassification:
         report = json.loads((tmp_path / "audit_report.json").read_text(encoding="utf-8"))
         real_bugs = [b for b in report["bugs"] if b["type"] == "REAL_BUG"]
         assert len(real_bugs) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Known-case suppression (_is_known_fp)
+# ---------------------------------------------------------------------------
+
+class TestKnownFPSuppression:
+    """Tests for KNOWN_FP_CASES + _is_known_fp narrow suppression."""
+
+    def test_hpe_cable_kit_cable_to_accessory(self):
+        items = [
+            {"vendor": "hpe", "option_name": "OCPA Cable Kit"},
+            {"vendor": "hpe", "option_name": "GPU Power Cable Kit"},
+        ]
+        assert _is_known_fp(items, "device_mismatch", "cable→accessory") is True
+
+    def test_hpe_hybrid_capacitor_battery_to_accessory(self):
+        items = [
+            {"vendor": "hpe", "option_name": "HPE Smart Storage Hybrid Capacitor with 260mm Cable Kit"},
+        ]
+        assert _is_known_fp(items, "device_mismatch", "battery→accessory") is True
+
+    def test_hpe_nvlink_bridge_accessory_to_gpu(self):
+        items = [
+            {"vendor": "hpe", "option_name": "NVIDIA 4-way NVLink Bridge for H200 NVL"},
+        ]
+        assert _is_known_fp(items, "device_mismatch", "accessory→gpu") is True
+
+    def test_hpe_cable_management_arm_accessory_to_cable(self):
+        items = [{"vendor": "hpe", "option_name": "HPE DL38X Gen10 Plus 2U Cable Management Arm for Rail Kit"}]
+        assert _is_known_fp(items, "device_mismatch", "accessory→cable") is True
+
+    def test_dell_cable_to_accessory_not_suppressed(self):
+        """Dell row with cable→accessory but no Cable Kit → NOT false positive."""
+        items = [
+            {"vendor": "dell", "option_name": "Random Cable Assembly"},
+        ]
+        assert _is_known_fp(items, "device_mismatch", "cable→accessory") is False
+
+
+# ---------------------------------------------------------------------------
+# detect_vendor_from_path
+# ---------------------------------------------------------------------------
+
+class TestDetectVendorFromPath:
+
+    def test_dell_run(self):
+        assert detect_vendor_from_path(Path("OUTPUT/dell_run/file.xlsx")) == "dell"
+
+    def test_lenovo_run_returns_unknown(self):
+        assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx")) == "unknown"
+
+    def test_no_vendor_keyword_returns_unknown(self):
+        assert detect_vendor_from_path(Path("/some/random/path/file.xlsx")) == "unknown"
+
+
+# ---------------------------------------------------------------------------
+# Alias product_# → skus
+# ---------------------------------------------------------------------------
+
+def test_product_hash_alias(tmp_path):
+    """Column 'product_#' should be normalized to 'skus' via _ALIASES."""
+    from batch_audit import write_audited_excel
+    import openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["entity_type", "state", "hw_type", "device_type", "option_name", "product_#"])
+    ws.append(["HW", "PRESENT", "cpu", "cpu", "CPU Module", "ABC-123"])
+    tmp_in = tmp_path / "input.xlsx"
+    wb.save(tmp_in)
+    tmp_out = tmp_path / "output.xlsx"
+    success, results, option_names = write_audited_excel(tmp_in, tmp_out, "hpe", None)
+    assert success
+    assert all(r == "OK" or "product_#" not in r for r in results)
+
+
+# ---------------------------------------------------------------------------
+# issue_color
+# ---------------------------------------------------------------------------
+
+class TestIssueColor:
+
+    def test_e1_returns_orange(self):
+        assert issue_color("E1:invalid_entity_type[FOOBAR]") == "FFE0B2"
+
+    def test_e2_returns_red(self):
+        assert issue_color("E2:unknown_entity") == "FFC7CE"
+
+    def test_e15_returns_grey(self):
+        assert issue_color("E15:base_no_device_type") == "F5F5F5"
+
+    def test_e18_returns_yellow(self):
+        assert issue_color("E18:logistic_with_physical_keyword[no_device_type:cord]") == "FFFDE7"
+
+
+# ---------------------------------------------------------------------------
+# E18 edge cases
+# ---------------------------------------------------------------------------
+
+class TestE18EdgeCases:
+
+    def test_logistic_bracket_fires_e18(self):
+        row = _row(entity_type="LOGISTIC", option_name="Mounting bracket kit",
+                   device_type="", hw_type="")
+        issues = validate_row(row, "hpe")
+        assert any("E18:" in i for i in issues)
+
+    def test_logistic_pdu_fires_e18(self):
+        row = _row(entity_type="LOGISTIC", option_name="PDU 16A basic unit",
+                   device_type="", hw_type="")
+        issues = validate_row(row, "hpe")
+        assert any("E18:" in i for i in issues)
+
+    def test_logistic_with_device_type_no_e18(self):
+        row = _row(entity_type="LOGISTIC", option_name="Mounting bracket kit",
+                   device_type="accessory", hw_type="accessory")
+        issues = validate_row(row, "hpe")
+        assert not any("E18:" in i for i in issues)
+
+
+# ---------------------------------------------------------------------------
+# Negative: mismatch without known-case suppression → NOT FALSE_POSITIVE
+# ---------------------------------------------------------------------------
+
+def test_unknown_device_mismatch_not_suppressed():
+    """A device_mismatch with no KNOWN_FP_CASES entry should be REAL_BUG or REVIEW_NEEDED."""
+    items = [
+        {"vendor": "cisco", "option_name": "Some Cisco Part"},
+        {"vendor": "cisco", "option_name": "Another Cisco Part"},
+        {"vendor": "cisco", "option_name": "Third Cisco Part"},
+    ]
+    assert _is_known_fp(items, "device_mismatch", "fan→gpu") is False

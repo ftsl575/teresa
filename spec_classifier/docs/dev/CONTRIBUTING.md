@@ -5,11 +5,12 @@
 ```
 spec_classifier/
 ├── main.py                 # Точка входа CLI, оркестрация пайплайна
-├── config.yaml             # Конфиг (rules_file, vendor_rules, cleaned_spec)
+├── config.yaml             # Конфиг (vendor_rules, cleaned_spec, paths)
 ├── requirements.txt
 ├── rules/
 │   ├── dell_rules.yaml     # Правила для Dell (entity, state, device_type, hw_type)
-│   └── cisco_rules.yaml    # Правила для Cisco CCW
+│   ├── cisco_rules.yaml    # Правила для Cisco CCW
+│   └── hpe_rules.yaml      # Правила для HPE QuoteBuilder BOM
 ├── src/
 │   ├── core/               # Парсер (Dell), нормализатор (Dell), классификатор, state_detector
 │   ├── rules/              # Загрузка и сопоставление правил (RuleSet)
@@ -17,10 +18,14 @@ spec_classifier/
 │   │   ├── base.py         # VendorAdapter ABC
 │   │   ├── dell/
 │   │   │   └── adapter.py  # DellAdapter (wraps core parser/normalizer)
-│   │   └── cisco/
-│   │       ├── parser.py   # Cisco CCW parser (sheet "Price Estimate")
-│   │       ├── normalizer.py # CiscoNormalizedRow + normalize_cisco_rows
-│   │       └── adapter.py  # CiscoAdapter
+│   │   ├── cisco/
+│   │   │   ├── parser.py   # Cisco CCW parser (sheet "Price Estimate")
+│   │   │   ├── normalizer.py # CiscoNormalizedRow + normalize_cisco_rows
+│   │   │   └── adapter.py  # CiscoAdapter
+│   │   └── hpe/
+│   │       ├── parser.py   # HPE BOM parser (sheet "BOM", col_map по имени)
+│   │       ├── normalizer.py # HPENormalizedRow + vendor extension fields
+│   │       └── adapter.py  # HPEAdapter
 │   ├── outputs/            # JSON/Excel-запись (json_writer, excel_writer, annotated_writer, branded_spec_writer)
 │   └── diagnostics/        # run_manager, stats_collector
 ├── tests/                  # Unit, integration, regression (Dell, Cisco, HPE)
@@ -53,6 +58,7 @@ spec_classifier/
 - Не коммитить output/ в git.
 - Не менять rule_id без обновления golden и явного описания в CHANGELOG.
 - Не менять `cisco_rules.yaml` без обновления Cisco golden (`ccw_1_expected.jsonl`, `ccw_2_expected.jsonl`).
+- Не менять `hpe_rules.yaml` без обновления HPE golden (`hp1–hp8_expected.jsonl`).
 
 ---
 

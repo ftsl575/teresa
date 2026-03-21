@@ -12,7 +12,7 @@
 - **Выход:**
   - папка прогона `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (например `dell_run/run-2026-02-28__13-24-32-dl1/`) под каталогом output_dir, с артефактами (JSON, CSV, Excel);
   - очищенная спецификация `cleaned_spec.xlsx` (только выбранные типы и состояние);
-  - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type);
+  - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + колонки Entity Type, State, device_type, hw_type, row_kind);
   - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
 
 Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED). Поддерживаемые вендоры: **Dell** (формат Dell spec export, заголовок "Module Name"), **Cisco CCW** (формат Cisco Commerce Workspace export, лист "Price Estimate", заголовок "Line Number" + "Part Number") и **HPE** (формат QuoteBuilder BOM, лист "BOM", колонки Product #, Product Description). Вендор задаётся флагом `--vendor {dell,cisco,hpe}`.
@@ -71,7 +71,7 @@
 | `header_rows.csv` | Только строки с `row_kind == HEADER`; UTF-8-sig. |
 | `run_summary.json` | Агрегаты: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
 | `cleaned_spec.xlsx` | Подмножество ITEM: типы из `config["cleaned_spec"]["include_types"]`, при `include_only_present` только state PRESENT. Колонки: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. |
-| `<stem>_annotated.xlsx` | Копия исходного листа (построчно), добавлены четыре колонки: Entity Type, State, device_type, hw_type; строки не удаляются; запись с `header=False`. |
+| `<stem>_annotated.xlsx` | Копия исходного листа (построчно), добавлены пять колонок: Entity Type, State, device_type, hw_type, row_kind; строки не удаляются; запись с `header=False`. |
 | `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по типу сущности; колонки SKU, Option Name, Qty, Price. Строки до первого BASE выводятся в preamble-блок. Только Dell. |
 | `run.log` | Текстовый лог этапов пайплайна. |
 
@@ -133,7 +133,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --update-golden
 Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder)`.
 
 - Исходный Excel читается через `pandas.read_excel(..., header=None)`. Строка заголовка передаётся как `header_row_index` из адаптера (результат `adapter.parse()`). Dell-парсер больше не вызывается внутри `annotated_writer`. Это обеспечивает корректную работу для обоих вендоров.
-- К таблице добавляются четыре колонки: "Entity Type", "State", "device_type", "hw_type". В строке заголовка в этих ячейках пишутся соответствующие подписи.
+- К таблице добавляются пять колонок: "Entity Type", "State", "device_type", "hw_type", "row_kind". В строке заголовка в этих ячейках пишутся соответствующие подписи.
 - Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value`, `state.value`, `device_type`, `hw_type`; иначе — пусто.
 - Результат сохраняется в `run_folder / "<stem>_annotated.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
 
@@ -188,7 +188,15 @@ spec_classifier/
 │   ├── dl4_expected.jsonl
 │   ├── dl5_expected.jsonl
 │   ├── ccw_1_expected.jsonl      # Cisco golden (Price Estimate, 26 строк)
-│   └── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
+│   ├── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
+│   ├── hp1_expected.jsonl        # HPE golden
+│   ├── hp2_expected.jsonl
+│   ├── hp3_expected.jsonl
+│   ├── hp4_expected.jsonl
+│   ├── hp5_expected.jsonl
+│   ├── hp6_expected.jsonl
+│   ├── hp7_expected.jsonl
+│   └── hp8_expected.jsonl
 ├── <output_dir>/                 # по умолчанию из config paths.output_root или cwd/output
 │   ├── dell_run/
 │   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Dell
@@ -223,7 +231,7 @@ spec_classifier/
   - `test_state_detector.py` — `detect_state` по правилам из YAML (ABSENT, DISABLED, PRESENT по умолчанию).
   - `test_rules_unit.py` — классификация: HEADER→HEADER-SKIP, BASE, SOFTWARE (в т.ч. Embedded Systems Management, Dell Secure Onboarding), HW (Chassis Configuration), SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN, state в результате.
   - `test_excel_writer.py` — наличие `cleaned_spec.xlsx`, отсутствие HEADER в нём, только типы из `include_types`, только PRESENT при `include_only_present`.
-  - `test_annotated_writer.py` — наличие `<stem>_annotated.xlsx`, совпадение числа строк с исходным, наличие колонок Entity Type, State, device_type, hw_type и заполненных значений для ITEM.
+  - `test_annotated_writer.py` — наличие `<stem>_annotated.xlsx`, совпадение числа строк с исходным, наличие колонок Entity Type, State, device_type, hw_type, row_kind и заполненных значений для ITEM.
 - **CLI** (`test_cli.py`): запуск `main.py --input ... --config config.yaml --output-dir output` через subprocess; проверка exit code 0, наличия в stdout подстроки `total_rows`, наличия в `output/run-*` файлов `cleaned_spec.xlsx` и `run_summary.json`.
 - **Regression** (`test_regression.py`): см. раздел 5; при отличии выводится diff по строкам.
 

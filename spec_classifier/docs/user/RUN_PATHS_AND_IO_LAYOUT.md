@@ -230,7 +230,6 @@ python -m pytest tests/ -v --tb=short
 ```
 output/
   dell_run/                         <- уже существует от основного прогона
-  audit/
     audit_summary.xlsx              <- сводный Excel с E-кодами по всем файлам
     audit_report.json               <- полный JSON-отчёт (bugs, yaml_candidates, rule_issues, stats)
     <stem>_annotated_audited.xlsx   <- копия annotated с добавленной колонкой pipeline_check
@@ -239,9 +238,9 @@ output/
 Запуск:
 
 ```bash
-python batch_audit.py --input-dir output/dell_run --vendor dell
-python batch_audit.py --input-dir output/hpe_run  --vendor hpe
-# Артефакты пишутся в output/audit/ (по умолчанию) или в --output-dir <dir>
+python batch_audit.py --output-dir output/dell_run --vendor dell
+python batch_audit.py --output-dir output/hpe_run  --vendor hpe
+# Артефакты пишутся в <output-dir>/ (по умолчанию) или в --output-dir <dir>
 ```
 
 Ключевые артефакты:
@@ -256,17 +255,16 @@ python batch_audit.py --input-dir output/hpe_run  --vendor hpe
 
 ```
 output/
-  audit/
+  dell_run/
     cluster_summary.xlsx            <- кластеры UNKNOWN-строк с proposed_device_type
-    cluster_rules_suggestions.json  <- YAML-кандидаты в формате batch_audit json-update
 ```
 
 Запуск:
 
 ```bash
-python cluster_audit.py --input-dir output/dell_run --vendor dell
-python cluster_audit.py --input-dir output/hpe_run  --vendor hpe
-# Результаты в output/audit/ или в --output-dir <dir>
+python cluster_audit.py --output-dir output/dell_run --vendor dell
+python cluster_audit.py --output-dir output/hpe_run  --vendor hpe
+# Результаты в <output-dir>/ или в --output-dir <dir>
 ```
 
 Ключевые артефакты:
@@ -274,7 +272,6 @@ python cluster_audit.py --input-dir output/hpe_run  --vendor hpe
 | Файл | Содержимое |
 |------|-----------|
 | `cluster_summary.xlsx` | Кластеры: cluster_id, count, vendors, top_terms, proposed_device_type, examples, suggested_yaml_rule. |
-| `cluster_rules_suggestions.json` | Предложенные правила в формате JSON-update для batch_audit. |
 
 ---
 
