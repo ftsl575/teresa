@@ -38,17 +38,43 @@ def _cisco_row(option_name: str, *, sku: str = "", is_bundle_root: bool = False)
 # Cisco device_type / hw_type matrix
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("option_name, sku, exp_device_type, exp_hw_type", [
-    ("Cisco Fan Module", "FAN-T4-F", "fan", "fan"),
-    ("AC Power Supply 1100W", "PWR-C1-1100WAC", "psu", "psu"),
-    ("10GBASE-SR SFP Module", "SFP-10G-SR", "transceiver", "transceiver"),
-    ("Stacking Cable 3M", "STACK-T4-3M", "cable", "cable"),
-    ("32GB DRAM Memory", "MEM-32G-DDR4", "ram", "memory"),
-    ("Slot Blank Filler", "", "blank_filler", "blank_filler"),
-    ("Power Cord C13 C14", "", "power_cord", "cable"),
+@pytest.mark.parametrize("option_name, sku, exp_device_type, exp_hw_type, exp_entity_type", [
+    ("Cisco Fan Module", "FAN-T4-F", "fan", "fan", "HW"),
+    ("AC Power Supply 1100W", "PWR-C1-1100WAC", "psu", "psu", "HW"),
+    ("10GBASE-SR SFP Module", "SFP-10G-SR", "transceiver", "transceiver", "HW"),
+    ("Stacking Cable 3M", "STACK-T4-3M", "cable", "cable", "HW"),
+    ("32GB DRAM Memory", "MEM-32G-DDR4", "ram", "memory", "HW"),
+    ("Slot Blank Filler", "", "blank_filler", "blank_filler", "HW"),
+    ("Power Cord C13 C14", "", "power_cord", "cable", "HW"),
 ])
-def test_cisco_device_type_and_hw_type(cisco_ruleset, option_name, sku, exp_device_type, exp_hw_type):
+def test_cisco_device_type_and_hw_type(cisco_ruleset, option_name, sku, exp_device_type, exp_hw_type, exp_entity_type):
     row = _cisco_row(option_name, sku=sku)
     result = classify_row(row, cisco_ruleset)
     assert result.device_type == exp_device_type
     assert result.hw_type == exp_hw_type
+    assert result.entity_type.value == exp_entity_type
+
+
+# ---------------------------------------------------------------------------
+# Cisco entity_type — one case per entity type
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("option_name, sku, is_bundle_root, exp_entity_type", [
+    # BASE-C-001: is_bundle_root=True → BASE
+    ("Cisco Catalyst 9300L-48P Switch", "C9300L-48P-4G-E", True, "BASE"),
+    # HW-C-002: option_name matches \bfan\b → HW
+    ("Cisco Fan Module", "FAN-T4-F", False, "HW"),
+    # service_rules is empty in cisco_rules.yaml — SERVICE is unreachable for Cisco
+    pytest.param(
+        "Cisco SMARTnet 1 Year Service", "CON-SNT-C9300X48", False, "SERVICE",
+        marks=pytest.mark.xfail(strict=False, reason="service_rules: [] in cisco_rules.yaml — SERVICE entity type not reachable"),
+    ),
+    # SOFTWARE-C-002: option_name matches \bDNA\b → SOFTWARE
+    ("Cisco DNA Essentials License", "", False, "SOFTWARE"),
+    # LOGISTIC-C-001: sku ^CAB-(?!9K|C13|C15|TA-|2Q|GUIDE) → LOGISTIC
+    ("Console Cable 6ft with RJ45", "CAB-CONSOLE-RJ45", False, "LOGISTIC"),
+])
+def test_cisco_entity_type(cisco_ruleset, option_name, sku, is_bundle_root, exp_entity_type):
+    row = _cisco_row(option_name, sku=sku, is_bundle_root=is_bundle_root)
+    result = classify_row(row, cisco_ruleset)
+    assert result.entity_type.value == exp_entity_type

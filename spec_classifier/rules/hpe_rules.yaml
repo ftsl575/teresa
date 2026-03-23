@@ -585,7 +585,7 @@ device_type_rules:
 
     - field: option_name
       pattern: '(?i)cable\s+management\s+arm'
-      device_type: accessory
+      device_type: cable
       rule_id: HW-H-042
 
     - field: option_name

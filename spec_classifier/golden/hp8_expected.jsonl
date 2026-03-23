@@ -66,7 +66,7 @@
 {"source_row_index": 67, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P48820-B21"]}
 {"source_row_index": 68, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-033", "device_type": "bezel", "hw_type": "chassis", "skus": ["P50400-B21"]}
 {"source_row_index": 69, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P50400-B21"]}
-{"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-027", "device_type": "accessory", "hw_type": "accessory", "skus": ["P22020-B21"]}
+{"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-027", "device_type": "cable", "hw_type": "cable", "skus": ["P22020-B21"]}
 {"source_row_index": 71, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P22020-B21"]}
 {"source_row_index": 72, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-024", "device_type": "heatsink", "hw_type": "heatsink", "skus": ["P48818-B21"]}
 {"source_row_index": 73, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P48818-B21"]}
