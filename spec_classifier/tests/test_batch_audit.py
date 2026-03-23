@@ -110,6 +110,11 @@ def test_e5_hw_type_on_config():
     assert any("E5:" in i for i in issues)
 
 
+def test_e5_logistic_with_hw_type():
+    issues = validate_row(_row(entity_type="LOGISTIC", hw_type="cable", device_type="power_cord"), "hpe")
+    assert any("E5:hw_type_on_non_hw" in i for i in issues)
+
+
 # ---------------------------------------------------------------------------
 # E6 — device_type on wrong entity
 # ---------------------------------------------------------------------------

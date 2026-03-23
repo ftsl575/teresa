@@ -360,7 +360,7 @@ def validate_row(row: dict, vendor: str) -> list[str]:
             issues.append(f"E4:state_unexpected_for_hpe[{state}]")
 
     # E5 — hw_type on non-HW
-    if entity not in ("HW", "LOGISTIC") and hw_type:
+    if entity not in ("HW",) and hw_type:
         issues.append(f"E5:hw_type_on_non_hw[entity:{entity}]")
 
     # E6 — device_type on wrong entity
