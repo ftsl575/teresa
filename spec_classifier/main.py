@@ -166,9 +166,11 @@ def _run_single(
             save_run_summary(stats, run_folder)
 
             generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
+            sheet_name = adapter.get_source_sheet_name()
             generate_annotated_source_excel(
                 raw_rows, normalized_rows, classification_results, input_path, run_folder,
                 header_row_index=header_row_index,
+                sheet_name=sheet_name,
             )
             if adapter.generates_branded_spec():
                 branded_path = run_folder / f"{input_path.stem}_branded.xlsx"

@@ -130,9 +130,9 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --update-golden
 
 ## 6. Annotated export
 
-Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder)`.
+Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder, *, header_row_index=None, sheet_name=None)`.
 
-- Исходный Excel читается через `pandas.read_excel(..., header=None)`. Строка заголовка передаётся как `header_row_index` из адаптера (результат `adapter.parse()`). Dell-парсер больше не вызывается внутри `annotated_writer`. Это обеспечивает корректную работу для обоих вендоров.
+- Исходный Excel читается через `pandas.read_excel(..., header=None, sheet_name=...)`. Параметр `sheet_name` передаётся из `adapter.get_source_sheet_name()` (в `main.py`): `None` → лист с индексом 0 (Dell, Cisco); строка → именованный лист (HPE → `"BOM"`). Строка заголовка передаётся как `header_row_index` из адаптера (результат `adapter.parse()`). Dell-парсер больше не вызывается внутри `annotated_writer`. Это обеспечивает корректную работу для всех вендоров.
 - К таблице добавляются пять колонок: "Entity Type", "State", "device_type", "hw_type", "row_kind". В строке заголовка в этих ячейках пишутся соответствующие подписи.
 - Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value`, `state.value`, `device_type`, `hw_type`; иначе — пусто.
 - Результат сохраняется в `run_folder / "<stem>_annotated.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
@@ -242,7 +242,7 @@ spec_classifier/
 ## 9. Ограничения и допущения
 
 - **Три вендора:** Dell (`rules/dell_rules.yaml`), Cisco (`rules/cisco_rules.yaml`), HPE (`rules/hpe_rules.yaml`). Cisco читает лист `"Price Estimate"` (строго, без fallback). Заголовок Cisco определяется по одновременному наличию `"Line Number"` и `"Part Number"`. SKU в Cisco: trailing-часть удаляется. HPE читает лист `"BOM"` с колонками Product #, Product Description. Branded spec для Cisco и HPE не создаётся.
-- **Один лист:** парсер и аннотированный экспорт работают с первым листом Excel.
+- **Один лист:** парсер работает с одним конкретным листом (Dell/Cisco — первый лист; HPE — лист `"BOM"`). Аннотированный экспорт использует `sheet_name` из `adapter.get_source_sheet_name()` для чтения того же листа.
 - **Заголовок:** строка заголовка ищется по точному совпадению ячейки с `"Module Name"` в первых 20 строках; при отсутствии — `find_header_row` возвращает `None`, `parse_excel` бросает `ValueError`.
 - **Кодировки:** конфиг и YAML правил читаются в UTF-8; CSV пишутся в UTF-8-sig для корректного открытия в Excel.
 - **Порядок строк:** соответствие нормализованных строк и результатов классификации — по индексу в списках; в аннотированном экспорте привязка к строке листа по `source_row_index` (1-based), считая, что первая строка листа в pandas — индекс 0 (Excel row 1).

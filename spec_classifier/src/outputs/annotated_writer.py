@@ -19,18 +19,22 @@ def generate_annotated_source_excel(
     original_excel_path: Path,
     run_folder: Path,
     header_row_index: Optional[int] = None,
+    sheet_name: Optional[str] = None,
 ) -> Path:
     """
     Load original Excel, add columns Entity Type, State, device_type, hw_type,
     and save to run_folder/<stem>_annotated.xlsx.
     Row count unchanged; mapping by source_row_index (Excel 1-based).
     header_row_index from adapter: 0-based row for header labels; None is valid (e.g. formats with no fixed header row) — no header row highlight/freeze.
+    sheet_name: name of the sheet to read; None → sheet index 0 (default for Dell/Cisco).
+      Pass adapter.get_source_sheet_name() to read a vendor-specific sheet (e.g. HPE → "BOM").
     """
     path = Path(original_excel_path)
     if not path.exists():
         raise FileNotFoundError(f"Original Excel not found: {path}")
 
-    df = pd.read_excel(path, header=None, engine="openpyxl")
+    _sheet = sheet_name if sheet_name is not None else 0
+    df = pd.read_excel(path, header=None, engine="openpyxl", sheet_name=_sheet)
     # header_row_index=None is valid (format has no header row): use row 0 for labels, no highlight/freeze
     label_row = header_row_index if header_row_index is not None else 0
 

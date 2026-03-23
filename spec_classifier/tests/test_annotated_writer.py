@@ -5,15 +5,81 @@ Uses robust header detection so annotated files with a preamble (e.g. Solution I
 
 import pytest
 import pandas as pd
+import openpyxl
 from pathlib import Path
 
 from main import _get_adapter
 from src.rules.rules_engine import RuleSet
-from src.core.classifier import classify_row
+from src.core.classifier import classify_row, ClassificationResult, EntityType
+from src.core.normalizer import NormalizedRow, RowKind
+from src.core.state_detector import State
 from src.outputs.annotated_writer import generate_annotated_source_excel
 
 from conftest import project_root, get_input_root_dell
 from tests.helpers import find_annotated_header_row, read_annotated_excel
+
+
+def test_annotated_writer_reads_named_sheet(tmp_path):
+    """sheet_name='BOM' reads from the BOM sheet, not sheet index 0."""
+    # Build a two-sheet workbook:
+    #   Sheet1 (index 0) — 5 rows of junk data (must NOT be read)
+    #   BOM              — 1 header row + 1 data row (SHOULD be read)
+    wb = openpyxl.Workbook()
+    ws0 = wb.active
+    ws0.title = "Sheet1"
+    for i in range(5):
+        ws0.append([f"sheet0_row_{i}", "dummy", "data"])
+
+    ws_bom = wb.create_sheet("BOM")
+    ws_bom.append(["Product #", "Product Description", "Qty"])   # row 1 — header
+    ws_bom.append(["SKU-CPU-001", "Intel Xeon Gold 5416S", "1"]) # row 2 — data
+
+    src_path = tmp_path / "hp_test.xlsx"
+    wb.save(str(src_path))
+
+    # Minimal pipeline objects: one ITEM row at source_row_index=2 (BOM row 2)
+    norm = NormalizedRow(
+        source_row_index=2,
+        row_kind=RowKind.ITEM,
+        group_name=None, group_id=None, product_name=None,
+        module_name="", option_name="Intel Xeon Gold 5416S",
+        option_id="SKU-CPU-001", skus=["SKU-CPU-001"], qty=1, option_price=0.0,
+    )
+    result = ClassificationResult(
+        row_kind=RowKind.ITEM,
+        entity_type=EntityType.HW,
+        state=State.PRESENT,
+        matched_rule_id="HW-TEST-001",
+        device_type="cpu",
+        hw_type="cpu",
+    )
+
+    out_path = generate_annotated_source_excel(
+        raw_rows=[],
+        normalized_rows=[norm],
+        classification_results=[result],
+        original_excel_path=src_path,
+        run_folder=tmp_path,
+        header_row_index=0,
+        sheet_name="BOM",
+    )
+
+    assert out_path.exists(), "annotated workbook should be created"
+    assert out_path.name == "hp_test_annotated.xlsx"
+
+    df_out = pd.read_excel(out_path, header=None, engine="openpyxl")
+    # BOM has 2 rows; Sheet1 has 5 rows — wrong sheet read → wrong row count
+    assert len(df_out) == 2, (
+        f"Expected 2 rows (from BOM sheet), got {len(df_out)} "
+        f"(Sheet1 has 5 rows — reading wrong sheet if 5)"
+    )
+    # Header row (row 0) must contain the annotation column labels
+    header_values = set(str(v) for v in df_out.iloc[0].dropna())
+    assert "Entity Type" in header_values
+    assert "hw_type" in header_values
+    # Data row (row 1) must have the classification value
+    data_values = set(str(v) for v in df_out.iloc[1].dropna())
+    assert "HW" in data_values
 
 
 def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(tmp_path):

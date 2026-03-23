@@ -44,3 +44,11 @@ class VendorAdapter(ABC):
     def get_rules_file(self) -> str:
         """Путь к YAML-файлу правил для этого вендора."""
         pass
+
+    def get_source_sheet_name(self) -> str | None:
+        """
+        Name of the sheet to read when generating the annotated export.
+        Returns None → use sheet index 0 (default for Dell and Cisco).
+        Override in vendor adapters that use a named sheet (e.g. HPE → "BOM").
+        """
+        return None

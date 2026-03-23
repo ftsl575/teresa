@@ -49,5 +49,8 @@ class HPEAdapter(VendorAdapter):
             "config_groups_count": len(config_names),
         }
 
+    def get_source_sheet_name(self) -> str | None:
+        return "BOM"
+
     def generates_branded_spec(self) -> bool:
         return False
