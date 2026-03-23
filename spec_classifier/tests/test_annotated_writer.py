@@ -111,12 +111,43 @@ def test_annotated_excel_exists_same_rows_has_entity_type_state_and_item_values(
     assert len(df_ann) == expected_data_rows, (
         f"Data row count must match: expected {expected_data_rows}, got {len(df_ann)}"
     )
-    for col in ("Entity Type", "State", "device_type", "hw_type"):
+    for col in ("Entity Type", "State", "device_type", "hw_type", "matched_rule_id"):
         assert col in df_ann.columns, f"Annotated file must have column {col!r}"
     # At least one ITEM row has non-empty Entity Type (e.g. BASE, HW)
     non_empty = df_ann["Entity Type"].dropna().astype(str).str.strip()
     non_empty = non_empty[(non_empty != "") & (non_empty != "Entity Type")]
     assert len(non_empty) > 0, "At least one ITEM row should have Entity Type filled"
+
+
+def test_annotated_matched_rule_id_column_populated(tmp_path):
+    """matched_rule_id column is present and non-empty for at least one ITEM row."""
+    root = project_root()
+    input_path = get_input_root_dell() / "dl1.xlsx"
+    if not input_path.exists():
+        pytest.skip(f"Input not found: {input_path} (set paths.input_root in config.local.yaml)")
+
+    adapter = _get_adapter("dell", {})
+    raw_rows, header_row_index = adapter.parse(str(input_path))
+    normalized_rows = adapter.normalize(raw_rows)
+    ruleset = RuleSet.load(str(root / "rules" / "dell_rules.yaml"))
+    classification_results = [classify_row(r, ruleset) for r in normalized_rows]
+
+    out_path = generate_annotated_source_excel(
+        raw_rows, normalized_rows, classification_results, input_path, tmp_path,
+        header_row_index=header_row_index,
+    )
+
+    _, df_ann = read_annotated_excel(out_path)
+    assert "matched_rule_id" in df_ann.columns, "matched_rule_id column must be present"
+
+    # At least one ITEM row must have a non-empty matched_rule_id
+    rule_ids = df_ann["matched_rule_id"].dropna().astype(str).str.strip()
+    rule_ids = rule_ids[(rule_ids != "") & (rule_ids != "matched_rule_id")]
+    assert len(rule_ids) > 0, "At least one ITEM row should have matched_rule_id filled"
+    # Spot-check: all non-empty values look like rule IDs (no spaces, alphanumeric + dashes)
+    import re
+    for rid in rule_ids:
+        assert re.match(r"^[\w\-]+$", rid), f"Unexpected matched_rule_id format: {rid!r}"
 
 
 def test_annotated_header_row_detection_with_preamble(tmp_path):
