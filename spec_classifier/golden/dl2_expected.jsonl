@@ -17,7 +17,7 @@
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCUJ"]}
 {"source_row_index": 26, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BBZQ"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBS"]}
 {"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -62,7 +62,7 @@
 {"source_row_index": 69, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 70, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCUJ"]}
 {"source_row_index": 71, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 72, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 72, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 73, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BBYX"]}
 {"source_row_index": 74, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBQ"]}
 {"source_row_index": 75, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -110,7 +110,7 @@
 {"source_row_index": 117, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 118, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCTH"]}
 {"source_row_index": 119, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 120, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 120, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 121, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BCGS"]}
 {"source_row_index": 122, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBQ"]}
 {"source_row_index": 123, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -157,7 +157,7 @@
 {"source_row_index": 164, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 165, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCTH"]}
 {"source_row_index": 166, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 167, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 167, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 168, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BCGS"]}
 {"source_row_index": 169, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBS"]}
 {"source_row_index": 170, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -204,7 +204,7 @@
 {"source_row_index": 211, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 212, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCTH"]}
 {"source_row_index": 213, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 214, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 214, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 215, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BCGS"]}
 {"source_row_index": 216, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBS"]}
 {"source_row_index": 217, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -250,7 +250,7 @@
 {"source_row_index": 257, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 258, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCUJ"]}
 {"source_row_index": 259, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQZ"]}
-{"source_row_index": 260, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 260, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 261, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BBYX"]}
 {"source_row_index": 262, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBS"]}
 {"source_row_index": 263, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -298,7 +298,7 @@
 {"source_row_index": 305, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 306, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCUJ"]}
 {"source_row_index": 307, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 308, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 308, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 309, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BBYX"]}
 {"source_row_index": 310, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBQ"]}
 {"source_row_index": 311, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}
@@ -344,7 +344,7 @@
 {"source_row_index": 351, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 352, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BCUJ"]}
 {"source_row_index": 353, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-AIQX"]}
-{"source_row_index": 354, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 354, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 355, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BBZQ"]}
 {"source_row_index": 356, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-001", "device_type": null, "hw_type": null, "skus": ["329-BKBQ"]}
 {"source_row_index": 357, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-002", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["412-AASK"]}

@@ -200,9 +200,14 @@ def test_e12_device_type_on_note():
 # E13 — LOGISTIC with physical cable
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("dt", ["power_cord", "cable", "sfp_cable", "fiber_cable"])
-def test_e13_logistic_with_physical_cable(dt):
-    row = _row(entity_type="LOGISTIC", device_type=dt, hw_type="cable")
+@pytest.mark.parametrize("dt, hw", [
+    ("power_cord", None),
+    ("cable", "cable"),
+    ("sfp_cable", "cable"),
+    ("fiber_cable", "cable"),
+])
+def test_e13_logistic_with_physical_cable(dt, hw):
+    row = _row(entity_type="LOGISTIC", device_type=dt, hw_type=hw or "")
     issues = validate_row(row, "hpe")
     assert any("E13:" in i for i in issues)
 
@@ -266,9 +271,15 @@ def test_e18_logistic_physical_keyword_no_device_type(option_name):
     assert any("E18:" in i for i in issues)
 
 
+def test_e8_excluded_for_power_cord():
+    row = _row(entity_type="HW", state="PRESENT", device_type="power_cord", hw_type="")
+    issues = validate_row(row, "hpe")
+    assert not any("E8:" in i for i in issues)
+
+
 def test_e18_not_fired_when_device_type_set():
     row = _row(entity_type="LOGISTIC", option_name="Power cord 2m",
-               device_type="power_cord", hw_type="cable")
+               device_type="power_cord", hw_type="")
     issues = validate_row(row, "hpe")
     assert not any("E18:" in i for i in issues)
 

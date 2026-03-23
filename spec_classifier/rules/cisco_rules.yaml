@@ -270,7 +270,6 @@ hw_type_rules:
     transceiver: transceiver
     cable: cable
     sfp_cable: cable
-    power_cord: cable    # BUGFIX E8: power_cord не имел hw_type маппинга
     psu: psu
     fan: fan
     ram: memory

@@ -90,7 +90,7 @@ def test_hpe_factory_integrated_matches_config_rule(hpe_ruleset):
     # 8  psu
     ("HPE 800W Flex Slot Platinum Power Supply", "psu", "psu"),
     # 9  power_cord (hw_type=None per taxonomy — power_cord is device_type only)
-    ("Power Cord C13 to C14 2.5m", "power_cord", "cable"),
+    ("Power Cord C13 to C14 2.5m", "power_cord", None),
     # 10 raid_controller
     ("HPE MR416i-p Gen11 Storage Controller", "raid_controller", "storage_controller"),
     # 11 hba

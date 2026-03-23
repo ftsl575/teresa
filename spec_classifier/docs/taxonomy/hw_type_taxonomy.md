@@ -17,7 +17,7 @@
 | 3 | BASE rows нужен hw_type? | **Нет.** `hw_type_applies_to: [HW]`. BASE rows не получают `hw_type` — тип изделия читается из `device_type`. |
 | 4 | enablement_kit — hw_type или device_type? | **Только `device_type`.** `entity_type=HW`, `device_type=enablement_kit`, `hw_type=None`. В `HW_TYPE_VOCAB` **не входит**. |
 | 5 | software_license/service в hw_type? | **Нет.** `hw_type_applies_to` = `[HW]`. SOFTWARE/SERVICE — только `entity_type`. |
-| 6 | power_cord — hw_type или device_type? | **Только `device_type`.** `hw_type_applies_to` = `[HW]`. Строки `power_cord` имеют `entity_type=HW`, `hw_type=cable (через device_type_map)`. |
+| 6 | power_cord — hw_type или device_type? | **Только `device_type`.** `hw_type_applies_to` = `[HW]`. Строки `power_cord` имеют `entity_type=HW`, `hw_type=None` (намеренно, per business rules). |
 
 ---
 
@@ -99,7 +99,7 @@
 |---|---|---|---|
 | `psu` | Power Supply Unit | Блок питания | HPE 2400W M-CRPS Titanium, NXA-PAC-650W-PE, ThinkSystem 750W Platinum, PAC900S12-T1 900W |
 
-> **Кабели питания** (`power_cord`): `entity_type=HW`, `device_type=power_cord`, `hw_type=cable`. `hw_type` проставляется через `device_type_map` (`power_cord → cable`). Тип читается из `device_type`.
+> **Кабели питания** (`power_cord`): `entity_type=HW`, `device_type=power_cord`, `hw_type=None` (намеренно, per business rules). Тип читается из `device_type`.
 
 ---
 
@@ -150,7 +150,7 @@
 
 | `device_type` | Описание | `entity_type` | `hw_type` |
 |---|---|---|---|
-| `power_cord` | Кабель питания (C13/C14/C15/C19) | HW | `cable` |
+| `power_cord` | Кабель питания (C13/C14/C15/C19) | HW | `None` |
 | `enablement_kit` | Enablement / Option Kit (HPE FIO, xFusion option cables) | HW | `None` — намеренно |
 
 ---
@@ -199,7 +199,7 @@ HW_TYPE_VOCAB = frozenset({
 | `cable` | `cable` | сужение scope | — |
 | *(sfp_cable → network_adapter для SFP/QSFP модулей)* | `transceiver` | исправление: модули ≠ NIC | ccw_1, ccw_2 |
 | `psu` | `psu` | без изменений | — |
-| *(device_type=power_cord → hw_type=cable)* | `cable` | device_type_map | — |
+| *(device_type=power_cord)* | `None` | intentional, per business rules | — |
 | `fan` | `fan` | без изменений | — |
 | `cpu_heatsink` | `heatsink` | переименование | dl2–dl5 |
 | `riser` | `riser` | без изменений | — |
@@ -270,8 +270,8 @@ device_type_map:
   transceiver: transceiver       # новый device_type для SFP/QSFP модулей
   sfp_cable: cable               # DAC/AOC/patch cord → cable (без изменений)
 
-# Кабели питания — hw_type не присваивается:
-# entity_type=HW, device_type=power_cord, hw_type=cable ← device_type_map
+# Кабели питания — hw_type=None (intentional, per business rules):
+# entity_type=HW, device_type=power_cord, hw_type=None
 
 # Enablement kits — hw_type не присваивается:
 # entity_type=HW, device_type=enablement_kit, hw_type=None ← намеренно

@@ -13,7 +13,7 @@
 
 ## Статус классификации
 - unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2, hp1–hp8)
-- hw_type_null_count = 0 на всех датасетах
+- hw_type_null_count = 0 на всех датасетах (кроме power_cord: hw_type=None — intentional, per business rules)
 
 ## Документация — device_type (DATA_CONTRACTS)
 - **device_type** описан как расширяемый словарь по вендорам; источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`. Новые значения при добавлении вендора — MINOR по разделу 7. Жёсткий список в коде не вводится.

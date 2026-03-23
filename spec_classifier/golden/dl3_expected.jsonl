@@ -17,7 +17,7 @@
 {"source_row_index": 24, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["634-CSHW"]}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "DISABLED", "matched_rule_id": "SOFTWARE-001", "device_type": null, "hw_type": null, "skus": ["379-BFXT", "634-CZRP"]}
 {"source_row_index": 26, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-BCWT"]}
-{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BCZG"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-002", "device_type": null, "hw_type": null, "skus": ["338-CRTY"]}
 {"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "nic", "hw_type": "network_adapter", "skus": ["540-BCRX"]}
@@ -55,7 +55,7 @@
 {"source_row_index": 62, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-001", "device_type": null, "hw_type": null, "skus": ["800-BBDM"]}
 {"source_row_index": 63, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "fan", "hw_type": "fan", "skus": ["384-BDQR"]}
 {"source_row_index": 64, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "psu", "hw_type": "psu", "skus": ["450-BCXC"]}
-{"source_row_index": 65, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": "cable", "skus": ["450-AADY"]}
+{"source_row_index": 65, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-010-POWER-CORD", "device_type": "power_cord", "hw_type": null, "skus": ["450-AADY"]}
 {"source_row_index": 66, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-002", "device_type": "riser", "hw_type": "riser", "skus": ["330-BDFP"]}
 {"source_row_index": 67, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-002", "device_type": null, "hw_type": null, "skus": ["384-BDXZ"]}
 {"source_row_index": 68, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "ABSENT", "matched_rule_id": "CONFIG-NOCABLE-001", "device_type": null, "hw_type": null, "skus": ["780-BCZQ"]}

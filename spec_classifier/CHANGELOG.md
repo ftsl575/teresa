@@ -14,6 +14,11 @@ Versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- fix(taxonomy): restore power_cord hw_type=None per original business rule (prompts/06).
+  Audit_2G erroneously propagated hw_type=cable via device_type_map.
+  Removed power_cord→cable from all 3 vendor YAML device_type_maps, batch_audit DEVICE_TYPE_MAP,
+  11 golden files (27 rows), 5 unit test files. Added _E8_NO_HW_TYPE_DEVICES exclusion set
+  in batch_audit.py to suppress false E8 on power_cord/enablement_kit rows.
 - Cisco NXK-AF-PE "Dummy PID Airflow" → CONFIG
   (CONFIG-C-001 расширен на все Dummy PID; HW-C-021-AIRFLOW и DT-C-021-AIRFLOW удалены)
 - Dell E16 подавлен для 412-AASK и 470-BCHP (NIC/BOSS blank fillers, не drive bay)

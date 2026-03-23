@@ -18,7 +18,7 @@ EXPECTED_DL1_HW_TYPE_COUNTS = {
     "storage_controller": 2,
     "fan": 1,
     "psu": 2,
-    "cable": 2,
+    "cable": 1,
     "riser": 1,
     "network_adapter": 3,
     "chassis": 2,
@@ -26,7 +26,7 @@ EXPECTED_DL1_HW_TYPE_COUNTS = {
     "heatsink": 1,
     "accessory": 1,
 }
-EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 21
+EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 20
 
 
 def test_hw_type_vocab():

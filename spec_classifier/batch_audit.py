@@ -57,7 +57,7 @@ DEVICE_TYPE_MAP = {
     "hpe": {
         "cpu": "cpu", "ram": "memory", "blank_filler": "blank_filler",
         "storage_nvme": "storage_drive", "storage_ssd": "storage_drive", "storage_hdd": "storage_drive",
-        "psu": "psu", "power_cord": "cable", "raid_controller": "storage_controller",
+        "psu": "psu", "raid_controller": "storage_controller",
         "hba": "hba", "nic": "network_adapter", "transceiver": "transceiver",
         "fiber_cable": "cable", "cable": "cable", "riser": "riser", "rail": "rail",
         "drive_cage": "chassis", "backplane": "backplane", "fan": "fan",
@@ -68,7 +68,7 @@ DEVICE_TYPE_MAP = {
         "cpu": "cpu", "psu": "psu", "nic": "network_adapter",
         "storage_nvme": "storage_drive", "storage_ssd": "storage_drive",
         "raid_controller": "storage_controller", "hba": "hba",
-        "power_cord": "cable", "sfp_cable": "cable",
+        "sfp_cable": "cable",
     },
     "cisco": {
         "transceiver": "transceiver", "cable": "cable",
@@ -372,7 +372,9 @@ def validate_row(row: dict, vendor: str) -> list[str]:
         issues.append(f"E7:hw_type_not_in_vocab[{hw_type}]")
 
     # E8 — HW missing hw_type
-    if entity == "HW" and state == "PRESENT" and not hw_type:
+    _E8_NO_HW_TYPE_DEVICES = {"power_cord", "enablement_kit"}
+    if entity == "HW" and state == "PRESENT" and not hw_type \
+            and device_type not in _E8_NO_HW_TYPE_DEVICES:
         issues.append("E8:hw_type_missing_on_hw")
 
     # E9 — device_type → hw_type mapping

@@ -45,7 +45,7 @@ def _cisco_row(option_name: str, *, sku: str = "", is_bundle_root: bool = False)
     ("Stacking Cable 3M", "STACK-T4-3M", "cable", "cable", "HW"),
     ("32GB DRAM Memory", "MEM-32G-DDR4", "ram", "memory", "HW"),
     ("Slot Blank Filler", "", "blank_filler", "blank_filler", "HW"),
-    ("Power Cord C13 C14", "", "power_cord", "cable", "HW"),
+    ("Power Cord C13 C14", "", "power_cord", None, "HW"),
 ])
 def test_cisco_device_type_and_hw_type(cisco_ruleset, option_name, sku, exp_device_type, exp_hw_type, exp_entity_type):
     row = _cisco_row(option_name, sku=sku)

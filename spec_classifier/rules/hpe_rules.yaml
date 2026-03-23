@@ -812,7 +812,6 @@ hw_type_rules:
     nic: network_adapter
     transceiver: transceiver
     fiber_cable: cable
-    power_cord: cable    # BUGFIX E8+E9: power_cord не имел hw_type маппинга
     cable: cable
     riser: riser
     rail: rail
