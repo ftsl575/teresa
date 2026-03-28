@@ -26,3 +26,8 @@ test_data/
 config.local.yaml
 temporary/
 diag/
+
+audit_run.txt
+audit_run_ai.txt
+baseline.txt
+*.log

@@ -954,6 +954,25 @@ KNOWN_FP_CASES = [
         "transition": "BASE→LOGISTIC",
         "option_name_pattern": r"(?i)(?:configure[- ]to[- ]order|cto)\s+(?:server|svr)\b",
     },
+    # Dell FRONT STORAGE module: AI reads "storage_controller", but this is a chassis
+    # option describing physical drive bay count (e.g. 379-BDTF). The PERC controller
+    # always appears as a separate row.
+    # Matches: option_name for rows where module_name="FRONT STORAGE"
+    {
+        "vendor": "dell",
+        "kind": "device_mismatch",
+        "transition": "chassis→storage_controller",
+        "option_name_pattern": r"(?i)\bfront\s+storage\b",
+    },
+    # Dell Chassis Configuration + NVMe Hardware RAID Drives: AI reads
+    # "storage_controller", but this is a chassis form-factor choice
+    # (e.g. 321-BLMP, 750-BBPB). PERC 12 is always a separate row.
+    {
+        "vendor": "dell",
+        "kind": "device_mismatch",
+        "transition": "chassis→storage_controller",
+        "option_name_pattern": r"(?i)\bNVMe\s+Hardware\s+RAID\b",
+    },
 ]
 
 
