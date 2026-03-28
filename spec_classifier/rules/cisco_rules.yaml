@@ -88,6 +88,10 @@ note_rules: []
 
 hw_rules:
   - field: sku
+    pattern: '^C9300L-STACK-KIT'
+    entity_type: HW
+    rule_id: HW-C-STACK-001
+  - field: sku
     pattern: '^(GLC|SFP|QSFP|QDD)'
     entity_type: HW
     rule_id: HW-C-001

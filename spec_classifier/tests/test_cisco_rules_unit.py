@@ -43,6 +43,7 @@ def _cisco_row(option_name: str, *, sku: str = "", is_bundle_root: bool = False)
     ("AC Power Supply 1100W", "PWR-C1-1100WAC", "psu", "psu", "HW"),
     ("10GBASE-SR SFP Module", "SFP-10G-SR", "transceiver", "transceiver", "HW"),
     ("Stacking Cable 3M", "STACK-T4-3M", "cable", "cable", "HW"),
+    ("Cisco Catalyst 9300L and 9300LM Stacking Kit", "C9300L-STACK-KIT2", "accessory", "accessory", "HW"),
     ("32GB DRAM Memory", "MEM-32G-DDR4", "ram", "memory", "HW"),
     ("Slot Blank Filler", "", "blank_filler", "blank_filler", "HW"),
     ("Power Cord C13 C14", "", "power_cord", None, "HW"),
