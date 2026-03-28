@@ -1,6 +1,6 @@
 {"source_row_index": 8, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-001", "device_type": "server", "hw_type": null, "skus": ["210-BFMO"]}
-{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": "storage_controller", "hw_type": "storage_controller", "skus": ["379-BDTF"]}
+{"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": "chassis", "hw_type": "chassis", "skus": ["379-BDTF"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-004", "device_type": "backplane", "hw_type": "backplane", "skus": ["379-BDSX"]}
 {"source_row_index": 12, "row_kind": "ITEM", "entity_type": "HW", "state": "ABSENT", "matched_rule_id": "HW-004", "device_type": null, "hw_type": "chassis", "skus": ["379-BDTE"]}
 {"source_row_index": 13, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-003", "device_type": "tpm", "hw_type": "tpm", "skus": ["461-AAIG"]}

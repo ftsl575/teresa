@@ -407,22 +407,6 @@ device_type_rules:
       device_type: backplane
       rule_id: DT-D-026-BACKPLANE-OPT
 
-    # ── FRONT STORAGE module → storage_controller ─────────────────────────────
-    # BUGFIX: FRONT STORAGE chassis selection (e.g. dl4/379-BDTF) is a storage
-    # controller configuration, not a physical chassis.
-    - field: module_name
-      pattern: '(?i)^FRONT\s+STORAGE$'
-      device_type: storage_controller
-      rule_id: DT-D-034-FRONT-STORAGE
-
-    # ── NVMe Hardware RAID chassis option → storage_controller ────────────────
-    # BUGFIX: "NVMe Hardware RAID Drives, Front PERC 12" (dl5/321-BLMP) describes
-    # a storage controller configuration, not a physical chassis.
-    - field: option_name
-      pattern: '(?i)\bNVMe\s+Hardware\s+RAID\b'
-      device_type: storage_controller
-      rule_id: DT-D-035-NVME-HWRAID
-
     # ── Chassis (ДО NVMe/SSD rules) ──────────────────────────────────────
     # BUGFIX: NVMe/SATA в option_name chassis-строк перехватывали DT-D-013/DT-D-012.
     - field: option_name
@@ -604,7 +588,6 @@ hw_type_rules:
     gpu: gpu
     management: management
     chassis: chassis
-    storage_controller: storage_controller
     accessory: accessory
     server: server
     ram: memory
