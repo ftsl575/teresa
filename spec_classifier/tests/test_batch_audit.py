@@ -115,6 +115,21 @@ def test_e5_logistic_with_hw_type():
     assert any("E5:hw_type_on_non_hw" in i for i in issues)
 
 
+def test_e5_not_fired_on_base_with_hw_type():
+    """BASE + hw_type → E10 only, E5 must NOT fire (P1-2)."""
+    issues = validate_row(_row(entity_type="BASE", hw_type="server",
+                               device_type="server"), "hpe")
+    assert any("E10:" in i for i in issues)
+    assert not any("E5:" in i for i in issues)
+
+
+def test_e5_still_fires_on_non_hw_non_base():
+    """CONFIG/SW/SVC + hw_type → E5 must still fire."""
+    for etype in ("CONFIG", "SOFTWARE", "SERVICE"):
+        issues = validate_row(_row(entity_type=etype, hw_type="cpu"), "hpe")
+        assert any("E5:" in i for i in issues), f"E5 missing for {etype}"
+
+
 # ---------------------------------------------------------------------------
 # E6 — device_type on wrong entity
 # ---------------------------------------------------------------------------
