@@ -134,3 +134,21 @@ python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --sa
 python main.py --input "C:\Users\G\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
 pytest tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 ```
+
+---
+
+## power_cord: hw_type намеренно отсутствует
+
+`power_cord` — единственный `device_type`, который намеренно не маппится в `hw_type` через `hw_type_rules.device_type_map`. Значение `hw_type` остаётся `None` по умолчанию.
+
+Это сознательное решение, не пропуск. Причина: power cord не является аппаратным компонентом с классифицируемым типом оборудования.
+
+**Важно для авторов правил:** не добавляйте `hw_type: null` как поле в `device_type_rules.rules` — это поле инертно для движка (`match_device_type_rule()` читает только `field` и `pattern`). Назначение `hw_type` происходит отдельным проходом через `hw_type_rules`. Запись `hw_type: null` в `device_type_rules` не меняет поведение и вводит в заблуждение.
+
+---
+
+## HPE: hw_type зависит только от device_type_map (Layer 1)
+
+HPE `hw_type_rules` используют только Layer 1 (`device_type_map`). Layers 2–3 (`rule_id_map`, `rules`) пусты.
+
+**Предупреждение:** при добавлении нового `device_type` для HPE необходимо ОДНОВРЕМЕННО добавить маппинг в `hw_type_rules.device_type_map`. Если маппинг не добавлен → `hw_type` останется `None`, строка будет помечена как «hw_type unresolved for HW row» в диагностике, но выделенного E-кода для этого случая нет. Это тихий дефект.

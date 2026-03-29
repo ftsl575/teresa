@@ -275,6 +275,8 @@ hw_rules:
     entity_type: HW
     rule_id: HW-009-CPU-CUS
 
+  # hw_type: intentionally unmapped — power_cord has no hw_type.
+  # See RULES_AUTHORING_GUIDE.md for rationale.
   # Power Cord — физический кабель, HW (не LOGISTIC)
   - field: option_name
     pattern: '(?i)(power\s+cord|jumper\s+cord|rack\s+cord|C13|C14|C19|C20)'

@@ -357,6 +357,8 @@ device_type_rules:
       device_type: psu
       rule_id: HW-H-003
 
+    # hw_type: intentionally unmapped — power_cord has no hw_type.
+    # See RULES_AUTHORING_GUIDE.md for rationale.
     # ── Power Cord ────────────────────────────────────────────────────────
     - field: option_name
       pattern: '(?i)c13.*c14'

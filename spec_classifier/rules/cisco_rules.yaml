@@ -193,6 +193,8 @@ device_type_rules:
       pattern: '(?i)^(PWR-|NXA-PAC|C\dK?-PWR)'
       device_type: psu
       rule_id: DT-C-002
+    # hw_type: intentionally unmapped — power_cord has no hw_type.
+    # See RULES_AUTHORING_GUIDE.md for rationale.
     - field: option_name
       pattern: '(?i)power cord|jumper power cord'
       device_type: power_cord
