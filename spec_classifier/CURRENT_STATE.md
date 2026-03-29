@@ -9,7 +9,7 @@
 ## Активные вендоры
 - Dell (spec export)
 - Cisco (CCW — Commerce Workspace)
-- HPE (QuoteBuilder BOM) — адаптер, правила (hpe_rules.yaml), регистрация в VENDOR_REGISTRY, config.yaml, annotated_writer (5 колонок), Makefile (HP_FILES, golden/тесты)
+- HPE (QuoteBuilder BOM) — адаптер, правила (hpe_rules.yaml), регистрация в VENDOR_REGISTRY, config.yaml, annotated_writer (6 колонок, включая matched_rule_id), Makefile (HP_FILES, golden/тесты)
 
 ## Статус классификации
 - unknown_count = 0 на всех датасетах (dl1–dl5, ccw_1, ccw_2, hp1–hp8)
