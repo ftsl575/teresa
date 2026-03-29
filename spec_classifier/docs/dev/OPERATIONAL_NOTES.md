@@ -91,3 +91,23 @@ powershell -ExecutionPolicy Bypass -File C:\Users\G\Desktop\teresa\run_audit.ps1
 Для быстрой проверки без AI (только E-коды, без токенов) — добавить `--no-ai` в строку `batch_audit.py` внутри скрипта.
 
 > **Примечание:** PowerShell не поддерживает вставку многострочного блока с `&&` — команды выполняются в обратном порядке. Поэтому команды оформлены в `.ps1` скрипт.
+
+---
+
+## Known Tech Debt: batch_audit.py vendor-specific hardcoding
+
+batch_audit.py содержит vendor-specific логику в следующих местах:
+
+1. **DEVICE_TYPE_MAP** (строки 56–79) — device_type→hw_type маппинг per vendor
+2. **validate_row() state logic** (строки 346–360) — ветки `if vendor == "dell"` / `"hpe"` / `"cisco"`
+3. **LLM_SYSTEM prompt** (строки 90–110) — vendor-aware текст промпта
+4. **Known FP cases** (строки 900–971) — vendor-tagged false positive паттерны
+5. **fp_patterns / комментарии** — vendor-specific логика в комментариях
+
+Текущее состояние: 3 вендора (dell, cisco, hpe). Работоспособно.
+
+Триггер рефакторинга: до добавления 4-го вендора.
+
+Рекомендуемое решение: вынести vendor-specific конфигурации в YAML-файлы или adapter-registry, чтобы добавление вендора не требовало правок в batch_audit.py.
+
+Источник: audit_1G P1-6.
