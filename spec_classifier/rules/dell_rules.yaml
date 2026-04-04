@@ -528,8 +528,10 @@ device_type_rules:
       rule_id: DT-D-025-CHASSIS
 
     # ── RAID Controller ──────────────────────────────────────
+    # BUG-1: BOSS variants and Storage Controller added so generic accessory fallback
+    # (DT-D-030-ACCESSORY) cannot win for rows where module_name is non-RAID (e.g. "Server Accessories").
     - field: option_name
-      pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel)\b'
+      pattern: '(?i)\b(PERC|HBA|Fibre\s+Channel|BOSS|Storage\s+Controller)\b'
       device_type: raid_controller
       rule_id: DT-D-027-RAID
 

@@ -52,5 +52,14 @@ class HPEAdapter(VendorAdapter):
     def get_source_sheet_name(self) -> str | None:
         return "BOM"
 
+    def get_extra_cols(self) -> list[tuple[str, str]]:
+        return [
+            ("product_type",          "product_type"),
+            ("extended_price",        "extended_price"),
+            ("lead_time",             "lead_time"),
+            ("config_name",           "config_name"),
+            ("is_factory_integrated", "is_factory_integrated"),
+        ]
+
     def generates_branded_spec(self) -> bool:
         return False

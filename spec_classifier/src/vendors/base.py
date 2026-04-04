@@ -52,3 +52,11 @@ class VendorAdapter(ABC):
         Override in vendor adapters that use a named sheet (e.g. HPE → "BOM").
         """
         return None
+
+    def get_extra_cols(self) -> list[tuple[str, str]]:
+        """
+        Vendor-specific extension columns for annotated Excel export.
+        Each tuple: (attribute_name_on_NormalizedRow, column_header_in_excel).
+        Override in vendor adapters. Default: no extra columns.
+        """
+        return []

@@ -39,5 +39,11 @@ class CiscoAdapter(VendorAdapter):
             "max_hierarchy_depth": max(depths) if depths else 0,
         }
 
+    def get_extra_cols(self) -> list[tuple[str, str]]:
+        return [
+            ("line_number",              "line_number"),
+            ("service_duration_months",  "service_duration_months"),
+        ]
+
     def generates_branded_spec(self) -> bool:
         return False

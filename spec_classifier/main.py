@@ -171,6 +171,7 @@ def _run_single(
                 raw_rows, normalized_rows, classification_results, input_path, run_folder,
                 header_row_index=header_row_index,
                 sheet_name=sheet_name,
+                extra_cols=adapter.get_extra_cols(),
             )
             if adapter.generates_branded_spec():
                 branded_path = run_folder / f"{input_path.stem}_branded.xlsx"

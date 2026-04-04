@@ -20,6 +20,7 @@ def generate_annotated_source_excel(
     run_folder: Path,
     header_row_index: Optional[int] = None,
     sheet_name: Optional[str] = None,
+    extra_cols: list[tuple[str, str]] = (),
 ) -> Path:
     """
     Load original Excel, add columns Entity Type, State, device_type, hw_type, row_kind, matched_rule_id,
@@ -28,6 +29,8 @@ def generate_annotated_source_excel(
     header_row_index from adapter: 0-based row for header labels; None is valid (e.g. formats with no fixed header row) — no header row highlight/freeze.
     sheet_name: name of the sheet to read; None → sheet index 0 (default for Dell/Cisco).
       Pass adapter.get_source_sheet_name() to read a vendor-specific sheet (e.g. HPE → "BOM").
+    extra_cols: vendor-specific extension columns from adapter.get_extra_cols().
+      Each tuple: (attribute_name_on_NormalizedRow, column_header_in_excel).
     """
     path = Path(original_excel_path)
     if not path.exists():
@@ -83,22 +86,8 @@ def generate_annotated_source_excel(
     df["row_kind"] = row_kind_col
     df["matched_rule_id"] = matched_rule_id_col
 
-    # --- Vendor extension columns (extensible) ---
-    # Each tuple: (attribute_name_on_NormalizedRow, column_header_in_excel)
-    # When adding a new vendor with extra fields, add tuples here.
-    VENDOR_EXTRA_COLS = [
-        ("line_number", "line_number"),
-        ("service_duration_months", "service_duration_months"),
-        # HPE vendor extension columns (empty for Dell/Cisco rows)
-        ("product_type", "product_type"),
-        ("extended_price", "extended_price"),
-        ("lead_time", "lead_time"),
-        ("config_name", "config_name"),
-        ("is_factory_integrated", "is_factory_integrated"),
-    ]
-
     row_to_norm = {r.source_row_index: r for r in normalized_rows}
-    for attr, col_name in VENDOR_EXTRA_COLS:
+    for attr, col_name in extra_cols:
         # NOTE: do NOT skip columns based on first-10-rows check — HPE columns may be
         # empty in early rows but populated later (e.g. files without Config Name header).
         # Columns are always added; empty values written as "".
