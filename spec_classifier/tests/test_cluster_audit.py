@@ -41,6 +41,9 @@ def _make_xlsx(path, columns, rows):
 # _detect_vendor_from_path
 # ---------------------------------------------------------------------------
 
+_KNOWN = ["cisco", "dell", "hpe"]
+
+
 @pytest.mark.parametrize("path_str, expected", [
     # vendor in stem
     ("OUTPUT/hpe_run/hp8_annotated_audited.xlsx", "hpe"),
@@ -53,7 +56,20 @@ def _make_xlsx(path, columns, rows):
     ("OUTPUT/other/mystery_file.xlsx", "unknown"),
 ])
 def test_detect_vendor_from_path(path_str, expected):
-    assert _detect_vendor_from_path(Path(path_str)) == expected
+    assert _detect_vendor_from_path(Path(path_str), _KNOWN) == expected
+
+
+def test_detect_vendor_new_vendor_in_known():
+    extended = _KNOWN + ["lenovo"]
+    assert _detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx"), extended) == "lenovo"
+
+
+def test_detect_vendor_unknown_path():
+    assert _detect_vendor_from_path(Path("/random/path/file.xlsx"), _KNOWN) == "unknown"
+
+
+def test_detect_vendor_ccw_alias_returns_cisco():
+    assert _detect_vendor_from_path(Path("OUTPUT/ccw_export/file.xlsx"), _KNOWN) == "cisco"
 
 
 # ---------------------------------------------------------------------------

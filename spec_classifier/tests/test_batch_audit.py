@@ -430,15 +430,32 @@ class TestKnownFPSuppression:
 # ---------------------------------------------------------------------------
 
 class TestDetectVendorFromPath:
+    KNOWN = ["cisco", "dell", "hpe"]
 
     def test_dell_run(self):
-        assert detect_vendor_from_path(Path("OUTPUT/dell_run/file.xlsx")) == "dell"
+        assert detect_vendor_from_path(Path("OUTPUT/dell_run/file.xlsx"), self.KNOWN) == "dell"
+
+    def test_hpe_run(self):
+        assert detect_vendor_from_path(Path("OUTPUT/hpe_run/file.xlsx"), self.KNOWN) == "hpe"
+
+    def test_cisco_run(self):
+        assert detect_vendor_from_path(Path("OUTPUT/cisco_run/file.xlsx"), self.KNOWN) == "cisco"
+
+    def test_hp_run_alias_returns_hpe(self):
+        assert detect_vendor_from_path(Path("OUTPUT/hp_run/file.xlsx"), self.KNOWN) == "hpe"
 
     def test_lenovo_run_returns_unknown(self):
-        assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx")) == "unknown"
+        assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx"), self.KNOWN) == "unknown"
 
     def test_no_vendor_keyword_returns_unknown(self):
-        assert detect_vendor_from_path(Path("/some/random/path/file.xlsx")) == "unknown"
+        assert detect_vendor_from_path(Path("/some/random/path/file.xlsx"), self.KNOWN) == "unknown"
+
+    def test_new_vendor_in_known_vendors(self):
+        extended = self.KNOWN + ["lenovo"]
+        assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx"), extended) == "lenovo"
+
+    def test_vendor_in_directory_path(self):
+        assert detect_vendor_from_path(Path("OUTPUT/dell/subdir/file.xlsx"), self.KNOWN) == "dell"
 
 
 # ---------------------------------------------------------------------------

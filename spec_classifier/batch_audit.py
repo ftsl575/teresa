@@ -26,6 +26,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import yaml
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
@@ -53,28 +54,91 @@ HW_TYPE_VOCAB = frozenset({
 VALID_ENTITY_TYPES = {"BASE", "HW", "CONFIG", "SOFTWARE", "SERVICE", "LOGISTIC", "NOTE", "UNKNOWN"}
 VALID_STATES = {"PRESENT", "ABSENT", "DISABLED", ""}
 
-DEVICE_TYPE_MAP = {
-    "hpe": {
-        "cpu": "cpu", "ram": "memory", "blank_filler": "blank_filler",
-        "storage_nvme": "storage_drive", "storage_ssd": "storage_drive", "storage_hdd": "storage_drive",
-        "psu": "psu", "raid_controller": "storage_controller",
-        "hba": "hba", "nic": "network_adapter", "transceiver": "transceiver",
-        "fiber_cable": "cable", "cable": "cable", "riser": "riser", "rail": "rail",
-        "drive_cage": "chassis", "backplane": "backplane", "fan": "fan",
-        "heatsink": "heatsink", "bezel": "chassis", "battery": "accessory",
-        "accessory": "accessory", "gpu": "gpu", "server": "server",
-    },
+
+def _load_config() -> dict:
+    """Load config.yaml, overlay with config.local.yaml (paths only)."""
+    base = Path(__file__).resolve().parent / "config.yaml"
+    with open(base, encoding="utf-8-sig") as f:
+        cfg = yaml.safe_load(f) or {}
+    local = base.parent / "config.local.yaml"
+    if local.exists():
+        with open(local, encoding="utf-8-sig") as f:
+            local_cfg = yaml.safe_load(f) or {}
+        cfg.update(local_cfg)
+    return cfg
+
+
+def _get_known_vendors(config: dict) -> list[str]:
+    """Return sorted list of vendor keys from config."""
+    return sorted(config.get("vendor_rules", {}).keys())
+
+
+def _load_device_type_maps(config: dict) -> dict[str, dict]:
+    """Load device_type→hw_type maps from vendor YAML rules."""
+    maps = {}
+    for vendor, rules_path in config.get("vendor_rules", {}).items():
+        path = Path(__file__).resolve().parent / rules_path
+        if path.exists():
+            with open(path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+            htr = data.get("hw_type_rules") or {}
+            maps[vendor] = htr.get("device_type_map") or {}
+    return maps
+
+
+try:
+    _device_type_map: dict[str, dict] = _load_device_type_maps(_load_config())
+except Exception:
+    _device_type_map: dict[str, dict] = {}
+
+# ── E4 state validation config ────────────────────────────────────────────────
+
+E4_STATE_VALIDATORS: dict = {
     "dell": {
-        "cpu": "cpu", "psu": "psu", "nic": "network_adapter",
-        "storage_nvme": "storage_drive", "storage_ssd": "storage_drive",
-        "raid_controller": "storage_controller", "hba": "hba",
-        "sfp_cable": "cable",
+        "type": "pattern_checks",
+        "rules": [
+            {
+                "pattern": r"^\s*No\s+",
+                "expected_states": ["ABSENT"],
+                "override_pattern": r"\b\d+\s+Rear\s+Blanks?\b",
+            },
+            {"pattern": r"\bDisabled\b", "expected_states": ["DISABLED", "ABSENT"]},
+            {"pattern": r"\b(None|Empty|Without)\b", "expected_states": ["ABSENT"]},
+        ],
     },
     "cisco": {
-        "transceiver": "transceiver", "cable": "cable",
-        "sfp_cable": "cable", "psu": "psu", "fan": "fan",
+        "type": "pattern_checks",
+        "rules": [
+            {"pattern": r"(?i)No .+ Selected", "expected_states": ["ABSENT"]},
+        ],
+    },
+    "hpe": {
+        "type": "unexpected_states",
+        "states": ["ABSENT", "DISABLED"],
     },
 }
+
+
+def _check_e4(vendor: str, option_name: str, state: str, issues: list[str]) -> None:
+    import re
+    cfg = E4_STATE_VALIDATORS.get(vendor)
+    if not cfg:
+        return
+    if cfg["type"] == "unexpected_states":
+        if state in cfg["states"]:
+            issues.append(f"E4:state_unexpected_for_{vendor}[{state}]")
+    elif cfg["type"] == "pattern_checks":
+        for rule in cfg["rules"]:
+            if re.search(rule["pattern"], option_name, re.IGNORECASE):
+                override = rule.get("override_pattern")
+                if override and re.search(override, option_name, re.IGNORECASE):
+                    continue
+                if state not in rule["expected_states"]:
+                    issues.append(
+                        f"E4:state_mismatch[expected:{rule['expected_states'][0]},got:{state}]"
+                    )
+                break
+
 
 # Colours
 RED    = "FFC7CE"
@@ -87,8 +151,14 @@ WHITE  = "FFFFFF"
 
 # ── LLM prediction layer ──────────────────────────────────────────────────────
 
-LLM_SYSTEM = """You are a hardware spec classifier for enterprise IT equipment (Dell, HPE, Cisco).
-Given a list of rows with Option Name (and optionally Module Name), predict for each row:
+def _build_llm_system(known_vendors: list[str]) -> str:
+    vendor_list = ", ".join(v.upper() if len(v) <= 4 else v.title() for v in known_vendors)
+    return f"""You are a hardware spec classifier for enterprise IT equipment ({vendor_list}).
+Given a list of rows with Option Name (and optionally Module Name), predict for each row:""" \
+        + _LLM_SYSTEM_BODY
+
+
+_LLM_SYSTEM_BODY = """
 - entity_type: one of BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE
 - device_type: one of cpu, memory, gpu, storage_nvme, storage_ssd, storage_hdd,
   storage_controller, hba, network_adapter, transceiver, cable, sfp_cable, fiber_cable,
@@ -117,6 +187,8 @@ Respond ONLY with a JSON array, one object per input row, in same order:
 [{"row_index": 0, "predicted_entity": "HW", "predicted_device_type": "cpu", "confidence": "high"},...]
 confidence: "high" if obvious, "medium" if plausible, "low" if uncertain.
 No markdown, no explanation, just the JSON array."""
+
+LLM_SYSTEM = _build_llm_system(_get_known_vendors(_load_config()))
 
 
 # GPT-4o-mini pricing per 1M tokens (update if model changes)
@@ -316,7 +388,8 @@ def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
 
 # ── Rule-based checks (E1–E15) ────────────────────────────────────────────────
 
-def validate_row(row: dict, vendor: str) -> list[str]:
+def validate_row(row: dict, vendor: str,
+                  device_type_map: dict[str, dict] | None = None) -> list[str]:
     import re
     issues = []
 
@@ -342,22 +415,8 @@ def validate_row(row: dict, vendor: str) -> list[str]:
     if state and state not in VALID_STATES:
         issues.append(f"E3:invalid_state[{state}]")
 
-    # E4 — state logic by vendor
-    if vendor == "dell":
-        if re.match(r"^\s*No\s+", option_name, re.IGNORECASE):
-            override = bool(re.search(r"\b\d+\s+Rear\s+Blanks?\b", option_name, re.IGNORECASE))
-            if not override and state != "ABSENT":
-                issues.append(f"E4:state_mismatch[expected:ABSENT,got:{state}]")
-        elif re.search(r"\bDisabled\b", option_name, re.IGNORECASE) and state not in ("DISABLED", "ABSENT"):
-            issues.append(f"E4:state_mismatch[expected:DISABLED,got:{state}]")
-        elif re.search(r"\b(None|Empty|Without)\b", option_name, re.IGNORECASE) and state != "ABSENT":
-            issues.append(f"E4:state_mismatch[expected:ABSENT,got:{state}]")
-    elif vendor == "cisco":
-        if re.search(r"(?i)No .+ Selected", option_name) and state != "ABSENT":
-            issues.append(f"E4:state_mismatch[expected:ABSENT,got:{state}]")
-    elif vendor == "hpe":
-        if state in ("ABSENT", "DISABLED"):
-            issues.append(f"E4:state_unexpected_for_hpe[{state}]")
+    # E4 — state logic by vendor (data-driven)
+    _check_e4(vendor, option_name, state, issues)
 
     # E5 — hw_type on non-HW
     if entity not in ("HW", "BASE") and hw_type:
@@ -379,7 +438,8 @@ def validate_row(row: dict, vendor: str) -> list[str]:
 
     # E9 — device_type → hw_type mapping
     if device_type and entity == "HW":
-        mapping = DEVICE_TYPE_MAP.get(vendor, {})
+        _dtm = device_type_map if device_type_map is not None else _device_type_map
+        mapping = _dtm.get(vendor, {})
         if device_type in mapping:
             expected_hw = mapping[device_type]
             if not hw_type:
@@ -522,7 +582,7 @@ def write_audited_excel(source_path: Path, out_path: Path, vendor: str,
     # Run rule-based validation + merge AI predictions
     all_results = []
     for i, row in enumerate(data_rows):
-        rule_issues = validate_row(row, vendor)
+        rule_issues = validate_row(row, vendor, _device_type_map)
 
         ai_str = None
         if ai_predictions is not None:
@@ -1219,14 +1279,17 @@ def find_annotated_files(output_dir: Path, vendor_filter: str | None,
     return files
 
 
-def detect_vendor_from_path(path: Path) -> str:
+def detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
+    """Detect vendor from path components using known vendor list."""
+    if known_vendors is None:
+        known_vendors = _get_known_vendors(_load_config())
     s = str(path).lower()
-    if "hpe_run" in s or "hp_run" in s:
+    for vendor in known_vendors:
+        if f"{vendor}_run" in s or f"/{vendor}/" in s or f"\\{vendor}\\" in s:
+            return vendor
+    # HPE alias: "hp_run" → "hpe"
+    if "hp_run" in s:
         return "hpe"
-    if "cisco_run" in s:
-        return "cisco"
-    if "dell_run" in s:
-        return "dell"
     print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
     return "unknown"
 
@@ -1234,9 +1297,12 @@ def detect_vendor_from_path(path: Path) -> str:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    config = _load_config()
+    known_vendors = _get_known_vendors(config)
+
     parser = argparse.ArgumentParser(description="Batch pipeline audit v2 (rule + AI)")
     parser.add_argument("--output-dir", default=".", help="Root OUTPUT folder")
-    parser.add_argument("--vendor", choices=["dell", "cisco", "hpe"])
+    parser.add_argument("--vendor", choices=known_vendors)
     parser.add_argument("--since", metavar="YYYY-MM-DD")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--no-ai", action="store_true", help="Skip LLM predictions (faster)")
@@ -1306,7 +1372,7 @@ def main():
     report_files = []
 
     for f in files:
-        vendor = args.vendor or detect_vendor_from_path(f)
+        vendor = args.vendor or detect_vendor_from_path(f, known_vendors)
         out_path = f.parent / f"{f.stem}{args.suffix}.xlsx"
         file_num = files.index(f) + 1
         print(f"  [{file_num}/{len(files)}] [{vendor.upper()}] {f.name}", flush=True)

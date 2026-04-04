@@ -16,8 +16,29 @@ from collections import defaultdict
 from pathlib import Path
 
 import json
+import yaml
 
 import pandas as pd
+
+
+def _load_config() -> dict:
+    """Load config.yaml, overlay with config.local.yaml (paths only)."""
+    base = Path(__file__).resolve().parent / "config.yaml"
+    cfg: dict = {}
+    if base.exists():
+        with open(base, encoding="utf-8-sig") as f:
+            cfg = yaml.safe_load(f) or {}
+    local = base.parent / "config.local.yaml"
+    if local.exists():
+        with open(local, encoding="utf-8-sig") as f:
+            local_cfg = yaml.safe_load(f) or {}
+        cfg.update(local_cfg)
+    return cfg
+
+
+def _get_known_vendors(config: dict) -> list[str]:
+    """Return sorted list of vendor keys from config."""
+    return sorted(config.get("vendor_rules", {}).keys())
 
 if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding \
         and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
@@ -29,7 +50,9 @@ if hasattr(sys.stderr, "reconfigure") and sys.stderr.encoding \
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(known_vendors: list[str] | None = None) -> argparse.ArgumentParser:
+    if known_vendors is None:
+        known_vendors = _get_known_vendors(_load_config())
     p = argparse.ArgumentParser(
         prog="cluster_audit.py",
         description="Cluster unclassified rows from Teresa audit output to discover new rules.",
@@ -42,10 +65,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--vendor",
-        choices=["dell", "hpe", "cisco"],
+        choices=known_vendors,
         default=None,
         metavar="VENDOR",
-        help="Optional vendor filter: dell | hpe | cisco.",
+        help=f"Optional vendor filter: {' | '.join(known_vendors)}.",
     )
     p.add_argument(
         "--min-cluster-size",
@@ -71,18 +94,25 @@ def build_parser() -> argparse.ArgumentParser:
 
 # ── Step 1: Load candidate rows ───────────────────────────────────────────────
 
-def _detect_vendor_from_path(path: Path) -> str:
+def _detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
     """Infer vendor from file name, parent, or grandparent directory name."""
+    if known_vendors is None:
+        known_vendors = _get_known_vendors(_load_config())
     stem = path.stem.lower()
     parent = path.parent.name.lower()
     grandparent = path.parent.parent.name.lower()
 
     for text in (stem, parent, grandparent):
-        if "hpe" in text or text.startswith("hp") or "hpe_run" in text:
+        for vendor in known_vendors:
+            if f"{vendor}_run" in text or text == vendor:
+                return vendor
+    # HPE alias: "hp_run" or stem starting with "hp"
+    for text in (stem, parent, grandparent):
+        if "hp_run" in text or (text.startswith("hp") and "hp" not in known_vendors):
             return "hpe"
-        if "dell" in text or "dell_run" in text:
-            return "dell"
-        if "cisco" in text or "ccw" in text or "cisco_run" in text:
+    # Cisco alias: "ccw" in path
+    if any("ccw" in t for t in (stem, parent, grandparent)):
+        if "cisco" in known_vendors:
             return "cisco"
     return "unknown"
 
