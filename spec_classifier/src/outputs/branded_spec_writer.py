@@ -292,4 +292,17 @@ def generate_branded_spec(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(str(output_path))
+
+    import openpyxl as _opx
+    from openpyxl.utils import get_column_letter as _gcl
+    _wb = _opx.load_workbook(str(output_path))
+    _ws = _wb.active
+    for col_idx, col_cells in enumerate(_ws.columns, 1):
+        max_len = 0
+        for cell in col_cells:
+            val = str(cell.value) if cell.value is not None else ""
+            max_len = max(max_len, len(val))
+        _ws.column_dimensions[_gcl(col_idx)].width = min(max_len + 2, 60)
+    _wb.save(str(output_path))
+
     return output_path
