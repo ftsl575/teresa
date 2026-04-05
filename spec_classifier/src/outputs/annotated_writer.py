@@ -107,4 +107,14 @@ def generate_annotated_source_excel(
     stem = path.stem
     out_path = run_folder / f"{stem}_annotated.xlsx"
     df.to_excel(out_path, index=False, header=False, engine="openpyxl")
+
+    import openpyxl as _opx
+    from openpyxl.utils import get_column_letter
+    _wb = _opx.load_workbook(out_path)
+    _ws = _wb.active
+    for col_idx, col_cells in enumerate(_ws.columns, 1):
+        max_len = max((len(str(c.value)) for c in col_cells if c.value), default=0)
+        _ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 50)
+    _wb.save(out_path)
+
     return out_path

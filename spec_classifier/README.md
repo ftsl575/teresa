@@ -204,8 +204,11 @@ Two scripts extend Teresa with post-run quality checks and pattern discovery.
 
 ### batch_audit.py — Rule & AI Audit
 
-Checks all `*_annotated.xlsx` outputs for classification errors (E-codes) 
-and AI mismatches.
+Checks all `*_annotated.xlsx` outputs for classification errors (E-codes)
+and AI mismatches. Key checks include:
+- **E2:** UNKNOWN entity (no rule matched)
+- **E17:** HW row with no device_type or hw_type determined
+- **E18:** LOGISTIC rows with physical keywords (cord, cable, rail, bracket, kit, rack, pdu, ups) but no device_type
 ```bash
 # Rule-based only (fast, no API key needed)
 python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai

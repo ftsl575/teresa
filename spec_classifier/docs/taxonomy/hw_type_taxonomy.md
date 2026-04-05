@@ -1,9 +1,9 @@
 # hw_type Taxonomy — Universal Device Type Dictionary
 ## Универсальный словарь типов устройств / spec_classifier teresa
 
-**Version:** v1.1.0  
-**Date:** 2026-02-28  
-**Vendors covered:** Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)  
+**Version:** v1.2.0  
+**Date:** 2026-04-04  
+**Vendors covered:** Dell · Cisco CCW · HPE (active) · Lenovo · xFusion · Huawei (planned)  
 **Replaces:** `HW_TYPE_VOCAB` v1.2.0 (20 values) → v2.0.0 (**25 values**)
 
 ---

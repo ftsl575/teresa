@@ -116,6 +116,10 @@ E4_STATE_VALIDATORS: dict = {
         "type": "unexpected_states",
         "states": ["ABSENT", "DISABLED"],
     },
+    "lenovo": {
+        "type": "unexpected_states",
+        "states": ["ABSENT", "DISABLED"],
+    },
 }
 
 

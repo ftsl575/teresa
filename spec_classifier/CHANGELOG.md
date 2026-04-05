@@ -13,6 +13,25 @@ Versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- feat(HPEAdapter): `get_extra_cols()` returns 5 HPE-specific annotated Excel columns (Config Name, Lead Time, Extended Price, Product Type, Factory Integrated)
+- feat(CiscoAdapter): `get_extra_cols()` returns 2 Cisco-specific columns (line_number, service_duration_months)
+
+### Changed
+- refactor(annotated_writer): `VENDOR_EXTRA_COLS` hardcoded registry removed; replaced with per-adapter `generate_annotated_source_excel(extra_cols=)` parameter sourced from `adapter.get_extra_cols()`
+- refactor(VendorAdapter): `get_extra_cols()` concrete method added (default `[]`); DellAdapter inherits default
+- refactor(batch_audit): `DEVICE_TYPE_MAP` constant removed — loaded dynamically from vendor YAML files via `_load_device_type_maps()` (R1)
+- refactor(batch_audit): `detect_vendor_from_path()` now accepts `known_vendors` parameter; loop over config-driven list replaces hardcoded if/elif chain (R2)
+- refactor(batch_audit): `--vendor choices` built dynamically from `config.yaml` vendor_rules keys (R3)
+- refactor(batch_audit): E4 state-mismatch logic extracted into `E4_STATE_VALIDATORS` dict + `_check_e4()` function; no vendor-specific if/elif in `validate_row()` (R4)
+- refactor(batch_audit): `LLM_SYSTEM` prompt vendor list templated via `_build_llm_system(known_vendors)` (R5)
+- refactor(cluster_audit): `_load_config()` / `_get_known_vendors()` added; `_detect_vendor_from_path()` generic loop over known_vendors; `--vendor choices` dynamic (R6)
+
+### Fixed
+- fix(dell_rules): `DT-D-027-RAID` pattern expanded to cover BOSS and Storage Controller variants; resolves `device_mismatch:raid_controller→accessory` REAL_BUG from audit 30.03
+- fix(.gitignore): `config.local.yaml` added to `spec_classifier/.gitignore`
+- fix(.gitignore): outer `.gitignore` rewritten as clean UTF-8 LF (was mixed UTF-16LE with NUL bytes)
+
 ### Fixed
 - fix(taxonomy): restore power_cord hw_type=None per original business rule (prompts/06).
   Audit_2G erroneously propagated hw_type=cable via device_type_map.

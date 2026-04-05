@@ -8,8 +8,12 @@
 
 ## 2. Поддерживаемые входные файлы
 
+Каждый вендор имеет свой формат входного файла. Вендор задаётся флагом `--vendor`.
+
+**Dell (`--vendor dell`, по умолчанию):**
+
 - **Формат:** `.xlsx`, первый лист.
-- **Строка заголовка:** в первых 20 строках должна быть ячейка с текстом `"Module Name"` (обязательно). По ней определяется заголовок таблицы.
+- **Строка заголовка:** в первых 20 строках должна быть ячейка с текстом `"Module Name"`. По ней определяется заголовок таблицы.
 - **Ожидаемые столбцы:** Module Name, Option Name, SKUs, Qty, Option List Price.
 - **Опциональные:** Group Name, Group ID, Product Name, Option ID.
 - **Ограничения:** один лист, один файл за запуск в single-file режиме; для нескольких файлов — режим `--batch-dir`.
@@ -78,7 +82,19 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 - **source_row_index:** 1-based номер строки в исходном Excel (для аудита и сопоставления с листом).
 - **entity_type:** один из 8 типов. Примеры: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, Power Cord), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives), UNKNOWN (ни одно правило не сработало).
 - **state:** PRESENT — опция присутствует; ABSENT — не установлена (например «No TPM», «No HDD», «Empty»); DISABLED — отключена (например «Disabled»).
-- **device_type:** уточнение для HW/LOGISTIC. Значения: power_cord, sfp_cable, storage_nvme, storage_ssd, psu, nic, raid_controller, hba, cpu. Может быть null, если правило не назначило device_type.
+- **device_type:** уточнение для HW/LOGISTIC. Полный список значений (источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`):
+
+  | Категория | Значения |
+  |-----------|---------|
+  | Compute | `cpu`, `ram`, `gpu`, `memory` |
+  | Storage | `storage_nvme`, `storage_ssd`, `storage_hdd`, `storage_controller`, `raid_controller`, `hba`, `drive_cage`, `backplane` |
+  | Network | `nic`, `network_adapter`, `transceiver`, `cable`, `sfp_cable`, `fiber_cable` |
+  | Power | `psu`, `power_cord` |
+  | Mechanical | `fan`, `heatsink`, `riser`, `chassis`, `rail`, `blank_filler`, `bezel`, `battery` |
+  | Management | `management`, `tpm`, `accessory` |
+  | Infrastructure | `server`, `switch`, `storage_system`, `wireless_ap` |
+
+  Может быть null, если правило не назначило device_type. Список расширяется при добавлении новых вендоров (MINOR-изменение).
 - **hw_type:** тип железа для HW-строк. 25 значений (v2.0.0): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. Для не-HW или неразрешённых HW — null.
 - **matched_rule_id:** идентификатор сработавшего правила (например HW-002, SERVICE-001). UNKNOWN-000 — совпадений нет.
 - **warnings:** список предупреждений (например «hw_type unresolved for HW row»); обычно пуст.

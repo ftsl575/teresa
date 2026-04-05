@@ -1,10 +1,10 @@
 # Current State — spec_classifier (teresa)
 
 ## Версия
-1.3.0
+1.4.0
 
 ## Дата последнего аудита
-2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail); 2026-03-07 (audit_1G FAIL — 7 P0); 2026-03-11 (recovery: golden sync, stray revert); 2026-03-15 (batch audit review — FAIL, 3 P0 / 10 P1)
+2026-03-06 (audit_2G PASS — 281 tests collected; unit/rules/writer tests 0 fail); 2026-03-07 (audit_1G FAIL — 7 P0); 2026-03-11 (recovery: golden sync, stray revert); 2026-03-15 (batch audit review — FAIL, 3 P0 / 10 P1); 2026-04-04 (audit_1E — Steps 0-2 delivered: Dell raid_controller fix, get_extra_cols() per-adapter, vendor-agnostic audit scripts)
 
 ## Активные вендоры
 - Dell (spec export)
@@ -27,7 +27,7 @@
 ## HPE (Step 1–2)
 - **src/vendors/hpe/:** созданы parser.py (BOM, col_map по имени, Total/EOF), normalizer.py (HPENormalizedRow + vendor extensions), adapter.py (HPEAdapter). can_parse: лист BOM + заголовки "Product #", "Product Description".
 - **rules/hpe_rules.yaml:** создан (version 1.0.0) — base_rules, service_rules, logistic_rules, config_rules, software_rules, device_type_rules (82 правила), hw_type_rules.device_type_map.
-- **Интеграция (Step 3):** main.py — VENDOR_REGISTRY["hpe"] = HPEAdapter; config.yaml — hpe: rules/hpe_rules.yaml; annotated_writer — VENDOR_EXTRA_COLS + 5 HPE колонок, skip по первым 10 строкам убран; Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe. Тесты test_regression_hpe и test_unknown_threshold_hpe — отдельный шаг (файлы тестов и golden).
+- **Интеграция (Step 3):** main.py — VENDOR_REGISTRY["hpe"] = HPEAdapter; config.yaml — hpe: rules/hpe_rules.yaml; annotated_writer — 5 HPE колонок (теперь через HPEAdapter.get_extra_cols()), skip по первым 10 строкам убран; Makefile — HP_FILES, generate_golden_hpe, test-regression-hpe, test-unknown-hpe. Тесты test_regression_hpe и test_unknown_threshold_hpe — отдельный шаг (файлы тестов и golden).
 
 ## Adapter can_parse (P0)
 - DellAdapter: положительная сигнатура — ячейка "Module Name" в первых 20 строках первого листа.
@@ -41,13 +41,13 @@
 - Нормализация qty: при пустом или отсутствующем значении используется default = 1 (ранее 0).
 
 ## Документация — пути (P1, LEAK-002–004)
-- README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`. Пути задаются через config.local.yaml. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; источник — код и config, без dell_mvp.
+- README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE: все примеры используют относительные пути `input/`, `output/`. Пути задаются через config.local.yaml. TECHNICAL_OVERVIEW: формулировка «пайплайн для вендорных спецификаций (Dell, Cisco CCW, HPE)»; источник — код и config, без dell_mvp.
 
 ## Документация — заголовки и ядро (P1, LEAK-005, LEAK-006, DOC-010)
 - Шесть doc-файлов: H1 заменён на «… — spec_classifier» (LEAK-005). Docstrings core: normalizer, rules_engine, parser, state_detector — без «Dell specification», «load Dell rules» (LEAK-006). parser.py: «column-based specification files», «sentinel column value», «1-based Excel row number»; rules_engine.RuleSet: «Loaded classification rules from a vendor YAML file». Taxonomy: «Vendors covered: Dell · Cisco CCW (active) · HPE · Lenovo · xFusion · Huawei (planned)» (DOC-010).
 
 ## Annotated writer и тесты (P1, LEAK-007, LEAK-008)
-- annotated_writer: проверка `has_cisco_fields` заменена на расширяемый реестр VENDOR_EXTRA_COLS (LEAK-007). Комментарии и docstring — без упоминания «Cisco CCW» (header_row_index=None описан как «formats with no fixed header row» / «format has no header row»). test_smoke, test_annotated_writer, test_excel_writer: используют _get_adapter("dell", {}), adapter.parse(), adapter.normalize() вместо прямых вызовов parse_excel/normalize_row (LEAK-008).
+- annotated_writer: проверка `has_cisco_fields` заменена на расширяемый паттерн (LEAK-007); в рамках audit_1E рефакторинг завершён: VENDOR_EXTRA_COLS удалён, вместо него — `VendorAdapter.get_extra_cols()` (default []), переопределён в HPEAdapter (5 колонок) и CiscoAdapter (2 колонки). Комментарии и docstring — без упоминания «Cisco CCW» (header_row_index=None описан как «formats with no fixed header row» / «format has no header row»). test_smoke, test_annotated_writer, test_excel_writer: используют _get_adapter("dell", {}), adapter.parse(), adapter.normalize() вместо прямых вызовов parse_excel/normalize_row (LEAK-008).
 
 ## P2 — документация (DOC-011, DOC-012)
 - RULES_AUTHORING_GUIDE: добавлена секция «Конвенция rule_id» — формат PREFIX-NUMBER[-SUFFIX], мультивендор (-C- для Cisco), уникальность, связь с golden (DOC-011).
@@ -61,6 +61,24 @@
 - docs/rules/      — документация правил классификации
 - docs/product/    — TECHNICAL_OVERVIEW.md (единственный актуальный обзор)
 - docs/archive/    — замёрзшие материалы (не актуальны)
+
+## audit_1E (2026-04-04) — Steps 0-2
+
+- **Step 0 — bugfix:**
+  - BUG-1: `rules/dell_rules.yaml` DT-D-027-RAID расширен на BOSS + Storage Controller; raid_controller теперь не падает в accessory.
+  - BUG-2: `spec_classifier/.gitignore` — добавлен `config.local.yaml`.
+  - BUG-3: `.gitignore` (outer) перезаписан в UTF-8 LF (был смешанный UTF-16LE).
+- **Step 1 — VendorAdapter.get_extra_cols():**
+  - `VendorAdapter.get_extra_cols()` добавлен как конкретный метод (default `[]`).
+  - HPEAdapter.get_extra_cols() возвращает 5 HPE-специфичных колонок.
+  - CiscoAdapter.get_extra_cols() возвращает 2 Cisco-специфичных колонки.
+  - DellAdapter — без изменений (наследует default).
+  - `annotated_writer.generate_annotated_source_excel()` принимает `extra_cols` как параметр; VENDOR_EXTRA_COLS удалён.
+  - `main.py` передаёт `adapter.get_extra_cols()`.
+- **Step 2 — vendor-agnostic audit:**
+  - `batch_audit.py`: DEVICE_TYPE_MAP загружается из YAML (R1); `detect_vendor_from_path()` принимает `known_vendors` (R2); `--vendor choices` динамические из `config.yaml` (R3); E4 state logic data-driven dict `E4_STATE_VALIDATORS` + `_check_e4()` (R4); LLM_SYSTEM промпт шаблонизирован через `_build_llm_system()` (R5).
+  - `cluster_audit.py`: `_load_config()` / `_get_known_vendors()` добавлены; `_detect_vendor_from_path()` generic; choices динамические (R6).
+  - Тесты: 114 tests green (8 новых для R2/R6).
 
 ## Workflow
 Claude анализирует репо → пишет промпты → Cursor выполняет →

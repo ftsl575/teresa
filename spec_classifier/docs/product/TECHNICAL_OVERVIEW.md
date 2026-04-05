@@ -253,6 +253,10 @@ spec_classifier/
 
 ## 10. Как расширять правила
 
+Каждый вендор имеет свой файл правил: `rules/dell_rules.yaml`, `rules/cisco_rules.yaml`, `rules/hpe_rules.yaml`. Структура единая: `version`, `state_rules`, `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, `device_type_rules`, `hw_type_rules`. Правила в каждой группе применяются в порядке «первое совпадение выигрывает» (`re.IGNORECASE`).
+
+Пример на основе `rules/dell_rules.yaml`:
+
 - **Файл правил:** `rules/dell_rules.yaml`. Структура: `version`, `state_rules.absent_keywords`, затем группы `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`. Каждое правило — объект с полями `field` (`module_name` или `option_name`), `pattern` (regex), `entity_type`, `rule_id`. Для state — `pattern`, `state` (ABSENT/DISABLED), `rule_id`.
 - **Добавление правил:** добавить в нужную группу новый элемент с уникальным `rule_id`. Порядок в группе важен: срабатывает первое совпадение. Регулярные выражения применяются без учёта регистра (`re.IGNORECASE` в `match_rule` и `detect_state`).
 - **Новый тип сущности:** потребует изменений в коде: enum `EntityType` в `classifier.py`, ветка в `classify_row`, при необходимости — секция в YAML и её чтение в `RuleSet`. В текущей реализации новых типов без правок кода добавить нельзя.

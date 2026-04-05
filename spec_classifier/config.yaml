@@ -20,3 +20,4 @@ vendor_rules:
   dell: "rules/dell_rules.yaml"
   cisco: "rules/cisco_rules.yaml"
   hpe: "rules/hpe_rules.yaml"
+  lenovo: "rules/lenovo_rules.yaml"

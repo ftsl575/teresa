@@ -35,11 +35,13 @@ from src.outputs.branded_spec_writer import generate_branded_spec
 from src.vendors.dell.adapter import DellAdapter
 from src.vendors.cisco.adapter import CiscoAdapter
 from src.vendors.hpe.adapter import HPEAdapter
+from src.vendors.lenovo.adapter import LenovoAdapter
 
 VENDOR_REGISTRY: dict[str, type] = {
     "dell": DellAdapter,
     "cisco": CiscoAdapter,
     "hpe": HPEAdapter,
+    "lenovo": LenovoAdapter,
 }
 
 
