@@ -1,0 +1,504 @@
+version: "1.0.0"
+
+state_rules:
+  absent_keywords: []
+  present_override_keywords: []
+
+# ── BASE: CTO rows ──────────────────────────────────────────────────────────
+base_rules:
+  - field: option_id
+    pattern: '(?i)^[A-Z0-9]{4}CTO'
+    entity_type: BASE
+    rule_id: BASE-L-001
+
+# ── SERVICE ──────────────────────────────────────────────────────────────────
+service_rules:
+  - field: option_name
+    pattern: '(?i)\b(warranty|support\s+service|premier\s+support|procare)\b'
+    entity_type: SERVICE
+    rule_id: SERVICE-L-001
+
+# ── LOGISTIC ─────────────────────────────────────────────────────────────────
+logistic_rules:
+  - field: option_name
+    pattern: '(?i)\b(delivery|shipping|freight)\b'
+    entity_type: LOGISTIC
+    rule_id: LOGISTIC-L-001
+
+# ── SOFTWARE / LICENSE ───────────────────────────────────────────────────────
+software_rules:
+  - field: option_name
+    pattern: '(?i)\bXClarity\b.*\b(FOD|Upgrade)\b'
+    entity_type: SOFTWARE
+    rule_id: SW-L-001
+
+  - field: option_name
+    pattern: '(?i)\bXClarity\s+Controller\s+Platin'
+    entity_type: SOFTWARE
+    rule_id: SW-L-002
+
+  - field: option_name
+    pattern: '(?i)\bFirmware\b.*\b(Root\s+of\s+Trust|Security\s+Module)\b'
+    entity_type: SOFTWARE
+    rule_id: SW-L-010
+
+  - field: option_name
+    pattern: '(?i)\b(License|Licensed)\b'
+    entity_type: SOFTWARE
+    rule_id: SW-L-020
+
+# ── NOTE ─────────────────────────────────────────────────────────────────────
+note_rules:
+  - field: option_name
+    pattern: '(?i)^(XCC\s+)?Label\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-001
+
+  - field: option_name
+    pattern: '(?i)\bNotice\s+for\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-002
+
+  - field: option_name
+    pattern: '(?i)\bLPK\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-003
+
+  - field: option_name
+    pattern: '(?i)\bPKG\s+BOM\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-004
+
+  - field: option_name
+    pattern: '(?i)^Package\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-005
+
+# ── CONFIG ───────────────────────────────────────────────────────────────────
+config_rules:
+  - field: option_name
+    pattern: '(?i)\bConfiguration\s+(Instruction|ID)\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-001
+
+  - field: option_name
+    pattern: '(?i)\bOperating\s+mode\s+selection\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-002
+
+  - field: option_name
+    pattern: '(?i)\bData\s+Center\s+Environment\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-003
+
+  - field: option_name
+    pattern: '(?i)\bHigh\s+voltage\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-004
+
+  - field: option_name
+    pattern: '(?i)\bN\+N\s+Redundancy\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-005
+
+  - field: option_name
+    pattern: '(?i)\bDisable\s+IPMI\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-006
+
+  - field: option_name
+    pattern: '(?i)\bFeature\s+Enable\s+TPM\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-007
+
+  - field: option_name
+    pattern: '(?i)\bPlatform\s+Secure\s+Boot\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-008
+
+  - field: option_name
+    pattern: '(?i)\bTrigger\s+MFG\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-009
+
+  - field: option_name
+    pattern: '(?i)\bSelect\s+Storage\s+devices\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-010
+
+  - field: option_name
+    pattern: '(?i)\bLaser\s+service\s+indicator\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-011
+
+  - field: option_name
+    pattern: '(?i)\bMI\s+for\s+PXE\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-012
+
+  - field: option_name
+    pattern: '(?i)\bSATA\s+RAID\s+Mode\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-013
+
+  - field: option_name
+    pattern: '(?i)\bController\s+01\b'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-014
+
+  - field: option_name
+    pattern: '(?i)\bM\.2\s+NVMe\b(?!.*\b(Drive|SSD)\b)'
+    entity_type: CONFIG
+    rule_id: CONFIG-L-015
+
+# ── HW rules ────────────────────────────────────────────────────────────────
+hw_rules:
+  # CPU
+  - field: option_name
+    pattern: '(?i)\b(Xeon|EPYC|Processor)\b'
+    entity_type: HW
+    rule_id: HW-L-001-CPU
+
+  # RAM / Memory
+  - field: option_name
+    pattern: '(?i)\b(RDIMM|TruDDR|DIMM|LRDIMM)\b'
+    entity_type: HW
+    rule_id: HW-L-002-RAM
+
+  # Blank — Memory Dummy
+  - field: option_name
+    pattern: '(?i)\bMemory\s+Dummy\b'
+    entity_type: HW
+    rule_id: HW-L-003-BLANK-MEM
+
+  # Blank — HDD Filler
+  - field: option_name
+    pattern: '(?i)\bHDD\s+Filler\b'
+    entity_type: HW
+    rule_id: HW-L-004-BLANK-HDD
+
+  # Blank — Riser/VGA/OCP Filler
+  - field: option_name
+    pattern: '(?i)\b(Riser|VGA|OCP)\s+Filler\b'
+    entity_type: HW
+    rule_id: HW-L-005-BLANK-RISER
+
+  # Blank — SuperCap Holder Dummy
+  - field: option_name
+    pattern: '(?i)\bSuperCap\s+Holder\s+Dummy\b'
+    entity_type: HW
+    rule_id: HW-L-006-BLANK-SCAP
+
+  # GPU (before generic HW)
+  - field: option_name
+    pattern: '(?i)\b(GPU|NVIDIA\s+HGX)\b'
+    entity_type: HW
+    rule_id: HW-L-007-GPU
+
+  # RAID controller (before HBA/NIC, exclude SuperCap)
+  - field: option_name
+    pattern: '(?i)\bRAID\s+\d{3}(?!.*\bSuperCap\b)'
+    entity_type: HW
+    rule_id: HW-L-008-RAID
+
+  # M.2 RAID Adapter
+  - field: option_name
+    pattern: '(?i)\bM\.2\s+.*\bRAID\b.*\bAdapter\b'
+    entity_type: HW
+    rule_id: HW-L-009-M2RAID
+
+  # HBA
+  - field: option_name
+    pattern: '(?i)\bHBA\b'
+    entity_type: HW
+    rule_id: HW-L-010-HBA
+
+  # NIC / Ethernet Adapter (before transceiver)
+  - field: option_name
+    pattern: '(?i)\b(Ethernet\s+Adapter|ConnectX|10GbE|25GbE|100GbE|OCP\s+Adapter)\b'
+    entity_type: HW
+    rule_id: HW-L-011-NIC
+
+  # Transceiver / SFP
+  - field: option_name
+    pattern: '(?i)\b(Transceiver|SFP28|SFP\+|QSFP)\b'
+    entity_type: HW
+    rule_id: HW-L-012-TRANSCEIVER
+
+  # SSD (before generic storage)
+  - field: option_name
+    pattern: '(?i)\bSSD\b'
+    entity_type: HW
+    rule_id: HW-L-013-SSD
+
+  # NVMe drive (exclude Cable, RAID, Adapter)
+  - field: option_name
+    pattern: '(?i)\bNVMe\b(?!.*\b(Cable|RAID|Adapter)\b).*\b(Drive|SSD|HS)\b'
+    entity_type: HW
+    rule_id: HW-L-014-NVME
+
+  # HDD (exclude Filler)
+  - field: option_name
+    pattern: '(?i)\bHDD\b(?!.*\bFiller\b)'
+    entity_type: HW
+    rule_id: HW-L-015-HDD
+
+  # PSU / Power Supply
+  - field: option_name
+    pattern: '(?i)\bPower\s+Supply\b'
+    entity_type: HW
+    rule_id: HW-L-016-PSU
+
+  # Power Cord
+  - field: option_name
+    pattern: '(?i)\b(Jumper\s+Cord|C13\s+to|C19\s+to|Power\s+Cord)\b'
+    entity_type: HW
+    rule_id: HW-L-017-POWERCORD
+
+  # Fan
+  - field: option_name
+    pattern: '(?i)\bFan\s+Module\b'
+    entity_type: HW
+    rule_id: HW-L-018-FAN
+
+  # Heatsink
+  - field: option_name
+    pattern: '(?i)\bHeatsink\b'
+    entity_type: HW
+    rule_id: HW-L-019-HEATSINK
+
+  # Riser (exclude Filler)
+  - field: option_name
+    pattern: '(?i)\bRiser\d*\b(?!.*\bFiller\b)'
+    entity_type: HW
+    rule_id: HW-L-020-RISER
+
+  # Rail
+  - field: option_name
+    pattern: '(?i)\b(Slide\s+Rail|Rail\s+Kit)\b'
+    entity_type: HW
+    rule_id: HW-L-021-RAIL
+
+  # Backplane
+  - field: option_name
+    pattern: '(?i)\bBackplane\b'
+    entity_type: HW
+    rule_id: HW-L-022-BACKPLANE
+
+  # Chassis / Cage
+  - field: option_name
+    pattern: '(?i)\b(Chassis|HDD\s+Cage|Media\s+Bay)\b'
+    entity_type: HW
+    rule_id: HW-L-023-CHASSIS
+
+  # TPM
+  - field: option_name
+    pattern: '(?i)\bTPM\s+\d'
+    entity_type: HW
+    rule_id: HW-L-024-TPM
+
+  # Cable (generic)
+  - field: option_name
+    pattern: '(?i)\bCable\b'
+    entity_type: HW
+    rule_id: HW-L-025-CABLE
+
+  # SuperCap / battery (not Dummy/Holder)
+  - field: option_name
+    pattern: '(?i)\bSuperCap\b(?!.*\b(Holder|Dummy)\b)'
+    entity_type: HW
+    rule_id: HW-L-026-BATTERY
+
+  # Accessory — motherboard, air duct, lift handles, EIA latch, system board
+  - field: option_name
+    pattern: '(?i)\b(System\s+Board|Motherboard|Air\s+Duct|Lift\s+Handle|EIA\s+Latch)\b'
+    entity_type: HW
+    rule_id: HW-L-027-ACCESSORY
+
+  # Catch-all MB (standalone)
+  - field: option_name
+    pattern: '(?i)\bMB\b'
+    entity_type: HW
+    rule_id: HW-L-028-MB
+
+# ── device_type_rules ────────────────────────────────────────────────────────
+device_type_rules:
+  applies_to: [HW, LOGISTIC, BASE]
+  rules:
+    # BASE
+    - field: option_id
+      pattern: '(?i)^[A-Z0-9]{4}CTO'
+      device_type: server
+      rule_id: DT-L-001-SERVER
+
+    # CPU
+    - field: option_name
+      pattern: '(?i)\b(Xeon|EPYC|Processor)\b'
+      device_type: cpu
+      rule_id: DT-L-002-CPU
+
+    # RAM
+    - field: option_name
+      pattern: '(?i)\b(RDIMM|TruDDR|DIMM|LRDIMM)\b'
+      device_type: ram
+      rule_id: DT-L-003-RAM
+
+    # GPU
+    - field: option_name
+      pattern: '(?i)\b(GPU|NVIDIA\s+HGX)\b'
+      device_type: gpu
+      rule_id: DT-L-004-GPU
+
+    # Blank fillers
+    - field: option_name
+      pattern: '(?i)\b(Memory\s+Dummy|HDD\s+Filler|Riser\s+Filler|VGA\s+Filler|OCP\s+Filler|SuperCap\s+Holder\s+Dummy)\b'
+      device_type: blank_filler
+      rule_id: DT-L-005-BLANK
+
+    # RAID controller (exclude SuperCap)
+    - field: option_name
+      pattern: '(?i)\bRAID\s+\d{3}(?!.*\bSuperCap\b)'
+      device_type: raid_controller
+      rule_id: DT-L-006-RAID
+
+    # M.2 RAID Adapter
+    - field: option_name
+      pattern: '(?i)\bM\.2\s+.*\bRAID\b.*\bAdapter\b'
+      device_type: raid_controller
+      rule_id: DT-L-007-M2RAID
+
+    # HBA
+    - field: option_name
+      pattern: '(?i)\bHBA\b'
+      device_type: hba
+      rule_id: DT-L-008-HBA
+
+    # NIC / Ethernet
+    - field: option_name
+      pattern: '(?i)\b(Ethernet\s+Adapter|ConnectX|10GbE|25GbE|100GbE|OCP\s+Adapter)\b'
+      device_type: nic
+      rule_id: DT-L-009-NIC
+
+    # Transceiver
+    - field: option_name
+      pattern: '(?i)\b(Transceiver|SFP28|SFP\+|QSFP)\b'
+      device_type: transceiver
+      rule_id: DT-L-010-TRANSCEIVER
+
+    # SSD
+    - field: option_name
+      pattern: '(?i)\bSSD\b'
+      device_type: storage_ssd
+      rule_id: DT-L-011-SSD
+
+    # NVMe drive
+    - field: option_name
+      pattern: '(?i)\bNVMe\b(?!.*\b(Cable|RAID|Adapter)\b).*\b(Drive|SSD|HS)\b'
+      device_type: storage_nvme
+      rule_id: DT-L-012-NVME
+
+    # HDD
+    - field: option_name
+      pattern: '(?i)\bHDD\b(?!.*\bFiller\b)'
+      device_type: storage_hdd
+      rule_id: DT-L-013-HDD
+
+    # PSU
+    - field: option_name
+      pattern: '(?i)\bPower\s+Supply\b'
+      device_type: psu
+      rule_id: DT-L-014-PSU
+
+    # Power Cord
+    - field: option_name
+      pattern: '(?i)\b(Jumper\s+Cord|C13\s+to|C19\s+to|Power\s+Cord)\b'
+      device_type: power_cord
+      rule_id: DT-L-015-POWERCORD
+
+    # Fan
+    - field: option_name
+      pattern: '(?i)\bFan\s+Module\b'
+      device_type: fan
+      rule_id: DT-L-016-FAN
+
+    # Heatsink
+    - field: option_name
+      pattern: '(?i)\bHeatsink\b'
+      device_type: heatsink
+      rule_id: DT-L-017-HEATSINK
+
+    # Riser
+    - field: option_name
+      pattern: '(?i)\bRiser\d*\b(?!.*\bFiller\b)'
+      device_type: riser
+      rule_id: DT-L-018-RISER
+
+    # Rail
+    - field: option_name
+      pattern: '(?i)\b(Slide\s+Rail|Rail\s+Kit)\b'
+      device_type: rail
+      rule_id: DT-L-019-RAIL
+
+    # Backplane
+    - field: option_name
+      pattern: '(?i)\bBackplane\b'
+      device_type: backplane
+      rule_id: DT-L-020-BACKPLANE
+
+    # Chassis
+    - field: option_name
+      pattern: '(?i)\b(Chassis|HDD\s+Cage|Media\s+Bay)\b'
+      device_type: chassis
+      rule_id: DT-L-021-CHASSIS
+
+    # TPM
+    - field: option_name
+      pattern: '(?i)\bTPM\s+\d'
+      device_type: tpm
+      rule_id: DT-L-022-TPM
+
+    # Cable
+    - field: option_name
+      pattern: '(?i)\bCable\b'
+      device_type: cable
+      rule_id: DT-L-023-CABLE
+
+    # SuperCap = battery
+    - field: option_name
+      pattern: '(?i)\bSuperCap\b(?!.*\b(Holder|Dummy)\b)'
+      device_type: battery
+      rule_id: DT-L-024-BATTERY
+
+    # Accessory — motherboard, air duct, etc.
+    - field: option_name
+      pattern: '(?i)\b(System\s+Board|Motherboard|Air\s+Duct|Lift\s+Handle|EIA\s+Latch|MB)\b'
+      device_type: accessory
+      rule_id: DT-L-025-ACCESSORY
+
+# ── hw_type_rules ────────────────────────────────────────────────────────────
+hw_type_rules:
+  applies_to: [HW]
+  device_type_map:
+    cpu: cpu
+    ram: memory
+    gpu: gpu
+    storage_nvme: storage_drive
+    storage_ssd: storage_drive
+    storage_hdd: storage_drive
+    raid_controller: storage_controller
+    hba: hba
+    nic: network_adapter
+    transceiver: transceiver
+    cable: cable
+    psu: psu
+    fan: fan
+    heatsink: heatsink
+    riser: riser
+    rail: rail
+    backplane: backplane
+    chassis: chassis
+    tpm: tpm
+    battery: accessory
+    blank_filler: blank_filler
+    accessory: accessory
+    server: server
