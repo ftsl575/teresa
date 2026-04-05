@@ -13,7 +13,7 @@ _(Cowork: прямой доступ к репо и OUTPUT. claude.ai: прочи
 
 1) Подтверди, что тесты/прогоны в принципе возможны по документации: где описан
    запуск и какие входные пути ожидаются (только ссылки на документы).
-2) По OUTPUT.rar посчитай для каждого вендора (Dell / Cisco / HPE):
+2) По OUTPUT.rar посчитай для каждого вендора (Dell / Cisco / HPE / Lenovo):
    - unknown_count (entity_type == UNKNOWN в classification.jsonl)
    - hw_type_null_count среди HW строк
    - количество E2, E17, E18 в audit_report.json (если файл присутствует)

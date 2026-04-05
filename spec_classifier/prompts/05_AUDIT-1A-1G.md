@@ -24,7 +24,7 @@ A) Выведи дерево файлов репозитория (src/, rules/, 
    - cluster_audit.py
    - scripts/update_golden_from_tests.py (или main.py --update-golden)
 
-B) В OUTPUT.rar для каждого вендора (Dell / Cisco / HPE) посчитай:
+B) В OUTPUT.rar для каждого вендора (Dell / Cisco / HPE / Lenovo) посчитай:
    - unknown_count (entity_type == UNKNOWN)
    - hw_type_null_all_items
    - hw_type_null_hw_only (только среди HW строк)
@@ -62,12 +62,21 @@ C) Перечисли все *.yaml/*.yml и *.md файлы (пути).
 Ответь:
 1) Есть ли vendor-specific знание в classifier/normalizer? (файл+фрагмент)
 2) core/parser.py — это действительно общий парсер или фактически dell-specific?
-3) VendorAdapter ABC: список абстрактных методов и проверка реализаций в Dell/Cisco/HPE.
+3) VendorAdapter ABC: список абстрактных методов и проверка реализаций в Dell/Cisco/HPE/Lenovo.
 4) can_parse: позитивная сигнатура у каждого?
-5) VENDOR_EXTRA_COLS: где задан, насколько расширяем без правок core?
-6) Добавление 4-го вендора (Lenovo): точный список файлов/действий, и препятствия.
-7) batch_audit.py и cluster_audit.py: они vendor-agnostic? Есть ли vendor-specific хардкод?
-   Проверь: KEYWORD_DEVICE_MAP в cluster_audit.py, fp_patterns в batch_audit.py.
+5) get_extra_cols(): реализован ли в каждом адаптере? Возвращает ли
+   правильные vendor-extension поля? annotated_writer использует параметр
+   extra_cols или всё ещё содержит хардкод VENDOR_EXTRA_COLS?
+6) Добавление нового вендора: сколько файлов нужно создать, сколько
+   существующих файлов нужно редактировать? Нужны ли правки в batch_audit.py
+   или cluster_audit.py? (ожидаемый ответ: нет, они vendor-agnostic)
+7) batch_audit.py и cluster_audit.py: подтверди что vendor-agnostic рефакторинг
+   работает. Проверь:
+   - DEVICE_TYPE_MAP загружается из YAML (не хардкод)?
+   - --vendor choices динамические из config.yaml?
+   - detect_vendor_from_path() принимает known_vendors?
+   - E4 state logic использует E4_STATE_VALIDATORS dict (не if/elif цепочку)?
+   - Есть ли KNOWN_FP_CASES для новых вендоров (Lenovo)?
 
 Формат: RESULTS + SUMMARY (CLAIMS/EVIDENCE/SEVERITY/ACTION)
 ```
@@ -95,19 +104,23 @@ RULES:
 [ ] E6 fix: batch_audit.py entity not in ("HW", "LOGISTIC", "BASE")
 [ ] E10 fix: device_type на BASE больше не триггерит E10
 [ ] config_name → module_name alias в _ALIASES
-[ ] product_# в SKU aliases (строка 795)
+[ ] product_# в SKU aliases (найти через grep "product_#" batch_audit.py)
 [ ] row_kind колонка в annotated_writer.py
 [ ] power_cord: hw_type=None во всех трёх YAML (не cable)
-[ ] hw_type applies_to: [HW] (не [HW, BASE]) во всех YAML
+[ ] hw_type applies_to: [HW] (не [HW, BASE]) во всех YAML (dell, cisco, hpe, lenovo)
 [ ] HPE note_rules: [] присутствует
-[ ] BASE-*-DT-001 rules: HPE→server, Dell→server, Cisco→switch
+[ ] BASE-*-DT-001 rules: HPE→server, Dell→server, Cisco→switch, Lenovo→server
+[ ] E4_STATE_VALIDATORS содержит записи для ВСЕХ вендоров из config.yaml
+[ ] Lenovo rules: lenovo_rules.yaml загружается, rule_id формат корректен
 [ ] Windows encoding fix: sys.stdout.reconfigure(encoding="utf-8")
 [ ] E18 в validate_row() и issue_color()
 
 ТЕСТЫ:
-[ ] tests/test_batch_audit.py существует (45 тестов)
+[ ] tests/test_batch_audit.py существует (подсчитать: grep -c "^def test_" tests/test_batch_audit.py)
 [ ] tests/test_cluster_audit.py существует (10+ тестов)
 [ ] test_hpe_rules_unit.py: device_type и hw_type assertions присутствуют
+[ ] tests/test_lenovo_rules_unit.py существует с device_type/hw_type assertions
+[ ] tests/test_lenovo_parser.py существует
 [ ] conftest.py: проверка per-vendor subdirs (не только root)
 
 ПУТИ:
@@ -187,9 +200,12 @@ RULES:
    - RUN_PATHS: описаны audit_report.json, audit_summary.xlsx, cluster_summary.xlsx, *_audited.xlsx?
    - DATA_CONTRACTS: есть схема audit_report.json и cluster_summary.xlsx?
    - DOCS_INDEX: есть ссылка на cluster_audit.py?
-5) CLI --vendor enum соответствует факту (dell/cisco/hpe)?
-6) Устаревшие формулировки "два вендора", Dell+Cisco без HPE.
+5) CLI --vendor enum соответствует факту (dell/cisco/hpe/lenovo)?
+6) Устаревшие формулировки без полного списка вендоров.
+   Проверить что ВСЕ документы упоминают Lenovo где перечислены вендоры.
 7) hw_type_taxonomy.md: power_cord=None, applies_to=[HW] — синхронизировано с кодом?
+8) Документация Lenovo: USER_GUIDE описывает Lenovo формат?
+   CLI_CONFIG: --vendor lenovo упомянут? hw_type_taxonomy: Lenovo = active?
 
 Формат: RESULTS (таблица: документ → проблема → цитата → риск) + SUMMARY
 ```
@@ -212,7 +228,8 @@ RULES:
 - config.yaml
 
 Задачи:
-1) Покрытие по вендорам: что есть у Dell/Cisco и отсутствует у HPE.
+1) Покрытие по вендорам: симметрия тестов между Dell/Cisco/HPE/Lenovo.
+   Для каждого вендора проверить наличие: rules_unit, normalizer, parser.
    Проверь: есть ли assertions на device_type/hw_type в test_hpe_rules_unit.py?
 
 2) Покрытие audit-слоя:
@@ -240,6 +257,21 @@ RULES:
 
 ```
 Ты — релизный гейт-аудитор. На входе только SUMMARY-блоки шагов 1A–1F.
+
+КРИТИЧЕСКОЕ ПРАВИЛО КЛАССИФИКАЦИИ:
+НЕ помечай как P0/P1 пункты из категории АРХИТЕКТУРНЫЙ ДОЛГ:
+- "parser.py де-факто Dell-specific" — это by design, не баг
+- "batch_audit содержит vendor hardcode" — проверь что vendor-agnostic
+  рефакторинг сделан; если да — это уже НЕ finding
+- "нет тестов для corrupt xlsx" — это P2 (nice-to-have), не P1
+- "config.local.yaml не в gitignore" — проверь факт, не повторяй из прошлого аудита
+
+P0 = данные теряются, crash, неправильная классификация.
+P1 = секция аудита не проходит (Docs FAIL, Tests FAIL).
+P2 = улучшения, arch debt, косметика.
+
+Если ВСЕ секции PASS и P0=0, статус = PASS даже при наличии P2.
+
 Собери финальный отчёт:
 
 AUDIT_STATUS: PASS/FAIL
@@ -252,11 +284,11 @@ NICE (P2):
 - …
 
 SECTIONS (каждая: PASS/FAIL + 1 строка причины):
-- Architecture
+- Architecture (включая vendor-agnostic audit layer)
 - Outputs/Metrics (включая audit + cluster метрики)
-- Rules/Adapters Integrity
-- Docs Consistency (CURRENT_STATE, CHANGELOG, INPUT layout, audit docs)
-- Tests & Safety (включая покрытие audit-слоя)
+- Rules/Adapters Integrity (все 4 вендора)
+- Docs Consistency (CURRENT_STATE, CHANGELOG, vendor docs для всех 4 вендоров)
+- Tests & Safety (включая покрытие Lenovo)
 
 ACTION PLAN:
 - 5–10 конкретных действий по приоритету (P0 сначала), с указанием файлов.

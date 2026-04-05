@@ -12,7 +12,7 @@
 _(Cowork: прямой доступ к репо и OUTPUT. claude.ai: прочитай teresa.zip и OUTPUT.rar.)_
 
 1) Найди и перечисли итоговые артефакты по каждому вендору.
-2) Посчитай для каждого вендора:
+2) Посчитай для каждого вендора (Dell / Cisco / HPE / Lenovo):
    - unknown_count и hw_type_null_count среди HW строк
    - количество E2, E17, E18 (из audit_report.json если есть)
 3) Если есть cluster_summary.xlsx — укажи top-5 кластеров по count

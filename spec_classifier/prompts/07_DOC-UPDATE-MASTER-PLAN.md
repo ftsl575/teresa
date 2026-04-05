@@ -45,6 +45,7 @@ C) Из work_report / SESSION_SUMMARY собери:
 Правила YES:
 - Нет [Unreleased] в CHANGELOG → YES
 - CURRENT_STATE: неактуальная дата/вендоры → YES
+- Не упомянут Lenovo в списке вендоров → YES
 - Не упомянут E18 → YES
 - Не описан cluster_audit.py → YES
 - Нет audit_report.json / cluster_summary.xlsx в OUTPUT layout → YES
@@ -90,7 +91,7 @@ D) CURSOR PROMPT
 менять порядок секций, удалять разделы, менять форматирование.
 Разрешено ТОЛЬКО: заменить устаревший текст на новый в указанном месте.
 После каждого документа: проверь что структура не изменилась,
-все 3 вендора упомянуты там где нужно.
+все 4 вендора (Dell, Cisco, HPE, Lenovo) упомянуты там где нужно.
 [MASTER PLAN секции A, B, C]
 --- КОНЕЦ ---
 

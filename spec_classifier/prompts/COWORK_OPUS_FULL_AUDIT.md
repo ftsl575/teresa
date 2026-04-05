@@ -41,7 +41,7 @@ Sonnet-шаги (1A — метрики, 1C — чеклист) уже выпол
 ────────────────────────────────────────────────
 
 Teresa — детерминированный пайплайн классификации оборудования из Excel BOM.
-Вендоры: Dell, Cisco, HPE.
+Вендоры: Dell, Cisco, HPE, Lenovo.
 Классификация по полям:
   entity_type: BASE / HW / CONFIG / SOFTWARE / SERVICE / LOGISTIC / NOTE / UNKNOWN
   hw_type: server / switch / cpu / memory / gpu / storage_drive / …
@@ -96,12 +96,18 @@ E17=HW без определённого типа (P1), E18=LOGISTIC с physical
 Ответь:
 1) Есть ли vendor-specific знание в classifier/normalizer? (файл+фрагмент)
 2) core/parser.py — это действительно общий парсер или фактически dell-specific?
-3) VendorAdapter ABC: список абстрактных методов и проверка реализаций в Dell/Cisco/HPE.
+3) VendorAdapter ABC: список абстрактных методов и проверка реализаций в Dell/Cisco/HPE/Lenovo.
 4) can_parse: позитивная сигнатура у каждого?
-5) VENDOR_EXTRA_COLS: где задан, насколько расширяем без правок core?
-6) Добавление 4-го вендора (Lenovo): точный список файлов/действий, и препятствия.
-7) batch_audit.py и cluster_audit.py: они vendor-agnostic? Есть ли vendor-specific хардкод?
-   Проверь: KEYWORD_DEVICE_MAP в cluster_audit.py, fp_patterns в batch_audit.py.
+5) get_extra_cols(): реализован ли в каждом адаптере?
+6) Добавление нового (5-го) вендора: сколько файлов создать/редактировать?
+   Нужны ли правки в batch_audit/cluster_audit? (ожидание: нет)
+7) batch_audit.py и cluster_audit.py: подтверди что vendor-agnostic рефакторинг
+   работает. Проверь:
+   - DEVICE_TYPE_MAP загружается из YAML (не хардкод)?
+   - --vendor choices динамические из config.yaml?
+   - detect_vendor_from_path() принимает known_vendors?
+   - E4 state logic использует E4_STATE_VALIDATORS dict (не if/elif цепочку)?
+   - Есть ли KNOWN_FP_CASES для новых вендоров (Lenovo)?
 
 Формат: RESULTS + SUMMARY (CLAIMS/EVIDENCE/SEVERITY/ACTION)
 
@@ -165,8 +171,9 @@ E17=HW без определённого типа (P1), E18=LOGISTIC с physical
    - RUN_PATHS: описаны audit_report.json, audit_summary.xlsx, cluster_summary.xlsx, *_audited.xlsx?
    - DATA_CONTRACTS: есть схема audit_report.json и cluster_summary.xlsx?
    - DOCS_INDEX: есть ссылка на cluster_audit.py?
-5) CLI --vendor enum соответствует факту (dell/cisco/hpe)?
-6) Устаревшие формулировки "два вендора", Dell+Cisco без HPE.
+5) CLI --vendor enum соответствует факту (dell/cisco/hpe/lenovo)?
+6) Устаревшие формулировки без полного списка вендоров.
+   Проверить что ВСЕ документы упоминают Lenovo где перечислены вендоры.
 7) hw_type_taxonomy.md: power_cord=None, applies_to=[HW] — синхронизировано с кодом?
 
 Формат: RESULTS (таблица: документ → проблема → цитата → риск) + SUMMARY
@@ -185,7 +192,8 @@ E17=HW без определённого типа (P1), E18=LOGISTIC с physical
 - config.yaml
 
 Задачи:
-1) Покрытие по вендорам: что есть у Dell/Cisco и отсутствует у HPE.
+1) Покрытие по вендорам: симметрия тестов между Dell/Cisco/HPE/Lenovo.
+   Для каждого вендора проверить наличие: rules_unit, normalizer, parser.
    Проверь: есть ли assertions на device_type/hw_type в test_hpe_rules_unit.py?
 
 2) Покрытие audit-слоя:
