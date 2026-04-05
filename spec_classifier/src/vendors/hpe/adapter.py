@@ -62,4 +62,4 @@ class HPEAdapter(VendorAdapter):
         ]
 
     def generates_branded_spec(self) -> bool:
-        return False
+        return True

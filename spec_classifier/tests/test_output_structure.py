@@ -117,8 +117,7 @@ def test_output_tree_shape_cisco_run(tmp_path):
         assert (run_folder / name).exists(), f"Required artifact missing: {name} in {run_folder}"
 
     assert (run_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing"
-    # Cisco must NOT have branded (per out.zip)
-    assert not (run_folder / f"{stem}_branded.xlsx").exists(), "Cisco must not have branded.xlsx"
+    assert (run_folder / f"{stem}_branded.xlsx").exists(), f"{stem}_branded.xlsx missing"
 
 
 def test_output_root_configurable_via_cli(tmp_path):

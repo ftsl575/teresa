@@ -57,4 +57,4 @@ class LenovoAdapter(VendorAdapter):
         return [("export_control", "export_control")]
 
     def generates_branded_spec(self) -> bool:
-        return False
+        return True
