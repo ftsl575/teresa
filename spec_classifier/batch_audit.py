@@ -332,13 +332,15 @@ DEVICE_TYPE_ALIASES = {
     "storage_nvme":    "storage_drive",
     "storage_ssd":     "storage_drive",
     "storage_hdd":     "storage_drive",
+    "power_cord":      "cable",
+    "hba":             "storage_controller",
 }
 
 # Entity типы где пайплайн всегда прав — AI не знает бизнес-логику
 # "Disabled" строка это HW ABSENT а не NOTE; chassis это физика а не CONFIG
-ENTITY_TRUST_PIPELINE = {"LOGISTIC", "SOFTWARE", "SERVICE", "CONFIG"}
+ENTITY_TRUST_PIPELINE = {"LOGISTIC", "SOFTWARE", "SERVICE", "CONFIG", "BASE"}
 # hw_type значения где entity=HW всегда правильный (chassis — физический корпус)
-HW_TYPE_TRUST = {"chassis"}
+HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory", "blank_filler"}
 
 def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
                        pred: dict) -> str | None:
