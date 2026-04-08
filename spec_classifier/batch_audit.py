@@ -342,6 +342,11 @@ ENTITY_TRUST_PIPELINE = {"LOGISTIC", "SOFTWARE", "SERVICE", "CONFIG", "BASE"}
 # hw_type значения где entity=HW всегда правильный (chassis — физический корпус)
 HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory", "blank_filler"}
 
+# device_type значения где пайплайн всегда прав — AI часто ошибается
+# cable kit ≠ accessory, battery/capacitor ≠ accessory, rail ≠ accessory
+DEVICE_TYPE_TRUST = {"cable", "battery", "rail", "riser", "blank_filler",
+                     "accessory", "chassis", "backplane"}
+
 def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
                        pred: dict) -> str | None:
     """
@@ -379,8 +384,12 @@ def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
 
         if pipe_dev and pipe_norm != ai_norm:
             # Цель 2: пайплайн поставил одно, AI говорит другое
-            conf_tag = f"[{confidence}]" if confidence != "high" else ""
-            tags.append(f"AI_MISMATCH{conf_tag}:device_type[pipeline:{pipeline_device}→ai:{p_device}]")
+            if pipe_dev in DEVICE_TYPE_TRUST:
+                # Пайплайн доверен для этих типов — AI часто ошибается на Kit/Capacitor/etc
+                tags.append(f"AI_MISMATCH[medium]:device_type[pipeline:{pipe_dev}→ai:{p_device}]")
+            else:
+                conf_tag = f"[{confidence}]" if confidence != "high" else ""
+                tags.append(f"AI_MISMATCH{conf_tag}:device_type[pipeline:{pipeline_device}→ai:{p_device}]")
         elif not pipe_dev and pipeline_entity in ("HW", "BASE"):
             # Цель 3: пайплайн не определил device_type, AI предлагает
             if confidence == "high":

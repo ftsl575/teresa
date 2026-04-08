@@ -11,6 +11,12 @@ base_rules:
     entity_type: BASE
     rule_id: BASE-L-001
 
+  # Multi-socket / multi-U Base configurations → BASE, server
+  - field: option_name
+    pattern: '(?i)\b\d+S\s+Base\b|\b\d+[US/]+\d*\s*Base\b.*\bSupporting\b'
+    entity_type: BASE
+    rule_id: BASE-L-010-MULTI-SOCKET
+
 # ── SERVICE ──────────────────────────────────────────────────────────────────
 service_rules:
   - field: option_name
@@ -114,6 +120,24 @@ note_rules:
     pattern: '(?i)\bSystem\s+Documentation\b|\bWW\s+(?:System\s+)?Packaging\b'
     entity_type: NOTE
     rule_id: NOTE-L-040
+
+  # HDD Type Label / HDD Sequence → NOTE (before HW HDD rule)
+  - field: option_name
+    pattern: '(?i)\bHDD\s+(Type\s+Label|Sequence)\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-050-HDD-LABEL
+
+  # xU Package / General Config PKG → NOTE
+  - field: option_name
+    pattern: '(?i)\b\d+U\s+Package\b|\bGeneral\s+Config\s+PKG\b'
+    entity_type: NOTE
+    rule_id: NOTE-L-060-PKG
+
+  # PSU/Fan/Power Label (at end of string) → NOTE
+  - field: option_name
+    pattern: '(?i)\b(PSU|Fan|Power)\b.*\bLabel\s*$'
+    entity_type: NOTE
+    rule_id: NOTE-L-070-LABEL-SUFFIX
 
   # Standalone / Unconfigured / Auto-Derived items → NOTE
   - field: option_name
@@ -246,9 +270,9 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-005-BLANK-RISER
 
-  # Blank — SuperCap/Super Cap Holder Dummy, Fan Dummy, PSU Dummy, CPU Dummy
+  # Blank — SuperCap/Super Cap Holder Dummy, Fan Dummy, PSU Dummy, CPU Dummy, PCIe DUMMY
   - field: option_name
-    pattern: '(?i)\bSuper\s*Cap\s+Holder\s+Dummy\b|\b(?:Fan|PSU|CPU\s+\w+)\s+Dummy\b'
+    pattern: '(?i)\bSuper\s*Cap\s+Holder\s+Dummy\b|\b(?:Fan|PSU|CPU\s+\w+)\s+Dummy\b|\bPCIe\s+DUMMY\b|\bCPU\s+Dummy\b'
     entity_type: HW
     rule_id: HW-L-006-BLANK-SCAP
 
@@ -269,6 +293,18 @@ hw_rules:
     pattern: '(?i)\bRAID\s+\d{3}(?!.*\bSuperCap\b)'
     entity_type: HW
     rule_id: HW-L-008-RAID
+
+  # M.2 Tray / Interposer / Cage → accessory (before M.2 RAID Adapter)
+  - field: option_name
+    pattern: '(?i)\bM\.2\b.*\b(Tray|Interposer|Cage)\b'
+    entity_type: HW
+    rule_id: HW-L-036-M2-ACCESSORY
+
+  # M.2 SATA/NVMe x-Bay Adapter → raid_controller (before M.2 RAID Adapter)
+  - field: option_name
+    pattern: '(?i)\bM\.2\s+(?:SATA|NVMe).*\d+-Bay\s+Adapter\b'
+    entity_type: HW
+    rule_id: HW-L-037-M2-BAY-ADAPTER
 
   # M.2 RAID Adapter
   - field: option_name
@@ -306,9 +342,9 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-014-NVME
 
-  # HDD (exclude Filler and Label)
+  # HDD (exclude Filler, Label, Cage, Sequence)
   - field: option_name
-    pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label)\b)'
+    pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label|Cage|Sequence)\b)'
     entity_type: HW
     rule_id: HW-L-015-HDD
 
@@ -396,9 +432,9 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-033-EIA
 
-  # Retimer / RoT Module / Enablement Kit → accessory
+  # Retimer / RoT Module / Root of Trust Module / Enablement Kit → accessory
   - field: option_name
-    pattern: '(?i)\b(Retimer|RoT\s+Module|Enablement\s+Kit)\b'
+    pattern: '(?i)\b(Retimer|RoT\s+Module|Root\s+of\s+Trust\s+Module|Enablement\s+Kit)\b'
     entity_type: HW
     rule_id: HW-L-034
 
@@ -408,9 +444,9 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-035
 
-  # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, etc.
+  # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
   - field: option_name
-    pattern: '(?i)\b(System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+    pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
     entity_type: HW
     rule_id: HW-L-027-ACCESSORY
 
@@ -429,6 +465,12 @@ device_type_rules:
       pattern: '(?i)^[A-Z0-9]{4}CTO'
       device_type: server
       rule_id: DT-L-001-SERVER
+
+    # Multi-socket / multi-U Base → server
+    - field: option_name
+      pattern: '(?i)\b\d+S\s+Base\b|\b\d+[US/]+\d*\s*Base\b.*\bSupporting\b'
+      device_type: server
+      rule_id: DT-L-058-MULTI-SOCKET
 
     # CPU Clip → accessory (before CPU)
     - field: option_name
@@ -460,9 +502,9 @@ device_type_rules:
       device_type: gpu
       rule_id: DT-L-004-GPU
 
-    # Blank fillers — any Filler keyword plus Memory/SuperCap dummies
+    # Blank fillers — any Filler keyword plus Memory/SuperCap dummies, PCIe DUMMY, CPU Dummy
     - field: option_name
-      pattern: '(?i)\bFiller\b|\bMemory\s+Dummy\b|\bSuper\s*Cap\s+Holder\s+Dummy\b|\b(?:Fan|PSU|CPU\s+\w+)\s+Dummy\b'
+      pattern: '(?i)\bFiller\b|\bMemory\s+Dummy\b|\bSuper\s*Cap\s+Holder\s+Dummy\b|\b(?:Fan|PSU|CPU\s+\w+)\s+Dummy\b|\bPCIe\s+DUMMY\b|\bCPU\s+Dummy\b'
       device_type: blank_filler
       rule_id: DT-L-005-BLANK
 
@@ -471,6 +513,18 @@ device_type_rules:
       pattern: '(?i)\bRAID\s+\d{3}(?!.*\bSuperCap\b)'
       device_type: raid_controller
       rule_id: DT-L-006-RAID
+
+    # M.2 Tray / Interposer / Cage → accessory (before M.2 RAID Adapter)
+    - field: option_name
+      pattern: '(?i)\bM\.2\b.*\b(Tray|Interposer|Cage)\b'
+      device_type: accessory
+      rule_id: DT-L-056-M2-ACCESSORY
+
+    # M.2 SATA/NVMe x-Bay Adapter → raid_controller (before M.2 RAID Adapter)
+    - field: option_name
+      pattern: '(?i)\bM\.2\s+(?:SATA|NVMe).*\d+-Bay\s+Adapter\b'
+      device_type: raid_controller
+      rule_id: DT-L-057-M2-BAY-ADAPTER
 
     # M.2 RAID Adapter
     - field: option_name
@@ -508,9 +562,9 @@ device_type_rules:
       device_type: storage_nvme
       rule_id: DT-L-012-NVME
 
-    # HDD (exclude Filler and Label)
+    # HDD (exclude Filler, Label, Cage, Sequence)
     - field: option_name
-      pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label)\b)'
+      pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label|Cage|Sequence)\b)'
       device_type: storage_hdd
       rule_id: DT-L-013-HDD
 
@@ -592,9 +646,9 @@ device_type_rules:
       device_type: battery
       rule_id: DT-L-024-BATTERY
 
-    # Retimer / RoT Module / Enablement Kit → accessory
+    # Retimer / RoT Module / Root of Trust Module / Enablement Kit → accessory
     - field: option_name
-      pattern: '(?i)\b(Retimer|RoT\s+Module|Enablement\s+Kit)\b'
+      pattern: '(?i)\b(Retimer|RoT\s+Module|Root\s+of\s+Trust\s+Module|Enablement\s+Kit)\b'
       device_type: accessory
       rule_id: DT-L-054
 
@@ -604,9 +658,9 @@ device_type_rules:
       device_type: raid_controller
       rule_id: DT-L-055
 
-    # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, etc.
+    # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
     - field: option_name
-      pattern: '(?i)\b(System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|MB|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+      pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|MB|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
       device_type: accessory
       rule_id: DT-L-025-ACCESSORY
 
