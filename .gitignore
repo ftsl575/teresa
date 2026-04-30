@@ -11,3 +11,7 @@ output/
 test_Dell_R770.xlsx
 make_run_results.ps1
 teresa.zip
+
+# Archives and outputs
+*.zip
+OUTPUT/
