@@ -18,7 +18,7 @@
 **Изменить:**
 - `main.py` — одна строка в VENDOR_REGISTRY
 - `config.yaml` — одна строка в `vendor_rules`
-- При необходимости: `src/outputs/annotated_writer.py` — добавить tuple в VENDOR_EXTRA_COLS, если у нормализованных строк есть дополнительные поля для колонок в annotated Excel
+- При необходимости: `src/vendors/<vendor>/adapter.py` — переопределить `get_extra_cols()` (см. `VendorAdapter` в `src/vendors/base.py`), если у нормализованных строк есть дополнительные поля для колонок в annotated Excel. Образцы: `HPEAdapter.get_extra_cols()` (5 колонок), `LenovoAdapter.get_extra_cols()` (1 колонка), `CiscoAdapter.get_extra_cols()` (2 колонки). `annotated_writer.py` принимает их параметром `extra_cols` и трогать его не нужно.
 - `CHANGELOG.md`, `CURRENT_STATE.md` — после добавления вендора
 
 ---
@@ -92,7 +92,7 @@ python main.py --save-golden --input "C:\Users\G\Desktop\INPUT\<file>.xlsx" --ve
 
 ### Шаг 9: Дополнительные колонки в annotated Excel
 
-Если адаптер добавляет поля к нормализованной строке (как Cisco: line_number, service_duration_months), добавить соответствующие tuple в **VENDOR_EXTRA_COLS** в `src/outputs/annotated_writer.py`. Vendor extension columns are always added to annotated output.
+Если адаптер добавляет поля к нормализованной строке (как Cisco: `line_number`, `service_duration_months`; HPE: `product_type`, `extended_price`, `lead_time`, `config_name`, `is_factory_integrated`; Lenovo: `export_control`), переопредели `get_extra_cols()` в адаптере. Метод возвращает `list[tuple[str, str]]`, где tuple = `(имя_атрибута_на_NormalizedRow, заголовок_колонки_в_excel)`. Базовая реализация в `src/vendors/base.py:VendorAdapter.get_extra_cols()` возвращает `[]` (default). `main.py` передаёт результат в `generate_annotated_source_excel(..., extra_cols=adapter.get_extra_cols())` — `src/outputs/annotated_writer.py` редактировать НЕ нужно. Vendor extension columns всегда попадают в annotated output.
 
 ---
 
