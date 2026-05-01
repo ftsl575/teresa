@@ -1,0 +1,13 @@
+{"source_row_index": 10, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 11, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 12, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 13, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 14, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-HU-002-SWITCH", "device_type": "switch", "hw_type": null, "skus": ["98012053"]}
+{"source_row_index": 15, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 16, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SW-HU-002-SW-LICENSE", "device_type": null, "hw_type": null, "skus": ["88037BNL"]}
+{"source_row_index": 17, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 18, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-HU-005-PSU", "device_type": "psu", "hw_type": "psu", "skus": ["02314APU"]}
+{"source_row_index": 19, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 20, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
+{"source_row_index": 21, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-HU-006-TRANSCEIVER", "device_type": "transceiver", "hw_type": "transceiver", "skus": ["02313URF"]}
+{"source_row_index": 22, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
