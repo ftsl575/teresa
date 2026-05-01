@@ -13,10 +13,11 @@ state_rules:
 
 # ── BASE (server chassis) ──────────────────────────────────────────────────
 base_rules:
-  # BASE-XF-001 — FusionServer chassis (Intel 1288/2288/5288/5885 V6/V7 + AMD Genoa)
+  # BASE-XF-001 — FusionServer chassis (Intel 1288/2288/5288/5885 V6/V7 + AMD Genoa/Turin)
+  # Phase 4 calibration: added Turin to AMD branch (xf1 row 39).
   - rule_id: BASE-XF-001-CHASSIS
     field: option_name
-    pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+Genoa\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)'
+    pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)'
     entity_type: BASE
 
 # ── SERVICE / LOGISTIC / NOTE / CONFIG (empty placeholders) ────────────────
@@ -115,16 +116,22 @@ hw_rules:
   # 9. RAID Controller / Card / SAS/SATA RAID / RAID PCIE card
   # Per Q3: 'M.2 RAID PCIE card' = controller, NOT drive (M.2 SSD #5 is strict
   # about \bM\.2\s+SSD\b so it doesn't catch RAID-card variants).
+  # Phase 4 calibration: added '12G SAS RAID' and 'RAID-9NNN' alternatives
+  # for xf5/xf10 row pattern '...12G SAS RAID-9540-8i' (description starts
+  # with PCIE 4.0 X8-Vendor ID prefix, RAID keyword appears mid-string).
   - rule_id: HW-XF-009-RAID-CONTROLLER
     field: option_name
-    pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b'
+    pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b|\b12G\s+SAS\s+RAID\b|\bRAID-9\d{3}\b'
     entity_type: HW
 
   # 10. GPU accessory — MUST be BEFORE GPU rule
   # Per Q2: 'A800 auxiliary material package' is accessory, NOT GPU.
+  # Phase 4 calibration: added 'GPU Card Power Line' and 'Power Line Spare Pack'
+  # for xf5 row 135 'GPU Card Power Line Spare Pack(H100&L40&RTX4090...)'.
+  # Per stakeholder decision: GPU power line is accessory (cable for GPU install).
   - rule_id: HW-XF-010-GPU-ACCESSORY
     field: option_name
-    pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b'
+    pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b|\bGPU\s+Card\s+Power\s+Line\b|\bPower\s+Line\s+Spare\s+Pack\b'
     entity_type: HW
 
   # 11. HBA (FC HBA / Emulex) — ORDER-CRITICAL: BEFORE transceiver
@@ -154,9 +161,11 @@ hw_rules:
 
   # 15. Cable (per Q4: one bucket — High Speed Cable / Power Cable / BTB / Mini-SAS HD)
   # NOTE: pattern intentionally does NOT match bare 'SFP+/SFP28' (would steal NIC/HBA/transceiver).
+  # Phase 4 calibration: added 'Optical Cable Parts' for xf5 row 139
+  # 'Optical Cable Parts,MPO/PC,...' — per Q4 all cable forms -> hw_type=cable.
   - rule_id: HW-XF-015-CABLE
     field: option_name
-    pattern: '(?i)\bHigh\s+Speed\s+Cable\b|\bPower\s+Cable\b|\bBTB\s+Connector\s+module\b|\bMini[\s\-]SAS\s+HD\s+Cable\b'
+    pattern: '(?i)\bHigh\s+Speed\s+Cable\b|\bPower\s+Cable\b|\bBTB\s+Connector\s+module\b|\bMini[\s\-]SAS\s+HD\s+Cable\b|\bOptical\s+Cable\s+Parts\b'
     entity_type: HW
 
   # 16. Power Cord (region-specific PDU cord — distinct from generic Power Cable)
@@ -181,9 +190,11 @@ hw_rules:
   # NB: \bRISER\d*\b admits RISER, RISER1, RISER2, RISER3 — xf3 has
   # 'SLOT,RISER1&RISER2 module' and 'SLOT,SLOT10&11,RISER3 module',
   # both of which lack the SLOT(PCIE...) parenthetical.
+  # Phase 4 calibration: added 'IO Extended Module' for xf5 row 124
+  # '1*16X SLOT,CPU straight out IO Extended Module' — riser-class accessory.
   - rule_id: HW-XF-019-RISER
     field: option_name
-    pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b'
+    pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b|\bIO\s+Extended\s+Module\b'
     entity_type: HW
 
   # 20. Rail (Ball Bearing Rail Kit)
@@ -211,19 +222,19 @@ device_type_rules:
     - {rule_id: DT-XF-006-STORAGE-SSD,    field: option_name, pattern: '(?i)\bSSD\b.*?\bSATA\b|\bSSD\b.*?\bSAS\b',                                                                                       device_type: storage_ssd}
     - {rule_id: DT-XF-007-STORAGE-HDD,    field: option_name, pattern: '(?i)\bHDD\b.*?\b(?:SAS|SATA|NL[\s\-]?SAS)\b',                                                                                    device_type: storage_hdd}
     - {rule_id: DT-XF-008-SUPERCAP,       field: option_name, pattern: '(?i)\bRAID\s+Card\s+SuperCap\b|\bSuper\s+capacitor\s+module\b',                                                                  device_type: accessory}
-    - {rule_id: DT-XF-009-RAID,           field: option_name, pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b',                              device_type: raid_controller}
-    - {rule_id: DT-XF-010-GPU-ACCESSORY,  field: option_name, pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b',            device_type: accessory}
+    - {rule_id: DT-XF-009-RAID,           field: option_name, pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b|\b12G\s+SAS\s+RAID\b|\bRAID-9\d{3}\b',                              device_type: raid_controller}
+    - {rule_id: DT-XF-010-GPU-ACCESSORY,  field: option_name, pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b|\bGPU\s+Card\s+Power\s+Line\b|\bPower\s+Line\s+Spare\s+Pack\b',            device_type: accessory}
     - {rule_id: DT-XF-011-HBA,            field: option_name, pattern: '(?i)\bFC\s+HBA\b|\bHBA\s+Card\b|\bEmulex\b.*?\b(?:HBA|FC)\b',                                                                    device_type: hba}
     - {rule_id: DT-XF-012-NIC,            field: option_name, pattern: '(?i)\bEthernet\s+(?:Adapter|Card)\b|\bNetwork\s+Card\b|\bNIC\b',                                                                 device_type: nic}
     - {rule_id: DT-XF-013-GPU,            field: option_name, pattern: '(?i)\bTesla\s+(?:T4|H100|A100|L\d{2})\b|\bVideo\s+Card,\s*GPU\b|\bGPU\b.*?\bAccelerator\b',                                      device_type: gpu}
     - {rule_id: DT-XF-014-TRANSCEIVER,    field: option_name, pattern: '(?i)\bOptical\s+transceiver\b|\bHigh\s+Speed\s+Transceiver\b',                                                                   device_type: transceiver}
-    - {rule_id: DT-XF-015-CABLE,          field: option_name, pattern: '(?i)\bHigh\s+Speed\s+Cable\b|\bPower\s+Cable\b|\bBTB\s+Connector\s+module\b|\bMini[\s\-]SAS\s+HD\s+Cable\b',                     device_type: cable}
+    - {rule_id: DT-XF-015-CABLE,          field: option_name, pattern: '(?i)\bHigh\s+Speed\s+Cable\b|\bPower\s+Cable\b|\bBTB\s+Connector\s+module\b|\bMini[\s\-]SAS\s+HD\s+Cable\b|\bOptical\s+Cable\s+Parts\b',                     device_type: cable}
     - {rule_id: DT-XF-016-POWER-CORD,     field: option_name, pattern: '(?i)\bPower\s+Cords\s+Cable\b',                                                                                                  device_type: power_cord}
     - {rule_id: DT-XF-017-FAN,            field: option_name, pattern: '(?i)\bFan\s+module\b',                                                                                                            device_type: fan}
     - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bAir\s+duct\b|\bFan\s+bracket\b|\bExtended\s+radiator\b|\bBackplane\b',                                                     device_type: accessory}
-    - {rule_id: DT-XF-019-RISER,          field: option_name, pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b',                                                              device_type: riser}
+    - {rule_id: DT-XF-019-RISER,          field: option_name, pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b|\bIO\s+Extended\s+Module\b',                                                              device_type: riser}
     - {rule_id: DT-XF-020-RAIL,           field: option_name, pattern: '(?i)\bBall\s+Bearing\s+Rail\s+Kit\b',                                                                                            device_type: rail}
-    - {rule_id: DT-XF-021-CHASSIS,        field: option_name, pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+Genoa\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)', device_type: server}
+    - {rule_id: DT-XF-021-CHASSIS,        field: option_name, pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)', device_type: server}
 
 # ── hw_type_rules (device_type → hw_type translation) ──────────────────────
 hw_type_rules:

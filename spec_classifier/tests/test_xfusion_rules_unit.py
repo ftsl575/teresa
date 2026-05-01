@@ -453,3 +453,64 @@ def test_huawei_disk_unit_does_not_match_xfusion(xfusion_ruleset):
     # Must not match any XF rule (unrelated description)
     assert "-XF-" not in rid, f"Huawei disk unit matched xfusion rule: {rid}"
     assert r.entity_type == EntityType.UNKNOWN
+
+
+# ── Phase 4 calibration tests ───────────────────────────────────────────────
+
+def test_amd_turin_chassis_fires_as_base(xfusion_ruleset):
+    """xf1 row 39 — AMD Turin chassis must be BASE (per Phase 4 calibration)."""
+    desc = "AMD Turin (8*3.5inch SAS/SATA HDD Through Chassis)(For oversea)"
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.BASE, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.device_type == "server", f"device_type={r.device_type}"
+
+
+def test_sas_raid_9540_fires_as_storage_controller(xfusion_ruleset):
+    """xf5/xf10 rows — '12G SAS RAID-9540-8i' must be storage_controller.
+    Description starts with PCIE 4.0 X8-Vendor ID prefix; RAID appears mid-string."""
+    desc = (
+        "PCIE 4.0 X8-Vendor ID 1000-Device ID 10E6-1-Subvendor ID 1000-"
+        "Subdevice ID 40D5-12G SAS RAID-9540-8i"
+    )
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.hw_type == "storage_controller", f"hw_type={r.hw_type}"
+    assert r.device_type == "raid_controller", f"device_type={r.device_type}"
+
+
+def test_io_extended_module_fires_as_riser(xfusion_ruleset):
+    """xf5 row 124 — 'IO Extended Module' under module='Riser Card' must be riser."""
+    desc = "1*16X SLOT,CPU straight out IO Extended Module"
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.hw_type == "riser", f"hw_type={r.hw_type}"
+    assert r.device_type == "riser", f"device_type={r.device_type}"
+
+
+def test_gpu_card_power_line_fires_as_accessory_not_cable(xfusion_ruleset):
+    """xf5 row 135 — GPU power line must be accessory (stakeholder decision Phase 4).
+    GPU-ACCESSORY rule (#10) must fire before CABLE rule (#15) — order-critical guard."""
+    desc = (
+        "GPU Card Power Line Spare Pack(H100&L40&RTX4090 Card "
+        "Power Line,PCIE 16Pin to PCIE 16Pin)"
+    )
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.hw_type == "accessory", f"hw_type={r.hw_type} (expected accessory, not cable)"
+    assert r.device_type == "accessory", f"device_type={r.device_type}"
+    assert "GPU-ACCESSORY" in (r.matched_rule_id or ""), (
+        f"Must match GPU-ACCESSORY rule, got: {r.matched_rule_id}"
+    )
+
+
+def test_optical_cable_parts_mpo_fires_as_cable(xfusion_ruleset):
+    """xf5 row 139 — Optical Cable Parts MPO must be cable.
+    Per Q4 decision: all cable forms (SAS / power / BTB / optical MPO) -> hw_type=cable."""
+    desc = (
+        "Optical Cable Parts,MPO/PC,MPO/PC,Multi-mode,5m,8 cores,"
+        "0m/0m,GJFH-8A1a.2(OM3),3.5mm,LSZH,60mm MPO,Bending insensitive"
+    )
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.hw_type == "cable", f"hw_type={r.hw_type}"
+    assert r.device_type == "cable", f"device_type={r.device_type}"
