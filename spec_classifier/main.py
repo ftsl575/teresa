@@ -37,6 +37,7 @@ from src.vendors.cisco.adapter import CiscoAdapter
 from src.vendors.hpe.adapter import HPEAdapter
 from src.vendors.lenovo.adapter import LenovoAdapter
 from src.vendors.huawei.adapter import HuaweiAdapter
+from src.vendors.xfusion.adapter import XFusionAdapter
 
 VENDOR_REGISTRY: dict[str, type] = {
     "dell": DellAdapter,
@@ -44,6 +45,7 @@ VENDOR_REGISTRY: dict[str, type] = {
     "hpe": HPEAdapter,
     "lenovo": LenovoAdapter,
     "huawei": HuaweiAdapter,
+    "xfusion": XFusionAdapter,
 }
 
 

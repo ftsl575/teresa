@@ -22,3 +22,4 @@ vendor_rules:
   hpe: "rules/hpe_rules.yaml"
   lenovo: "rules/lenovo_rules.yaml"
   huawei: "rules/huawei_rules.yaml"
+  xfusion: "rules/xfusion_rules.yaml"

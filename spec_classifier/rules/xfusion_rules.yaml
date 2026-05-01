@@ -1,0 +1,55 @@
+version: "1.0.0"
+
+# xFusion FusionServer eDeal classification rules.
+# Phase 1 SCAFFOLD — empty sections; real rules land in Phase 3.
+# Rule_id namespace: XF (e.g. BASE-XF-001, HW-XF-005-PSU).
+
+# ── STATE ──────────────────────────────────────────────────────────────────
+# All xFusion eDeal rows are PRESENT (same model as Huawei — no ABSENT/DISABLED markers).
+state_rules:
+  absent_keywords: []
+  present_override_keywords: []
+
+# ── BASE ───────────────────────────────────────────────────────────────────
+base_rules: []
+# TODO Phase 3: 1-2 BASE rules for FusionServer chassis (per VENDOR_FORMAT_SPEC §5).
+
+# ── SERVICE ────────────────────────────────────────────────────────────────
+service_rules: []
+# TODO Phase 3 (preventive): HiCare / Premier Support / Warranty patterns.
+# No SERVICE rows observed in 10 samples — empty until first SERVICE file.
+
+# ── LOGISTIC ───────────────────────────────────────────────────────────────
+logistic_rules: []
+# TODO Phase 3 (preventive): Freight / Insurance — currently live on Summary
+# sheet (not parsed), same pattern as Huawei.
+
+# ── SOFTWARE ───────────────────────────────────────────────────────────────
+software_rules: []
+# TODO Phase 3: SW-XF-001-SKU-PREFIX (^88\w{5,}) + SW-XF-002-LICENSE.
+
+# ── NOTE ───────────────────────────────────────────────────────────────────
+note_rules: []
+# None observed in samples.
+
+# ── CONFIG ─────────────────────────────────────────────────────────────────
+config_rules: []
+# Sub-modules collapsed into module_name by normalizer; no CONFIG rows reach
+# classifier (same model as Huawei).
+
+# ── HW rules ───────────────────────────────────────────────────────────────
+hw_rules: []
+# TODO Phase 3 (~10 rules, ORDER-CRITICAL: HBA -> NIC -> transceiver per
+# VENDOR_FORMAT_SPEC §5 sketch + master-plan §3.1).
+
+# ── device_type_rules ──────────────────────────────────────────────────────
+device_type_rules:
+  applies_to: [HW, LOGISTIC, BASE]
+  rules: []
+# TODO Phase 3 (~14 rules).
+
+# ── hw_type_rules ──────────────────────────────────────────────────────────
+hw_type_rules:
+  applies_to: [HW]
+  device_type_map: {}
+# TODO Phase 3: 14-entry device_type_map per VENDOR_FORMAT_SPEC §5.

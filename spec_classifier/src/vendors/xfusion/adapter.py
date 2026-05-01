@@ -1,11 +1,15 @@
 import openpyxl
 from src.vendors.base import VendorAdapter
+from src.vendors.xfusion.parser import parse_excel
+from src.vendors.xfusion.normalizer import normalize_xfusion_rows
 
 
 class XFusionAdapter(VendorAdapter):
     """
-    Phase 0 STUB — only `can_parse` is implemented.
-    Full implementation lands in Phase 1 (parser/normalizer/registry).
+    xFusion FusionServer eDeal adapter.
+    can_parse — Phase 0 (mutually exclusive twin with HuaweiAdapter).
+    parse / normalize / get_rules_file / extras — Phase 1.
+    Real classification rules land in Phase 3 (rules/xfusion_rules.yaml currently scaffold).
     """
 
     def __init__(self, config: dict = None):
@@ -50,22 +54,31 @@ class XFusionAdapter(VendorAdapter):
             wb.close()
 
     def parse(self, filepath: str):
-        raise NotImplementedError(
-            "XFusionAdapter.parse — Phase 1 (xfusion/parser.py not yet created)"
-        )
+        return parse_excel(filepath)
 
     def normalize(self, raw_rows):
-        raise NotImplementedError(
-            "XFusionAdapter.normalize — Phase 1 (xfusion/normalizer.py not yet created)"
-        )
+        return normalize_xfusion_rows(raw_rows)
 
     def get_rules_file(self):
-        raise NotImplementedError(
-            "XFusionAdapter.get_rules_file — Phase 1.4 (rules/xfusion_rules.yaml not yet created)"
-        )
-
-    def generates_branded_spec(self) -> bool:
-        raise NotImplementedError("XFusionAdapter.generates_branded_spec — Phase 1")
+        vendor_rules = self._config.get("vendor_rules", {})
+        return vendor_rules.get("xfusion", "rules/xfusion_rules.yaml")
 
     def get_vendor_stats(self, normalized_rows: list) -> dict:
-        raise NotImplementedError("XFusionAdapter.get_vendor_stats — Phase 2")
+        # Phase 1 minimal stub — real implementation in Phase 2 per CC Q4
+        # (server_configs_count, unique_models_count, spare_parts_groups_count).
+        return {}
+
+    def get_source_sheet_name(self) -> str | None:
+        return "AllInOne"
+
+    def get_extra_cols(self) -> list[tuple[str, str]]:
+        return [
+            ("position_no",     "position_no"),
+            ("model",           "model"),
+            ("unit_qty",        "unit_qty"),
+            ("total_price",     "total_price"),
+            ("lead_time_days",  "lead_time_days"),
+        ]
+
+    def generates_branded_spec(self) -> bool:
+        return True
