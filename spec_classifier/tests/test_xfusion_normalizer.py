@@ -318,3 +318,69 @@ def test_no_sku_shape_label_is_header_not_item():
 
 def test_empty_input_returns_empty_list():
     assert normalize_xfusion_rows([]) == []
+
+
+# ---------------------------------------------------------------------------
+# Test 15: get_vendor_stats — CC Q4 three counters (Phase 2)
+# ---------------------------------------------------------------------------
+
+def test_vendor_stats():
+    """CC Q4: get_vendor_stats returns server_configs_count,
+    unique_models_count, spare_parts_groups_count."""
+    from src.vendors.xfusion.adapter import XFusionAdapter
+
+    def _item(idx, *, group_name, product_name, option_id):
+        return XFusionNormalizedRow(
+            source_row_index=idx,
+            row_kind=RowKind.ITEM,
+            group_name=group_name,
+            group_id=None,
+            product_name=product_name,
+            module_name="",
+            option_name="desc",
+            option_id=option_id,
+            skus=[option_id],
+            qty=1,
+            option_price=100.0,
+        )
+
+    def _header(idx, *, group_name=None, product_name=None):
+        return XFusionNormalizedRow(
+            source_row_index=idx,
+            row_kind=RowKind.HEADER,
+            group_name=group_name,
+            group_id=None,
+            product_name=product_name,
+            module_name="",
+            option_name="",
+            option_id=None,
+            skus=[],
+            qty=0,
+            option_price=0.0,
+        )
+
+    rows = [
+        # group A: Spec_Server_A_2025, product "1288H V7" — 3 ITEMs
+        _header(10, group_name="Spec_Server_A_2025"),
+        _item(11, group_name="Spec_Server_A_2025", product_name="1288H V7", option_id="0231Y091"),
+        _item(12, group_name="Spec_Server_A_2025", product_name="1288H V7", option_id="0620Y006-006"),
+        _item(13, group_name="Spec_Server_A_2025", product_name="1288H V7", option_id="0253Y189"),
+        # group B: Spec_Server_B_2025, product "2288H V7" — 2 ITEMs
+        _header(14, group_name="Spec_Server_B_2025"),
+        _item(15, group_name="Spec_Server_B_2025", product_name="2288H V7", option_id="0231Y025"),
+        _item(16, group_name="Spec_Server_B_2025", product_name="2288H V7", option_id="0255Y686"),
+        # group C: Spec_Server_C_2025, product "1288H V7" (duplicate model) — 1 ITEM
+        _header(17, group_name="Spec_Server_C_2025"),
+        _item(18, group_name="Spec_Server_C_2025", product_name="1288H V7", option_id="21243789"),
+        # group D: Spare Parts — 2 ITEMs (product "5288 V7" from inherited level-1)
+        _header(19, group_name="5288 V7 Spare Parts Overseas"),
+        _item(20, group_name="5288 V7 Spare Parts Overseas", product_name="5288 V7", option_id="0231Y091"),
+        _item(21, group_name="5288 V7 Spare Parts Overseas", product_name="5288 V7", option_id="0253Y189"),
+    ]
+
+    stats = XFusionAdapter().get_vendor_stats(rows)
+    assert stats == {
+        "server_configs_count":    3,   # A, B, C — spare parts excluded
+        "unique_models_count":     3,   # "1288H V7", "2288H V7", "5288 V7"
+        "spare_parts_groups_count": 1,  # group D only
+    }

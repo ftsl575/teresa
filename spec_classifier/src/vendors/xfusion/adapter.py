@@ -64,9 +64,31 @@ class XFusionAdapter(VendorAdapter):
         return vendor_rules.get("xfusion", "rules/xfusion_rules.yaml")
 
     def get_vendor_stats(self, normalized_rows: list) -> dict:
-        # Phase 1 minimal stub — real implementation in Phase 2 per CC Q4
-        # (server_configs_count, unique_models_count, spare_parts_groups_count).
-        return {}
+        """
+        Phase 2 — vendor_stats per CC Q4:
+          - server_configs_count: distinct group_name values among ITEM rows,
+            EXCLUDING Spare Parts groups (substring "spare parts", case-insensitive).
+          - unique_models_count: distinct product_name values among ITEM rows
+            (includes Spare Parts ITEMs — they inherit their server's product_name).
+          - spare_parts_groups_count: distinct group_name values that contain
+            "spare parts" (case-insensitive substring).
+        Only ITEM rows are counted; HEADER rows are ignored.
+        """
+        from src.core.normalizer import RowKind
+
+        item_rows = [r for r in normalized_rows if getattr(r, "row_kind", None) == RowKind.ITEM]
+
+        all_groups = {r.group_name for r in item_rows if r.group_name}
+        spare_parts_groups = {g for g in all_groups if "spare parts" in g.lower()}
+        server_config_groups = all_groups - spare_parts_groups
+
+        unique_models = {r.product_name for r in item_rows if getattr(r, "product_name", None)}
+
+        return {
+            "server_configs_count": len(server_config_groups),
+            "unique_models_count": len(unique_models),
+            "spare_parts_groups_count": len(spare_parts_groups),
+        }
 
     def get_source_sheet_name(self) -> str | None:
         return "AllInOne"
