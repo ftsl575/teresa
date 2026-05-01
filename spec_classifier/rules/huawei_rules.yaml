@@ -8,9 +8,9 @@ state_rules:
 
 # ── BASE ───────────────────────────────────────────────────────────────────
 base_rules:
-  # BASE-HU-001 — OceanStor storage controller enclosure
+  # BASE-HU-001 — Storage controller enclosure (Dorado V6/V7 + 2200/5300 series)
   - field: option_name
-    pattern: '(?i)\bOceanStor\b.*\b(?:Dual\s+(?:Ctrl|Controllers)|Cache)\b'
+    pattern: '(?i)\bDual\s+(?:Ctrl|Controllers)\b.*\b\d+\s*(?:GB|TB)\s+Cache\b'
     entity_type: BASE
     rule_id: BASE-HU-001-OCEANSTOR
 
@@ -57,6 +57,16 @@ software_rules:
     entity_type: SOFTWARE
     rule_id: SW-HU-003-LICENSE-GENERIC
 
+  # SW-HU-004 — SKU prefix fallback (all Huawei software SKUs start with 88)
+  # Catches descriptions without "License" / "SW License" / "Software *",
+  # e.g. SKU 88038NCX "SAN Advanced Package(Including ...)".
+  # Pattern: 88 + 5+ alphanumeric (covers both 8-char form 88036XNC and
+  # longer all-digit form 8803011267).
+  - field: option_id
+    pattern: '^88\w{5,}'
+    entity_type: SOFTWARE
+    rule_id: SW-HU-004-SKU-PREFIX
+
 # ── NOTE ───────────────────────────────────────────────────────────────────
 note_rules: []
 
@@ -98,17 +108,18 @@ hw_rules:
     entity_type: HW
     rule_id: HW-HU-005-PSU
 
-  # HW-HU-006 — Optical Transceiver
-  - field: option_name
-    pattern: '(?i)\bOptical\s+Transceiver\b'
-    entity_type: HW
-    rule_id: HW-HU-006-TRANSCEIVER
-
   # HW-HU-007 — Cable variants (Patch Cord, Optical Cable, High Speed Cable, Mini SAS HD)
+  # Must come BEFORE HW-HU-006: AOC cables include "Optical Transceiver" in name.
   - field: option_name
     pattern: '(?i)\b(?:Patch\s+Cord|Optical\s+Cable\s+Parts|High\s+Speed\s+Cable|Mini\s+SAS\s+HD)\b'
     entity_type: HW
     rule_id: HW-HU-007-CABLE
+
+  # HW-HU-006 — Optical Transceiver (leaf SFP modules; placed AFTER cable rule)
+  - field: option_name
+    pattern: '(?i)\bOptical\s+Transceiver\b'
+    entity_type: HW
+    rule_id: HW-HU-006-TRANSCEIVER
 
   # HW-HU-008 — Disk Enclosure (JBOD shelf, NOT Disk Unit) — CC #7
   - field: option_name
@@ -122,9 +133,9 @@ device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
   rules:
     # ── BASE-row device_types ────────────────────────────────────────────
-    # BASE-HU-DT-001 — OceanStor → storage_system
+    # BASE-HU-DT-001 — Controller enclosure → storage_system
     - field: option_name
-      pattern: '(?i)\bOceanStor\b.*\b(?:Dual\s+(?:Ctrl|Controllers)|Cache)\b'
+      pattern: '(?i)\bDual\s+(?:Ctrl|Controllers)\b.*\b\d+\s*(?:GB|TB)\s+Cache\b'
       device_type: storage_system
       rule_id: BASE-HU-DT-001-STORAGE-SYSTEM
 
@@ -171,17 +182,18 @@ device_type_rules:
       device_type: psu
       rule_id: DT-HU-005-PSU
 
-    # DT-HU-006 — Optical Transceiver → transceiver
-    - field: option_name
-      pattern: '(?i)\bOptical\s+Transceiver\b'
-      device_type: transceiver
-      rule_id: DT-HU-006-TRANSCEIVER
-
     # DT-HU-007 — Cable variants → sfp_cable
+    # Must come BEFORE DT-HU-006: AOC cables include "Optical Transceiver" in name.
     - field: option_name
       pattern: '(?i)\b(?:Patch\s+Cord|Optical\s+Cable\s+Parts|High\s+Speed\s+Cable|Mini\s+SAS\s+HD)\b'
       device_type: sfp_cable
       rule_id: DT-HU-007-CABLE
+
+    # DT-HU-006 — Optical Transceiver → transceiver (placed AFTER cable rule)
+    - field: option_name
+      pattern: '(?i)\bOptical\s+Transceiver\b'
+      device_type: transceiver
+      rule_id: DT-HU-006-TRANSCEIVER
 
     # DT-HU-008 — Disk Enclosure (JBOD shelf) → accessory (CC #7)
     - field: option_name

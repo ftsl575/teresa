@@ -208,3 +208,63 @@ def test_first_match_wins_nvme_before_hdd(huawei_ruleset):
     assert result.device_type == "storage_nvme", (
         f"Expected device_type=storage_nvme, got {result.device_type}"
     )
+
+
+# ── Phase 3.6: edge case fixes ─────────────────────────────────────────────
+
+def test_BASE_HU_001_oceanstor_2200_no_brand_name(huawei_ruleset):
+    """
+    OceanStor 2200 controller row lacks the brand name in option_name
+    (brand only in parent rollup which the parser strips). Updated regex
+    must match by 'Dual Controllers' + '<N>GB Cache' instead.
+    """
+    r = _row("2200(2U, Dual Controllers, SAS, AC\u00a0V HVDC, 32GB Cache, 4*1Gb ETH,...)")
+    result = classify_row(r, huawei_ruleset)
+    assert result.entity_type == EntityType.BASE
+    assert result.matched_rule_id == "BASE-HU-001-OCEANSTOR"
+
+
+def test_BASE_HU_001_dorado_v7_no_v6_suffix(huawei_ruleset):
+    """
+    Dorado V7 series (no 'V6' suffix, gap before parenthesis) still matches:
+    new regex requires 'Dual Ctrl/Controllers' + '<N>(GB|TB) Cache'.
+    """
+    r = _row("OceanStor Dorado 6000 (2U,Dual Ctrl,NVMe,AC\u00a0V HVDC,2TB Cache,4*100Gb RDMA,...)")
+    result = classify_row(r, huawei_ruleset)
+    assert result.entity_type == EntityType.BASE
+    assert result.matched_rule_id == "BASE-HU-001-OCEANSTOR"
+
+
+def test_SW_HU_004_san_advanced_package_via_sku_prefix(huawei_ruleset):
+    """
+    SKU 88038NCX 'SAN Advanced Package(Including DeviceManager,DME IQ,...)'
+    has no License/Software keyword in name → must fall back to option_id
+    prefix rule SW-HU-004 (all Huawei software SKUs start with 88).
+    """
+    r = _row(
+        "SAN Advanced Package(Including DeviceManager,DME IQ,...)",
+        option_id="88038NCX",
+    )
+    result = classify_row(r, huawei_ruleset)
+    assert result.entity_type == EntityType.SOFTWARE
+    assert result.matched_rule_id == "SW-HU-004-SKU-PREFIX"
+
+
+def test_aoc_cable_classified_as_cable_not_transceiver(huawei_ruleset):
+    """
+    AOC cable name contains 'Optical Cable Parts' AND 'Optical Transceiver'.
+    Cable rule (HW-HU-007 / DT-HU-007) must win over transceiver rule
+    (HW-HU-006 / DT-HU-006) due to ordering.
+    """
+    r = _row(
+        "Optical Cable Parts,SFP28 to SFP28,25G,850nm,0.01km,With Two Optical Transceiver"
+    )
+    result = classify_row(r, huawei_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.matched_rule_id == "HW-HU-007-CABLE", (
+        f"Expected HW-HU-007-CABLE (cable wins over transceiver), "
+        f"got {result.matched_rule_id}"
+    )
+    assert result.device_type == "sfp_cable", (
+        f"Expected device_type=sfp_cable, got {result.device_type}"
+    )
