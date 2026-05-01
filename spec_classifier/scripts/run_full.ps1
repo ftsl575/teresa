@@ -96,6 +96,8 @@ if (-not $TestsOnly) {
         if (Test-Path (Join-Path $InputRoot "dell")) { $vendorsToRun += "dell" }
         if (Test-Path (Join-Path $InputRoot "cisco")) { $vendorsToRun += "cisco" }
         if (Test-Path (Join-Path $InputRoot "hpe")) { $vendorsToRun += "hpe" }
+        if (Test-Path (Join-Path $InputRoot "lenovo")) { $vendorsToRun += "lenovo" }
+        if (Test-Path (Join-Path $InputRoot "huawei")) { $vendorsToRun += "huawei" }
     }
     $batchLog = Join-Path $DiagDir "batch.log"
     foreach ($v in $vendorsToRun) {

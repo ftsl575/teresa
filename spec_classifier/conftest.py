@@ -149,7 +149,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         and input_root.exists()
         and skipped > 0
     ):
-        vendor_names = ["dell", "cisco", "hpe"]
+        vendor_names = ["dell", "cisco", "hpe", "lenovo", "huawei"]
         has_vendor_subdirs = any(
             (input_root / v).exists() and any((input_root / v).glob("*.xlsx"))
             for v in vendor_names
