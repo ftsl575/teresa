@@ -31,7 +31,7 @@ HW_TYPE_VOCAB = frozenset({
     # Вычислительные компоненты
     "cpu", "memory", "gpu",
     # Подсистема хранения
-    "storage_drive", "storage_controller", "hba", "backplane", "io_module",
+    "storage_drive", "storage_enclosure", "storage_controller", "hba", "backplane", "io_module",
     # Сеть
     "network_adapter", "transceiver", "cable",
     # Питание

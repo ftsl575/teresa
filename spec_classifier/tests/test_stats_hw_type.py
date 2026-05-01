@@ -30,7 +30,7 @@ EXPECTED_DL1_HW_TYPE_TOTAL = sum(EXPECTED_DL1_HW_TYPE_COUNTS.values())  # 20
 
 
 def test_hw_type_vocab():
-    assert len(HW_TYPE_VOCAB) == 25
+    assert len(HW_TYPE_VOCAB) == 26
     assert all(isinstance(v, str) and v for v in HW_TYPE_VOCAB)
     assert all(v == v.lower() for v in HW_TYPE_VOCAB)
 
@@ -70,3 +70,8 @@ def test_hw_type_counts_sum_le_hw_entity_count(dl1_stats):
     assert total_hw_type <= hw_count, (
         f"sum(hw_type_counts)={total_hw_type} should be <= entity_type_counts['HW']={hw_count}"
     )
+
+
+def test_storage_enclosure_in_vocab():
+    """PR-1 (Q2): storage_enclosure must be a recognised hw_type for cross-vendor enclosures."""
+    assert "storage_enclosure" in HW_TYPE_VOCAB

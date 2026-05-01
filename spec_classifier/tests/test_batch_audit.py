@@ -153,6 +153,12 @@ def test_e7_hw_type_not_in_vocab():
     assert any("E7:" in i for i in issues)
 
 
+def test_e7_storage_enclosure_passes():
+    """PR-1 (Q2): storage_enclosure ∈ HW_TYPE_VOCAB → E7 must NOT fire."""
+    issues = validate_row(_row(hw_type="storage_enclosure", device_type="storage_enclosure"), "hpe")
+    assert not any("E7:" in i for i in issues)
+
+
 # ---------------------------------------------------------------------------
 # E8 — HW missing hw_type
 # ---------------------------------------------------------------------------

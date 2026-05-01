@@ -44,7 +44,7 @@ if hasattr(sys.stderr, "reconfigure") and sys.stderr.encoding \
 HW_TYPE_VOCAB = frozenset({
     "server", "switch", "storage_system", "wireless_ap",
     "cpu", "memory", "gpu",
-    "storage_drive", "storage_controller", "hba", "backplane", "io_module",
+    "storage_drive", "storage_enclosure", "storage_controller", "hba", "backplane", "io_module",
     "network_adapter", "transceiver", "cable",
     "psu", "fan", "heatsink",
     "riser", "chassis", "rail", "blank_filler",
@@ -348,7 +348,7 @@ DEVICE_TYPE_ALIASES = {
 # "Disabled" строка это HW ABSENT а не NOTE; chassis это физика а не CONFIG
 ENTITY_TRUST_PIPELINE = {"LOGISTIC", "SOFTWARE", "SERVICE", "CONFIG", "BASE"}
 # hw_type значения где entity=HW всегда правильный (chassis — физический корпус)
-HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory", "blank_filler"}
+HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory", "blank_filler", "storage_enclosure"}
 
 # device_type значения где пайплайн всегда прав — AI часто ошибается
 # cable kit ≠ accessory, battery/capacitor ≠ accessory, rail ≠ accessory
