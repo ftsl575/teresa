@@ -124,6 +124,10 @@ E4_STATE_VALIDATORS: dict = {
         "type": "unexpected_states",
         "states": ["ABSENT", "DISABLED"],
     },
+    "xfusion": {
+        "type": "unexpected_states",
+        "states": ["ABSENT", "DISABLED"],
+    },
 }
 
 
