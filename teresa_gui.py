@@ -2,7 +2,7 @@
 teresa_gui.py — PyQt6 GUI front-end for run.ps1
 
 Layout:
-  Left  — vendor buttons (Dell / Cisco / HPE / Lenovo / Huawei / xFusion-disabled)
+  Left  — vendor buttons (Dell / Cisco / HPE / Lenovo / Huawei / xFusion)
           + "Full Pipeline" button + AI toggle + Tests toggle
   Right — OpenAI key field with "Save to env" button
           + status table showing which step is running / done / failed
@@ -35,8 +35,8 @@ from PyQt6.QtWidgets import (
 
 # ─── Configuration ──────────────────────────────────────────────────────────
 
-VENDORS_ACTIVE = ["dell", "cisco", "hpe", "lenovo", "huawei"]
-VENDORS_DISABLED = ["xfusion"]  # not yet integrated
+VENDORS_ACTIVE = ["dell", "cisco", "hpe", "lenovo", "huawei", "xfusion"]
+VENDORS_DISABLED = []
 
 REPO_ROOT = Path(__file__).resolve().parent
 RUN_PS1 = REPO_ROOT / "run.ps1"
@@ -275,20 +275,11 @@ class TeresaWindow(QMainWindow):
             "hpe": "HPE",
             "lenovo": "Lenovo",
             "huawei": "Huawei",
+            "xfusion": "xFusion",
         }
         for v in VENDORS_ACTIVE:
             btn = QPushButton(f"  ▶  {vendor_labels.get(v, v.title())}")
             btn.clicked.connect(lambda _checked, vendor=v: self._run_vendor(vendor))
-            vendor_layout.addWidget(btn)
-
-        for v in VENDORS_DISABLED:
-            btn = QPushButton(f"  ▶  {v.title()}  (not yet integrated)")
-            btn.setEnabled(False)
-            btn.setToolTip(
-                "xFusion adapter not yet implemented.\n"
-                "Run the vendor integration cycle first "
-                "(see prompts/00_VENDOR-RECON.md)."
-            )
             vendor_layout.addWidget(btn)
 
         layout.addWidget(vendor_box)
