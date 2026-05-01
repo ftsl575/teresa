@@ -42,8 +42,7 @@ if (Test-Path $ConfigLocal) {
 Set-Location $SpecDir
 
 # Active vendors (kept here as single source of truth for the script).
-# To add xfusion later: just append "xfusion" to this list once src/vendors/xfusion/ is ready.
-$ALL_VENDORS = @("dell", "cisco", "hpe", "lenovo", "huawei")
+$ALL_VENDORS = @("dell", "cisco", "hpe", "lenovo", "huawei", "xfusion")
 
 if ($Vendor) {
     if ($ALL_VENDORS -notcontains $Vendor) {

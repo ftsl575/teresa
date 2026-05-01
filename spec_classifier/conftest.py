@@ -89,6 +89,16 @@ def get_input_root_huawei() -> Path:
     return sub if sub.exists() else base
 
 
+def get_input_root_lenovo() -> Path:
+    """Resolve input path for Lenovo files: paths.input_root/lenovo or INPUT directly."""
+    config = load_config()
+    raw = (config.get("paths") or {}).get("input_root") or "input"
+    p = Path(raw)
+    base = p if p.is_absolute() else project_root() / p
+    sub = base / "lenovo"
+    return sub if sub.exists() else base
+
+
 def get_input_root_xfusion() -> Path:
     """Resolve input path for xFusion files: paths.input_root/xfusion or INPUT directly."""
     config = load_config()
@@ -159,7 +169,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         and input_root.exists()
         and skipped > 0
     ):
-        vendor_names = ["dell", "cisco", "hpe", "lenovo", "huawei"]
+        vendor_names = ["dell", "cisco", "hpe", "lenovo", "huawei", "xfusion"]
         has_vendor_subdirs = any(
             (input_root / v).exists() and any((input_root / v).glob("*.xlsx"))
             for v in vendor_names
