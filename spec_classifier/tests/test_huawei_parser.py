@@ -173,3 +173,53 @@ def test_huawei_can_parse_negative_other_vendors():
         assert result is False, (
             f"HuaweiAdapter.can_parse() returned True for non-Huawei file: {path.name}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Test 7: subcategory rollup rows must NOT survive parser cleansing
+# ---------------------------------------------------------------------------
+
+def test_huawei_parser_rejects_subcategory_rollup_rows_hu1():
+    """
+    hu1.xlsx contains subcategory rollup-rows where col 3 contains
+    descriptive text (e.g. "Mainframe", "Software", "Power") instead of
+    a real SKU. Parser must treat these as HEADER rows by setting
+    Part Number to None / empty string.
+
+    Real SKUs are ≤ 12-character alphanumeric without whitespace.
+    """
+    path = _huawei_input_dir() / "hu1.xlsx"
+    _skip_if_missing(path)
+    rows, _ = parse_excel(str(path))
+
+    subcategory_phrases = {
+        "CloudEngine",
+        "Mainframe",
+        "Software",
+        "Power",
+        "Optical Transceiver",
+        "GE-SFP Optical Transceiver",
+        "S5700 Series",
+        "S5735-S Series",
+    }
+
+    for row in rows:
+        pn = row.get("Part Number")
+        if pn is None:
+            continue
+        pn_str = str(pn).strip()
+        if not pn_str:
+            continue
+        assert " " not in pn_str, (
+            f"Row {row.get('__row_index__')} has whitespace in Part Number "
+            f"('{pn_str}') — subcategory rollup leaked through parser"
+        )
+        assert len(pn_str) <= 12, (
+            f"Row {row.get('__row_index__')} has Part Number too long "
+            f"('{pn_str}') — descriptive text leaked through parser"
+        )
+        for phrase in subcategory_phrases:
+            assert phrase != pn_str, (
+                f"Row {row.get('__row_index__')} has subcategory phrase "
+                f"'{pn_str}' as Part Number — should be filtered to None"
+            )

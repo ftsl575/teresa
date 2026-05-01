@@ -6,6 +6,9 @@ col5=Product Description, col6=Unit Quantity, col7=Qty,
 col8=Total Price, col9=Extended Price.
 Stop sentinel: col3 == "EOM" → stop reading (do not include that row).
 Optional header-lookup columns: 'Production LT (Days)', 'EOM', 'EOS'.
+is_leaf refinement: col 3 is treated as Part Number only when it has SKU
+shape (≤12 alnum chars, no whitespace); descriptive subcategory text is
+nulled so downstream normalizer treats the row as HEADER.
 """
 
 import openpyxl
@@ -17,6 +20,26 @@ _SHEET_NAME = "AllInOne"
 _HEADER_ROW = 8
 _DATA_START_ROW = 9
 _STOP_SENTINEL = "EOM"
+
+
+def _is_sku_shape(value: str) -> bool:
+    """
+    Huawei SKU format: 8-character alphanumeric, no whitespace, ≤ 12 chars,
+    must contain at least one digit. Subcategory header text either contains
+    whitespace, exceeds 12 chars, or is pure-alpha (e.g. "Mainframe", "Power").
+    """
+    if not value:
+        return False
+    s = str(value).strip()
+    if not s:
+        return False
+    if " " in s or "\t" in s:
+        return False
+    if len(s) > 12:
+        return False
+    if not any(c.isdigit() for c in s):
+        return False
+    return all(c.isalnum() or c in "-_" for c in s)
 
 
 def _find_col_index(header_row_values: tuple, name: str, partial: bool = False) -> int:
@@ -82,6 +105,13 @@ def parse_excel(filepath: str) -> Tuple[List[dict], int]:
             col3_str = str(col3).strip() if col3 is not None else ""
             if col3_str == _STOP_SENTINEL:
                 break
+
+            # Subcategory rollup detection — col 3 holds descriptive text instead
+            # of a real SKU (whitespace OR length > 12). Null Part Number so the
+            # normalizer treats this row as HEADER via bool(part_number)==False.
+            if col3_str and not _is_sku_shape(col3_str):
+                col3 = None
+                col3_str = ""
 
             production_lt = (
                 raw[lt_col_idx] if lt_col_idx >= 0 and len(raw) > lt_col_idx else ""

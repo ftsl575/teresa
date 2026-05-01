@@ -1,18 +1,206 @@
-version: "0.1.0-scaffold"
+version: "1.0.0"
 
+# ── STATE ──────────────────────────────────────────────────────────────────
+# CC #4: all Huawei eDeal rows are PRESENT (no ABSENT/DISABLED markers).
 state_rules:
   absent_keywords: []
   present_override_keywords: []
 
-base_rules: []
-service_rules: []
-logistic_rules: []
-software_rules: []
-note_rules: []
-config_rules: []
-hw_rules: []
-device_type_rules: []
+# ── BASE ───────────────────────────────────────────────────────────────────
+base_rules:
+  # BASE-HU-001 — OceanStor storage controller enclosure
+  - field: option_name
+    pattern: '(?i)\bOceanStor\b.*\b(?:Dual\s+(?:Ctrl|Controllers)|Cache)\b'
+    entity_type: BASE
+    rule_id: BASE-HU-001-OCEANSTOR
 
+  # BASE-HU-002 — S-series switches (any S\d{4} model)
+  - field: option_name
+    pattern: '(?i)^S\d{4}-[A-Z0-9-]+\b.*\bports\b'
+    entity_type: BASE
+    rule_id: BASE-HU-002-SWITCH
+
+  # BASE-HU-003 — AirEngine / AC-series wireless (preventive — none in current 5 files)
+  - field: option_name
+    pattern: '(?i)\bAirEngine\b|^AC\d{4}\b'
+    entity_type: BASE
+    rule_id: BASE-HU-003-WIRELESS
+
+# ── SERVICE ────────────────────────────────────────────────────────────────
+service_rules: []
+# TODO: add regex for HiCare/Warranty/Support Service when first SERVICE-file
+# appears (absent in current 5 sample files — CC #8).
+
+# ── LOGISTIC ───────────────────────────────────────────────────────────────
+logistic_rules: []
+# TODO: add regex for Freight/Shipping/Delivery/Packaging when first
+# LOGISTIC-file appears (in Huawei eDeal these rows usually live in Disclaimer
+# sheet, not AllInOne — CC #9).
+
+# ── SOFTWARE ───────────────────────────────────────────────────────────────
+software_rules:
+  # SW-HU-001 — Software Bundle/Package/License (specific first)
+  - field: option_name
+    pattern: '(?i)\bSoftware\s+(?:Bundle|Package|License)\b'
+    entity_type: SOFTWARE
+    rule_id: SW-HU-001-BUNDLE
+
+  # SW-HU-002 — SW License (compact form on switches)
+  - field: option_name
+    pattern: '(?i)\bSW\s+License\b'
+    entity_type: SOFTWARE
+    rule_id: SW-HU-002-SW-LICENSE
+
+  # SW-HU-003 — generic License (broad — must be LAST in SW)
+  - field: option_name
+    pattern: '(?i)\bLicense\b'
+    entity_type: SOFTWARE
+    rule_id: SW-HU-003-LICENSE-GENERIC
+
+# ── NOTE ───────────────────────────────────────────────────────────────────
+note_rules: []
+
+# ── CONFIG ─────────────────────────────────────────────────────────────────
+config_rules: []
+# Huawei eDeal has no CONFIG-level: configuration already collapsed into
+# leaf rows (unlike Lenovo/Dell rollup trees).
+
+# ── HW rules ───────────────────────────────────────────────────────────────
+# Order is CRITICAL: specific BEFORE generic (first-match-wins).
+hw_rules:
+  # HW-HU-001 — I/O module (Huawei storage pluggable)
+  - field: option_name
+    pattern: '(?i)\bI\s*/\s*O\s+module\b'
+    entity_type: HW
+    rule_id: HW-HU-001-IO-MODULE
+
+  # HW-HU-002 — NVMe SSD Disk Unit (specific — must match BEFORE generic SSD/HDD)
+  - field: option_name
+    pattern: '(?i)\bSSD\s+NVMe\b.*\bDisk\s+Unit\b'
+    entity_type: HW
+    rule_id: HW-HU-002-NVME
+
+  # HW-HU-003 — SAS SSD Disk Unit (specific — before generic Disk Unit)
+  - field: option_name
+    pattern: '(?i)\bSSD\s+SAS\s+Disk\s+Unit\b'
+    entity_type: HW
+    rule_id: HW-HU-003-SSD-SAS
+
+  # HW-HU-004 — NL-SAS / SAS HDD Disk Unit (must be AFTER SSD rules!)
+  - field: option_name
+    pattern: '(?i)\b(?:NL-SAS|SAS)\s+Disk\s+Unit\b(?!.*\bSSD\b)'
+    entity_type: HW
+    rule_id: HW-HU-004-HDD
+
+  # HW-HU-005 — Power Module
+  - field: option_name
+    pattern: '(?i)\bPower\s+Module\b'
+    entity_type: HW
+    rule_id: HW-HU-005-PSU
+
+  # HW-HU-006 — Optical Transceiver
+  - field: option_name
+    pattern: '(?i)\bOptical\s+Transceiver\b'
+    entity_type: HW
+    rule_id: HW-HU-006-TRANSCEIVER
+
+  # HW-HU-007 — Cable variants (Patch Cord, Optical Cable, High Speed Cable, Mini SAS HD)
+  - field: option_name
+    pattern: '(?i)\b(?:Patch\s+Cord|Optical\s+Cable\s+Parts|High\s+Speed\s+Cable|Mini\s+SAS\s+HD)\b'
+    entity_type: HW
+    rule_id: HW-HU-007-CABLE
+
+  # HW-HU-008 — Disk Enclosure (JBOD shelf, NOT Disk Unit) — CC #7
+  - field: option_name
+    pattern: '(?i)\bDisk\s+Enclosure\b(?!.*\bDisk\s+Unit\b)'
+    entity_type: HW
+    rule_id: HW-HU-008-DISK-ENCLOSURE
+
+# ── device_type_rules ──────────────────────────────────────────────────────
+# Order is CRITICAL: specific BEFORE generic (first-match-wins).
+device_type_rules:
+  applies_to: [HW, LOGISTIC, BASE]
+  rules:
+    # ── BASE-row device_types ────────────────────────────────────────────
+    # BASE-HU-DT-001 — OceanStor → storage_system
+    - field: option_name
+      pattern: '(?i)\bOceanStor\b.*\b(?:Dual\s+(?:Ctrl|Controllers)|Cache)\b'
+      device_type: storage_system
+      rule_id: BASE-HU-DT-001-STORAGE-SYSTEM
+
+    # BASE-HU-DT-002 — S-series → switch
+    - field: option_name
+      pattern: '(?i)^S\d{4}-[A-Z0-9-]+\b.*\bports\b'
+      device_type: switch
+      rule_id: BASE-HU-DT-002-SWITCH
+
+    # BASE-HU-DT-003 — AirEngine/AC → wireless_ap
+    - field: option_name
+      pattern: '(?i)\bAirEngine\b|^AC\d{4}\b'
+      device_type: wireless_ap
+      rule_id: BASE-HU-DT-003-WIRELESS-AP
+
+    # ── HW-row device_types ──────────────────────────────────────────────
+    # DT-HU-001 — I/O module → io_module (Huawei-specific!)
+    - field: option_name
+      pattern: '(?i)\bI\s*/\s*O\s+module\b'
+      device_type: io_module
+      rule_id: DT-HU-001-IO-MODULE
+
+    # DT-HU-002 — SSD NVMe → storage_nvme (specific — before SSD)
+    - field: option_name
+      pattern: '(?i)\bSSD\s+NVMe\b.*\bDisk\s+Unit\b'
+      device_type: storage_nvme
+      rule_id: DT-HU-002-NVME
+
+    # DT-HU-003 — SSD SAS → storage_ssd
+    - field: option_name
+      pattern: '(?i)\bSSD\s+SAS\s+Disk\s+Unit\b'
+      device_type: storage_ssd
+      rule_id: DT-HU-003-SSD-SAS
+
+    # DT-HU-004 — NL-SAS/SAS HDD → storage_hdd (AFTER SSD!)
+    - field: option_name
+      pattern: '(?i)\b(?:NL-SAS|SAS)\s+Disk\s+Unit\b(?!.*\bSSD\b)'
+      device_type: storage_hdd
+      rule_id: DT-HU-004-HDD
+
+    # DT-HU-005 — Power Module → psu
+    - field: option_name
+      pattern: '(?i)\bPower\s+Module\b'
+      device_type: psu
+      rule_id: DT-HU-005-PSU
+
+    # DT-HU-006 — Optical Transceiver → transceiver
+    - field: option_name
+      pattern: '(?i)\bOptical\s+Transceiver\b'
+      device_type: transceiver
+      rule_id: DT-HU-006-TRANSCEIVER
+
+    # DT-HU-007 — Cable variants → sfp_cable
+    - field: option_name
+      pattern: '(?i)\b(?:Patch\s+Cord|Optical\s+Cable\s+Parts|High\s+Speed\s+Cable|Mini\s+SAS\s+HD)\b'
+      device_type: sfp_cable
+      rule_id: DT-HU-007-CABLE
+
+    # DT-HU-008 — Disk Enclosure (JBOD shelf) → accessory (CC #7)
+    - field: option_name
+      pattern: '(?i)\bDisk\s+Enclosure\b(?!.*\bDisk\s+Unit\b)'
+      device_type: accessory
+      rule_id: DT-HU-008-DISK-ENCLOSURE
+
+# ── hw_type_rules ──────────────────────────────────────────────────────────
 hw_type_rules:
   applies_to: [HW]
-  device_type_map: {}
+  device_type_map:
+    storage_nvme: storage_drive
+    storage_ssd: storage_drive
+    storage_hdd: storage_drive
+    io_module: io_module
+    transceiver: transceiver
+    sfp_cable: cable
+    cable: cable
+    psu: psu
+    accessory: accessory
+    # storage_system / switch / wireless_ap → BASE rows; hw_type=None per business rules
+    # power_cord → device_type only, hw_type=None per business rules
