@@ -69,10 +69,10 @@
 {"source_row_index": 87, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-012", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9K-ACC-SCR-4"]}
 {"source_row_index": 88, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-024-CAB-GUIDE", "device_type": "accessory", "hw_type": "accessory", "skus": ["CAB-GUIDE-1RU"]}
 {"source_row_index": 89, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SOFTWARE-C-006", "device_type": null, "hw_type": null, "skus": ["NETWORK-PNP-LIC"]}
-{"source_row_index": 90, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["C9300L-STACK-KIT2"]}
+{"source_row_index": 90, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-STACK-001", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9300L-STACK-KIT2"]}
 {"source_row_index": 91, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-014", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9300L-STACK-A"]}
 {"source_row_index": 92, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-022-STACK-SKU", "device_type": "cable", "hw_type": "cable", "skus": ["STACK-T3A-1M"]}
-{"source_row_index": 93, "row_kind": "ITEM", "entity_type": "BASE", "state": "PRESENT", "matched_rule_id": "BASE-C-001", "device_type": "switch", "hw_type": null, "skus": ["C9300L-STACK-KIT2"]}
+{"source_row_index": 93, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-STACK-001", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9300L-STACK-KIT2"]}
 {"source_row_index": 94, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-014", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9300L-STACK-A"]}
 {"source_row_index": 95, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-022-STACK-SKU", "device_type": "cable", "hw_type": "cable", "skus": ["STACK-T3A-1M"]}
 {"source_row_index": 96, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-C-001", "device_type": "cable", "hw_type": "cable", "skus": ["QSFP-100G-CU1M"]}

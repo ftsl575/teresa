@@ -46,7 +46,7 @@
 {"source_row_index": 53, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["817-BBBP"]}
 {"source_row_index": 54, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "PRESENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["709-BBIY"]}
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "ABSENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["883-BBBD"]}
-{"source_row_index": 56, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": "storage_hdd", "hw_type": null, "skus": ["293-10049"]}
+{"source_row_index": 56, "row_kind": "ITEM", "entity_type": "LOGISTIC", "state": "PRESENT", "matched_rule_id": "LOGISTIC-001", "device_type": null, "hw_type": null, "skus": ["293-10049"]}
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "PRESENT", "matched_rule_id": "SERVICE-004", "device_type": null, "hw_type": null, "skus": ["293-10025"]}
 {"source_row_index": 58, "row_kind": "ITEM", "entity_type": "SERVICE", "state": "ABSENT", "matched_rule_id": "SERVICE-001", "device_type": null, "hw_type": null, "skus": ["883-BBFN"]}
 {"source_row_index": 59, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}

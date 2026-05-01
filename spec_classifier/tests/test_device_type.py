@@ -255,3 +255,20 @@ def test_base_row_gets_server_device_type(ruleset):
     assert r.entity_type == EntityType.BASE
     assert r.matched_rule_id == "BASE-001"
     assert r.device_type == "server"
+
+
+# --- LOGISTIC: Shipbox Label must NOT be tagged as storage_hdd (PR-2) ---
+def test_logistic_shipbox_label_no_device_type(ruleset):
+    """SKU 293-10049 is a Box-Labels LOGISTIC row whose option_name mentions
+    'HDD Size' inside a parenthetical — the anchored negative-lookahead
+    in DT-D-014-HDD must keep device_type=None instead of storage_hdd.
+    Affects 12 rows across dl1, dl2, dl3, dl4 (PR-2 forecast §SCOPE)."""
+    row = _row(
+        module_name="Box Labels",
+        option_name="Order Configuration Shipbox Label (Ship Date, Model, Processor Speed, HDD Size, RAM)",
+        skus=["293-10049"],
+    )
+    r = classify_row(row, ruleset)
+    assert r.entity_type == EntityType.LOGISTIC, f"entity_type={r.entity_type}"
+    assert r.matched_rule_id == "LOGISTIC-001", f"matched_rule_id={r.matched_rule_id}"
+    assert r.device_type is None, f"device_type={r.device_type} (must be None, not storage_hdd)"

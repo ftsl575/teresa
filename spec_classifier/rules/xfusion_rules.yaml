@@ -17,7 +17,7 @@ base_rules:
   # Phase 4 calibration: added Turin to AMD branch (xf1 row 39).
   - rule_id: BASE-XF-001-CHASSIS
     field: option_name
-    pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)'
+    pattern: '(?i)(?:\b(?:G)?\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)'
     entity_type: BASE
 
 # ── SERVICE / LOGISTIC / NOTE / CONFIG (empty placeholders) ────────────────
@@ -111,6 +111,14 @@ hw_rules:
   - rule_id: HW-XF-008-SUPERCAP
     field: option_name
     pattern: '(?i)\bRAID\s+Card\s+SuperCap\b|\bSuper\s+capacitor\s+module\b'
+    entity_type: HW
+
+  # 8C. RAID Card riser (per Q-PR2: '*RAID Card riser*' is a riser, NOT a
+  # RAID controller). ORDER-CRITICAL: must fire BEFORE RAID-CONTROLLER (#9),
+  # which would otherwise catch '\bRAID\s+(?:Cable\s+)?Card\b'.
+  - rule_id: HW-XF-008C-RAID-CARD-RISER
+    field: option_name
+    pattern: '(?i)\bRAID\s+Card\s+riser\b'
     entity_type: HW
 
   # 9. RAID Controller / Card / SAS/SATA RAID / RAID PCIE card
@@ -214,6 +222,15 @@ hw_rules:
 device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
   rules:
+    # PR-2 reorder: DT-XF-021-CHASSIS promoted to position 0 (highest priority)
+    # so BASE chassis lines win over component rules. Required because chassis
+    # descriptions can incidentally contain HDD/SAS/SATA/Backplane keywords
+    # (e.g. "G5500 V7(...HDD Chassis-Support 16*3.5 SAS/SATA...)"), which
+    # would otherwise be intercepted by DT-XF-007-STORAGE-HDD (position 7) or
+    # DT-XF-018-ACCESSORY (\bBackplane\b). The chassis pattern itself is
+    # highly specific (mandatory \d{4}H? V\d or AMD Genoa/Turin model prefix
+    # + mandatory Chassis keyword), so false-positive risk is negligible.
+    - {rule_id: DT-XF-021-CHASSIS,        field: option_name, pattern: '(?i)(?:\b(?:G)?\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)', device_type: server}
     - {rule_id: DT-XF-001-PSU,            field: option_name, pattern: '(?i)\bAC\s+power\s+supply\b|\bAC\s+Power\s+Module\b',                                                                            device_type: psu}
     - {rule_id: DT-XF-002-CPU,            field: option_name, pattern: '(?i)\bIntel\s+Xeon\b.*?\b(?:CPU|Processor)\b|\bAMD\s+(?:Genoa|Turin|EPYC)\b.*?\bCPU\b',                                          device_type: cpu}
     - {rule_id: DT-XF-003-MEMORY,         field: option_name, pattern: '(?i)\bDDR[45][\s,]+RDIMM\b',                                                                                                     device_type: memory}
@@ -222,6 +239,7 @@ device_type_rules:
     - {rule_id: DT-XF-006-STORAGE-SSD,    field: option_name, pattern: '(?i)\bSSD\b.*?\bSATA\b|\bSSD\b.*?\bSAS\b',                                                                                       device_type: storage_ssd}
     - {rule_id: DT-XF-007-STORAGE-HDD,    field: option_name, pattern: '(?i)\bHDD\b.*?\b(?:SAS|SATA|NL[\s\-]?SAS)\b',                                                                                    device_type: storage_hdd}
     - {rule_id: DT-XF-008-SUPERCAP,       field: option_name, pattern: '(?i)\bRAID\s+Card\s+SuperCap\b|\bSuper\s+capacitor\s+module\b',                                                                  device_type: accessory}
+    - {rule_id: DT-XF-008C-RAID-CARD-RISER, field: option_name, pattern: '(?i)\bRAID\s+Card\s+riser\b',                                                                                                  device_type: riser}
     - {rule_id: DT-XF-009-RAID,           field: option_name, pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b|\b12G\s+SAS\s+RAID\b|\bRAID-9\d{3}\b',                              device_type: raid_controller}
     - {rule_id: DT-XF-010-GPU-ACCESSORY,  field: option_name, pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b|\bGPU\s+Card\s+Power\s+Line\b|\bPower\s+Line\s+Spare\s+Pack\b',            device_type: accessory}
     - {rule_id: DT-XF-011-HBA,            field: option_name, pattern: '(?i)\bFC\s+HBA\b|\bHBA\s+Card\b|\bEmulex\b.*?\b(?:HBA|FC)\b',                                                                    device_type: hba}
@@ -234,7 +252,6 @@ device_type_rules:
     - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bAir\s+duct\b|\bFan\s+bracket\b|\bExtended\s+radiator\b|\bBackplane\b',                                                     device_type: accessory}
     - {rule_id: DT-XF-019-RISER,          field: option_name, pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b|\bIO\s+Extended\s+Module\b',                                                              device_type: riser}
     - {rule_id: DT-XF-020-RAIL,           field: option_name, pattern: '(?i)\bBall\s+Bearing\s+Rail\s+Kit\b',                                                                                            device_type: rail}
-    - {rule_id: DT-XF-021-CHASSIS,        field: option_name, pattern: '(?i)(?:\b\d{4}H?\s+V\d\b|\bAMD\s+(?:Genoa|Turin)\b).*?\b(?:HDD\s+Chassis(?:-Sup(?:port)?)?|Through\s+Chassis|RAID\s+Chassis|Chassis\b)', device_type: server}
 
 # ── hw_type_rules (device_type → hw_type translation) ──────────────────────
 hw_type_rules:

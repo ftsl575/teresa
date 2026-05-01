@@ -113,3 +113,24 @@ def test_option_price_field_name():
     norm = normalize_cisco_rows(rows)
     assert hasattr(norm[0], "option_price")
     assert norm[0].option_price == 99.5
+
+
+# --- PR-2: BUNDLE_ROOT_SKU_EXCLUSIONS guard ---
+def test_c9300l_stack_kit_excluded_from_bundle_root():
+    """C9300L-STACK-KIT2 is a Stacking Kit accessory bundle that LOOKS like
+    a platform BASE row structurally (top-level Line Number with children),
+    but it is NOT a switch base. The BUNDLE_ROOT_SKU_EXCLUSIONS guard must
+    set is_bundle_root=False so downstream classification falls through to
+    HW/accessory rules instead of BASE-C-001-SWITCH (ccw_2 rows 90, 93)."""
+    rows = _make_raw(
+        ["5.0", "5.1"],
+        ["Cisco Catalyst 9300L Stacking Kit (Spare)", "STACK-T1-50CM Stacking Cable"],
+        part_numbers=["C9300L-STACK-KIT2", "STACK-T1-50CM"],
+    )
+    norm = normalize_cisco_rows(rows)
+    assert norm[0].is_top_level is True
+    assert norm[0].skus == ["C9300L-STACK-KIT2"]
+    assert norm[0].is_bundle_root is False, (
+        "C9300L-STACK-KIT2 must be excluded from is_bundle_root=True via "
+        "BUNDLE_ROOT_SKU_EXCLUSIONS, even when it has children in the BoM."
+    )

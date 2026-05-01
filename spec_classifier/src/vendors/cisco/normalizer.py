@@ -17,6 +17,22 @@ def _is_empty(value) -> bool:
     return str(value).strip() == ""
 
 
+# SKU prefixes that look like bundle roots structurally (top-level Line Number
+# with children present) but represent accessory kits / cable kits / module
+# kits etc. — NOT platform BASE rows. Extending this tuple closes future
+# similar mis-bundle-root cases without touching the rules engine. Each entry
+# is a CASE-SENSITIVE prefix match on the row's primary SKU (Part Number).
+BUNDLE_ROOT_SKU_EXCLUSIONS: tuple[str, ...] = (
+    "C9300L-STACK-KIT",
+)
+
+
+def _is_bundle_root_excluded(sku: Optional[str]) -> bool:
+    if not sku:
+        return False
+    return any(sku.startswith(prefix) for prefix in BUNDLE_ROOT_SKU_EXCLUSIONS)
+
+
 @dataclass
 class CiscoNormalizedRow:
     """Cisco normalized row — duck-type compatible с Dell NormalizedRow."""
@@ -86,7 +102,16 @@ def normalize_cisco_rows(raw_rows: List[dict]) -> List[CiscoNormalizedRow]:
         parts = ln.split(".")
         bundle_id = parts[0] if parts else ""
         is_top_level = len(parts) == 2 and parts[1] == "0"
-        is_bundle_root = is_top_level and bundle_id in bundle_ids_with_children
+
+        pn = row.get("Part Number")
+        skus = [str(pn).strip().rstrip("=")] if not _is_empty(pn) else []
+        primary_sku = skus[0] if skus else None
+
+        is_bundle_root = (
+            is_top_level
+            and bundle_id in bundle_ids_with_children
+            and not _is_bundle_root_excluded(primary_sku)
+        )
 
         if is_top_level:
             parent_line_number = None
@@ -101,9 +126,6 @@ def normalize_cisco_rows(raw_rows: List[dict]) -> List[CiscoNormalizedRow]:
 
         desc = row.get("Description")
         option_name = str(desc).strip() if not _is_empty(desc) else ""
-
-        pn = row.get("Part Number")
-        skus = [str(pn).strip().rstrip("=")] if not _is_empty(pn) else []
 
         qty_val = row.get("Qty")
         try:

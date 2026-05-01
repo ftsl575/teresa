@@ -514,3 +514,48 @@ def test_optical_cable_parts_mpo_fires_as_cable(xfusion_ruleset):
     assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
     assert r.hw_type == "cable", f"hw_type={r.hw_type}"
     assert r.device_type == "cable", f"device_type={r.device_type}"
+
+
+# ── PR-2 calibration tests ─────────────────────────────────────────────────
+
+def test_g5500_v7_chassis_fires_as_base(xfusion_ruleset):
+    """xf5 row 115 — G5500 V7 chassis line. Plain BASE-XF-001 regex required
+    (?:G)?\\d{4}H?\\s+V\\d to admit the G-prefixed model number, otherwise
+    the row falls through to HW/storage_hdd via HW-XF-007-STORAGE-HDD."""
+    desc = (
+        "G5500 V7(24*3.5inch HDD Chassis-Support 16*3.5 SAS/SATA+8*3.5 SAS/SATA/"
+        "CPU NVMe, EXP backplane,SWITCH 8 FHFL GPU cards)(For oversea)"
+    )
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.BASE, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.matched_rule_id == "BASE-XF-001-CHASSIS"
+    assert r.device_type == "server", f"device_type={r.device_type}"
+
+
+def test_5885h_v7_chassis_with_backplane_keeps_server_dt(xfusion_ruleset):
+    """xf3 row 48 — 5885H V7 chassis with 'EXP backplane' in description.
+    Pre-PR-2 ordering let DT-XF-018-ACCESSORY (matches \\bBackplane\\b) fire
+    first, mis-tagging the row as device_type=accessory. After reordering
+    DT-XF-021-CHASSIS BEFORE DT-XF-018-ACCESSORY, the BASE row must keep
+    device_type=server."""
+    desc = (
+        "5885H V7(25*2.5-inch HDD Chassis,EXP backplane,"
+        "supporting GPU,8080 fans)(For oversea)"
+    )
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.BASE, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.matched_rule_id == "BASE-XF-001-CHASSIS"
+    assert r.device_type == "server", f"device_type={r.device_type} (must be server, not accessory)"
+
+
+def test_raid_card_riser_fires_as_riser_not_raid_controller(xfusion_ruleset):
+    """xf5 row 126 — 'RAID Card riser' is a RISER, not a RAID controller.
+    HW-XF-008C-RAID-CARD-RISER must fire BEFORE HW-XF-009-RAID-CONTROLLER,
+    otherwise the broader \\bRAID\\s+(?:Cable\\s+)?Card\\b alternative would
+    mis-tag the row as raid_controller / storage_controller."""
+    desc = "1*8X SLOT(PCIE4.0),RAID Card riser,Suitable for G5500 3.5-inch integrated equipment"
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW, f"entity_type={r.entity_type}, rule={r.matched_rule_id}"
+    assert r.matched_rule_id == "HW-XF-008C-RAID-CARD-RISER"
+    assert r.device_type == "riser", f"device_type={r.device_type}"
+    assert r.hw_type == "riser", f"hw_type={r.hw_type}"

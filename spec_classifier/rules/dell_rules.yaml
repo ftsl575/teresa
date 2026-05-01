@@ -435,8 +435,14 @@ device_type_rules:
       rule_id: DT-D-032-FAN-FOAM
 
     # ── Storage HDD ──────────────────────────────────────────
+    # Anchored negative-lookahead ^(?!.*\bLabel\b) keeps LOGISTIC
+    # Shipbox Labels (which mention "HDD Size" inside their description)
+    # from being mis-tagged as storage_hdd. The leading '^' is required
+    # because rules_engine uses re.search; without anchoring, the lookahead
+    # would be evaluated at the HDD-match position (where 'Label' is BEHIND,
+    # not ahead) and would trivially succeed. See PR-2 spec + Deviations.
     - field: option_name
-      pattern: '(?i)\b(HDD|Hard\s+Drive)\b'
+      pattern: '(?i)^(?!.*\bLabel\b).*\b(HDD|Hard\s+Drive)\b'
       device_type: storage_hdd
       rule_id: DT-D-014-HDD
 
