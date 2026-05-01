@@ -1,0 +1,18 @@
+version: "0.1.0-scaffold"
+
+state_rules:
+  absent_keywords: []
+  present_override_keywords: []
+
+base_rules: []
+service_rules: []
+logistic_rules: []
+software_rules: []
+note_rules: []
+config_rules: []
+hw_rules: []
+device_type_rules: []
+
+hw_type_rules:
+  applies_to: [HW]
+  device_type_map: {}

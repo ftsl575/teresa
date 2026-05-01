@@ -21,3 +21,4 @@ vendor_rules:
   cisco: "rules/cisco_rules.yaml"
   hpe: "rules/hpe_rules.yaml"
   lenovo: "rules/lenovo_rules.yaml"
+  huawei: "rules/huawei_rules.yaml"
