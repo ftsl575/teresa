@@ -89,6 +89,16 @@ def get_input_root_huawei() -> Path:
     return sub if sub.exists() else base
 
 
+def get_input_root_xfusion() -> Path:
+    """Resolve input path for xFusion files: paths.input_root/xfusion or INPUT directly."""
+    config = load_config()
+    raw = (config.get("paths") or {}).get("input_root") or "input"
+    p = Path(raw)
+    base = p if p.is_absolute() else project_root() / p
+    sub = base / "xfusion"
+    return sub if sub.exists() else base
+
+
 def _resolve_input_root_for_skip_guard():
     """Resolve input_root with precedence: config.local.yaml, then config.yaml.
 
