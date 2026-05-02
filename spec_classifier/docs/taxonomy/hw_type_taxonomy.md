@@ -1,10 +1,10 @@
 # hw_type Taxonomy — Universal Device Type Dictionary
 ## Универсальный словарь типов устройств / spec_classifier teresa
 
-**Version:** v1.2.0  
-**Date:** 2026-04-04  
-**Vendors covered:** Dell · Cisco CCW · HPE (active) · Lenovo · xFusion · Huawei (planned)  
-**Replaces:** `HW_TYPE_VOCAB` v1.2.0 (20 values) → v2.0.0 (**25 values**)
+**Version:** v2.1.0  
+**Date:** 2026-05-02  
+**Vendors covered:** Dell · Cisco CCW · HPE · Lenovo · xFusion · Huawei (active)  
+**Replaces:** `HW_TYPE_VOCAB` v2.0.0 (25 values) → v2.1.0 (**26 values**) — adds `storage_enclosure`
 
 ---
 
@@ -21,7 +21,7 @@
 
 ---
 
-## Словарь (25 значений hw_type)
+## Словарь (26 значений hw_type)
 
 ### Группа 1 — Основное изделие (только BASE rows)
 
@@ -55,7 +55,8 @@
 | `storage_drive` | Storage Drive | Накопитель (SSD / HDD / NVMe) | HPE 3.84TB NVMe U.3, HPE 480GB SATA SSD, ThinkSystem VA 480GB, Dorado 7.68TB NVMe |
 | `storage_controller` | Storage Controller / RAID | RAID-контроллер | HPE MR416i-o OCP, PERC H965i, BOSS card, MegaRAID, Smart Array с кешем/батареей |
 | `hba` | HBA (FC / SAS) | Адаптер шины (FC / SAS HBA) | HPE SN1620E 32Gb FC SecureHBA, SN1610E 32Gb FC, Emulex LPe32002 32Gb FC, HBA465e SAS, Broadcom SAS HBA |
-| `backplane` | Backplane / Drive Cage | Объединительная панель / Корзина | HPE Tri-Mode U.3 Drive Cage Kit, ThinkSystem 1U 8×2.5" SAS/SATA Backplane |
+| `backplane` | Backplane / Drive Cage | Объединительная панель / Корзина | HPE Tri-Mode U.3 Drive Cage Kit, ThinkSystem 1U 8×2.5" SAS/SATA Backplane, xFusion FusionServer Backplane |
+| `storage_enclosure` | Storage Enclosure / Disk Enclosure | Дисковый отсек СХД (внешний) | Huawei OceanStor Disk Enclosure, Lenovo D1224 (планируется), Dell PowerVault MDxxx (планируется) |
 | `io_module` | I/O Module (Storage) | Интерфейсный модуль СХД | 4p SmartIO FC SFP28 (OceanStor), 2p 40Gb ETH QSFP+, 4p 25Gb RDMA Scale-out |
 
 > **Миграция:** `ssd` + `hdd` + `nvme` → `storage_drive`. `hba` device_type → `hw_type: hba` (было `storage_controller`).
@@ -155,7 +156,7 @@
 
 ---
 
-## Итоговый HW_TYPE_VOCAB (25 значений)
+## Итоговый HW_TYPE_VOCAB (26 значений)
 
 ```python
 HW_TYPE_VOCAB = frozenset({
@@ -164,7 +165,7 @@ HW_TYPE_VOCAB = frozenset({
     # Вычислительные компоненты
     "cpu", "memory", "gpu",
     # Подсистема хранения
-    "storage_drive", "storage_controller", "hba", "backplane", "io_module",
+    "storage_drive", "storage_enclosure", "storage_controller", "hba", "backplane", "io_module",
     # Сеть
     "network_adapter", "transceiver", "cable",
     # Питание
@@ -215,6 +216,39 @@ HW_TYPE_VOCAB = frozenset({
 | — | `storage_system` | новый тип (BASE) | только новые вендоры |
 | — | `wireless_ap` | новый тип (BASE) | только новые вендоры |
 | — | `accessory` | новый тип | ccw_2 (stacking module) |
+| — | `storage_enclosure` | новый тип (Q2 cross-vendor) | huawei `DT-HU-008` (storage_enclosure) |
+| `motherboard` | `chassis` | reaffirmed Lenovo precedent (Q1) | lenovo `HW-L-040 + DT-L-040` (motherboard:chassis), dell legacy |
+
+---
+
+## Cross-vendor divergences (intentional)
+
+Following stakeholder decisions Q1–Q5 (handoff PR-1 → PR-4c), the taxonomy intentionally diverges across vendors for some `device_type` → `hw_type` mappings. Each divergence is encoded at the YAML layer (`rules/<vendor>_rules.yaml` `device_type_map`) — global aliases in `batch_audit.py` are used only for AI_MISMATCH suppression, never as an `hw_type` mapping.
+
+### bezel (Q5)
+- HPE: `device_type=bezel, hw_type=chassis` (existing precedent — kept).
+- Lenovo: `device_type=bezel, hw_type=accessory` (rule `HW-L-045-BEZEL` + `DT-L-045-BEZEL` + `lenovo_rules.yaml` map `bezel: accessory`).
+
+The global `DEVICE_TYPE_ALIASES["bezel"] = "chassis"` in `batch_audit.py` is preserved to honor HPE's existing semantics; Lenovo's local `bezel: accessory` mapping resolves the divergence per-file. `bezel` is in `DEVICE_TYPE_TRUST` so the pipeline's value is always trusted over the AI prediction.
+
+### backplane (Q3)
+- xFusion: `DT-XF-022-BACKPLANE` → `device_type=backplane, hw_type=backplane`.
+- HPE: `device_type=drive_cage` → mapped via local `device_type_map` to `hw_type=backplane` (PR-3, `2f327d1`).
+- Cross-vendor alias: `DEVICE_TYPE_ALIASES["drive_cage"] = "backplane"` (PR-4c, flipped from `chassis`) suppresses AI_MISMATCH when the AI says "backplane" and the pipeline says "drive_cage".
+
+### storage_enclosure (Q2)
+- Huawei: `device_type=storage_enclosure, hw_type=storage_enclosure` (rule `DT-HU-008`).
+- Cross-vendor category — not tied to a specific OEM. Future Dell PowerVault, HPE MSA, Lenovo DE / D1224, NetApp DS expected to use this type.
+- `storage_enclosure` is in `DEVICE_TYPE_TRUST` (PR-3); pipeline value is always trusted.
+
+### motherboard (Q1)
+- Lenovo: `device_type=motherboard, hw_type=chassis` (rules `HW-L-040 + DT-L-040` + `lenovo_rules.yaml` map `motherboard: chassis`, PR-4a `e73538e`).
+- Dell: legacy regex-based hw_type rule emits `hw_type=chassis` directly without `device_type=motherboard` (no separate device_type promotion). Dell upgrade tracked separately.
+- Global alias: `DEVICE_TYPE_ALIASES["motherboard"] = "chassis"` (PR-4a). `motherboard` added to `DEVICE_TYPE_TRUST`.
+
+### GPU Base (Q4)
+- Lenovo: `entity_type=BASE, device_type=server` (rule `BASE-L-020-GPU-BASE` + `DT-L-060-GPU-BASE`, PR-4b `2e9e91c`). "GPU Base" SKUs describe the multi-GPU complex chassis foundation (the BASE machine), not a discrete GPU component.
+- BASE rows do not get `hw_type` (`hw_type_rules.applies_to: [HW]`); the type is read from `device_type=server`.
 
 ---
 
@@ -232,7 +266,8 @@ HW_TYPE_VOCAB = frozenset({
 | `storage_drive` | ✓ | ✓ | — | ✓ | ✓ | ✓ | — |
 | `storage_controller` | ✓ | ✓ | — | ✓ | ✓ | — | — |
 | `hba` | ✓ | ✓ | — | — | ✓ | — | — |
-| `backplane` | ✓ | ✓ | — | ✓ | — | — | — |
+| `backplane` | ✓ | ✓ | — | ✓ | ✓ | — | — |
+| `storage_enclosure` | — | — | — | — | — | ✓ | — |
 | `io_module` | — | — | — | — | — | ✓ | — |
 | `network_adapter` | ✓ | ✓ | — | ✓ | ✓ | — | — |
 | `transceiver` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ |
@@ -241,12 +276,12 @@ HW_TYPE_VOCAB = frozenset({
 | `fan` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
 | `heatsink` | ✓ | ✓ | — | ✓ | — | — | — |
 | `riser` | ✓ | ✓ | — | ✓ | ✓ | — | — |
-| `chassis` | ✓ | — | — | ✓ | — | — | — |
+| `chassis` | ✓ | — | — | ✓ (incl. `motherboard:chassis`) | — | — | — |
 | `management` | ✓ | ✓ | ✓ | ✓ | — | — | — |
 | `tpm` | ✓ | — | — | ✓ | — | — | — |
 | `rail` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
 | `blank_filler` | ✓ | ✓ | ✓ | ✓ | — | — | — |
-| `accessory` | — | ✓ | ✓ | ✓ | — | — | ✓ |
+| `accessory` | — | ✓ | ✓ | ✓ (incl. Lenovo-local `bezel:accessory`) | — | — | ✓ |
 | *`power_cord`* | *dt only* | *dt only* | *dt only* | *dt only* | *dt only* | — | — |
 | *`enablement_kit`* | — | *dt only* | — | — | *dt only* | — | — |
 
@@ -297,4 +332,4 @@ device_type_map:
 
 ---
 
-*Source of truth для `HW_TYPE_VOCAB` в `classifier.py` и всех `*_rules.yaml`. Версия v1.1.0.*
+*Source of truth для `HW_TYPE_VOCAB` в `classifier.py` и всех `*_rules.yaml`. Версия v2.1.0, обновлено 2026-05-02.*

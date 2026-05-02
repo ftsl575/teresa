@@ -2,7 +2,7 @@
 
 ## 1. Назначение
 
-Система классифицирует строки спецификаций (Dell, Cisco CCW и HPE QuoteBuilder BOM) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
+Система классифицирует строки спецификаций (Dell, Cisco CCW, HPE QuoteBuilder BOM, Lenovo DCSC, xFusion FusionServer eDeal, Huawei eDeal) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
 
 ---
 
@@ -31,6 +31,26 @@
 - Строка заголовка: строго первая строка листа (row 0), no preamble.
 - Ожидаемые столбцы: Product #, Product Description, Qty, Unit Price (USD), Config Name. Опционально: Product Type, Extended List Price (USD), Estimated Availability Lead Time.
 - Особенности: `Product #` используется полностью как `option_id`; базовый SKU (до первого пробела) записывается в `skus[0]`. Колонка `Config Name` отображается в `group_name` и `module_name`. Строка `"Factory Integrated"` классифицируется как `CONFIG` (правило `CONFIG-H-001`). Конец данных: первая строка, у которой первая непустая ячейка = `"total"` (без учёта регистра).
+
+**Lenovo DCSC (`--vendor lenovo`):**
+
+- Формат: `.xlsx`, лист "Configuration" или первый лист (DCSC экспорт).
+- Строка заголовка: ищется по наличию ячеек `"Option Name"` / `"Option ID"` в первых ~20 строках.
+- Ожидаемые столбцы: Option ID, Option Name, Quantity, Unit Price; опционально Module / Category.
+- Особенности: BASE machine type кодируется как `[A-Z0-9]{4}CTO` (например `7D5GCTO1WW`); XClarity Controller FOD строки (`7S0X…`) намеренно исключены через negative lookahead `^(?!7S)` и попадают в правила SOFTWARE. Поддерживаются: `device_type=motherboard` (HW-L-040, "System Board"/"MB"; → `hw_type=chassis`), `device_type=bezel` ("Blowing Rock"/Security Bezel; → `hw_type=accessory`, Lenovo-local), GPU Base (`BASE-L-020`; → `entity_type=BASE, device_type=server`).
+
+**xFusion FusionServer eDeal (`--vendor xfusion`):**
+
+- Формат: `.xlsx`, лист с конфигурацией FusionServer.
+- Строка заголовка: ищется по наличию `"Configuration Name"` / `"Component Type"`.
+- Ожидаемые столбцы: Part Number / Material Code, Component Type, Description, Quantity, Unit Price.
+- Особенности: BASE machine type использует G-prefix part numbers (`BASE-XF-001` / `DT-XF-021`). Поддерживается `device_type=backplane` (`DT-XF-022-BACKPLANE` → `hw_type=backplane`).
+
+**Huawei eDeal (`--vendor huawei`):**
+
+- Формат: `.xlsx`, листы для ICT/Server/Storage/WLAN каталогов.
+- Строка заголовка: ищется по наличию `"Material Code"` / `"Description"`.
+- Особенности: поддерживаются `device_type=storage_enclosure` (Disk Enclosure семейство OceanStor → `hw_type=storage_enclosure`, новый тип в HW_TYPE_VOCAB v2.1.0) и `device_type=io_module` (SmartIO модули → `hw_type=io_module`). BASE для AirEngine/AC точек доступа: `entity_type=BASE, device_type=wireless_ap`.
 
 ---
 
@@ -87,15 +107,15 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
   | Категория | Значения |
   |-----------|---------|
   | Compute | `cpu`, `ram`, `gpu`, `memory` |
-  | Storage | `storage_nvme`, `storage_ssd`, `storage_hdd`, `storage_controller`, `raid_controller`, `hba`, `drive_cage`, `backplane` |
+  | Storage | `storage_nvme`, `storage_ssd`, `storage_hdd`, `storage_drive`, `storage_controller`, `raid_controller`, `hba`, `drive_cage`, `backplane`, `storage_enclosure`, `io_module` |
   | Network | `nic`, `network_adapter`, `transceiver`, `cable`, `sfp_cable`, `fiber_cable` |
   | Power | `psu`, `power_cord` |
-  | Mechanical | `fan`, `heatsink`, `riser`, `chassis`, `rail`, `blank_filler`, `bezel`, `battery` |
+  | Mechanical | `fan`, `heatsink`, `riser`, `chassis`, `motherboard`, `rail`, `blank_filler`, `bezel`, `battery` |
   | Management | `management`, `tpm`, `accessory` |
   | Infrastructure | `server`, `switch`, `storage_system`, `wireless_ap` |
 
   Может быть null, если правило не назначило device_type. Список расширяется при добавлении новых вендоров (MINOR-изменение).
-- **hw_type:** тип железа для HW-строк. 25 значений (v2.0.0): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. Для не-HW или неразрешённых HW — null.
+- **hw_type:** тип железа для HW-строк. 26 значений (v2.1.0): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_enclosure, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. Для не-HW или неразрешённых HW — null.
 - **matched_rule_id:** идентификатор сработавшего правила (например HW-002, SERVICE-001). UNKNOWN-000 — совпадений нет.
 - **warnings:** список предупреждений (например «hw_type unresolved for HW row»); обычно пуст.
 
@@ -115,6 +135,14 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 
 ```powershell
 python main.py --vendor hpe --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx"
+```
+
+Для Lenovo / xFusion / Huawei: аналогично, с соответствующим `--vendor` и правилами `rules/<vendor>_rules.yaml`. Lenovo input → `INPUT\lenovo\` (L1.xlsx … L11.xlsx, regression goldens сгенерированы в PR-4c).
+
+```powershell
+python main.py --vendor lenovo  --input "C:\Users\G\Desktop\INPUT\lenovo\L1.xlsx"
+python main.py --vendor xfusion --input "C:\Users\G\Desktop\INPUT\xfusion\xf1.xlsx"
+python main.py --vendor huawei  --input "C:\Users\G\Desktop\INPUT\huawei\hu1.xlsx"
 ```
 
 ---

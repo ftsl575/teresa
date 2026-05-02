@@ -93,6 +93,18 @@ Versioning: [SemVer](https://semver.org/).
 - docs: TESTING_GUIDE, CONTRIBUTING — HPE добавлен (тесты, golden hp1–hp8, запрет на изменение hpe_rules без golden update, дерево src/vendors/hpe/).
 - docs: RUN_PATHS_AND_IO_LAYOUT — исправлены флаги CLI и убрана phantom-секция audit/.
 
+### Changed (taxonomy refactor — PR-1 → PR-5)
+- feat(taxonomy): `HW_TYPE_VOCAB` +`storage_enclosure` (PR-1, `1d0e1fc`) — 25→26 values; sync'd in `src/core/classifier.py` and `batch_audit.py`.
+- fix(rules): xfusion calibration (BASE-XF-001/DT-XF-021 G-prefix; +HW-XF-008C-RAID-CARD-RISER + DT-XF-008C); dell DT-D-014-HDD anchored Label-lookahead; cisco BUNDLE_ROOT_SKU_EXCLUSIONS parser fix (PR-2, `a8eab5d`).
+- feat(taxonomy users): hpe `drive_cage→backplane`; xfusion `DT-XF-022-BACKPLANE`; huawei `DT-HU-008` → `storage_enclosure`; `batch_audit._LLM_SYSTEM_BODY` +storage_enclosure +backplane +bezel +motherboard; `DEVICE_TYPE_TRUST` +storage_enclosure (PR-3, `2f327d1`).
+- feat(lenovo): motherboard support (`HW-L-040 + DT-L-040` + map `motherboard:chassis`); `BASE-L-001`/`DT-L-001` negative-lookahead `^(?!7S)[A-Z0-9]{4}CTO` (XClarity FOD); HDD Type Label digit-suffix; `DEVICE_TYPE_ALIASES["motherboard"]=chassis`; `DEVICE_TYPE_TRUST` +motherboard (PR-4a, `e73538e`).
+- feat(lenovo): GPU Base (`BASE-L-020`) / BlueField (`HW-L-041`) / Network Card (`HW-L-042`) / Fan Board (`HW-L-043`) / Bracket (`HW-L-044`) — 5 new HW + 5 DT rules (PR-4b, `2e9e91c`).
+- feat(lenovo): Bezel (`HW-L-045-BEZEL` + `DT-L-045-BEZEL` + map `bezel:accessory`, Lenovo-local); OCP NIC interposer / PCIe switch board / FPC; `DEVICE_TYPE_ALIASES["drive_cage"]: chassis→backplane` (deferred PR-3 §7f); `DEVICE_TYPE_TRUST` +bezel; 11 Lenovo goldens; `tests/test_regression_lenovo.py` (PR-4c, `06d64c1`).
+- docs(taxonomy refactor): `hw_type_taxonomy.md` v1.2.0→v2.1.0 (storage_enclosure + cross-vendor divergences section), `DATA_CONTRACTS.md` (26 values + Lenovo/xFusion/Huawei device_type lists), `USER_GUIDE.md` (vendor sections + new dt rows), `README.md` (title + Vendor Support all 6), `CLAUDE.md` (drive_cage alias + vendors), `batch_audit.py` docstring (E1-E18 counter; `DEVICE_TYPE_ALIASES` semantic note) (PR-5, this commit).
+
+### Removed
+- chore(repo): `TAXONOMY_EXPANSION_DIAGNOSTIC.md` (untracked diagnostic artifact from cycle PR-0; superseded by PR-1..PR-5 commits).
+
 ---
 
 ## [1.3.0] — 2026-03-03

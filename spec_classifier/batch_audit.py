@@ -2,7 +2,7 @@
 batch_audit.py v2 — Batch pipeline validation + LLM prediction layer.
 
 Finds all *_annotated.xlsx in OUTPUT folder, runs:
-  1. Rule-based checks (E1–E15) — fast, local
+  1. Rule-based checks (E1–E18) — fast, local
   2. LLM prediction — Claude looks at Option Name and predicts entity_type + device_type.
      If prediction disagrees with pipeline → adds AI_MISMATCH pометку.
 
@@ -328,7 +328,10 @@ def run_llm_predictions(data_rows: list[dict], client, batch_size: int = 40, llm
     return results, total_tok_in, total_tok_out
 
 
-# Синонимы device_type — разные названия одного и того же, не считать мисматчем
+# device_type aliases — semantic equivalences for AI_MISMATCH suppression ONLY.
+# NOT an hw_type map. (e.g. drive_cage→backplane: AI saying "backplane" matches
+# pipeline saying "drive_cage" without raising an AI_MISMATCH flag. Per-vendor
+# hw_type maps live in rules/<vendor>_rules.yaml device_type_map.)
 DEVICE_TYPE_ALIASES = {
     "ram":             "memory",
     "nic":             "network_adapter",
@@ -411,7 +414,7 @@ def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
     return "; ".join(tags) if tags else None
 
 
-# ── Rule-based checks (E1–E15) ────────────────────────────────────────────────
+# ── Rule-based checks (E1–E18) ────────────────────────────────────────────────
 
 def validate_row(row: dict, vendor: str,
                   device_type_map: dict[str, dict] | None = None) -> list[str]:

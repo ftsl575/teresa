@@ -1,8 +1,8 @@
 # CLAUDE.md — Контекст проекта Teresa / spec_classifier
 > Этот файл читается автоматически в Cowork и Claude Desktop.
 > Цель: не грузить репо в каждом окне. Обновляй после каждого значимого цикла.
-> Последнее обновление: 2026-04-30
-> Последний коммит: f74a3a9 chore: extend .gitignore for archives and OUTPUT folder
+> Последнее обновление: 2026-05-02
+> Последний коммит: 06d64c1 PR-4c: Lenovo final (Bezel + UNKNOWN-3 + drive_cage alias flip + goldens creation)
 > Последний прогон: 2026-04-30 21:17 (4 vendors, 26 files, 4338 rows; см. OUTPUT/audit_report.json)
 
 ---
@@ -10,7 +10,7 @@
 ## ПРОЕКТ
 
 **Teresa** — пайплайн классификации оборудования из Excel BOM (Bill of Materials).
-Вендоры: **Dell / Cisco / HPE / Lenovo**.
+Вендоры: **Dell / Cisco / HPE / Lenovo / xFusion / Huawei**.
 Каждая строка классифицируется по полям:
 
 | Поле | Значения |
@@ -157,8 +157,14 @@ hba              = storage_controller
 sfp_cable        = cable
 fiber_cable      = cable
 power_cord       = cable        ← только AI alias; в YAML power_cord БЕЗ hw_type (см. бизнес-правило выше)
-drive_cage       = chassis
-bezel            = chassis
+drive_cage       = backplane    ← AI_MISMATCH suppression only, не hw_type-маппинг.
+                                  PR-4c flip (06d64c1) align с pipeline output:
+                                  HPE `hpe_rules.yaml device_type_map` маппит drive_cage→backplane,
+                                  поэтому AI говорящий "backplane" не должен спорить с pipeline
+                                  говорящим "drive_cage". Раньше было `chassis` — устарело.
+bezel            = chassis      ← HPE-precedent (HPE bezel→chassis). Lenovo-local override:
+                                  `lenovo_rules.yaml` map bezel→accessory (PR-4c). Глобальный
+                                  alias не меняется чтобы не сломать HPE.
 storage_nvme     = storage_drive
 storage_ssd      = storage_drive
 storage_hdd      = storage_drive

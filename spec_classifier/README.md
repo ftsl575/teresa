@@ -1,6 +1,6 @@
-# Spec Classifier (Dell · Cisco · HPE)
+# Spec Classifier (Dell · Cisco · HPE · Lenovo · xFusion · Huawei)
 
-Deterministic rule-based pipeline for classifying Dell, Cisco CCW, and HPE Excel specification files.
+Deterministic rule-based pipeline for classifying Dell, Cisco CCW, HPE, Lenovo (DCSC), xFusion (FusionServer eDeal), and Huawei (eDeal) Excel specification files.
 
 **Excel in → parse → normalize → classify → Excel/JSON/CSV out.**
 Classification uses YAML rules + regex. No ML. Fully reproducible.
@@ -110,7 +110,7 @@ per-run folder: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_
 
 | Option | Default | Description |
 |---|---|---|
-| `--vendor {dell,cisco,hpe}` | `dell` | Vendor adapter: Dell spec export, Cisco CCW export, or HPE BOM |
+| `--vendor {dell,cisco,hpe,lenovo,xfusion,huawei}` | `dell` | Vendor adapter: Dell spec, Cisco CCW, HPE BOM, Lenovo DCSC, xFusion FusionServer eDeal, Huawei eDeal |
 | `--input PATH` | — | **Required** (single-file mode). Path to input .xlsx |
 | `--batch-dir PATH` | — | Batch mode: process all .xlsx in this directory |
 | `--config PATH` | `config.yaml` | Config YAML |
@@ -127,6 +127,11 @@ Either `--input`, `--batch-dir`, or `--batch` is required. Full reference: [docs
 - **Dell (default):** Parses Dell export (header row by "Module Name"). All artifacts including branded spec. Use `--vendor dell` or omit.
 - **Cisco CCW:** Parses Cisco Commerce Workspace export (sheet **"Price Estimate"**). Same pipeline; annotated Excel gets extra columns (line_number, service_duration_months). Branded spec is not generated for Cisco. `run_summary.json` includes `vendor_stats` (e.g. top_level_bundles_count, max_hierarchy_depth).
 - **HPE:** Parses HPE QuoteBuilder BOM (sheet **"BOM"**, columns Product #, Product Description). Same pipeline; annotated Excel gets HPE vendor columns. Branded spec is not generated for HPE. `run_summary.json` includes `vendor_stats` (e.g. factory_integrated_count).
+- **Lenovo:** Parses Lenovo DCSC export (sheet **"Configuration"** or first sheet; header row located by "Option Name" / "Option ID"). Annotated Excel gets Lenovo vendor columns; branded spec is not generated for Lenovo. Test files: `L1.xlsx ... L11.xlsx`.
+- **xFusion:** Parses xFusion FusionServer eDeal export (header row located by "Configuration Name" / "Component Type"; G-prefix part numbers normalized via `BASE-XF-001` / `DT-XF-021`). Branded spec is not generated for xFusion.
+- **Huawei:** Parses Huawei eDeal export (sheets for ICT/Server/Storage/WLAN catalogs; header row located by "Material Code" / "Description"). Supports `device_type=storage_enclosure` (Disk Enclosure family) and `device_type=io_module` (OceanStor SmartIO modules). Branded spec is not generated for Huawei.
+
+For the full per-row classification taxonomy (`device_type`, `hw_type`, vendor coverage matrix, cross-vendor divergences) see [`docs/taxonomy/hw_type_taxonomy.md`](docs/taxonomy/hw_type_taxonomy.md).
 
 **Config:** Rules per vendor in `config.yaml`:
 
@@ -135,6 +140,9 @@ vendor_rules:
   dell: "rules/dell_rules.yaml"
   cisco: "rules/cisco_rules.yaml"
   hpe: "rules/hpe_rules.yaml"
+  lenovo: "rules/lenovo_rules.yaml"
+  xfusion: "rules/xfusion_rules.yaml"
+  huawei: "rules/huawei_rules.yaml"
 ```
 
 **Cisco parser limitations:**
