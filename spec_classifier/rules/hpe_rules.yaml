@@ -817,7 +817,7 @@ hw_type_rules:
     cable: cable
     riser: riser
     rail: rail
-    drive_cage: chassis
+    drive_cage: backplane
     backplane: backplane
     fan: fan
     heatsink: heatsink

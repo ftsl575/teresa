@@ -195,10 +195,10 @@ device_type_rules:
       device_type: transceiver
       rule_id: DT-HU-006-TRANSCEIVER
 
-    # DT-HU-008 — Disk Enclosure (JBOD shelf) → accessory (CC #7)
+    # DT-HU-008 — Disk Enclosure (JBOD shelf) → storage_enclosure (PR-3 / Q2)
     - field: option_name
       pattern: '(?i)\bDisk\s+Enclosure\b(?!.*\bDisk\s+Unit\b)'
-      device_type: accessory
+      device_type: storage_enclosure
       rule_id: DT-HU-008-DISK-ENCLOSURE
 
 # ── hw_type_rules ──────────────────────────────────────────────────────────
@@ -214,5 +214,6 @@ hw_type_rules:
     cable: cable
     psu: psu
     accessory: accessory
+    storage_enclosure: storage_enclosure
     # storage_system / switch / wireless_ap → BASE rows; hw_type=None per business rules
     # power_cord → device_type only, hw_type=None per business rules

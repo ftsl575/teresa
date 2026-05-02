@@ -21,7 +21,7 @@
 {"source_row_index": 30, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["0258Y016"]}
 {"source_row_index": 32, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-021-BACKPLANE", "device_type": "accessory", "hw_type": "accessory", "skus": ["0258Y009"]}
+{"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-021-BACKPLANE", "device_type": "backplane", "hw_type": "backplane", "skus": ["0258Y009"]}
 {"source_row_index": 34, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-012-NIC", "device_type": "nic", "hw_type": "network_adapter", "skus": ["0231Y804"]}
 {"source_row_index": 36, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}

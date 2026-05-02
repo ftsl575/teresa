@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.core.classifier import classify_row, EntityType
 from src.core.normalizer import RowKind
-from src.rules.rules_engine import RuleSet
+from src.rules.rules_engine import RuleSet, match_device_type_rule
 from src.vendors.xfusion.normalizer import XFusionNormalizedRow
 
 
@@ -284,12 +284,25 @@ def test_power_cords_cable_fires_as_power_cord(xfusion_ruleset):
 
 # ─── BACKPLANE (Q5) ─────────────────────────────────────────────────────────
 
-def test_backplane_fires_as_accessory(xfusion_ruleset):
+def test_backplane_fires_as_backplane(xfusion_ruleset):
     desc = 'Rear 4*2.5" Hard Disk Backplane Module for NVME'
     r = classify_row(_row(desc), xfusion_ruleset)
     assert r.matched_rule_id == "HW-XF-021-BACKPLANE"
-    assert r.device_type == "accessory"
-    assert r.hw_type == "accessory"
+    assert r.device_type == "backplane"
+    assert r.hw_type == "backplane"
+
+
+def test_backplane_module_dt_rule_fires(xfusion_ruleset):
+    """PR-3: explicit DT-level check — DT-XF-022-BACKPLANE must win on xf9:33
+    descriptor. Pipeline matched_rule_id reflects the HW-level rule
+    (HW-XF-021-BACKPLANE), but device_type=backplane can only be emitted by
+    DT-XF-022-BACKPLANE, not by DT-XF-018-ACCESSORY (which no longer matches
+    \\bBackplane\\b after Spec 2.A)."""
+    desc = 'Rear 4*2.5" Hard Disk Backplane Module for NVME'
+    dt_match = match_device_type_rule(_row(desc), xfusion_ruleset.device_type_rules)
+    assert dt_match is not None
+    assert dt_match["rule_id"] == "DT-XF-022-BACKPLANE"
+    assert dt_match["device_type"] == "backplane"
 
 
 # ─── SOFTWARE ───────────────────────────────────────────────────────────────

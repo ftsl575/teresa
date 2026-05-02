@@ -4,7 +4,7 @@
 {"source_row_index": 5, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P74573-B21"]}
 {"source_row_index": 6, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-003", "device_type": "ram", "hw_type": "memory", "skus": ["P69727-B21"]}
 {"source_row_index": 7, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P69727-B21"]}
-{"source_row_index": 8, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "chassis", "skus": ["P75741-B21"]}
+{"source_row_index": 8, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["P75741-B21"]}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P75741-B21"]}
 {"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-005", "device_type": "storage_nvme", "hw_type": "storage_drive", "skus": ["P64842-B21"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P64842-B21"]}
@@ -32,4 +32,4 @@
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-024", "device_type": "heatsink", "hw_type": "heatsink", "skus": ["P74792-B21"]}
 {"source_row_index": 34, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P74792-B21"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-006", "device_type": null, "hw_type": null, "skus": ["P79564-B21"]}
-{"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "chassis", "skus": ["P75741-B21"]}
+{"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["P75741-B21"]}

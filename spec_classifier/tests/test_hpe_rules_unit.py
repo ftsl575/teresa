@@ -114,7 +114,7 @@ def test_hpe_factory_integrated_matches_config_rule(hpe_ruleset):
     # 20 rail
     ("HPE Easy Install Rail Kit", "rail", "rail"),
     # 21 drive_cage
-    ("HPE DL380 8SFF Drive Cage Kit", "drive_cage", "chassis"),
+    ("HPE DL380 8SFF Drive Cage Kit", "drive_cage", "backplane"),
     # 22 backplane
     ("HPE 8SFF U.3 Backplane Kit", "backplane", "backplane"),
     # 23 bezel
@@ -129,3 +129,16 @@ def test_hpe_device_type_and_hw_type(hpe_ruleset, option_name, exp_device_type, 
     result = classify_row(row, hpe_ruleset)
     assert result.device_type == exp_device_type
     assert result.hw_type == exp_hw_type
+
+
+def test_drive_cage_p75741_b21_fires_as_backplane(hpe_ruleset):
+    """PR-3: real P75741-B21 drive cage SKU — after drive_cage→backplane map flip,
+    device_type stays drive_cage, but hw_type is now backplane (was chassis)."""
+    row = _hpe_row(
+        "HPE ProLiant Compute DL3XX Gen12 8SFF x4 U.3 Tri-Mode Drive Cage Kit"
+    )
+    result = classify_row(row, hpe_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "drive_cage"
+    assert result.hw_type == "backplane"
+    assert result.matched_rule_id == "HW-H-GLOBAL-028"

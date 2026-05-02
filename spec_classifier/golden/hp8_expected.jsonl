@@ -4,7 +4,7 @@
 {"source_row_index": 5, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P67079-B21"]}
 {"source_row_index": 6, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-003", "device_type": "ram", "hw_type": "memory", "skus": ["P64707-B21"]}
 {"source_row_index": 7, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P64707-B21"]}
-{"source_row_index": 8, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "chassis", "skus": ["P48813-B21"]}
+{"source_row_index": 8, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["P48813-B21"]}
 {"source_row_index": 9, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P48813-B21"]}
 {"source_row_index": 10, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-006", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["P40497-B21"]}
 {"source_row_index": 11, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P40497-B21"]}
@@ -37,7 +37,7 @@
 {"source_row_index": 38, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P67084-B21"]}
 {"source_row_index": 39, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-003", "device_type": "ram", "hw_type": "memory", "skus": ["P64707-B21"]}
 {"source_row_index": 40, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P64707-B21"]}
-{"source_row_index": 41, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "chassis", "skus": ["P48813-B21"]}
+{"source_row_index": 41, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-028", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["P48813-B21"]}
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P48813-B21"]}
 {"source_row_index": 43, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-006", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["P40497-B21"]}
 {"source_row_index": 44, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P40497-B21"]}

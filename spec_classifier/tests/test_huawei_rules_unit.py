@@ -141,6 +141,22 @@ def test_HW_HU_008_disk_enclosure(huawei_ruleset):
     result = classify_row(r, huawei_ruleset)
     assert result.entity_type == EntityType.HW
     assert result.matched_rule_id == "HW-HU-008-DISK-ENCLOSURE"
+    assert result.device_type == "storage_enclosure"
+    assert result.hw_type == "storage_enclosure"
+
+
+def test_disk_enclosure_dae_sku_fires_as_storage_enclosure(huawei_ruleset):
+    """PR-3: real hu3:20/39 DAE SKU descriptor — after DT-HU-008 flipped from
+    accessory to storage_enclosure, both device_type and hw_type become
+    storage_enclosure (via device_type_map)."""
+    r = _row(
+        "SAS Disk Enclosure(4U,AC HVDC,3.5 Inch,Expansion Module,"
+        "24 Disk Slots,Without Disk Units,DAE62435U4)"
+    )
+    result = classify_row(r, huawei_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "storage_enclosure"
+    assert result.hw_type == "storage_enclosure"
 
 
 # ── device_type ───────────────────────────────────────────────────────────

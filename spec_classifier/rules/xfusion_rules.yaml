@@ -249,7 +249,8 @@ device_type_rules:
     - {rule_id: DT-XF-015-CABLE,          field: option_name, pattern: '(?i)\bHigh\s+Speed\s+Cable\b|\bPower\s+Cable\b|\bBTB\s+Connector\s+module\b|\bMini[\s\-]SAS\s+HD\s+Cable\b|\bOptical\s+Cable\s+Parts\b',                     device_type: cable}
     - {rule_id: DT-XF-016-POWER-CORD,     field: option_name, pattern: '(?i)\bPower\s+Cords\s+Cable\b',                                                                                                  device_type: power_cord}
     - {rule_id: DT-XF-017-FAN,            field: option_name, pattern: '(?i)\bFan\s+module\b',                                                                                                            device_type: fan}
-    - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bAir\s+duct\b|\bFan\s+bracket\b|\bExtended\s+radiator\b|\bBackplane\b',                                                     device_type: accessory}
+    - {rule_id: DT-XF-022-BACKPLANE,      field: option_name, pattern: '(?i)\bBackplane\s+Module\b',                                                                                                    device_type: backplane}
+    - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bAir\s+duct\b|\bFan\s+bracket\b|\bExtended\s+radiator\b',                                                                  device_type: accessory}
     - {rule_id: DT-XF-019-RISER,          field: option_name, pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b|\bIO\s+Extended\s+Module\b',                                                              device_type: riser}
     - {rule_id: DT-XF-020-RAIL,           field: option_name, pattern: '(?i)\bBall\s+Bearing\s+Rail\s+Kit\b',                                                                                            device_type: rail}
 
@@ -272,6 +273,7 @@ hw_type_rules:
     riser:             riser
     rail:              rail
     accessory:         accessory
+    backplane:         backplane
     gpu:               gpu
     server:            server
     # power_cord intentionally NOT mapped → hw_type=None per business rules.
