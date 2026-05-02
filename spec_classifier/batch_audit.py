@@ -335,7 +335,7 @@ DEVICE_TYPE_ALIASES = {
     "raid_controller": "storage_controller",
     "sfp_cable":       "cable",
     "fiber_cable":     "cable",
-    "drive_cage":      "chassis",
+    "drive_cage":      "backplane",
     "bezel":           "chassis",
     "motherboard":     "chassis",
     "storage_nvme":    "storage_drive",
@@ -355,7 +355,7 @@ HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory"
 # cable kit ≠ accessory, battery/capacitor ≠ accessory, rail ≠ accessory
 DEVICE_TYPE_TRUST = {"cable", "battery", "rail", "riser", "blank_filler",
                      "accessory", "chassis", "backplane", "storage_enclosure",
-                     "motherboard"}
+                     "motherboard", "bezel"}
 
 def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
                        pred: dict) -> str | None:

@@ -306,6 +306,24 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-044-BRACKET
 
+  # OCP NIC Interposer Card → nic (PR-4c Theme 10)
+  - field: option_name
+    pattern: '(?i)\bOCP\s+NIC\s+Interposer\b'
+    entity_type: HW
+    rule_id: HW-L-046-OCP-NIC-INTERPOSER
+
+  # PCIe Switch Board → accessory (PR-4c Theme 10)
+  - field: option_name
+    pattern: '(?i)\bPCIe\s+Switch\s+Board\b'
+    entity_type: HW
+    rule_id: HW-L-047-PCIE-SWITCH-BOARD
+
+  # Flexible Printed Circuit → cable (PR-4c Theme 10)
+  - field: option_name
+    pattern: '(?i)\bFlexible\s+Printed\s+Circuit\b'
+    entity_type: HW
+    rule_id: HW-L-048-FPC
+
   # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
   - field: option_name
     pattern: '(?i)\bCables?\d*\b|\bCBL\b|\bCables\s+Set\b'
@@ -419,6 +437,12 @@ hw_rules:
     pattern: '(?i)\bBackplane\b'
     entity_type: HW
     rule_id: HW-L-022-BACKPLANE
+
+  # Bezel (Lenovo codename: Blowing Rock; Security Bezel) → bezel/accessory (PR-4c Theme 9, Q5)
+  - field: option_name
+    pattern: '(?i)\bBlowing\s+Rock\b|\bSecurity\s+Bezel\b'
+    entity_type: HW
+    rule_id: HW-L-045-BEZEL
 
   # Chassis / Cage / Bezel
   - field: option_name
@@ -556,6 +580,24 @@ device_type_rules:
       device_type: accessory
       rule_id: DT-L-044-BRACKET
 
+    # OCP NIC Interposer → nic (PR-4c Theme 10)
+    - field: option_name
+      pattern: '(?i)\bOCP\s+NIC\s+Interposer\b'
+      device_type: nic
+      rule_id: DT-L-046-OCP-NIC-INTERPOSER
+
+    # PCIe Switch Board → accessory (PR-4c Theme 10)
+    - field: option_name
+      pattern: '(?i)\bPCIe\s+Switch\s+Board\b'
+      device_type: accessory
+      rule_id: DT-L-047-PCIE-SWITCH-BOARD
+
+    # Flexible Printed Circuit → cable (PR-4c Theme 10)
+    - field: option_name
+      pattern: '(?i)\bFlexible\s+Printed\s+Circuit\b'
+      device_type: cable
+      rule_id: DT-L-048-FPC
+
     # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
     - field: option_name
       pattern: '(?i)\bCables?\d*\b|\bCBL\b|\bCables\s+Set\b'
@@ -676,6 +718,12 @@ device_type_rules:
       device_type: backplane
       rule_id: DT-L-020-BACKPLANE
 
+    # Bezel → bezel (PR-4c Theme 9)
+    - field: option_name
+      pattern: '(?i)\bBlowing\s+Rock\b|\bSecurity\s+Bezel\b'
+      device_type: bezel
+      rule_id: DT-L-045-BEZEL
+
     # Chassis / Cage / Bezel
     - field: option_name
       pattern: '(?i)\b(Chassis|HDD\s+Cage|HD\s+Cage|Media\s+Bay|Bezel)\b'
@@ -759,6 +807,7 @@ hw_type_rules:
     backplane: backplane
     chassis: chassis
     motherboard: chassis
+    bezel: accessory
     tpm: tpm
     battery: accessory
     blank_filler: blank_filler

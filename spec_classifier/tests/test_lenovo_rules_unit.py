@@ -308,6 +308,46 @@ def test_legit_sfp_transceiver_remains_transceiver_post_bracket(lenovo_ruleset):
     assert result.hw_type == "transceiver"
 
 
+# ── PR-4c Theme 9: Bezel "Blowing Rock" → HW/bezel/accessory ────────────────
+
+def test_blowing_rock_bezel(lenovo_ruleset):
+    """Lenovo codename 'Blowing Rock' = security bezel → HW/bezel/accessory (PR-4c Q5)."""
+    r = _row("L1 Blowing Rock - Red", option_id="BYV7")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "bezel"
+    assert result.hw_type == "accessory"
+
+
+# ── PR-4c Theme 10: UNKNOWN-3 SR680a V4 closures ───────────────────────────
+
+def test_ocp_nic_interposer_is_nic(lenovo_ruleset):
+    """OCP NIC Interposer Card → HW/nic/network_adapter (PR-4c Theme 10)."""
+    r = _row("ThinkSystem SR680a V4 OCP NIC Interposer Card", option_id="CBA1")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "nic"
+    assert result.hw_type == "network_adapter"
+
+
+def test_pcie_switch_board_is_accessory(lenovo_ruleset):
+    """PCIe Switch Board → HW/accessory/accessory (PR-4c Theme 10)."""
+    r = _row("ThinkSystem SR680a V4 PCIe Switch Board with two 144-lanes Switches", option_id="CB9Q")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "accessory"
+    assert result.hw_type == "accessory"
+
+
+def test_flexible_printed_circuit_is_cable(lenovo_ruleset):
+    """Flexible Printed Circuit (FPC) → HW/cable/cable (PR-4c Theme 10)."""
+    r = _row("ThinkSystem SR680a V4 Flexible Printed Circuit", option_id="CB9S")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "cable"
+    assert result.hw_type == "cable"
+
+
 # ── Edge cases ───────────────────────────────────────────────────────────────
 
 def test_unknown_row(lenovo_ruleset):
