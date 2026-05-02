@@ -17,6 +17,12 @@ base_rules:
     entity_type: BASE
     rule_id: BASE-L-010-MULTI-SOCKET
 
+  # GPU Base — это GPU-шасси/база, не дискретный GPU (PR-4b Theme 4, handoff Q4)
+  - field: option_name
+    pattern: '(?i)\bGPU\s+Base\b'
+    entity_type: BASE
+    rule_id: BASE-L-020-GPU-BASE
+
 # ── SERVICE ──────────────────────────────────────────────────────────────────
 service_rules:
   - field: option_name
@@ -276,6 +282,30 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-006-BLANK-SCAP
 
+  # BlueField / DPU → nic (before cable + transceiver) — PR-4b Theme 5
+  - field: option_name
+    pattern: '(?i)\bBlueField(?:-?\d+)?\b'
+    entity_type: HW
+    rule_id: HW-L-041-BLUEFIELD
+
+  # Network Card / OSFP NIC → nic (before GPU rule to avoid 8-GPU desc collision) — PR-4b Theme 6
+  - field: option_name
+    pattern: '(?i)\bNetwork\s+Card\b|\bOSFP\s+(?:NIC|Network)\b'
+    entity_type: HW
+    rule_id: HW-L-042-NETWORK-CARD
+
+  # GPU/CPU/Server Fan (Control) Board / Fan Control Board → fan — PR-4b Theme 7
+  - field: option_name
+    pattern: '(?i)\b(?:GPU|CPU|Server)\s+Fan\s+(?:Control\s+)?Board\b|\bFan\s+Control\s+Board\b'
+    entity_type: HW
+    rule_id: HW-L-043-FAN-BOARD
+
+  # PCIe Bracket / Retention Bracket → accessory (before transceiver to avoid QSFP collision) — PR-4b Theme 8
+  - field: option_name
+    pattern: '(?i)\b(?:PCIe|Retention)\s+Bracket\b'
+    entity_type: HW
+    rule_id: HW-L-044-BRACKET
+
   # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
   - field: option_name
     pattern: '(?i)\bCables?\d*\b|\bCBL\b|\bCables\s+Set\b'
@@ -478,6 +508,12 @@ device_type_rules:
       device_type: server
       rule_id: DT-L-058-MULTI-SOCKET
 
+    # GPU Base → server (PR-4b Theme 4, handoff Q4)
+    - field: option_name
+      pattern: '(?i)\bGPU\s+Base\b'
+      device_type: server
+      rule_id: DT-L-060-GPU-BASE
+
     # CPU Clip → accessory (before CPU)
     - field: option_name
       pattern: '(?i)\bCPU\b.*\bClip\b'
@@ -495,6 +531,30 @@ device_type_rules:
       pattern: '(?i)\b(RDIMM|TruDDR|DIMM|LRDIMM)\b'
       device_type: ram
       rule_id: DT-L-003-RAM
+
+    # BlueField / DPU → nic (PR-4b Theme 5)
+    - field: option_name
+      pattern: '(?i)\bBlueField(?:-?\d+)?\b'
+      device_type: nic
+      rule_id: DT-L-041-BLUEFIELD
+
+    # Network Card / OSFP NIC → nic (PR-4b Theme 6)
+    - field: option_name
+      pattern: '(?i)\bNetwork\s+Card\b|\bOSFP\s+(?:NIC|Network)\b'
+      device_type: nic
+      rule_id: DT-L-042-NETWORK-CARD
+
+    # Fan Board → fan (PR-4b Theme 7)
+    - field: option_name
+      pattern: '(?i)\b(?:GPU|CPU|Server)\s+Fan\s+(?:Control\s+)?Board\b|\bFan\s+Control\s+Board\b'
+      device_type: fan
+      rule_id: DT-L-043-FAN-BOARD
+
+    # PCIe Bracket / Retention Bracket → accessory (PR-4b Theme 8)
+    - field: option_name
+      pattern: '(?i)\b(?:PCIe|Retention)\s+Bracket\b'
+      device_type: accessory
+      rule_id: DT-L-044-BRACKET
 
     # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
     - field: option_name

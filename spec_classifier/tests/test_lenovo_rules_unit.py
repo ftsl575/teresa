@@ -196,6 +196,118 @@ def test_plain_hdd_remains_storage_drive(lenovo_ruleset):
     assert result.hw_type == "storage_drive"
 
 
+# ── PR-4b Theme 4: GPU Base → BASE/server ───────────────────────────────────
+
+@pytest.mark.parametrize("option_id, option_name", [
+    ("CBAD", "ThinkSystem SR680a V4 B300 GPU Base"),
+    ("C9JN", "ThinkSystem SR680a V3 B200 GPU Base"),
+    ("BR7G", "ThinkSystem SR675 V3 4DW PCIe GPU Base"),
+])
+def test_gpu_base_is_base_server(lenovo_ruleset, option_id, option_name):
+    """GPU Base SKUs are GPU-chassis foundations, classified as BASE/server (PR-4b Theme 4, Q4)."""
+    r = _row(option_name, option_id=option_id)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.BASE
+    assert result.device_type == "server"
+
+
+def test_legit_gpu_board_remains_gpu(lenovo_ruleset):
+    """Regression: legit GPU board (no 'Base' token) still classifies as HW/gpu/gpu."""
+    r = _row("ThinkSystem NVIDIA HGX B200 180GB 1000W 8-GPU Board")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "gpu"
+    assert result.hw_type == "gpu"
+
+
+# ── PR-4b Theme 5: BlueField DPU → HW/nic/network_adapter ───────────────────
+
+@pytest.mark.parametrize("option_name", [
+    "ThinkSystem NVIDIA BlueField-3 B3220 VPI QSFP112 2P 200G PCIe Gen5 x16 with Tin Plating Connector",
+    "ThinkSystem BlueField-3 Power Cable",
+])
+def test_bluefield_is_hw_nic(lenovo_ruleset, option_name):
+    """BlueField DPU + Power Cable both route to HW/nic/network_adapter (PR-4b Theme 5)."""
+    r = _row(option_name)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "nic"
+    assert result.hw_type == "network_adapter"
+
+
+def test_legit_transceiver_remains_transceiver(lenovo_ruleset):
+    """Regression: non-BlueField SFP28 transceiver still classifies as HW/transceiver/transceiver."""
+    r = _row("ThinkSystem Finisar Dual Rate 10G/25G SR SFP28 Transceiver")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "transceiver"
+    assert result.hw_type == "transceiver"
+
+
+# ── PR-4b Theme 6: Network Card / OSFP → HW/nic/network_adapter ─────────────
+
+def test_osfp_network_card_8gpu_is_nic(lenovo_ruleset):
+    """OSFP Network Card description containing '8-GPU complex' must classify as nic, not gpu."""
+    r = _row("ThinkSystem SR680a V4 OSFP Network Card for 8-GPU complex")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "nic"
+    assert result.hw_type == "network_adapter"
+
+
+def test_legit_8gpu_board_remains_gpu(lenovo_ruleset):
+    """Regression: NVIDIA HGX 8-GPU Board (no 'Network Card') still routes to gpu."""
+    r = _row("NVIDIA HGX B200 8-GPU Board")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "gpu"
+
+
+# ── PR-4b Theme 7: Fan Boards → HW/fan/fan ──────────────────────────────────
+
+@pytest.mark.parametrize("option_name", [
+    "ThinkSystem SR680a V4 GPU Fan Control Board",
+    "ThinkSystem SR680a V4 CPU Fan Board for Air-cooled 8U Chassis",
+    "ThinkSystem SR680a V3 for B200 Server Fan Control Board",
+])
+def test_fan_board_is_hw_fan(lenovo_ruleset, option_name):
+    """GPU/CPU/Server Fan (Control) Board variants all route to HW/fan/fan (PR-4b Theme 7)."""
+    r = _row(option_name)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "fan"
+    assert result.hw_type == "fan"
+
+
+def test_legit_fan_module_remains_fan(lenovo_ruleset):
+    """Regression: 'Performance Fan Module' still routes to fan via HW-L-018 (not HW-L-043)."""
+    r = _row("ThinkSystem 2U V3 Performance Fan Module")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "fan"
+    assert result.hw_type == "fan"
+
+
+# ── PR-4b Theme 8: PCIe Bracket → HW/accessory/accessory ────────────────────
+
+def test_pcie_bracket_qsfp_is_accessory(lenovo_ruleset):
+    """Mellanox QSFP56 PCIe Bracket must route to accessory, not transceiver."""
+    r = _row("Mellanox Low-Profile Dual-Port QSFP56 PCIe Bracket L1/SBB")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "accessory"
+    assert result.hw_type == "accessory"
+
+
+def test_legit_sfp_transceiver_remains_transceiver_post_bracket(lenovo_ruleset):
+    """Regression: bare SFP28 transceiver (no 'PCIe Bracket') still routes to transceiver."""
+    r = _row("Lenovo 25Gb SFP28 Transceiver Module")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "transceiver"
+    assert result.hw_type == "transceiver"
+
+
 # ── Edge cases ───────────────────────────────────────────────────────────────
 
 def test_unknown_row(lenovo_ruleset):
