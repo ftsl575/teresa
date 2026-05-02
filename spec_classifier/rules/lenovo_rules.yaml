@@ -7,7 +7,7 @@ state_rules:
 # ── BASE: CTO rows ──────────────────────────────────────────────────────────
 base_rules:
   - field: option_id
-    pattern: '(?i)^[A-Z0-9]{4}CTO'
+    pattern: '(?i)^(?!7S)[A-Z0-9]{4}CTO'
     entity_type: BASE
     rule_id: BASE-L-001
 
@@ -105,7 +105,7 @@ note_rules:
 
   # HDD/NVMe/SATA/SAS/PCIe label rows → NOTE (before HW rules)
   - field: option_name
-    pattern: '(?i)\b(HDD|NVMe|SATA|SAS|PCIe)\b.*\bLabels?\b'
+    pattern: '(?i)\b(HDD|NVMe|SATA|SAS|PCIe)\b.*\bLabels?\d*\b'
     entity_type: NOTE
     rule_id: NOTE-L-010
 
@@ -123,7 +123,7 @@ note_rules:
 
   # HDD Type Label / HDD Sequence → NOTE (before HW HDD rule)
   - field: option_name
-    pattern: '(?i)\bHDD\s+(Type\s+Label|Sequence)\b'
+    pattern: '(?i)\bHDD\s+(?:Type\s+Label\d*|Sequence)\b'
     entity_type: NOTE
     rule_id: NOTE-L-050-HDD-LABEL
 
@@ -344,7 +344,7 @@ hw_rules:
 
   # HDD (exclude Filler, Label, Cage, Sequence)
   - field: option_name
-    pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label|Cage|Sequence)\b)'
+    pattern: '(?i)\bHDD\b(?!.*\b(?:Filler|Cage|Sequence|Labels?\d*)\b)'
     entity_type: HW
     rule_id: HW-L-015-HDD
 
@@ -444,9 +444,15 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-035
 
+  # Motherboard / System Board / MB / MB W/IO → motherboard (Q1; before accessory catch-all)
+  - field: option_name
+    pattern: '(?i)\bSystem\s+Board\b|\b(?:Motherboard|Mainboard)\b|\bMB(?:\s+W\/IO)?(?=\s|,|$)'
+    entity_type: HW
+    rule_id: HW-L-040-MOTHERBOARD
+
   # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
   - field: option_name
-    pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+    pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
     entity_type: HW
     rule_id: HW-L-027-ACCESSORY
 
@@ -462,7 +468,7 @@ device_type_rules:
   rules:
     # BASE
     - field: option_id
-      pattern: '(?i)^[A-Z0-9]{4}CTO'
+      pattern: '(?i)^(?!7S)[A-Z0-9]{4}CTO'
       device_type: server
       rule_id: DT-L-001-SERVER
 
@@ -564,7 +570,7 @@ device_type_rules:
 
     # HDD (exclude Filler, Label, Cage, Sequence)
     - field: option_name
-      pattern: '(?i)\bHDD\b(?!.*\b(Filler|Label|Cage|Sequence)\b)'
+      pattern: '(?i)\bHDD\b(?!.*\b(?:Filler|Cage|Sequence|Labels?\d*)\b)'
       device_type: storage_hdd
       rule_id: DT-L-013-HDD
 
@@ -658,9 +664,15 @@ device_type_rules:
       device_type: raid_controller
       rule_id: DT-L-055
 
+    # Motherboard → motherboard
+    - field: option_name
+      pattern: '(?i)\bSystem\s+Board\b|\b(?:Motherboard|Mainboard)\b|\bMB(?:\s+W\/IO)?(?=\s|,|$)'
+      device_type: motherboard
+      rule_id: DT-L-040-MOTHERBOARD
+
     # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
     - field: option_name
-      pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|System\s+Board|Motherboard|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|MB|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+      pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
       device_type: accessory
       rule_id: DT-L-025-ACCESSORY
 
@@ -686,6 +698,7 @@ hw_type_rules:
     rail: rail
     backplane: backplane
     chassis: chassis
+    motherboard: chassis
     tpm: tpm
     battery: accessory
     blank_filler: blank_filler

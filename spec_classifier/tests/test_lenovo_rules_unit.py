@@ -48,6 +48,27 @@ def test_xclarity_fod_is_software(lenovo_ruleset):
     assert result.entity_type == EntityType.SOFTWARE
 
 
+def test_xclarity_fod_with_cto_option_id_is_software(lenovo_ruleset):
+    """Production case: 7S-prefix CTO option_id must fall through BASE→SOFTWARE via SW-L-001."""
+    r = _row("XClarity Controller Platin-FOD", option_id="7S0XCTO5WW")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.SOFTWARE
+
+
+def test_xclarity_prem_fod_with_cto_option_id_is_software(lenovo_ruleset):
+    r = _row("XClarity Controller Prem-FOD", option_id="7S0XCTO8WW")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.SOFTWARE
+
+
+def test_non_7s_cto_remains_base_server(lenovo_ruleset):
+    """Negative-lookahead regression: non-7S CTO option_id still routes to BASE/server."""
+    r = _row("ThinkSystem SR650 V3", option_id="7Y0XCTO1WW")
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.BASE
+    assert result.device_type == "server"
+
+
 def test_firmware_security_module_is_software(lenovo_ruleset):
     r = _row("ThinkSystem SR650 V3 Firmware and Root of Trust Security Module v2")
     result = classify_row(r, lenovo_ruleset)
@@ -113,7 +134,7 @@ def test_package_is_note(lenovo_ruleset):
     ("TPM 2.0", "tpm"),
     ("M.2 Cable", "cable"),
     ("ThinkSystem RAID 930/940 SuperCap", "battery"),
-    ("ThinkSystem SR650 V3 MB", "accessory"),
+    ("ThinkSystem SR650 V3 MB", "motherboard"),
     ("Lenovo ThinkSystem Air Duct", "accessory"),
     ("ThinkSystem HBA 440-8i SAS/SATA PCIe Gen4 12Gb Internal Adapter", "hba"),
 ])
@@ -122,6 +143,57 @@ def test_device_type(lenovo_ruleset, option_name, expected_device_type):
     result = classify_row(r, lenovo_ruleset)
     assert result.entity_type == EntityType.HW, f"Expected HW for '{option_name}', got {result.entity_type}"
     assert result.device_type == expected_device_type, f"For '{option_name}': expected {expected_device_type}, got {result.device_type}"
+
+
+# ── Theme 1: Motherboard / System Board / MB → HW/motherboard/chassis ──────
+
+@pytest.mark.parametrize("option_name", [
+    "ThinkSystem SR680a V4 System Board",
+    "ThinkSystem SR650 V3 MB",
+    "ThinkSystem SR645 V3 MB W/IO,Turin,Oahu,1U",
+    "ThinkSystem SR675 V3 System Board v2",
+])
+def test_motherboard_is_hw_motherboard_chassis(lenovo_ruleset, option_name):
+    """System Board / MB / MB W/IO must classify to HW/motherboard/chassis (PR-4a Q1)."""
+    r = _row(option_name)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "motherboard"
+    assert result.hw_type == "chassis"
+
+
+@pytest.mark.parametrize("option_name", [
+    "8MB cache memory module",
+    "100 MB/s throughput cable",
+])
+def test_mb_inside_word_is_not_motherboard(lenovo_ruleset, option_name):
+    """Negative: 'MB' embedded in '8MB' or 'MB/s' must NOT classify as motherboard."""
+    r = _row(option_name)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.device_type != "motherboard"
+
+
+# ── Theme 3: HDD Type Label / HDD Type Label1/2 → NOTE ───────────────────────
+
+@pytest.mark.parametrize("option_name", [
+    'ThinkSystem 2U MS 24x2.5" SATA/SAS HDD Type Label1',
+    'ThinkSystem 2U MS 24x2.5" SATA/SAS HDD Type Label2',
+    "HDD Type Label",
+])
+def test_hdd_type_label_is_note(lenovo_ruleset, option_name):
+    """Digit-suffix and bare 'HDD Type Label' all route to NOTE (PR-4a regex fix)."""
+    r = _row(option_name)
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.NOTE
+
+
+def test_plain_hdd_remains_storage_drive(lenovo_ruleset):
+    """Regression: plain HDD (no Label) still classifies as HW/storage_hdd/storage_drive."""
+    r = _row('2.5" 1.2TB 10K SAS HDD')
+    result = classify_row(r, lenovo_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.device_type == "storage_hdd"
+    assert result.hw_type == "storage_drive"
 
 
 # ── Edge cases ───────────────────────────────────────────────────────────────

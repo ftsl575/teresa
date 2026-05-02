@@ -175,7 +175,7 @@ _LLM_SYSTEM_BODY = """
 - device_type: one of cpu, memory, gpu, storage_nvme, storage_ssd, storage_hdd,
   storage_controller, storage_enclosure, hba, network_adapter, transceiver, cable, sfp_cable, fiber_cable,
   psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory,
-  power_cord, raid_controller, nic, ram, drive_cage, backplane, bezel, battery,
+  power_cord, raid_controller, nic, ram, drive_cage, backplane, motherboard, bezel, battery,
   server, switch, storage_system, wireless_ap
   OR empty string "" if not applicable.
 
@@ -337,6 +337,7 @@ DEVICE_TYPE_ALIASES = {
     "fiber_cable":     "cable",
     "drive_cage":      "chassis",
     "bezel":           "chassis",
+    "motherboard":     "chassis",
     "storage_nvme":    "storage_drive",
     "storage_ssd":     "storage_drive",
     "storage_hdd":     "storage_drive",
@@ -353,7 +354,8 @@ HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory"
 # device_type значения где пайплайн всегда прав — AI часто ошибается
 # cable kit ≠ accessory, battery/capacitor ≠ accessory, rail ≠ accessory
 DEVICE_TYPE_TRUST = {"cable", "battery", "rail", "riser", "blank_filler",
-                     "accessory", "chassis", "backplane", "storage_enclosure"}
+                     "accessory", "chassis", "backplane", "storage_enclosure",
+                     "motherboard"}
 
 def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
                        pred: dict) -> str | None:
