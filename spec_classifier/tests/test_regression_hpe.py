@@ -6,6 +6,10 @@ from pathlib import Path
 
 from conftest import project_root, get_input_root_hpe, load_config
 from tests.helpers import run_pipeline_in_memory, build_golden_rows
+from src.core.classifier import classify_row, EntityType
+from src.core.normalizer import RowKind
+from src.rules.rules_engine import RuleSet
+from src.vendors.hpe.normalizer import HPENormalizedRow
 
 HP_FILES = ["hp1.xlsx", "hp2.xlsx", "hp3.xlsx", "hp4.xlsx", "hp5.xlsx", "hp6.xlsx", "hp7.xlsx", "hp8.xlsx"]
 
@@ -63,3 +67,58 @@ def test_regression_hpe(filename):
             all_diffs.extend(diffs)
     if all_diffs:
         pytest.fail("Regression diff:\n" + "\n".join(all_diffs))
+
+
+# ── Cycle 2 signature SKUs — PR-9b PDB / PR-10 optical / PR-3 drive cage ─────────
+
+
+@pytest.fixture(scope="module")
+def hpe_rules_cycle2():
+    return RuleSet.load(str(project_root() / "rules" / "hpe_rules.yaml"))
+
+
+def _hrow(name: str, oid: str) -> HPENormalizedRow:
+    return HPENormalizedRow(
+        source_row_index=1,
+        row_kind=RowKind.ITEM,
+        group_name=None,
+        group_id=None,
+        product_name=None,
+        module_name="",
+        option_name=name,
+        option_id=oid,
+        skus=[oid],
+        qty=1,
+        option_price=1.0,
+    )
+
+
+@pytest.mark.parametrize(
+    "oid, opt, erule, edt, ehw",
+    [
+        ("P57888-B21", "HPE ProLiant DL385 Gen11 Power Distribution Board Kit", "HW-H-GLOBAL-034", "power_distribution_board", "chassis"),
+        ("726537-B21", "HPE 9.5mm SATA DVD-RW Optical Drive", "HW-H-GLOBAL-038", "optical_drive", "storage_drive"),
+        ("P75741-B21", "HPE ProLiant Compute DL3XX Gen12 8SFF x4 U.3 Tri-Mode Drive Cage Kit", "HW-H-GLOBAL-028", "drive_cage", "backplane"),
+    ],
+)
+def test_regression_cycle2_hpe_signature_skus(hpe_rules_cycle2, oid, opt, erule, edt, ehw):
+    res = classify_row(_hrow(opt, oid), hpe_rules_cycle2)
+    assert res.entity_type == EntityType.HW
+    assert res.matched_rule_id == erule
+    assert res.device_type == edt
+    assert res.hw_type == ehw
+
+
+def test_regression_cycle2_hpe_power_cord_not_pdb(hpe_rules_cycle2):
+    res = classify_row(_hrow("HPE Power Cord C13 to C14 2.5m AC Jumper", "PC-CHK"), hpe_rules_cycle2)
+    assert res.entity_type == EntityType.HW
+    assert res.matched_rule_id != "HW-H-GLOBAL-034"
+    assert res.device_type != "power_distribution_board"
+    assert res.device_type == "power_cord"
+
+
+def test_regression_cycle2_hpe_hdd_not_optical_drive(hpe_rules_cycle2):
+    res = classify_row(_hrow("HPE 2.4TB SAS 12G Mission Critical HDD", "HDD-CHK"), hpe_rules_cycle2)
+    assert res.matched_rule_id != "HW-H-GLOBAL-038"
+    assert res.device_type != "optical_drive"
+    assert res.device_type == "storage_hdd"

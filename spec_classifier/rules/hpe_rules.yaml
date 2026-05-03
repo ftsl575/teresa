@@ -773,20 +773,22 @@ device_type_rules:
       device_type: accessory
       rule_id: HW-H-079
 
+    # PR-9b Q8: Power Distribution Board / PDB Kit → power_distribution_board (chassis)
     - field: option_name
       pattern: '(?i)power\s+distribution\s+board'
-      device_type: accessory
-      rule_id: HW-H-080
+      device_type: power_distribution_board
+      rule_id: HW-H-080-PDB
 
+    # PR-10 Q10f: Optical drive → optical_drive (maps to storage_drive)
     - field: option_name
       pattern: '(?i)optical\s+drive'
-      device_type: accessory
-      rule_id: HW-H-081
+      device_type: optical_drive
+      rule_id: HW-H-081-OPTICAL-DRIVE
 
     - field: option_name
       pattern: '(?i)\bdvd\b'
-      device_type: accessory
-      rule_id: HW-H-082
+      device_type: optical_drive
+      rule_id: HW-H-082-DVD
 
     # ── Server catch-all (ПОСЛЕДНЕЕ правило в device_type_rules) ──────────
     # 'proliant' вынесен сюда из BASE-H-DT-001. Срабатывает только если
@@ -826,3 +828,6 @@ hw_type_rules:
     accessory: accessory
     gpu: gpu
     server: server
+    power_distribution_board: chassis  # PR-9b Q8
+    interconnect_board: chassis          # PR-9b Q8 reserved
+    optical_drive: storage_drive         # PR-10 Q10f

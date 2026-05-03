@@ -6,7 +6,7 @@
 {"source_row_index": 14, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-002-RAM", "device_type": "ram", "hw_type": "memory", "skus": ["BNF9"]}
 {"source_row_index": 15, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-010", "device_type": null, "hw_type": null, "skus": ["5977"]}
 {"source_row_index": 16, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-016-PSU", "device_type": "psu", "hw_type": "psu", "skus": ["BNFH"]}
-{"source_row_index": 17, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-023-CHASSIS", "device_type": "chassis", "hw_type": "chassis", "skus": ["BQ2M"]}
+{"source_row_index": 17, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-062-MEDIA-BAY", "device_type": "media_bay", "hw_type": "chassis", "skus": ["BQ2M"]}
 {"source_row_index": 18, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-018-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["BH9N"]}
 {"source_row_index": 19, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-021-RAIL", "device_type": "rail", "hw_type": "rail", "skus": ["B8LA"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-024-TPM", "device_type": "tpm", "hw_type": "tpm", "skus": ["BPKR"]}
@@ -25,7 +25,7 @@
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8NA"]}
 {"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AUWG"]}
-{"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["B8NM"]}
+{"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["B8NM"]}
 {"source_row_index": 37, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8L8"]}
 {"source_row_index": 38, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8NK"]}
 {"source_row_index": 39, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-004", "device_type": null, "hw_type": null, "skus": ["BK15"]}
@@ -47,7 +47,7 @@
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-002-RAM", "device_type": "ram", "hw_type": "memory", "skus": ["BNF9"]}
 {"source_row_index": 56, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-010", "device_type": null, "hw_type": null, "skus": ["5977"]}
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-016-PSU", "device_type": "psu", "hw_type": "psu", "skus": ["BNFG"]}
-{"source_row_index": 58, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-023-CHASSIS", "device_type": "chassis", "hw_type": "chassis", "skus": ["BQ2M"]}
+{"source_row_index": 58, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-062-MEDIA-BAY", "device_type": "media_bay", "hw_type": "chassis", "skus": ["BQ2M"]}
 {"source_row_index": 59, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-018-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["BH9M"]}
 {"source_row_index": 60, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-021-RAIL", "device_type": "rail", "hw_type": "rail", "skus": ["B8LA"]}
 {"source_row_index": 61, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-024-TPM", "device_type": "tpm", "hw_type": "tpm", "skus": ["BPKR"]}
@@ -68,7 +68,7 @@
 {"source_row_index": 76, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
 {"source_row_index": 77, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AUWG"]}
 {"source_row_index": 78, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["BEYJ"]}
-{"source_row_index": 79, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["B8NM"]}
+{"source_row_index": 79, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["B8NM"]}
 {"source_row_index": 80, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8L8"]}
 {"source_row_index": 81, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8NJ"]}
 {"source_row_index": 82, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8NK"]}

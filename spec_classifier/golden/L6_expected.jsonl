@@ -19,7 +19,7 @@
 {"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-021-RAIL", "device_type": "rail", "hw_type": "rail", "skus": ["BT6H"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-006", "device_type": null, "hw_type": null, "skus": ["B7XZ"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-040-MOTHERBOARD", "device_type": "motherboard", "hw_type": "chassis", "skus": ["BT2N"]}
-{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-034", "device_type": "accessory", "hw_type": "accessory", "skus": ["BTTS"]}
+{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-047-ROT-MODULE", "device_type": "tpm", "hw_type": "tpm", "skus": ["BTTS"]}
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-004", "device_type": null, "hw_type": null, "skus": ["BK15"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BCPG"]}
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-040", "device_type": null, "hw_type": null, "skus": ["BT6P"]}

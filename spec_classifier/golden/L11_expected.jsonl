@@ -36,7 +36,7 @@
 {"source_row_index": 44, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BR8F"]}
 {"source_row_index": 45, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BR8E"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["BFCZ"]}
-{"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BFTH"]}
+{"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-046-FRONT-PANEL", "device_type": "front_panel", "hw_type": "management", "skus": ["BFTH"]}
 {"source_row_index": 48, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BFD6"]}
 {"source_row_index": 49, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["BYT3"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BFGY"]}
@@ -45,7 +45,7 @@
 {"source_row_index": 53, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BR88"]}
 {"source_row_index": 54, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-070-LABEL-SUFFIX", "device_type": null, "hw_type": null, "skus": ["BRNM"]}
 {"source_row_index": 55, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BR8W"]}
-{"source_row_index": 56, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-034", "device_type": "accessory", "hw_type": "accessory", "skus": ["BR7U"]}
+{"source_row_index": 56, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-047-ROT-MODULE", "device_type": "tpm", "hw_type": "tpm", "skus": ["BR7U"]}
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BRUS"]}
 {"source_row_index": 58, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BR85"]}
 {"source_row_index": 59, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["BFNU"]}

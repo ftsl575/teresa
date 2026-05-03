@@ -105,7 +105,9 @@ hw_rules:
     pattern: '(?i)\bHDD\b.*?\b(?:SAS|SATA|NL[\s\-]?SAS)\b'
     entity_type: HW
 
-  # 8. Super-capacitor / RAID Card SuperCap (accessory family).
+  # 8. Super-capacitor / RAID Card SuperCap (battery class — RAID cache
+  # protection at power loss; unified with lenovo SuperCap and HPE Hybrid
+  # Capacitor / Smart Storage Battery per PR-8 / Q6 decision).
   # ORDER-CRITICAL: must fire BEFORE RAID-CONTROLLER, because '*RAID Card
   # SuperCap*' would otherwise be caught by the broader \bRAID\s+Card\b.
   - rule_id: HW-XF-008-SUPERCAP
@@ -238,7 +240,7 @@ device_type_rules:
     - {rule_id: DT-XF-005-STORAGE-M2,     field: option_name, pattern: '(?i)\bM\.2\s+SSD\b',                                                                                                              device_type: storage_ssd}
     - {rule_id: DT-XF-006-STORAGE-SSD,    field: option_name, pattern: '(?i)\bSSD\b.*?\bSATA\b|\bSSD\b.*?\bSAS\b',                                                                                       device_type: storage_ssd}
     - {rule_id: DT-XF-007-STORAGE-HDD,    field: option_name, pattern: '(?i)\bHDD\b.*?\b(?:SAS|SATA|NL[\s\-]?SAS)\b',                                                                                    device_type: storage_hdd}
-    - {rule_id: DT-XF-008-SUPERCAP,       field: option_name, pattern: '(?i)\bRAID\s+Card\s+SuperCap\b|\bSuper\s+capacitor\s+module\b',                                                                  device_type: accessory}
+    - {rule_id: DT-XF-008-SUPERCAP,       field: option_name, pattern: '(?i)\bRAID\s+Card\s+SuperCap\b|\bSuper\s+capacitor\s+module\b',                                                                  device_type: battery}
     - {rule_id: DT-XF-008C-RAID-CARD-RISER, field: option_name, pattern: '(?i)\bRAID\s+Card\s+riser\b',                                                                                                  device_type: riser}
     - {rule_id: DT-XF-009-RAID,           field: option_name, pattern: '(?i)\bRAID\s+Controller\b|\bRAID\s+(?:Cable\s+)?Card\b|\bSAS/SATA\s+RAID\b|\bRAID\s+PCIE\s+card\b|\b12G\s+SAS\s+RAID\b|\bRAID-9\d{3}\b',                              device_type: raid_controller}
     - {rule_id: DT-XF-010-GPU-ACCESSORY,  field: option_name, pattern: '(?i)\bAccessories\s+for\s+(?:dual\s+slot\s+)?GPU\b|\bA800\s+auxiliary\s+material\s+package\b|\bGPU\s+power\s+cord\b|\bGPU\s+Card\s+Power\s+Line\b|\bPower\s+Line\s+Spare\s+Pack\b',            device_type: accessory}
@@ -250,7 +252,11 @@ device_type_rules:
     - {rule_id: DT-XF-016-POWER-CORD,     field: option_name, pattern: '(?i)\bPower\s+Cords\s+Cable\b',                                                                                                  device_type: power_cord}
     - {rule_id: DT-XF-017-FAN,            field: option_name, pattern: '(?i)\bFan\s+module\b',                                                                                                            device_type: fan}
     - {rule_id: DT-XF-022-BACKPLANE,      field: option_name, pattern: '(?i)\bBackplane\s+Module\b',                                                                                                    device_type: backplane}
-    - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bAir\s+duct\b|\bFan\s+bracket\b|\bExtended\s+radiator\b',                                                                  device_type: accessory}
+    # PR-10 Q10e: Air duct extracted from accessory catch-all into its own
+    # device_type (air_duct → accessory via device_type_map). MUST fire BEFORE
+    # DT-XF-018-ACCESSORY (Fan bracket / Extended radiator stay accessory).
+    - {rule_id: DT-XF-018A-AIR-DUCT,      field: option_name, pattern: '(?i)\bAir\s+duct\b',                                                                                                            device_type: air_duct}
+    - {rule_id: DT-XF-018-ACCESSORY,      field: option_name, pattern: '(?i)\bFan\s+bracket\b|\bExtended\s+radiator\b',                                                                                 device_type: accessory}
     - {rule_id: DT-XF-019-RISER,          field: option_name, pattern: '(?i)\bRISER\d*\b|\bSLOT\s*\(PCIE\d(?:\.\d)?\)|\bIO\d&\d\s+module\b|\bIO\s+Extended\s+Module\b',                                                              device_type: riser}
     - {rule_id: DT-XF-020-RAIL,           field: option_name, pattern: '(?i)\bBall\s+Bearing\s+Rail\s+Kit\b',                                                                                            device_type: rail}
 
@@ -273,7 +279,9 @@ hw_type_rules:
     riser:             riser
     rail:              rail
     accessory:         accessory
+    air_duct:          accessory  # PR-10 Q10e: Air duct — airflow guide; no cooling hw_type in vocab
     backplane:         backplane
     gpu:               gpu
     server:            server
+    battery:           accessory  # PR-8 / Q6: SuperCap unified with lenovo/hpe (battery → accessory)
     # power_cord intentionally NOT mapped → hw_type=None per business rules.

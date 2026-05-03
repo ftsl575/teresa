@@ -312,17 +312,62 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-046-OCP-NIC-INTERPOSER
 
-  # PCIe Switch Board → accessory (PR-4c Theme 10)
+  # Interconnect Board (PCIe Switch / Retimer / I/O Board) → interconnect_board/chassis
+  # PR-9b Q8: Internal PCIe interconnect / retimer / I/O board within server
+  # chassis. Distinct from motherboard (Q1, main system board) and from external
+  # io_module (Huawei storage pluggable). Replaces the PR-4c HW-L-047-PCIE-SWITCH-BOARD
+  # rule (which only caught "PCIe Switch Board" and routed to accessory). Pattern
+  # requires "Board" or "Card" suffix so cables ("Retimer Cable", "OCP I/O Adapter")
+  # do NOT match. MUST fire BEFORE HW-L-027-ACCESSORY (which used to swallow
+  # "I/O Board" via its catch-all) and BEFORE HW-L-034 ("Retimer|Enablement Kit").
   - field: option_name
-    pattern: '(?i)\bPCIe\s+Switch\s+Board\b'
+    pattern: '(?i)\b(?:PCIe\s+Switch\s+Board|(?:PCIe\s+)?Retimer\s+(?:Card|Board)|(?:System\s+)?I[/-]?O\s+Board)\b'
     entity_type: HW
-    rule_id: HW-L-047-PCIE-SWITCH-BOARD
+    rule_id: HW-L-049-INTERCONNECT-BOARD
+
+  # Power Distribution / Interface / Interconnect Board → power_distribution_board/chassis
+  # PR-9b Q8: Internal server PDB — distributes power within chassis, distinct
+  # from PSU. Pattern requires the literal "Board" suffix so "Power Cord",
+  # "Power Cable", and "Power Supply" do NOT match (they are caught earlier by
+  # HW-L-017-POWERCORD / HW-L-016-PSU). MUST fire BEFORE HW-L-027-ACCESSORY
+  # (which used to swallow Power (Distribution|Interface|Interconnect) Board).
+  - field: option_name
+    pattern: '(?i)\bPower\s+(?:Distribution|Interface|Interconnect)\s+Board\b'
+    entity_type: HW
+    rule_id: HW-L-053-PDB
 
   # Flexible Printed Circuit → cable (PR-4c Theme 10)
   - field: option_name
     pattern: '(?i)\bFlexible\s+Printed\s+Circuit\b'
     entity_type: HW
     rule_id: HW-L-048-FPC
+
+  # Cable Riser → riser/riser (PR-10 Q10d)
+  # MUST fire BEFORE HW-L-050-CABLE-THROUGH (which would catch the literal "Cable"
+  # token first) and BEFORE HW-L-007-GPU (no GPU keyword here, but kept for
+  # symmetry with the riser-vs-cable distinction). C1YH "ThinkSystem SR630 V4
+  # x16/x16 PCIe Gen5 Cable Riser 1" was previously routed to cable/cable; this
+  # promotes it to riser/riser since it is structurally a riser carrying a cable
+  # form-factor (signal-routing PCIe riser via cabled link).
+  - field: option_name
+    pattern: '(?i)\bCable\s+Riser\b'
+    entity_type: HW
+    rule_id: HW-L-063-CABLE-RISER
+
+  # Air Duct → air_duct/accessory (PR-10 Q10e, new device_type)
+  # MUST fire BEFORE HW-L-007-GPU (so C3RP "ThinkSystem 2U GPU air duct" no
+  # longer hijacks via the GPU keyword) AND BEFORE HW-L-027-ACCESSORY (which
+  # used to swallow Air Duct/Airduct via its catch-all). "Air Baffle" stays
+  # accessory in HW-L-027-ACCESSORY by design — this rule narrows on
+  # Air Duct / Airduct tokens only. NOT cooling — no cooling hw_type in
+  # HW_TYPE_VOCAB; airflow guides map to accessory bucket.
+  # Negative-lookahead `(?!.*\bFiller\b)` defends against "Air Duct Filler"
+  # (B8MP) which must keep routing to blank_filler via HW-L-005-BLANK-RISER /
+  # DT-L-005-BLANK (Filler keyword wins over air_duct semantics).
+  - field: option_name
+    pattern: '(?i)(?:\bAir\s*Duct\b|\bAirduct\b)(?!.*\bFiller\b)'
+    entity_type: HW
+    rule_id: HW-L-064-AIR-DUCT
 
   # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
   - field: option_name
@@ -444,9 +489,31 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-045-BEZEL
 
-  # Chassis / Cage / Bezel
+  # HDD / HD / NVMe Cage → drive_cage/backplane (PR-9c Q9)
+  # Lenovo storage cage infrastructure — same hw_type semantics as HPE drive_cage
+  # (PR-3, drive_cage→backplane). MUST fire BEFORE HW-L-023-CHASSIS (whose pattern
+  # used to swallow these). Pattern requires the literal "Cage" suffix so that
+  # bare "HDD Filler" / "HD Filler" stays under their own rules.
   - field: option_name
-    pattern: '(?i)\b(Chassis|HDD\s+Cage|HD\s+Cage|Media\s+Bay|Bezel)\b'
+    pattern: '(?i)\b(?:HDD|HD|NVMe(?:\s+HDD)?)\s+Cage\b'
+    entity_type: HW
+    rule_id: HW-L-061-DRIVE-CAGE
+
+  # Media Bay → media_bay/chassis (PR-9c Q9, new device_type)
+  # Distinct from drive_cage — Media Bay is a removable physical bay that may
+  # host front I/O panel, optical drive, or front-mounted devices; not always a
+  # drive cage. Hw_type stays chassis (safer than backplane). MUST fire BEFORE
+  # HW-L-023-CHASSIS. Narrow regex anchored on "Media Bay" with word boundary —
+  # does not match "Multimedia" prefix (no \b match) or generic "Storage media".
+  - field: option_name
+    pattern: '(?i)\bMedia\s+Bay\b'
+    entity_type: HW
+    rule_id: HW-L-062-MEDIA-BAY
+
+  # Chassis / Bezel — generic chassis catch-all (PR-9c Q9: HDD Cage / Media Bay
+  # extracted into HW-L-061-DRIVE-CAGE / HW-L-062-MEDIA-BAY respectively).
+  - field: option_name
+    pattern: '(?i)\b(Chassis|Bezel)\b'
     entity_type: HW
     rule_id: HW-L-023-CHASSIS
 
@@ -486,9 +553,32 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-033-EIA
 
-  # Retimer / RoT Module / Root of Trust Module / Enablement Kit → accessory
+  # Front Operator Panel / LCD system information display → front_panel/management
+  # PR-9a Q7a: Lenovo Docs document Front Operator Panel as server controls/LEDs/
+  # status display (management class). MUST fire BEFORE HW-L-027-ACCESSORY (which
+  # has \bOperator\s+Panel\b in its catch-all) and HW-L-034 (Retimer/Enablement).
+  # Pattern is intentionally narrow (\bFront\s+Operator\s+Panel\b) so that BV2C
+  # "Serial Port and Port for External Operator Panel" does NOT match — it's a
+  # rear-panel I/O accessory, not a front operator panel itself.
   - field: option_name
-    pattern: '(?i)\b(Retimer|RoT\s+Module|Root\s+of\s+Trust\s+Module|Enablement\s+Kit)\b'
+    pattern: '(?i)\bFront\s+Operator\s+Panel\b|\bLCD\s+system\s+information\s+display\b'
+    entity_type: HW
+    rule_id: HW-L-046-FRONT-PANEL
+
+  # Root of Trust Module / RoT Module → tpm/tpm
+  # PR-9a Q7b: Lenovo Docs document RoT as "Firmware and Root of Trust/TPM 2.0
+  # Security Module" — same security bucket as TPM. MUST fire BEFORE HW-L-034
+  # (Retimer|Enablement Kit catch). Note: SW-L-010 catches "Firmware and Root
+  # of Trust Security Module" first (BYQL/BM8S routed to SOFTWARE) — only HW
+  # variants ("Root of Trust Module", "RoT Module") reach this rule.
+  - field: option_name
+    pattern: '(?i)\bRoot\s+of\s+Trust\s+Module\b|\bRoT\s+Module\b|\bFirmware\s+and\s+Root\s+of\s+Trust\b'
+    entity_type: HW
+    rule_id: HW-L-047-ROT-MODULE
+
+  # Retimer / Enablement Kit → accessory (RoT moved out to HW-L-047 in PR-9a)
+  - field: option_name
+    pattern: '(?i)\b(Retimer|Enablement\s+Kit)\b'
     entity_type: HW
     rule_id: HW-L-034
 
@@ -504,9 +594,15 @@ hw_rules:
     entity_type: HW
     rule_id: HW-L-040-MOTHERBOARD
 
-  # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
+  # Accessory — air baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw,
+  # plus residual board/card variants. PR-9b Q8: I/O Board and Power (Distribution|Interface|Interconnect) Board
+  # were extracted into HW-L-049-INTERCONNECT-BOARD and HW-L-053-PDB respectively — keep only
+  # Mezzanine/Control/CPU/Sideband Extension boards in this catch-all.
+  # PR-10 Q10e: Air Duct / Airduct extracted into HW-L-064-AIR-DUCT (air_duct/accessory).
+  # Air Baffle stays here (still accessory/accessory) per business decision — the
+  # PR-10 spec narrows the new air_duct device_type to literal "Air Duct" tokens only.
   - field: option_name
-    pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+    pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*Baffle|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
     entity_type: HW
     rule_id: HW-L-027-ACCESSORY
 
@@ -586,17 +682,37 @@ device_type_rules:
       device_type: nic
       rule_id: DT-L-046-OCP-NIC-INTERPOSER
 
-    # PCIe Switch Board → accessory (PR-4c Theme 10)
+    # Interconnect Board (PCIe Switch / Retimer / I/O Board) → interconnect_board (PR-9b Q8)
     - field: option_name
-      pattern: '(?i)\bPCIe\s+Switch\s+Board\b'
-      device_type: accessory
-      rule_id: DT-L-047-PCIE-SWITCH-BOARD
+      pattern: '(?i)\b(?:PCIe\s+Switch\s+Board|(?:PCIe\s+)?Retimer\s+(?:Card|Board)|(?:System\s+)?I[/-]?O\s+Board)\b'
+      device_type: interconnect_board
+      rule_id: DT-L-049-INTERCONNECT-BOARD
+
+    # Power Distribution / Interface / Interconnect Board → power_distribution_board (PR-9b Q8)
+    - field: option_name
+      pattern: '(?i)\bPower\s+(?:Distribution|Interface|Interconnect)\s+Board\b'
+      device_type: power_distribution_board
+      rule_id: DT-L-053-PDB
 
     # Flexible Printed Circuit → cable (PR-4c Theme 10)
     - field: option_name
       pattern: '(?i)\bFlexible\s+Printed\s+Circuit\b'
       device_type: cable
       rule_id: DT-L-048-FPC
+
+    # Cable Riser → riser (PR-10 Q10d; mirrors HW-L-063-CABLE-RISER)
+    - field: option_name
+      pattern: '(?i)\bCable\s+Riser\b'
+      device_type: riser
+      rule_id: DT-L-063-CABLE-RISER
+
+    # Air Duct → air_duct (PR-10 Q10e; mirrors HW-L-064-AIR-DUCT)
+    # Negative-lookahead `(?!.*\bFiller\b)` defends against "Air Duct Filler"
+    # (B8MP) which must keep routing to blank_filler via DT-L-005-BLANK below.
+    - field: option_name
+      pattern: '(?i)(?:\bAir\s*Duct\b|\bAirduct\b)(?!.*\bFiller\b)'
+      device_type: air_duct
+      rule_id: DT-L-064-AIR-DUCT
 
     # Cable-Through (before GPU to catch cables with GPU/Riser keywords)
     - field: option_name
@@ -724,9 +840,21 @@ device_type_rules:
       device_type: bezel
       rule_id: DT-L-045-BEZEL
 
-    # Chassis / Cage / Bezel
+    # HDD / HD / NVMe Cage → drive_cage (PR-9c Q9; mapped to backplane via device_type_map)
     - field: option_name
-      pattern: '(?i)\b(Chassis|HDD\s+Cage|HD\s+Cage|Media\s+Bay|Bezel)\b'
+      pattern: '(?i)\b(?:HDD|HD|NVMe(?:\s+HDD)?)\s+Cage\b'
+      device_type: drive_cage
+      rule_id: DT-L-061-DRIVE-CAGE
+
+    # Media Bay → media_bay (PR-9c Q9; new device_type, mapped to chassis via device_type_map)
+    - field: option_name
+      pattern: '(?i)\bMedia\s+Bay\b'
+      device_type: media_bay
+      rule_id: DT-L-062-MEDIA-BAY
+
+    # Chassis / Bezel — generic catch-all (PR-9c Q9 trim: cage/bay extracted)
+    - field: option_name
+      pattern: '(?i)\b(Chassis|Bezel)\b'
       device_type: chassis
       rule_id: DT-L-021-CHASSIS
 
@@ -760,9 +888,24 @@ device_type_rules:
       device_type: battery
       rule_id: DT-L-024-BATTERY
 
-    # Retimer / RoT Module / Root of Trust Module / Enablement Kit → accessory
+    # Front Operator Panel / LCD system information display → front_panel
+    # PR-9a Q7a: must fire BEFORE DT-L-025-ACCESSORY (which has \bOperator\s+Panel\b)
+    # and BEFORE DT-L-054 (Retimer|Enablement Kit). Narrow on \bFront\s+Operator\s+Panel\b
+    # so that BV2C "External Operator Panel" stays accessory.
     - field: option_name
-      pattern: '(?i)\b(Retimer|RoT\s+Module|Root\s+of\s+Trust\s+Module|Enablement\s+Kit)\b'
+      pattern: '(?i)\bFront\s+Operator\s+Panel\b|\bLCD\s+system\s+information\s+display\b'
+      device_type: front_panel
+      rule_id: DT-L-046-FRONT-PANEL
+
+    # Root of Trust Module / RoT Module → tpm (unified with TPM bucket per PR-9a Q7b)
+    - field: option_name
+      pattern: '(?i)\bRoot\s+of\s+Trust\s+Module\b|\bRoT\s+Module\b|\bFirmware\s+and\s+Root\s+of\s+Trust\b'
+      device_type: tpm
+      rule_id: DT-L-047-ROT-MODULE
+
+    # Retimer / Enablement Kit → accessory (RoT moved out to DT-L-047 in PR-9a)
+    - field: option_name
+      pattern: '(?i)\b(Retimer|Enablement\s+Kit)\b'
       device_type: accessory
       rule_id: DT-L-054
 
@@ -778,9 +921,12 @@ device_type_rules:
       device_type: motherboard
       rule_id: DT-L-040-MOTHERBOARD
 
-    # Accessory — boards, air duct/baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw, etc.
+    # Accessory — air baffle, handles, brackets, operator panel, PSU duct, top cover, sponge, screw,
+    # plus residual board/card variants. PR-9b Q8: I/O Board and Power (Distribution|Interface|Interconnect)
+    # Board were extracted into DT-L-049-INTERCONNECT-BOARD and DT-L-053-PDB respectively.
+    # PR-10 Q10e: Air Duct / Airduct extracted into DT-L-064-AIR-DUCT (air_duct). Air Baffle stays here.
     - field: option_name
-      pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*(?:Duct|Baffle)|Airduct|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:I\/O|Power\s+(?:Distribution|Interface|Interconnect)|Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
+      pattern: '(?i)\b(Top\s+Cover|Sponge|Screw|Air\s*Baffle|Lift\s+Handles?|Front\s+System\s+Handles?|EIA\s+Latch|EIA|Operator\s+Panel|PSU\s+Duct|Bracket|CPU\s+Carrier|Sensor\s+Holder|Slot\s+Holder)\b|\b(?:Mezzanine|Control|CPU|Sideband\s+Extension)\s+(?:Board|Card)\b'
       device_type: accessory
       rule_id: DT-L-025-ACCESSORY
 
@@ -805,10 +951,16 @@ hw_type_rules:
     riser: riser
     rail: rail
     backplane: backplane
+    drive_cage: backplane              # PR-9c Q9: HDD/HD/NVMe Cage → backplane (mirrors HPE PR-3)
     chassis: chassis
     motherboard: chassis
+    media_bay: chassis                 # PR-9c Q9: Media Bay (front-panel/optical/etc bay) → chassis
     bezel: accessory
-    tpm: tpm
+    tpm: tpm           # PR-9a Q7b: tpm bucket also covers RoT / Root of Trust security modules
+    front_panel: management  # PR-9a Q7a: Front Operator Panel / LCD status display
+    power_distribution_board: chassis  # PR-9b Q8: PDB / Power Interface / Interconnect Board (internal)
+    interconnect_board: chassis        # PR-9b Q8: PCIe Switch / Retimer / I/O Board (internal)
+    air_duct: accessory                # PR-10 Q10e: Air Duct / Airduct — airflow guide; no cooling hw_type
     battery: accessory
     blank_filler: blank_filler
     accessory: accessory

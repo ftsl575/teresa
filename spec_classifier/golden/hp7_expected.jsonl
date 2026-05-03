@@ -14,7 +14,7 @@
 {"source_row_index": 15, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P64842-B21"]}
 {"source_row_index": 16, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-036", "device_type": "accessory", "hw_type": "accessory", "skus": ["P50728-B21"]}
 {"source_row_index": 17, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P50728-B21"]}
-{"source_row_index": 18, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-038", "device_type": "accessory", "hw_type": "accessory", "skus": ["726537-B21"]}
+{"source_row_index": 18, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-038", "device_type": "optical_drive", "hw_type": "storage_drive", "skus": ["726537-B21"]}
 {"source_row_index": 19, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["726537-B21"]}
 {"source_row_index": 20, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-H-GLOBAL-026", "device_type": "riser", "hw_type": "riser", "skus": ["P48802-B21"]}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-H-001", "device_type": null, "hw_type": null, "skus": ["P48802-B21"]}

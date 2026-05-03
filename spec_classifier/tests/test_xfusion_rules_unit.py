@@ -387,10 +387,36 @@ def test_fan_module_fires_as_fan(xfusion_ruleset):
     assert r.hw_type == "fan"
 
 
-def test_air_duct_fires_as_accessory(xfusion_ruleset):
+def test_air_duct_fires_as_air_duct(xfusion_ruleset):
+    """PR-10 Q10e: xfusion 'Air duct' SKUs route to HW/air_duct/accessory.
+    Was accessory/accessory pre-PR-10 — DT-XF-018-ACCESSORY was split into
+    DT-XF-018A-AIR-DUCT (Air duct → air_duct) and DT-XF-018-ACCESSORY
+    (Fan bracket / Extended radiator → accessory). Entity rule
+    HW-XF-018-AIR-DUCT-ACCESSORY itself unchanged."""
     desc = 'Air duct(2U radiator)'
     r = classify_row(_row(desc), xfusion_ruleset)
     assert r.matched_rule_id == "HW-XF-018-AIR-DUCT-ACCESSORY"
+    assert r.device_type == "air_duct"
+    assert r.hw_type == "accessory"
+
+
+def test_xfusion_fan_bracket_remains_accessory(xfusion_ruleset):
+    """NEGATIVE PR-10 Q10e guard: xfusion 'Fan bracket' (e.g. SKU 21203766)
+    must NOT be promoted to air_duct — stays accessory/accessory via the
+    trimmed DT-XF-018-ACCESSORY pattern (Fan bracket / Extended radiator only)."""
+    r = classify_row(_row("Fan bracket"), xfusion_ruleset)
+    assert r.matched_rule_id == "HW-XF-018-AIR-DUCT-ACCESSORY"
+    assert r.device_type == "accessory"
+    assert r.hw_type == "accessory"
+
+
+def test_xfusion_extended_radiator_remains_accessory(xfusion_ruleset):
+    """NEGATIVE PR-10 Q10e guard: xfusion 'Extended radiator bracket assembly'
+    (e.g. SKU 0231YAFU '5288 V7 2U Extended radiator bracket assembly') must
+    stay accessory/accessory — distinct from Air duct semantics."""
+    r = classify_row(_row("5288 V7 2U Extended radiator bracket assembly"), xfusion_ruleset)
+    assert r.matched_rule_id == "HW-XF-018-AIR-DUCT-ACCESSORY"
+    assert r.device_type == "accessory"
     assert r.hw_type == "accessory"
 
 
@@ -417,28 +443,91 @@ def test_riser_with_riser_digit_suffix(xfusion_ruleset):
     assert r.hw_type == "riser"
 
 
-def test_supercap_standalone_fires_as_accessory(xfusion_ruleset):
+def test_supercap_standalone_fires_as_battery_accessory(xfusion_ruleset):
+    """PR-8 / Q6: Super capacitor module → device_type=battery, hw_type=accessory.
+    Unified with lenovo SuperCap (HW-L-026-BATTERY) and HPE Hybrid Capacitor /
+    Smart Storage Battery (HW-H-GLOBAL-030)."""
     desc = ('Super capacitor module,64mm*51mm*13.1mm,Wire mounting,'
             'split from 08170002,NA,7600uF,5h')
     r = classify_row(_row(desc), xfusion_ruleset)
     assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
     assert r.hw_type == "accessory"
 
 
-def test_supercap_raid_card_fires_as_accessory(xfusion_ruleset):
+def test_supercap_raid_card_fires_as_battery_accessory(xfusion_ruleset):
     """ORDER-CRITICAL: SUPERCAP (#8) must fire BEFORE RAID-CONTROLLER (#9),
-    else 'RAID Card SuperCap' would be caught by \\bRAID\\s+Card\\b first."""
+    else 'RAID Card SuperCap' would be caught by \\bRAID\\s+Card\\b first.
+    PR-8 / Q6: device_type=battery (unified with lenovo/hpe)."""
     desc = '35xx/39xx RAID Card SuperCap'
     r = classify_row(_row(desc), xfusion_ruleset)
     assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
     assert r.hw_type == "accessory"
 
 
-def test_raid_card_supercap_with_used_for_fires_as_accessory(xfusion_ruleset):
+def test_raid_card_supercap_with_used_for_fires_as_battery_accessory(xfusion_ruleset):
+    """PR-8 / Q6: device_type=battery (unified with lenovo/hpe)."""
     desc = 'RAID Card SuperCap,used for 35XX/39XX'
     r = classify_row(_row(desc), xfusion_ruleset)
     assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
     assert r.hw_type == "accessory"
+
+
+# ─── PR-8 / Q6: SuperCap unification — real-fixture SKU descriptions ────────
+
+def test_supercap_sku_0231yaal_fires_as_battery(xfusion_ruleset):
+    """xf2/xf3 fixture SKU 0231YAAL — verbatim option_name from real eDeal."""
+    desc = 'RAID Card SuperCap,used for 35XX/39XX'
+    r = classify_row(_row(desc, option_id='0231YAAL'), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
+    assert r.hw_type == "accessory"
+
+
+def test_supercap_sku_0231y384_fires_as_battery(xfusion_ruleset):
+    """xf3 fixture SKU 0231Y384 — verbatim option_name from real eDeal."""
+    desc = '35xx/39xx RAID Card SuperCap'
+    r = classify_row(_row(desc, option_id='0231Y384'), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
+    assert r.hw_type == "accessory"
+
+
+def test_supercap_sku_0231y676_fires_as_battery(xfusion_ruleset):
+    """xf5/xf7/xf8/xf9 fixture SKU 0231Y676 — verbatim option_name from real eDeal."""
+    desc = 'RAID Card SuperCap, used for 35xx/39xx'
+    r = classify_row(_row(desc, option_id='0231Y676'), xfusion_ruleset)
+    assert r.entity_type == EntityType.HW
+    assert r.matched_rule_id == "HW-XF-008-SUPERCAP"
+    assert r.device_type == "battery"
+    assert r.hw_type == "accessory"
+
+
+def test_negative_raid_card_cable_does_not_match_supercap(xfusion_ruleset):
+    """NEGATIVE PR-8 guard: 'RAID Card Cable' must NOT match SUPERCAP rule.
+    SUPERCAP regex is anchored on '\\bRAID\\s+Card\\s+SuperCap\\b' — a bare
+    'RAID Card Cable' must fall through to RAID-CONTROLLER (whose pattern
+    explicitly admits 'RAID (?:Cable )?Card') and never become a battery."""
+    desc = 'RAID Card Cable,Mini-SAS HD,0.8m'
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.matched_rule_id != "HW-XF-008-SUPERCAP"
+    assert r.device_type != "battery"
+
+
+def test_negative_power_cable_does_not_match_supercap(xfusion_ruleset):
+    """NEGATIVE PR-8 guard: generic 'Power Cable' must NOT match SUPERCAP rule.
+    Must fall to HW-XF-015-CABLE (device_type=cable, hw_type=cable)."""
+    desc = 'Power Cable,1.5m,12AWG,for PSU'
+    r = classify_row(_row(desc), xfusion_ruleset)
+    assert r.matched_rule_id != "HW-XF-008-SUPERCAP"
+    assert r.device_type != "battery"
+    assert r.matched_rule_id == "HW-XF-015-CABLE"
+    assert r.device_type == "cable"
+    assert r.hw_type == "cable"
 
 
 def test_raid_controller_9560_fires_as_storage_controller(xfusion_ruleset):

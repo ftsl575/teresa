@@ -34,13 +34,13 @@
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-003-BLANK-MEM", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AURS"]}
 {"source_row_index": 43, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["BPP5"]}
 {"source_row_index": 44, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-004-BLANK-HDD", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AVEQ"]}
-{"source_row_index": 45, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-007-GPU", "device_type": "gpu", "hw_type": "gpu", "skus": ["C3RP"]}
+{"source_row_index": 45, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["C3RP"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["C3RJ"]}
 {"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-026-BATTERY", "device_type": "battery", "hw_type": "accessory", "skus": ["AUNP"]}
 {"source_row_index": 48, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-012", "device_type": null, "hw_type": null, "skus": ["BHSS"]}
 {"source_row_index": 49, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-004", "device_type": null, "hw_type": null, "skus": ["C4SH"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["C3S7"]}
-{"source_row_index": 51, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["C7Y8"]}
+{"source_row_index": 51, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-049-INTERCONNECT-BOARD", "device_type": "interconnect_board", "hw_type": "chassis", "skus": ["C7Y8"]}
 {"source_row_index": 52, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-030-CPU-CLIP", "device_type": "accessory", "hw_type": "accessory", "skus": ["C26Y"]}
 {"source_row_index": 53, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["C3S5"]}
 {"source_row_index": 54, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["C3R0"]}

@@ -26,6 +26,10 @@ class EntityType(Enum):
 
 
 HW_TYPE_VOCAB = frozenset({
+    # ── Canonical 26 hardware buckets (v2.1.0+). Cycle 2 (PR-8–PR-10) did NOT add
+    # any new hw_type values — only new device_type labels that map into these
+    # buckets via per-vendor device_type_map (e.g. air_duct→accessory).
+    # Keep in sync with batch_audit.HW_TYPE_VOCAB and docs/taxonomy/hw_type_taxonomy.md.
     # Основное изделие (BASE rows)
     "server", "switch", "storage_system", "wireless_ap",
     # Вычислительные компоненты

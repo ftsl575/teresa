@@ -34,11 +34,11 @@
 {"source_row_index": 42, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["C9JS"]}
 {"source_row_index": 43, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-043-FAN-BOARD", "device_type": "fan", "hw_type": "fan", "skus": ["C9JT"]}
 {"source_row_index": 44, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-030-CPU-CLIP", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP53"]}
-{"source_row_index": 45, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BAVU"]}
+{"source_row_index": 45, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-046-FRONT-PANEL", "device_type": "front_panel", "hw_type": "management", "skus": ["BAVU"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-050-CABLE-THROUGH", "device_type": "cable", "hw_type": "cable", "skus": ["C9JU"]}
 {"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-004-BLANK-HDD", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AVEN"]}
-{"source_row_index": 48, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["CBWP"]}
-{"source_row_index": 49, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["C9N7"]}
+{"source_row_index": 48, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-053-PDB", "device_type": "power_distribution_board", "hw_type": "chassis", "skus": ["CBWP"]}
+{"source_row_index": 49, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-053-PDB", "device_type": "power_distribution_board", "hw_type": "chassis", "skus": ["C9N7"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-040", "device_type": null, "hw_type": null, "skus": ["C9JZ"]}
 {"source_row_index": 51, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 52, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SW-L-004", "device_type": null, "hw_type": null, "skus": ["5641PX3"]}

@@ -36,7 +36,7 @@
 {"source_row_index": 44, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BPF4"]}
 {"source_row_index": 45, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BPF3"]}
 {"source_row_index": 46, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-026-BATTERY", "device_type": "battery", "hw_type": "accessory", "skus": ["AUNP"]}
-{"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-023-CHASSIS", "device_type": "chassis", "hw_type": "chassis", "skus": ["B97T"]}
+{"source_row_index": 47, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-061-DRIVE-CAGE", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["B97T"]}
 {"source_row_index": 48, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-003-BLANK-MEM", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AURS"]}
 {"source_row_index": 49, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-004", "device_type": null, "hw_type": null, "skus": ["B986"]}
 {"source_row_index": 50, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-019-HEATSINK", "device_type": "heatsink", "hw_type": "heatsink", "skus": ["BP4Z"]}
@@ -49,7 +49,7 @@
 {"source_row_index": 57, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BPKD"]}
 {"source_row_index": 58, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
 {"source_row_index": 59, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-010", "device_type": null, "hw_type": null, "skus": ["B8K9"]}
-{"source_row_index": 60, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-023-CHASSIS", "device_type": "chassis", "hw_type": "chassis", "skus": ["BWKY"]}
+{"source_row_index": 60, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-061-DRIVE-CAGE", "device_type": "drive_cage", "hw_type": "backplane", "skus": ["BWKY"]}
 {"source_row_index": 61, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-001", "device_type": null, "hw_type": null, "skus": ["B97B"]}
 {"source_row_index": 62, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BLLD"]}
 {"source_row_index": 63, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-032-SUPERCAP-HOLDER", "device_type": "accessory", "hw_type": "accessory", "skus": ["BU8G"]}
@@ -124,7 +124,7 @@
 {"source_row_index": 132, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SW-L-010", "device_type": null, "hw_type": null, "skus": ["BYQL"]}
 {"source_row_index": 133, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
 {"source_row_index": 134, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["AUTQ"]}
-{"source_row_index": 135, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 135, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 136, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 137, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["AWF9"]}
 {"source_row_index": 138, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BPKD"]}
@@ -207,7 +207,7 @@
 {"source_row_index": 215, "row_kind": "ITEM", "entity_type": "SOFTWARE", "state": "PRESENT", "matched_rule_id": "SW-L-010", "device_type": null, "hw_type": null, "skus": ["BYQL"]}
 {"source_row_index": 216, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
 {"source_row_index": 217, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["AUTQ"]}
-{"source_row_index": 218, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 218, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 219, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 220, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["AWF9"]}
 {"source_row_index": 221, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BPKD"]}
@@ -276,7 +276,7 @@
 {"source_row_index": 284, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BQQ6"]}
 {"source_row_index": 285, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["B8KG"]}
 {"source_row_index": 286, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
-{"source_row_index": 287, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 287, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 288, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 289, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
 {"source_row_index": 290, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BLLD"]}
@@ -355,7 +355,7 @@
 {"source_row_index": 363, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BQQ6"]}
 {"source_row_index": 364, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["B8KG"]}
 {"source_row_index": 365, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
-{"source_row_index": 366, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 366, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 367, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 368, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
 {"source_row_index": 369, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BLLD"]}
@@ -433,7 +433,7 @@
 {"source_row_index": 441, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BQQ6"]}
 {"source_row_index": 442, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["B8KG"]}
 {"source_row_index": 443, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
-{"source_row_index": 444, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 444, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 445, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 446, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-020-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["BLLD"]}
 {"source_row_index": 447, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-010", "device_type": null, "hw_type": null, "skus": ["B8K8"]}
@@ -513,7 +513,7 @@
 {"source_row_index": 521, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BQQ6"]}
 {"source_row_index": 522, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["B8KG"]}
 {"source_row_index": 523, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
-{"source_row_index": 524, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 524, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 525, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 526, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-050-HDD-LABEL", "device_type": null, "hw_type": null, "skus": ["B8JZ"]}
 {"source_row_index": 527, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}
@@ -594,7 +594,7 @@
 {"source_row_index": 602, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BQQ6"]}
 {"source_row_index": 603, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["B8KG"]}
 {"source_row_index": 604, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-020", "device_type": null, "hw_type": null, "skus": ["BQPS"]}
-{"source_row_index": 605, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-027-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["BP46"]}
+{"source_row_index": 605, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-064-AIR-DUCT", "device_type": "air_duct", "hw_type": "accessory", "skus": ["BP46"]}
 {"source_row_index": 606, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-033-EIA", "device_type": "accessory", "hw_type": "accessory", "skus": ["BXGY"]}
 {"source_row_index": 607, "row_kind": "ITEM", "entity_type": "NOTE", "state": "PRESENT", "matched_rule_id": "NOTE-L-050-HDD-LABEL", "device_type": null, "hw_type": null, "skus": ["B8JZ"]}
 {"source_row_index": 608, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B5WJ"]}

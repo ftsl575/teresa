@@ -11,7 +11,7 @@
 {"source_row_index": 20, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 21, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-006-STORAGE-SSD", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["0255YCDL"]}
 {"source_row_index": 22, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 23, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "accessory", "hw_type": "accessory", "skus": ["0231Y384"]}
+{"source_row_index": 23, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "battery", "hw_type": "accessory", "skus": ["0231Y384"]}
 {"source_row_index": 24, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 25, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["02580119"]}
 {"source_row_index": 26, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["02580118"]}
@@ -22,7 +22,7 @@
 {"source_row_index": 31, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-009-RAID-CONTROLLER", "device_type": "raid_controller", "hw_type": "storage_controller", "skus": ["0256Y050"]}
 {"source_row_index": 33, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21205150"]}
+{"source_row_index": 34, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "air_duct", "hw_type": "accessory", "skus": ["21205150"]}
 {"source_row_index": 35, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-017-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["02311VSF"]}
 {"source_row_index": 36, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21203766"]}
 {"source_row_index": 37, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
@@ -52,7 +52,7 @@
 {"source_row_index": 62, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["0258Y066"]}
 {"source_row_index": 63, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 64, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-009-RAID-CONTROLLER", "device_type": "raid_controller", "hw_type": "storage_controller", "skus": ["0231Y129"]}
-{"source_row_index": 65, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "accessory", "hw_type": "accessory", "skus": ["0231YAAL"]}
+{"source_row_index": 65, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "battery", "hw_type": "accessory", "skus": ["0231YAAL"]}
 {"source_row_index": 66, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 67, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-012-NIC", "device_type": "nic", "hw_type": "network_adapter", "skus": ["0231Y804"]}
 {"source_row_index": 68, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-012-NIC", "device_type": "nic", "hw_type": "network_adapter", "skus": ["0231Y809"]}
@@ -78,7 +78,7 @@
 {"source_row_index": 89, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 90, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-006-STORAGE-SSD", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["0255Y165"]}
 {"source_row_index": 91, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 92, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "accessory", "hw_type": "accessory", "skus": ["0231Y384"]}
+{"source_row_index": 92, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "battery", "hw_type": "accessory", "skus": ["0231Y384"]}
 {"source_row_index": 93, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 94, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["02580121"]}
 {"source_row_index": 95, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-019-RISER", "device_type": "riser", "hw_type": "riser", "skus": ["02580157"]}
@@ -89,7 +89,7 @@
 {"source_row_index": 100, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 101, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-009-RAID-CONTROLLER", "device_type": "raid_controller", "hw_type": "storage_controller", "skus": ["0256Y050"]}
 {"source_row_index": 102, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 103, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21205144"]}
+{"source_row_index": 103, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "air_duct", "hw_type": "accessory", "skus": ["21205144"]}
 {"source_row_index": 104, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-017-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["02311VSF"]}
 {"source_row_index": 105, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21203766"]}
 {"source_row_index": 106, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
@@ -112,7 +112,7 @@
 {"source_row_index": 124, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-006-STORAGE-SSD", "device_type": "storage_ssd", "hw_type": "storage_drive", "skus": ["0255Y165"]}
 {"source_row_index": 125, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 126, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-009-RAID-CONTROLLER", "device_type": "raid_controller", "hw_type": "storage_controller", "skus": ["03027XWU"]}
-{"source_row_index": 127, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "accessory", "hw_type": "accessory", "skus": ["0231Y384"]}
+{"source_row_index": 127, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-008-SUPERCAP", "device_type": "battery", "hw_type": "accessory", "skus": ["0231Y384"]}
 {"source_row_index": 128, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 129, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-012-NIC", "device_type": "nic", "hw_type": "network_adapter", "skus": ["0257Y108"]}
 {"source_row_index": 130, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
@@ -121,7 +121,7 @@
 {"source_row_index": 133, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 134, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-012-NIC", "device_type": "nic", "hw_type": "network_adapter", "skus": ["0257Y151"]}
 {"source_row_index": 135, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
-{"source_row_index": 136, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21205144"]}
+{"source_row_index": 136, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "air_duct", "hw_type": "accessory", "skus": ["21205144"]}
 {"source_row_index": 137, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-017-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["02311VSF"]}
 {"source_row_index": 138, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-XF-018-AIR-DUCT-ACCESSORY", "device_type": "accessory", "hw_type": "accessory", "skus": ["21203766"]}
 {"source_row_index": 139, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}

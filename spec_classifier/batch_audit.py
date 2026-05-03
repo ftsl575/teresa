@@ -42,6 +42,8 @@ if hasattr(sys.stderr, "reconfigure") and sys.stderr.encoding \
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 HW_TYPE_VOCAB = frozenset({
+    # Cycle 2 (PR-8–PR-10): no new hw_type members — only device_type refinements
+    # mapped through vendor YAML device_type_map + batch_audit DEVICE_TYPE_ALIASES.
     "server", "switch", "storage_system", "wireless_ap",
     "cpu", "memory", "gpu",
     "storage_drive", "storage_enclosure", "storage_controller", "hba", "backplane", "io_module",
@@ -176,8 +178,34 @@ _LLM_SYSTEM_BODY = """
   storage_controller, storage_enclosure, hba, network_adapter, transceiver, cable, sfp_cable, fiber_cable,
   psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory,
   power_cord, raid_controller, nic, ram, drive_cage, backplane, motherboard, bezel, battery,
+  front_panel, power_distribution_board, interconnect_board, io_module, media_bay,
+  air_duct, optical_drive,
   server, switch, storage_system, wireless_ap
   OR empty string "" if not applicable.
+
+front_panel = server front operator panel with LEDs/LCD/status display, including
+diagnostic panels and Operator Panel ASM modules. Maps to hw_type=management.
+tpm covers BOTH TPM 2.0 modules AND Root of Trust (RoT) security modules — Lenovo
+documents these together as "Firmware and Root of Trust/TPM 2.0 Security Module".
+power_distribution_board = internal server PDB / Power Interface / Power Interconnect
+Board that distributes power within the chassis. Distinct from PSU (which converts AC
+to DC) and from power_cord. Maps to hw_type=chassis.
+interconnect_board = internal server PCIe Switch / Retimer / I/O Board (e.g. "PCIe
+Switch Board with two 144-lanes Switches", "PCIe Retimer Card", "System I/O Board").
+Distinct from motherboard (main system board) and from io_module (external pluggable
+storage I/O module). Maps to hw_type=chassis.
+media_bay = server media bay — a removable physical bay that can host front I/O panel,
+optical drive, or other front-mounted devices (e.g. "Standard Media Bay", "Media Bay
+without External Diagnostics Port"). Distinct from drive_cage (which is drive-specific
+and maps to backplane). Maps to hw_type=chassis.
+air_duct = server air duct / airflow guide — plastic or sheet-metal directional
+component that channels airflow over CPUs, DIMMs, GPUs (e.g. "ThinkSystem 2U Main
+Air Duct", "Air duct (1U radiator)"). Distinct from heatsink (heat-conducting metal
+fin stack) and from fan (active cooling). Maps to hw_type=accessory (no cooling
+hw_type exists in the canonical 26-value vocab).
+optical_drive = optical disk drive — DVD-RW / DVD-ROM / CD-ROM / Blu-ray / ODD,
+removable storage media reader (e.g. "HPE 9.5mm SATA DVD-RW Optical Drive"). Maps
+to hw_type=storage_drive (same bucket as HDD/SSD/NVMe storage drives).
 
 Rules:
 - BASE = the main product itself (server model, switch model, storage array)
@@ -333,19 +361,25 @@ def run_llm_predictions(data_rows: list[dict], client, batch_size: int = 40, llm
 # pipeline saying "drive_cage" without raising an AI_MISMATCH flag. Per-vendor
 # hw_type maps live in rules/<vendor>_rules.yaml device_type_map.)
 DEVICE_TYPE_ALIASES = {
-    "ram":             "memory",
-    "nic":             "network_adapter",
-    "raid_controller": "storage_controller",
-    "sfp_cable":       "cable",
-    "fiber_cable":     "cable",
-    "drive_cage":      "backplane",
-    "bezel":           "chassis",
-    "motherboard":     "chassis",
-    "storage_nvme":    "storage_drive",
-    "storage_ssd":     "storage_drive",
-    "storage_hdd":     "storage_drive",
-    "power_cord":      "cable",
-    "hba":             "storage_controller",
+    "ram":                       "memory",
+    "nic":                       "network_adapter",
+    "raid_controller":           "storage_controller",
+    "sfp_cable":                 "cable",
+    "fiber_cable":               "cable",
+    "drive_cage":                "backplane",
+    "bezel":                     "chassis",
+    "motherboard":               "chassis",
+    "storage_nvme":              "storage_drive",
+    "storage_ssd":               "storage_drive",
+    "storage_hdd":               "storage_drive",
+    "power_cord":                "cable",
+    "hba":                       "storage_controller",
+    "front_panel":               "management",  # PR-9a Q7a: Front Operator Panel maps to management bucket
+    "power_distribution_board":  "chassis",     # PR-9b Q8: PDB / Power Interface / Power Interconnect Board → chassis
+    "interconnect_board":        "chassis",     # PR-9b Q8: PCIe Switch / Retimer / I/O Board → chassis
+    "media_bay":                 "chassis",     # PR-9c Q9: Media Bay (front-panel/optical/etc bay) → chassis
+    "air_duct":                  "accessory",   # PR-10 Q10e: Air Duct / Airduct (airflow guide) → accessory bucket
+    "optical_drive":             "storage_drive",  # PR-10 Q10f: DVD-RW / Optical Drive → storage_drive bucket
 }
 
 # Entity типы где пайплайн всегда прав — AI не знает бизнес-логику
@@ -356,9 +390,19 @@ HW_TYPE_TRUST = {"chassis", "backplane", "riser", "rail", "battery", "accessory"
 
 # device_type значения где пайплайн всегда прав — AI часто ошибается
 # cable kit ≠ accessory, battery/capacitor ≠ accessory, rail ≠ accessory
+# front_panel — узкий regex (Front Operator Panel / LCD system info display),
+# AI часто кидает в accessory.
+# power_distribution_board / interconnect_board (PR-9b Q8) — узкие regex
+# по "Board" suffix; AI часто плывёт в accessory или motherboard.
+# air_duct / optical_drive (PR-10 Q10e/Q10f) — узкие regex; AI часто кидает
+# air_duct в accessory (теряется новый device_type) и optical_drive в accessory
+# (вместо storage_drive bucket).
 DEVICE_TYPE_TRUST = {"cable", "battery", "rail", "riser", "blank_filler",
                      "accessory", "chassis", "backplane", "storage_enclosure",
-                     "motherboard", "bezel"}
+                     "motherboard", "bezel", "front_panel",
+                     "power_distribution_board", "interconnect_board",
+                     "media_bay", "drive_cage",
+                     "air_duct", "optical_drive"}
 
 def build_ai_mismatch(pipeline_entity: str, pipeline_device: str,
                        pred: dict) -> str | None:

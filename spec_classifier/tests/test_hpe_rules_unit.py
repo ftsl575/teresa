@@ -121,8 +121,8 @@ def test_hpe_factory_integrated_matches_config_rule(hpe_ruleset):
     ("HPE DL380 Gen11 Bezel Kit", "bezel", "chassis"),
     # 24 battery
     ("HPE Smart Storage Lithium-ion Battery", "battery", "accessory"),
-    # 25 accessory
-    ("HPE Slim Optical Drive", "accessory", "accessory"),
+    # 25 accessory (generic — Optical Drive moved to optical_drive in PR-10 Q10f)
+    ("HPE 9.5mm SATA DVD-RW Optical Drive", "optical_drive", "storage_drive"),
 ])
 def test_hpe_device_type_and_hw_type(hpe_ruleset, option_name, exp_device_type, exp_hw_type):
     row = _hpe_row(option_name)
@@ -142,3 +142,77 @@ def test_drive_cage_p75741_b21_fires_as_backplane(hpe_ruleset):
     assert result.device_type == "drive_cage"
     assert result.hw_type == "backplane"
     assert result.matched_rule_id == "HW-H-GLOBAL-028"
+
+
+# ── PR-9b Q8: HPE Power Distribution Board → HW/power_distribution_board/chassis ─
+
+def test_hpe_pdb_p57888_b21_is_power_distribution_board(hpe_ruleset):
+    """PR-9b Q8: real P57888-B21 'HPE ProLiant DL385 Gen11 Power Distribution
+    Board Kit' must promote from accessory/accessory to power_distribution_board
+    /chassis. Entity rule HW-H-GLOBAL-034 unchanged; device-type rule
+    HW-H-080-PDB now outputs power_distribution_board, mapped to chassis via
+    device_type_map (PR-9b)."""
+    row = _hpe_row(
+        "HPE ProLiant DL385 Gen11 Power Distribution Board Kit",
+        option_id="P57888-B21",
+    )
+    result = classify_row(row, hpe_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.matched_rule_id == "HW-H-GLOBAL-034"
+    assert result.device_type == "power_distribution_board"
+    assert result.hw_type == "chassis"
+
+
+def test_hpe_power_cord_does_not_match_pdb(hpe_ruleset):
+    """NEGATIVE PR-9b Q8 guard: HPE 'Power Cord' must NOT pick up power_distribution_board.
+    HW-H-GLOBAL-034 / HW-H-080-PDB regex requires 'power distribution board' literal."""
+    row = _hpe_row("HPE Power Cord C13 to C14 2.5m AC Jumper")
+    result = classify_row(row, hpe_ruleset)
+    assert result.matched_rule_id != "HW-H-GLOBAL-034"
+    assert result.device_type != "power_distribution_board"
+    assert result.device_type == "power_cord"
+
+
+# ── PR-10 Q10f: HPE Optical Drive → HW/optical_drive/storage_drive ───────────
+
+def test_pr10_hpe_dvd_rw_726537_b21_is_optical_drive(hpe_ruleset):
+    """PR-10 Q10f: real 726537-B21 'HPE 9.5mm SATA DVD-RW Optical Drive'
+    promotes from accessory/accessory to optical_drive/storage_drive. Entity
+    rule HW-H-GLOBAL-038 unchanged; device-type rules HW-H-081-OPTICAL-DRIVE
+    and HW-H-082-DVD now output optical_drive, mapped to storage_drive via
+    device_type_map (PR-10)."""
+    row = _hpe_row(
+        "HPE 9.5mm SATA DVD-RW Optical Drive",
+        option_id="726537-B21",
+    )
+    result = classify_row(row, hpe_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.matched_rule_id == "HW-H-GLOBAL-038"
+    assert result.device_type == "optical_drive"
+    assert result.hw_type == "storage_drive"
+
+
+def test_pr10_hpe_drive_cage_is_not_optical_drive(hpe_ruleset):
+    """NEGATIVE PR-10 Q10f guard: HPE 'Drive Cage' must NOT match
+    HW-H-GLOBAL-038 (optical drive entity rule); it stays drive_cage/backplane
+    via HW-H-GLOBAL-028. The optical-drive regex requires 'dvd|optical drive|
+    cd-rom|blu-ray', none of which appear in 'Drive Cage Kit'."""
+    row = _hpe_row(
+        "HPE ProLiant Compute DL3XX Gen12 8SFF x4 U.3 Tri-Mode Drive Cage Kit",
+        option_id="P75741-B21",
+    )
+    result = classify_row(row, hpe_ruleset)
+    assert result.entity_type == EntityType.HW
+    assert result.matched_rule_id != "HW-H-GLOBAL-038"
+    assert result.device_type == "drive_cage"
+    assert result.hw_type == "backplane"
+
+
+def test_pr10_hpe_generic_storage_drive_is_not_optical(hpe_ruleset):
+    """NEGATIVE PR-10 Q10f guard: a generic SAS/SATA HDD must keep its
+    storage_hdd device_type — must NOT be misrouted to optical_drive."""
+    row = _hpe_row("HPE 2.4TB SAS 12G Mission Critical HDD")
+    result = classify_row(row, hpe_ruleset)
+    assert result.matched_rule_id != "HW-H-GLOBAL-038"
+    assert result.device_type == "storage_hdd"
+    assert result.hw_type == "storage_drive"

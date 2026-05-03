@@ -6,6 +6,10 @@ from pathlib import Path
 
 from conftest import project_root, get_input_root_xfusion
 from tests.helpers import run_pipeline_in_memory, build_golden_rows
+from src.core.classifier import classify_row, EntityType
+from src.core.normalizer import RowKind
+from src.rules.rules_engine import RuleSet
+from src.vendors.xfusion.normalizer import XFusionNormalizedRow
 
 
 def _load_golden(golden_path: Path):
@@ -59,3 +63,43 @@ def test_xfusion_regression(filename):
             all_diffs.extend(diffs)
     if all_diffs:
         pytest.fail("Regression diff:\n" + "\n".join(all_diffs))
+
+
+# ── Cycle 2 — PR-8 SuperCap bucket / PR-10 air_duct ───────────────────────────────
+
+
+@pytest.fixture(scope="module")
+def xfusion_rules_cycle2():
+    return RuleSet.load(str(project_root() / "rules" / "xfusion_rules.yaml"))
+
+
+def _xrow(option_name: str, option_id: str = "2120CHK") -> XFusionNormalizedRow:
+    return XFusionNormalizedRow(
+        source_row_index=1,
+        row_kind=RowKind.ITEM,
+        group_name=None,
+        group_id=None,
+        product_name=None,
+        module_name="",
+        option_name=option_name,
+        option_id=option_id,
+        skus=[option_id],
+        qty=1,
+        option_price=1.0,
+    )
+
+
+@pytest.mark.parametrize(
+    "desc, rid, dt, hw",
+    [
+        ("Air duct(2U radiator)", "HW-XF-018-AIR-DUCT-ACCESSORY", "air_duct", "accessory"),
+        ("Fan bracket", "HW-XF-018-AIR-DUCT-ACCESSORY", "accessory", "accessory"),
+        ("35xx/39xx RAID Card SuperCap", "HW-XF-008-SUPERCAP", "battery", "accessory"),
+    ],
+)
+def test_regression_cycle2_xfusion_air_duct_and_supercap(xfusion_rules_cycle2, desc, rid, dt, hw):
+    res = classify_row(_xrow(desc), xfusion_rules_cycle2)
+    assert res.entity_type == EntityType.HW
+    assert res.matched_rule_id == rid
+    assert res.device_type == dt
+    assert res.hw_type == hw

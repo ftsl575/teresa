@@ -19,7 +19,7 @@
 {"source_row_index": 27, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-016-PSU", "device_type": "psu", "hw_type": "psu", "skus": ["BMUF"]}
 {"source_row_index": 28, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-017-POWERCORD", "device_type": "power_cord", "hw_type": null, "skus": ["6570"]}
 {"source_row_index": 29, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-018-FAN", "device_type": "fan", "hw_type": "fan", "skus": ["BH9M"]}
-{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-023-CHASSIS", "device_type": "chassis", "hw_type": "chassis", "skus": ["BQ2M"]}
+{"source_row_index": 30, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-062-MEDIA-BAY", "device_type": "media_bay", "hw_type": "chassis", "skus": ["BQ2M"]}
 {"source_row_index": 31, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-021-RAIL", "device_type": "rail", "hw_type": "rail", "skus": ["B8LA"]}
 {"source_row_index": 32, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-024-TPM", "device_type": "tpm", "hw_type": "tpm", "skus": ["BPKR"]}
 {"source_row_index": 33, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-006", "device_type": null, "hw_type": null, "skus": ["B7XZ"]}
@@ -52,7 +52,7 @@
 {"source_row_index": 60, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-005-BLANK-RISER", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AUWG"]}
 {"source_row_index": 61, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-003-BLANK-MEM", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["AURS"]}
 {"source_row_index": 62, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-006-BLANK-SCAP", "device_type": "blank_filler", "hw_type": "blank_filler", "skus": ["B8NK"]}
-{"source_row_index": 63, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-034", "device_type": "accessory", "hw_type": "accessory", "skus": ["C257"]}
+{"source_row_index": 63, "row_kind": "ITEM", "entity_type": "HW", "state": "PRESENT", "matched_rule_id": "HW-L-047-ROT-MODULE", "device_type": "tpm", "hw_type": "tpm", "skus": ["C257"]}
 {"source_row_index": 64, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-001", "device_type": null, "hw_type": null, "skus": ["A2HP"]}
 {"source_row_index": 65, "row_kind": "HEADER", "entity_type": null, "state": null, "matched_rule_id": "HEADER-SKIP", "device_type": null, "hw_type": null, "skus": []}
 {"source_row_index": 66, "row_kind": "ITEM", "entity_type": "CONFIG", "state": "PRESENT", "matched_rule_id": "CONFIG-L-001", "device_type": null, "hw_type": null, "skus": ["5374CM1"]}
