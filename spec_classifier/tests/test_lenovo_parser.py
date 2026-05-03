@@ -7,34 +7,52 @@ import openpyxl
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.vendors.lenovo.adapter import LenovoAdapter
 from src.vendors.lenovo.parser import parse_excel
 
 
-def _make_lenovo_xlsx(path, data_rows, *, include_terms=True):
-    """Create a minimal Lenovo DCSC Quote xlsx for testing."""
+_DEFAULT_HEADER = [
+    "Part number",
+    None,
+    "Product Description",
+    None,
+    "Qty",
+    "Price",
+    "Total Part Price",
+    "Export Control",
+]
+
+
+def _make_lenovo_xlsx(
+    path,
+    data_rows,
+    *,
+    include_terms=True,
+    sheet_title="Quote",
+    extra_rows_before_header=None,
+    header_cells=None,
+):
+    """Create a minimal Lenovo DCSC Quote-like xlsx for testing."""
+    extra_rows_before_header = extra_rows_before_header or []
+    header_cells = list(header_cells) if header_cells is not None else list(_DEFAULT_HEADER)
+
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Quote"
+    ws.title = sheet_title
 
     # Row 0 (1-based: row 1)
     ws.append([None, None, "Data Center Solution Configurator Quote", None, None])
-    # Row 1
     ws.append([None, None, "Prepared for:", "Prepared by:"])
-    # Row 2
     ws.append([None, None, None, "Price Date:", "26-Feb-26"])
-    # Row 3 (empty)
     ws.append([])
-    # Row 4
     ws.append([None, None, "Your final configuration..."])
-    # Row 5 = header
-    ws.append(["Part number", None, "Product Description", None, "Qty", "Price",
-               "Total Part Price", "Export Control"])
-    # Row 6 = sub-header (skipped by parser)
+    for row in extra_rows_before_header:
+        ws.append(list(row))
+    ws.append(header_cells)
+    # Sub-header row (Part number empty — skipped until first real BOM line)
     ws.append([None, None, None, None, None, "(per unit)\nUS Dollar"])
-    # Row 7 (empty)
     ws.append([])
 
-    # Row 8+ = data rows
     for row in data_rows:
         ws.append(row)
 
@@ -107,8 +125,107 @@ def test_missing_sheet_raises(tmp_path):
     ws.append(["data"])
     wb.save(p)
     wb.close()
-    with pytest.raises(ValueError, match="Sheet 'Quote' not found"):
+    with pytest.raises(ValueError, match="No Lenovo DCSC header") as exc:
         parse_excel(str(p))
+    assert "SomeOther" in str(exc.value)
+
+
+def test_header_row_found_when_shifted_down(tmp_path):
+    """Extra preamble rows move the marker header below legacy row 5."""
+    p = tmp_path / "test.xlsx"
+    _make_lenovo_xlsx(
+        p,
+        [["BYW4", None, "Intel Xeon Silver 4510", None, 2, 100.0, None, None]],
+        include_terms=False,
+        extra_rows_before_header=[[]],
+    )
+    rows, hdr = parse_excel(str(p))
+    assert hdr == 6
+    assert len(rows) == 1
+    assert rows[0]["Part number"] == "BYW4"
+    assert rows[0]["__row_index__"] == 10
+
+
+def test_renamed_sheet_fallback(tmp_path):
+    """Parser discovers BOM / renamed sheet via header scan."""
+    p = tmp_path / "test.xlsx"
+    _make_lenovo_xlsx(
+        p,
+        [["BYW4", None, "CPU", None, 2, 100.0, None, None]],
+        include_terms=False,
+        sheet_title="BOM",
+    )
+    assert LenovoAdapter().can_parse(str(p))
+    rows, hdr = parse_excel(str(p))
+    assert hdr >= 5
+    assert rows[0]["Part number"] == "BYW4"
+
+
+def test_discount_column_inserted_before_price(tmp_path):
+    header = [
+        "Part number",
+        None,
+        "Product Description",
+        None,
+        "Qty",
+        "Discount",
+        "Price",
+        "Total Part Price",
+        "Export Control",
+    ]
+    p = tmp_path / "test.xlsx"
+    _make_lenovo_xlsx(
+        p,
+        [["BYW4", None, "CPU line", None, 2, 5.0, 100.0, None, None]],
+        include_terms=False,
+        header_cells=header,
+    )
+    rows, _ = parse_excel(str(p))
+    assert rows[0]["Qty"] == 2
+    assert rows[0]["Price"] == 100.0
+
+
+def test_permuted_columns(tmp_path):
+    header = [
+        "Product Description",
+        None,
+        "Part number",
+        None,
+        "Export Control",
+        "Qty",
+        "Price",
+        "Total Part Price",
+    ]
+    p = tmp_path / "test.xlsx"
+    _make_lenovo_xlsx(
+        p,
+        [["Intel Silver", None, "BYW4", None, "No", 3, 99.5, None]],
+        include_terms=False,
+        header_cells=header,
+    )
+    rows, _ = parse_excel(str(p))
+    assert rows[0]["Part number"] == "BYW4"
+    assert rows[0]["Product Description"] == "Intel Silver"
+    assert rows[0]["Qty"] == 3
+    assert rows[0]["Price"] == 99.5
+    assert rows[0]["Export Control"] == "No"
+
+
+def test_regression_internal_empty_row_still_separator_after_refactor(tmp_path):
+    """Ensure pre-data blank skipping does not drop blank rows between BOM lines."""
+    p = tmp_path / "test.xlsx"
+    _make_lenovo_xlsx(
+        p,
+        [
+            ["BYW4", None, "CPU", None, 2, 100.0, None, None],
+            [None, None, None, None, None, None, None, None],
+            ["BWHS", None, "RAM", None, 8, 50.0, None, None],
+        ],
+        include_terms=False,
+    )
+    rows, _ = parse_excel(str(p))
+    assert len(rows) == 3
+    assert rows[1]["Part number"] is None
 
 
 def test_empty_rows_included_as_separators(tmp_path):
@@ -127,3 +244,53 @@ def test_empty_rows_included_as_separators(tmp_path):
 def test_file_not_found():
     with pytest.raises(FileNotFoundError):
         parse_excel("/nonexistent/path/file.xlsx")
+
+
+def test_adapter_get_source_sheet_name_reflects_actual_sheet(tmp_path):
+    """get_source_sheet_name() returns the sheet parse() actually used."""
+    # Default Quote sheet
+    p1 = tmp_path / "quote.xlsx"
+    _make_lenovo_xlsx(p1, [["BYW4", None, "CPU", None, 1, 10.0, None, None]],
+                      include_terms=False)
+    a1 = LenovoAdapter()
+    assert a1.get_source_sheet_name() is None  # before parse()
+    a1.parse(str(p1))
+    assert a1.get_source_sheet_name() == "Quote"
+
+    # Renamed sheet
+    p2 = tmp_path / "bom.xlsx"
+    _make_lenovo_xlsx(p2, [["BYW4", None, "CPU", None, 1, 10.0, None, None]],
+                      include_terms=False, sheet_title="BOM")
+    a2 = LenovoAdapter()
+    a2.parse(str(p2))
+    assert a2.get_source_sheet_name() == "BOM"
+
+    # Quote w availability fallback (no plain Quote sheet)
+    p3 = tmp_path / "qwa.xlsx"
+    _make_lenovo_xlsx(p3, [["BYW4", None, "CPU", None, 1, 10.0, None, None]],
+                      include_terms=False, sheet_title="Quote w availability")
+    a3 = LenovoAdapter()
+    a3.parse(str(p3))
+    assert a3.get_source_sheet_name() == "Quote w availability"
+
+
+def test_get_source_sheet_name_resets_on_parse_error(tmp_path):
+    """Failed parse clears cached sheet name so it does not leak from prior file."""
+    p_good = tmp_path / "good.xlsx"
+    _make_lenovo_xlsx(p_good, [["BYW4", None, "CPU", None, 1, 10.0, None, None]],
+                      include_terms=False)
+    p_bad = tmp_path / "bad.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "SomeOther"
+    ws.append(["data"])
+    wb.save(p_bad)
+    wb.close()
+
+    adapter = LenovoAdapter()
+    adapter.parse(str(p_good))
+    assert adapter.get_source_sheet_name() == "Quote"
+
+    with pytest.raises(ValueError, match="No Lenovo DCSC header"):
+        adapter.parse(str(p_bad))
+    assert adapter.get_source_sheet_name() is None

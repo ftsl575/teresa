@@ -18,6 +18,8 @@ Versioning: [SemVer](https://semver.org/).
 - feat(CiscoAdapter): `get_extra_cols()` returns 2 Cisco-specific columns (line_number, service_duration_months)
 
 ### Changed
+- refactor(LenovoParser): убраны позиционные константы `_HEADER_ROW`/`_DATA_START_ROW` и индексы колонок; шапка ищется сканированием первых 30 строк по маркерам Part number/Product Description/Qty/Price/Export Control; колонки мапятся через `col_map` (как в HPE); fallback по листам если `"Quote"` отсутствует или без шапки; `can_parse()` обновлён под новую логику. Контракт row dict не меняется, golden L1…L11 идентичны.
+- refactor(LenovoAdapter): `get_source_sheet_name()` теперь возвращает имя листа, реально использованного последним `parse()` вызовом, а не захардкоженное `"Quote"`. Парсер дополнительно экспортирует `parse_excel_with_sheet(filepath) -> (rows, header_row_index, sheet_name)`; адаптер кэширует `sheet_name` на инстансе и отдаёт его в `annotated_writer`, чтобы вторичное чтение Excel шло из того же листа (важно при fallback на `"Quote w availability"` или переименованный лист). До первого `parse()` метод возвращает `None` (legacy-поведение `annotated_writer` — sheet index 0). Тест: `test_adapter_get_source_sheet_name_reflects_actual_sheet`.
 - refactor(annotated_writer): `VENDOR_EXTRA_COLS` hardcoded registry removed; replaced with per-adapter `generate_annotated_source_excel(extra_cols=)` parameter sourced from `adapter.get_extra_cols()`
 - refactor(VendorAdapter): `get_extra_cols()` concrete method added (default `[]`); DellAdapter inherits default
 - refactor(batch_audit): `DEVICE_TYPE_MAP` constant removed — loaded dynamically from vendor YAML files via `_load_device_type_maps()` (R1)
@@ -254,19 +256,4 @@ Versioning: [SemVer](https://semver.org/).
 - DEC-001/002: "No Cable" / "No Cables Required" classified as CONFIG + ABSENT.
 - DEC-004: Optics and transceivers classified as `hw_type=network_adapter`.
 - DEC-005: PERC Controller rows now have `device_type=raid_controller`.
-- DEC-006: BOSS-N1 controller card → `storage_controller`; "No BOSS Card" → CONFIG + ABSENT.
-- F1: Hard Drive / 10K rows classified as `hw_type=hdd`.
-- SFP Modules: DAC/Twinax cables → `entity_type=HW`, `hw_type=cable`, `device_type=sfp_cable`.
-- FRONT STORAGE / REAR STORAGE → `hw_type=chassis`.
-
----
-
-## [1.0.0] — 2026-02-23
-
-### Added
-- Initial release: 8 entity types (BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN).
-- `row_kind` detection (ITEM/HEADER).
-- State detection: PRESENT, ABSENT, DISABLED.
-- Full test coverage with regression tests (`golden/dl1–dl5_expected.jsonl`).
-- SOFTWARE-001: Embedded Systems Management.
-- SOFTWARE-002: Dell Secure Onboarding.
+- DEC-006: BOSS-N1 controller card → `storage_controller`; "No BOSS Card" →
