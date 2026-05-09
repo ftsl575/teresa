@@ -16,4 +16,5 @@ teresa.zip
 *.zip
 OUTPUT/
 .cursor/
+.claude/
 commits.txt
