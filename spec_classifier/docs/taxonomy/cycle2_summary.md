@@ -68,7 +68,7 @@ The script loads the **newest** `classification.jsonl` tree under each vendor ru
 **Commands used for rule-only snapshot:**
 
 ```powershell
-Set-Location C:\Users\G\Desktop\teresa\spec_classifier
+Set-Location C:\Users\<USERNAME>\Desktop\teresa\spec_classifier
 python batch_audit.py --output-dir "$env:USERPROFILE\Desktop\OUTPUT" --no-ai
 ```
 

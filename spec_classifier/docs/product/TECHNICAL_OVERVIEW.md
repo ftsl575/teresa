@@ -98,9 +98,9 @@
 Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
 
 ```bash
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --update-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --update-golden
 ```
 
 ---
@@ -265,15 +265,15 @@ spec_classifier/
 Cisco-правила: файл `rules/cisco_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`, `is_bundle_root` (строки `"true"`/`"false"` в нижнем регистре), `service_duration_months`. После изменения `rules/cisco_rules.yaml` рекомендуется запускать:
 
 ```bash
-python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
-python main.py --input "C:\Users\G\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
 pytest tests/test_regression_cisco.py -v
 ```
 
 HPE-правила: файл `rules/hpe_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`. Все classify-правила HPE ориентированы на `option_name` (BOM не содержит отдельного module_name). После изменения `rules/hpe_rules.yaml` рекомендуется запускать:
 
 ```bash
-python main.py --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe --save-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe --save-golden
 pytest tests/test_regression_hpe.py -v
 pytest tests/test_hpe_rules_unit.py -v
 ```

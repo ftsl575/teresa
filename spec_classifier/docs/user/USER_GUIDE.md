@@ -60,7 +60,7 @@
 
 ```bash
 cd spec_classifier
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"
 ```
 
 Результат — папка `output/run-YYYY-MM-DD__HH-MM-SS-dl1/` (или с суффиксом `_1`, `_2` при коллизии). В ней — все артефакты прогона. Итоги смотрите в `run_summary.json` и `unknown_rows.csv`.
@@ -123,10 +123,10 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 
 ## 7. Рекомендованный рабочий процесс
 
-1. Запустить прогон: `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"`.
+1. Запустить прогон: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"`.
 2. Проверить `unknown_rows.csv`.
 3. Если `unknown_count > 0`: добавить или скорректировать правило в `dell_rules.yaml` → запустить снова → проверить diff в классификации.
-4. При принятии изменений: `python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden` и `pytest tests/test_regression.py -v`.
+4. При принятии изменений: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden` и `pytest tests/test_regression.py -v`.
 5. Если `unknown_count = 0` и регрессия зелёная — готово.
 
 Для Cisco CCW: шаги аналогичны, но с `--vendor cisco` и правилами в `rules/cisco_rules.yaml`. Цель — `unknown_count = 0` на `ccw_1` и `ccw_2`.
@@ -134,15 +134,15 @@ python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx"
 Для HPE: шаги аналогичны, но с `--vendor hpe` и правилами в `rules/hpe_rules.yaml`. Входные файлы рекомендуется хранить в `INPUT\hpe\`. Цель — `unknown_count = 0` на всех BOM-файлах (hp1–hp8).
 
 ```powershell
-python main.py --vendor hpe --input "C:\Users\G\Desktop\INPUT\hpe\hp1.xlsx"
+python main.py --vendor hpe --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hp1.xlsx"
 ```
 
 Для Lenovo / xFusion / Huawei: аналогично, с соответствующим `--vendor` и правилами `rules/<vendor>_rules.yaml`. Lenovo input → `INPUT\lenovo\` (L1.xlsx … L11.xlsx, regression goldens сгенерированы в PR-4c).
 
 ```powershell
-python main.py --vendor lenovo  --input "C:\Users\G\Desktop\INPUT\lenovo\L1.xlsx"
-python main.py --vendor xfusion --input "C:\Users\G\Desktop\INPUT\xfusion\xf1.xlsx"
-python main.py --vendor huawei  --input "C:\Users\G\Desktop\INPUT\huawei\hu1.xlsx"
+python main.py --vendor lenovo  --input "C:\Users\<USERNAME>\Desktop\INPUT\lenovo\L1.xlsx"
+python main.py --vendor xfusion --input "C:\Users\<USERNAME>\Desktop\INPUT\xfusion\xf1.xlsx"
+python main.py --vendor huawei  --input "C:\Users\<USERNAME>\Desktop\INPUT\huawei\hu1.xlsx"
 ```
 
 ---

@@ -10,10 +10,10 @@
 
 | Роль      | Путь                           | Содержимое                          |
 |-----------|--------------------------------|-------------------------------------|
-| CODE      | C:\Users\G\Desktop\teresa      | Только .py, .yaml, .md, .ps1, тесты |
-| INPUT     | C:\Users\G\Desktop\INPUT       | Исходные .xlsx с конфигуратора      |
-| OUTPUT    | C:\Users\G\Desktop\OUTPUT      | Результаты прогонов (run folders)   |
-| TEMPORARY | C:\Users\G\Desktop\temporary  | __pycache__, .pytest_cache, diag/   |
+| CODE      | C:\Users\<USERNAME>\Desktop\teresa      | Только .py, .yaml, .md, .ps1, тесты |
+| INPUT     | C:\Users\<USERNAME>\Desktop\INPUT       | Исходные .xlsx с конфигуратора      |
+| OUTPUT    | C:\Users\<USERNAME>\Desktop\OUTPUT      | Результаты прогонов (run folders)   |
+| TEMPORARY | C:\Users\<USERNAME>\Desktop\temporary  | __pycache__, .pytest_cache, diag/   |
 
 Как это обеспечивается:
 

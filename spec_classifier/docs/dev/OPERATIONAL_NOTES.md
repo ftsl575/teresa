@@ -4,7 +4,7 @@
 
 ```bash
 python main.py --input path/to/file.xlsx --output-dir output
-python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
 ```
 
 Результат: папка `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` с полным набором артефактов.
@@ -14,7 +14,7 @@ python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
 ## 2. Batch-прогон
 
 ```bash
-python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
+python main.py --batch-dir "C:\Users\<USERNAME>\Desktop\INPUT"
 ```
 
 Создаётся: для каждого .xlsx в директории — своя папка `run-YYYY-MM-DD__HH-MM-SS-<stem>/`, плюс одна папка `run-YYYY-MM-DD__HH-MM-SS-TOTAL/`.
@@ -47,40 +47,40 @@ python main.py --batch-dir "C:\Users\G\Desktop\INPUT"
 
 ## 6. Работа с новым датасетом
 
-1. Положить xlsx в `C:\Users\G\Desktop\INPUT\` (например dl5.xlsx).
-2. Запустить пайплайн: `python main.py --input "C:\Users\G\Desktop\INPUT\dl5.xlsx"`.
+1. Положить xlsx в `C:\Users\<USERNAME>\Desktop\INPUT\` (например dl5.xlsx).
+2. Запустить пайплайн: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl5.xlsx"`.
 3. Проверить unknown_rows.csv и run_summary.json.
 4. При необходимости добавить правила в dell_rules.yaml и повторить.
-5. Сгенерировать golden: `python main.py --input "C:\Users\G\Desktop\INPUT\dl5.xlsx" --save-golden`.
+5. Сгенерировать golden: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl5.xlsx" --save-golden`.
 6. Добавить новый файл (dlN) в parametrize регрессии и другие тесты при необходимости.
 7. Запустить pytest tests/ -v и закоммитить изменения.
 
 Новый Cisco датасет (ccwN.xlsx):
 
-1. Положить файл в `C:\Users\G\Desktop\INPUT\ccw_N.xlsx`.
-2. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco`.
+1. Положить файл в `C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx`.
+2. Запустить `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco`.
 3. Проверить `unknown_rows.csv`. Цель — `unknown_count = 0`.
 4. При `unknown_count > 0`: добавить правила в `rules/cisco_rules.yaml`, повторить.
-5. `python main.py --input "C:\Users\G\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`
+5. `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`
 6. Добавить `ccw_N` в регрессионный тест; `pytest tests/ -v`.
 
 Новый HPE датасет (hpN.xlsx):
 
-1. Положить BOM-файл в `C:\Users\G\Desktop\INPUT\hpe\hpN.xlsx` (лист «BOM», колонки: Product #, Description, Qty, Unit Price).
-2. Запустить `python main.py --input "C:\Users\G\Desktop\INPUT\hpe\hpN.xlsx" --vendor hpe`.
+1. Положить BOM-файл в `C:\Users\<USERNAME>\Desktop\INPUT\hpe\hpN.xlsx` (лист «BOM», колонки: Product #, Description, Qty, Unit Price).
+2. Запустить `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hpN.xlsx" --vendor hpe`.
 3. Проверить `unknown_rows.csv`. Цель — `unknown_count = 0`.
 4. При `unknown_count > 0`: добавить правила в `rules/hpe_rules.yaml`; запустить повторно.
-5. `python main.py --input "C:\Users\G\Desktop\INPUT\hpe\hpN.xlsx" --vendor hpe --save-golden`
+5. `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hpN.xlsx" --vendor hpe --save-golden`
 6. Добавить `hpN` в `test_regression_hpe.py` и `test_unknown_threshold_hpe.py`; `pytest tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py -v`.
 
 ---
 
 ## 7. Полный прогон (пайплайн + аудит + кластеризация)
 
-Скрипт-запускалка: `run_audit.ps1` в корне репо (`C:\Users\G\Desktop\teresa\run_audit.ps1`).
+Скрипт-запускалка: `run_audit.ps1` в корне репо (`C:\Users\<USERNAME>\Desktop\teresa\run_audit.ps1`).
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File C:\Users\G\Desktop\teresa\run_audit.ps1
+powershell -ExecutionPolicy Bypass -File C:\Users\<USERNAME>\Desktop\teresa\run_audit.ps1
 ```
 
 Выполняет по порядку:
