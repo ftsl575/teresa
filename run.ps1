@@ -21,7 +21,7 @@ param(
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# ── Self-locating paths (не привязаны к C:\Users\G) ─────────────────────────
+# ── Self-locating paths (не привязаны к конкретному профилю пользователя) ───
 $RepoRoot   = $PSScriptRoot
 $SpecDir    = Join-Path $RepoRoot "spec_classifier"
 $MainPy     = Join-Path $SpecDir  "main.py"
