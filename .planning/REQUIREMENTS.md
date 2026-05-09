@@ -13,7 +13,7 @@ File cleanup — no behavior changes.
 
 - [x] **HYG-01**: Hardcoded `C:\Users\G\` username is removed from every committed file (examples, docs, Makefile, configs); replaced with `<USERNAME>` placeholder or `$HOME`/`%USERPROFILE%` style references where appropriate.
 - [x] **HYG-02**: Dual `.gitignore` files (`/.gitignore` and `spec_classifier/.gitignore`) are consolidated into a single root `.gitignore` covering both layers; the redundant one is deleted.
-- [ ] **HYG-03**: Dead and orphan files are removed (orphans include unimported modules, `commits.txt`, `.bak`, `.zip`, abandoned scratch files); list of removed files documented in the PR.
+- [x] **HYG-03**: Dead and orphan files are removed (orphans include unimported modules, `commits.txt`, `.bak`, `.zip`, abandoned scratch files); list of removed files documented in the PR.
 
 ### Docs
 
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | HYG-01 | Phase 1 | Complete |
 | HYG-02 | Phase 1 | Complete |
-| HYG-03 | Phase 1 | Pending |
+| HYG-03 | Phase 1 | Complete |
 | DOC-01 | Phase 2 | Pending |
 | DOC-02 | Phase 2 | Pending |
 | DOC-03 | Phase 2 | Pending |
