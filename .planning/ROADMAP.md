@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - No move of `spec_classifier/src/core/parser.py`; no `HW_TYPE_VOCAB` dedup; no `batch_audit.py` switch from Excel to JSONL.
 - Launchers stay Windows-only by design â€” only the username string is scrubbed; `run.ps1`, `teresa.bat`, `teresa_gui.py` remain PowerShell/Windows.
 **Plans**: 4 plans
-- [ ] 01-01-PLAN.md — HYG-01 username scrub across 17 tracked files (per-context placeholders per D-01)
+- [x] 01-01-PLAN.md — HYG-01 username scrub across 17 tracked files (per-context placeholders per D-01)
 - [ ] 01-02-PLAN.md — HYG-02 consolidate dual .gitignore into single root file
 - [ ] 01-03-PLAN.md — HYG-03 remove dead/orphan files (commits.txt; investigated keep list)
 - [ ] 01-04-PLAN.md — D-11 verification gate (greps + pytest + smoke + diff review) and phase commits
@@ -74,7 +74,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hygiene | 0/TBD | Not started | - |
+| 1. Hygiene | 1/4 | In Progress|  |
 | 2. Docs | 0/TBD | Not started | - |
 | 3. Workflow | 0/TBD | Not started | - |
 
