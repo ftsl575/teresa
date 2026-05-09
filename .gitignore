@@ -1,20 +1,56 @@
-# Local test data (kept outside repo — see config.local.yaml)
+# --- Python bytecode / cache ---
 **/__pycache__/
+*.pyc
+*.pyo
+
+# --- Virtual environments ---
 .venv/
 venv/
+env/
+
+# --- Test / coverage / lint cache ---
 .pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Repo-local data dirs (live outside the repo per code-only policy) ---
+# Lowercase fallbacks for config-driven local paths
+input/
+output/
+test_data/
+OUTPUT/
+spec_classifier/input/
 spec_classifier/output/
+spec_classifier/test_data/
+spec_classifier/temporary/
+spec_classifier/diag/
+
+# --- Local config overlay (gitignored -- copy from .example) ---
+spec_classifier/config.local.yaml
+
+# --- Audit / run scratch artifacts ---
+spec_classifier/audit_run.txt
+spec_classifier/audit_run_ai.txt
+spec_classifier/baseline.txt
+*.log
+commits.txt
+
+# --- Archives ---
+*.zip
+
+# --- Tooling assets (not part of the repo) ---
+.cursor/
+.claude/
+
+# --- Legacy / one-off scratch files seen in past commits ---
 for cursor/
 out/
-test_data/
-output/
 test_Dell_R770.xlsx
 make_run_results.ps1
 teresa.zip
-
-# Archives and outputs
-*.zip
-OUTPUT/
-.cursor/
-.claude/
-commits.txt
