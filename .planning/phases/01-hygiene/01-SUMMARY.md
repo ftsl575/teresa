@@ -81,9 +81,9 @@ metrics:
 
 | Commit | Requirement | Description |
 |--------|-------------|-------------|
-| <sha-pending-hyg01> | HYG-01 | `chore(hygiene): scrub C:\Users\G\ username from tracked files` |
-| <sha-pending-hyg02> | HYG-02 | `chore(hygiene): consolidate dual .gitignore into single root file` |
-| <sha-pending-hyg03> | HYG-03 | `chore(hygiene): remove dead/orphan files + phase 1 SUMMARYs` |
+| aa6035e / b00fc08 / 38ef807 | HYG-01 | `chore(01-01): scrub username from code/build files + root markdown + docs/` (3 commits) |
+| 7a451e8 | HYG-02 | `chore(01-02): consolidate dual .gitignore into single root file` |
+| c551092 | HYG-03 | `chore(hygiene): remove dead/orphan files + phase 1 SUMMARYs` |
 
 *SHAs will be visible in `git log --oneline HEAD~3..HEAD` after Task 4.5 commits land.*
 
@@ -106,7 +106,7 @@ metrics:
 | 01 (HYG-01) | Username scrub — 17 files, 95 replacements | spec_classifier/Makefile, batch_audit.py, config.local.yaml.example, README.md, CLAUDE.md, CHANGELOG.md, CURRENT_STATE.md, COWORK_OPUS_FULL_AUDIT.md, 9 docs/ files | aa6035e, b00fc08, 38ef807 |
 | 02 (HYG-02) | gitignore consolidation — root rewritten, spec_classifier/.gitignore deleted | .gitignore (modified), spec_classifier/.gitignore (deleted) | 7a451e8 |
 | 03 (HYG-03) | Dead/orphan file removal — commits.txt deleted, verify script confirmed live | commits.txt (untracked, deleted) | none (untracked deletion) |
-| 04 (gate) | D-11 verification — all 5 conditions PASS | 01-04-VERIFICATION.md, this file | <sha-pending-hyg03> |
+| 04 (gate) | D-11 verification — all 5 conditions PASS | 01-04-VERIFICATION.md, this file | c551092 |
 
 ## 3. D-11 Gate Result
 
