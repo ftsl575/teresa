@@ -2,7 +2,7 @@
 # Run from spec_classifier/ (e.g. make generate_golden).
 #
 # INPUT paths: all vendor XLSX files live outside the repo.
-# Default: C:\Users\G\Desktop\INPUT\ (set in config.local.yaml → paths.input_root).
+# Default: $(HOME)/Desktop/INPUT (set in config.local.yaml → paths.input_root).
 # Override per-call: make generate_golden INPUT=D:/other/path
 #
 # Dell/Cisco: INPUT\ (flat, e.g. INPUT\dl1.xlsx)
@@ -16,7 +16,7 @@ HP_FILES  = hp1 hp2 hp3 hp4 hp5 hp6 hp7 hp8
 
 # Default INPUT root — matches config.local.yaml paths.input_root.
 # Override on command line: make generate_golden INPUT=/d/specs/INPUT
-INPUT     ?= C:/Users/G/Desktop/INPUT
+INPUT     ?= $(HOME)/Desktop/INPUT
 
 .PHONY: generate_golden generate_golden_dell generate_golden_cisco generate_golden_hpe \
         test test-unit test-smoke \

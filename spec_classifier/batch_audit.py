@@ -7,11 +7,11 @@ Finds all *_annotated.xlsx in OUTPUT folder, runs:
      If prediction disagrees with pipeline → adds AI_MISMATCH pометку.
 
 Usage:
-    python batch_audit.py --output-dir C:/Users/G/Desktop/OUTPUT
-    python batch_audit.py --output-dir C:/Users/G/Desktop/OUTPUT --no-ai     # rule checks only
-    python batch_audit.py --output-dir C:/Users/G/Desktop/OUTPUT --vendor hpe
-    python batch_audit.py --output-dir C:/Users/G/Desktop/OUTPUT --since 2026-03-04
-    python batch_audit.py --output-dir C:/Users/G/Desktop/OUTPUT --dry-run
+    python batch_audit.py --output-dir ~/Desktop/OUTPUT
+    python batch_audit.py --output-dir ~/Desktop/OUTPUT --no-ai     # rule checks only
+    python batch_audit.py --output-dir ~/Desktop/OUTPUT --vendor hpe
+    python batch_audit.py --output-dir ~/Desktop/OUTPUT --since 2026-03-04
+    python batch_audit.py --output-dir ~/Desktop/OUTPUT --dry-run
 
 Requirements:
     pip install anthropic openpyxl pandas

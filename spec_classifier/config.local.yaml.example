@@ -4,9 +4,9 @@
 # CLI arguments (--output-dir, --input, --batch-dir) override everything.
 
 paths:
-  input_root: "C:\\Users\\G\\Desktop\\INPUT"
-  output_root: "C:\\Users\\G\\Desktop\\OUTPUT"
+  input_root: "C:\\Users\\<USERNAME>\\Desktop\\INPUT"
+  output_root: "C:\\Users\\<USERNAME>\\Desktop\\OUTPUT"
 
 # Where to redirect temporary files (.pytest_cache, __pycache__).
 # Used by scripts/clean.ps1 and scripts/run_full.ps1.
-temp_root: "C:\\Users\\G\\Desktop\\temporary"
+temp_root: "C:\\Users\\<USERNAME>\\Desktop\\temporary"
