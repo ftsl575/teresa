@@ -155,7 +155,7 @@ vendor_rules:
 ## Test Data
 
 Test files (dl1–dl5.xlsx for Dell, ccw_1.xlsx/ccw_2.xlsx for Cisco, hp1–hp8.xlsx for HPE)
-are **not stored in git**. Place them in `C:\Users\G\Desktop\INPUT\`
+are **not stored in git**. Place them in `C:\Users\<USERNAME>\Desktop\INPUT\`
 (or configure `paths.input_root` in `config.local.yaml`).
 Smoke, regression, and threshold tests skip automatically if files are absent.
 
@@ -183,9 +183,9 @@ pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
 ## Updating Golden (after rule changes)
 
 ```bash
-python main.py --input "C:\Users\G\Desktop\INPUT\dl1.xlsx" --save-golden
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden
 # Repeat for dl2..dl5 as needed
-# Cisco: python main.py --input "C:\Users\G\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden (and ccw_2)
+# Cisco: python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden (and ccw_2)
 pytest tests/test_regression.py -v
 ```
 
@@ -219,11 +219,11 @@ and AI mismatches. Key checks include:
 - **E18:** LOGISTIC rows with physical keywords (cord, cable, rail, bracket, kit, rack, pdu, ups) but no device_type
 ```bash
 # Rule-based only (fast, no API key needed)
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --no-ai
 
 # Full audit with AI validation
 $env:OPENAI_API_KEY="sk-..."
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT
 ```
 
 Outputs: `audit_report.json`, `audit_summary.xlsx`, `*_audited.xlsx` per file.
@@ -236,16 +236,16 @@ Clusters unclassified rows to discover new YAML rules.
 Reads `*_audited.xlsx` (or `*_annotated.xlsx`) from output dir.
 ```bash
 # Preview candidates without clustering
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --dry-run
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --dry-run
 
 # Full clustering run
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT
 
 # Filter by vendor
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --vendor hpe
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --vendor hpe
 
 # Custom cluster parameters
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --min-cluster-size 5 --max-clusters 30
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --min-cluster-size 5 --max-clusters 30
 ```
 
 | Argument | Default | Description |
@@ -263,18 +263,18 @@ Outputs: `cluster_summary.xlsx` + updates `audit_report.json` with `clusters` se
 ### Recommended Workflow
 ```bash
 # 1. Run Teresa
-python main.py --batch-dir C:\Users\G\Desktop\INPUT
+python main.py --batch-dir C:\Users\<USERNAME>\Desktop\INPUT
 
 # 2. Rule-based audit
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --no-ai
 
 # 3. Cluster unclassified rows
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT
 
 # 4. Review cluster_summary.xlsx → write YAML rules
 
 # 5. Re-run Teresa + audit → verify E2/E17 reduction
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --no-ai
 ```
 
 ---

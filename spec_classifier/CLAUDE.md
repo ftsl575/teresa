@@ -26,10 +26,10 @@
 ## ПУТИ (Windows)
 
 ```
-Репо:    C:\Users\G\Desktop\teresa\spec_classifier
-Input:   C:\Users\G\Desktop\INPUT  (dell/, hpe/, cisco/)
-Output:  C:\Users\G\Desktop\OUTPUT
-Temp:    C:\Users\G\Desktop\temporary
+Репо:    C:\Users\<USERNAME>\Desktop\teresa\spec_classifier
+Input:   C:\Users\<USERNAME>\Desktop\INPUT  (dell/, hpe/, cisco/)
+Output:  C:\Users\<USERNAME>\Desktop\OUTPUT
+Temp:    C:\Users\<USERNAME>\Desktop\temporary
 ```
 
 ---
@@ -58,7 +58,7 @@ INPUT/
 
 ### Структура OUTPUT (после полного прогона + аудита)
 ```
-OUTPUT/  (вне репо: C:\Users\G\Desktop\OUTPUT, в .gitignore)
+OUTPUT/  (вне репо: C:\Users\<USERNAME>\Desktop\OUTPUT, в .gitignore)
   dell_run/  cisco_run/  hpe_run/  lenovo_run/
     run-YYYY-MM-DD__HH-MM-SS-<stem>/
       classification.jsonl, run_summary.json
@@ -107,13 +107,13 @@ spec_classifier/
 python main.py --batch-dir <INPUT/vendor> --vendor <vendor>
 
 # Аудит без AI (быстро)
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --no-ai
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --no-ai
 
 # Аудит конкретного вендора с AI
-python batch_audit.py --output-dir C:\Users\G\Desktop\OUTPUT --vendor hpe
+python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --vendor hpe
 
 # Кластеризация
-python cluster_audit.py --output-dir C:\Users\G\Desktop\OUTPUT
+python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT
 
 # Тесты
 pytest tests/ -v --tb=short

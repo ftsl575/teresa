@@ -92,4 +92,4 @@ Claude проводит аудит после каждого набора изм
 - **Скрипты (scripts/):** run_full.ps1 (pytest + batch по вендорам), run_tests.ps1 (только pytest), clean.ps1 (очистка __pycache__, .pytest_cache, .ruff_cache, .mypy_cache, diag/). Логи run_full → temp_root/diag/runs/\<timestamp\>/.
 - **Документация:** docs/dev/ONE_BUTTON_RUN.md; README — секция «One-button run (Windows)»; DOCS_INDEX — ссылка на ONE_BUTTON_RUN.
 - **Makefile:** заголовок изменён на «Spec Classifier — Makefile». Переменные DL_FILES (dl1–dl5), CCW_FILES (ccw_1, ccw_2). Цель `test` включает test-regression-cisco и test-unknown-cisco. `generate_golden` генерирует golden и для Dell, и для Cisco (второй цикл по CCW_FILES с --vendor cisco). Отдельная цель `generate_golden_cisco` — только Cisco.
-- Makefile: INPUT ?= C:/Users/G/Desktop/INPUT — единый корень для Dell/Cisco/HPE; generate_golden_dell отдельная цель
+- Makefile: INPUT ?= $(HOME)/Desktop/INPUT — единый корень для Dell/Cisco/HPE; generate_golden_dell отдельная цель

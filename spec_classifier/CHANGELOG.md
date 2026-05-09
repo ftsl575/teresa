@@ -134,7 +134,7 @@ Versioning: [SemVer](https://semver.org/).
 - docs: ONE_BUTTON_RUN.md — diag path updated to temp_root/diag/runs/<timestamp>/
 - docs: CONTRIBUTING.md — diag/ отмечен как gitignored, пишется в temp_root
 - refactor(tests): все тесты Dell/Cisco переведены с `test_data/` на `get_input_root_dell()` / `get_input_root_cisco()` — единое соглашение с HPE; test_stats_hw_type.py включён
-- docs: OPERATIONAL_NOTES, TESTING_GUIDE, NEW_VENDOR_GUIDE, ONE_BUTTON_RUN, TECHNICAL_OVERVIEW, RULES_AUTHORING_GUIDE, USER_GUIDE, README — `test_data/` заменён на `C:\Users\G\Desktop\INPUT\` во всех примерах команд
+- docs: OPERATIONAL_NOTES, TESTING_GUIDE, NEW_VENDOR_GUIDE, ONE_BUTTON_RUN, TECHNICAL_OVERVIEW, RULES_AUTHORING_GUIDE, USER_GUIDE, README — `test_data/` заменён на `C:\Users\<USERNAME>\Desktop\INPUT\` во всех примерах команд
 - fix(.gitignore): `test_data/*.xlsx` расширен до `test_data/` (целиком)
 - fix(json_writer): добавлен option_id в unknown_rows.csv (audit_1G P0-1)
 - fix(excel_writer): добавлены Group Name, Group ID в cleaned_spec.xlsx (audit_1G P0-2)
@@ -177,7 +177,7 @@ Versioning: [SemVer](https://semver.org/).
 
 ### Changed
 - config: paths default to `input` / `output`; remove dead `rules_file` key; Dell get_rules_file fallback to `rules/dell_rules.yaml` only (LEAK-001, LEAK-009).
-- docs: replace all `C:\Users\G\Desktop\...` with relative paths in README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE.md; examples use `input/`, `output/`, `mkdir`; add note on config.local.yaml for absolute paths (LEAK-002, LEAK-003, LEAK-004).
+- docs: replace all `C:\Users\<USERNAME>\Desktop\...` with relative paths in README.md, RUN_PATHS_AND_IO_LAYOUT.md, TECHNICAL_OVERVIEW.md, CLI_CONFIG_REFERENCE.md; examples use `input/`, `output/`, `mkdir`; add note on config.local.yaml for absolute paths (LEAK-002, LEAK-003, LEAK-004).
 - docs: TECHNICAL_OVERVIEW §1 — «пайплайн для вендорных спецификаций (Dell, Cisco CCW)»; source reference — код в src/, main.py, tests/, config.yaml (remove dell_mvp).
 - docs: fix output paths in TECHNICAL_OVERVIEW, add --output-dir default, update README title for multivendor, assign version 1.2.0 to unreleased section.
 - refactor: delegate vendor_stats to adapter.get_vendor_stats(), main.py vendor-agnostic (CODE-002).
