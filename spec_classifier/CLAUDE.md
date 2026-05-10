@@ -126,30 +126,30 @@ python main.py --update-golden
 
 ---
 
-## БИЗНЕС-ПРАВИЛА (не нарушать при правках)
+## Business Rules (do not violate when editing)
 
-- **LOGISTIC** = только упаковка, документы, доставка, freight
-- **Power cord, stacking cable, rail, bracket** → HW, не LOGISTIC
-- **power_cord**: `hw_type=None` — намеренно не маппится. Источники истины:
+- **LOGISTIC** = packaging, documents, delivery, freight only
+- **Power cord, stacking cable, rail, bracket** → HW, not LOGISTIC
+- **power_cord**: `hw_type=None` — intentionally unmapped. Sources of truth:
   `rules/dell_rules.yaml:278`, `rules/cisco_rules.yaml:196`, `rules/hpe_rules.yaml:360`
-  все содержат комментарий `# hw_type: intentionally unmapped — power_cord has no hw_type`.
-  power_cord отсутствует в device_type_map всех 4 YAML.
-  В `batch_audit.py:449` исключён из E8: `_E8_NO_HW_TYPE_DEVICES = {"power_cord", "enablement_kit"}`.
-  Семантический алиас power_cord ≈ cable существует только в `batch_audit.py:DEVICE_TYPE_ALIASES`
-  и применяется исключительно для подавления AI_MISMATCH (когда AI говорит "cable"
-  — это не считается несогласием с пайплайном). Это не hw_type-маппинг.
-  См. git: `c3c7cb6 fix(taxonomy): restore power_cord hw_type=None`.
-- **BASE** без device_type → норма (E15 = инфо, не баг)
-- **BASE с device_type** → валидно (BASE-*-DT-* YAML rules), E6/E10 НЕ должны срабатывать
-- **blank_filler + state=ABSENT** → заглушка в слоте, не ошибка (E16 = инфо)
-- **Dummy PID for Airflow** → HW/accessory, не CONFIG
-- **Factory Integrated** строки (is_factory_integrated=True) → CONFIG, AI не проверяет
-- **hw_type applies_to** → `[HW]` (не [HW, BASE]) — код победил, таксономия обновлена
+  all contain the comment `# hw_type: intentionally unmapped — power_cord has no hw_type`.
+  power_cord is absent from device_type_map in all 4 YAML files.
+  In `batch_audit.py:449` it is excluded from E8: `_E8_NO_HW_TYPE_DEVICES = {"power_cord", "enablement_kit"}`.
+  The power_cord ≈ cable semantic alias exists only in `batch_audit.py:DEVICE_TYPE_ALIASES`
+  and is applied solely to suppress AI_MISMATCH (when the AI says "cable"
+  — it does not count as disagreement with the pipeline). It is NOT a hw_type mapping.
+  See git: `c3c7cb6 fix(taxonomy): restore power_cord hw_type=None`.
+- **BASE** without device_type → normal (E15 = INFO, not a bug)
+- **BASE with device_type** → valid (BASE-*-DT-* YAML rules); E6/E10 MUST NOT fire
+- **blank_filler + state=ABSENT** → placeholder in slot, not an error (E16 = INFO)
+- **Dummy PID for Airflow** → HW/accessory, not CONFIG
+- **Factory Integrated** rows (is_factory_integrated=True) → CONFIG; AI does not check them
+- **hw_type applies_to** → `[HW]` (not [HW, BASE]) — code won, taxonomy updated
 
-### Алиасы device_type (одно и то же, не мисматч)
+### device_type Aliases (semantic equivalents, not mismatches)
 
-Источник: `batch_audit.py:DEVICE_TYPE_ALIASES`. Применяются ТОЛЬКО для подавления
-AI_MISMATCH (равенство "по смыслу"), а не как hw_type-маппинг.
+Source: `batch_audit.py:DEVICE_TYPE_ALIASES`. Used SOLELY to suppress AI_MISMATCH
+(semantic equality), NOT as a hw_type mapping.
 
 ```
 ram              = memory
@@ -158,15 +158,15 @@ raid_controller  = storage_controller
 hba              = storage_controller
 sfp_cable        = cable
 fiber_cable      = cable
-power_cord       = cable        ← только AI alias; в YAML power_cord БЕЗ hw_type (см. бизнес-правило выше)
-drive_cage       = backplane    ← AI_MISMATCH suppression only, не hw_type-маппинг.
-                                  PR-4c flip (06d64c1) align с pipeline output:
-                                  HPE `hpe_rules.yaml device_type_map` маппит drive_cage→backplane,
-                                  поэтому AI говорящий "backplane" не должен спорить с pipeline
-                                  говорящим "drive_cage". Раньше было `chassis` — устарело.
-bezel            = chassis      ← HPE-precedent (HPE bezel→chassis). Lenovo-local override:
-                                  `lenovo_rules.yaml` map bezel→accessory (PR-4c). Глобальный
-                                  alias не меняется чтобы не сломать HPE.
+power_cord       = cable        ← AI alias only; in YAML power_cord has NO hw_type (see business rule above)
+drive_cage       = backplane    ← AI_MISMATCH suppression only, NOT a hw_type mapping.
+                                  PR-4c flip (06d64c1) aligns with pipeline output:
+                                  HPE `hpe_rules.yaml device_type_map` maps drive_cage→backplane,
+                                  so an AI saying "backplane" should not disagree with the pipeline
+                                  saying "drive_cage". Previously `chassis` — now obsolete.
+bezel            = chassis      ← HPE precedent (HPE bezel→chassis). Lenovo-local override:
+                                  `lenovo_rules.yaml` maps bezel→accessory (PR-4c). The global
+                                  alias is NOT changed to avoid breaking HPE.
 storage_nvme     = storage_drive
 storage_ssd      = storage_drive
 storage_hdd      = storage_drive
@@ -183,123 +183,125 @@ product_#         → skus          (HPE extension!)
 
 ---
 
-## E-КОДЫ batch_audit.py
+## E-codes (batch_audit.py)
 
-Полный список E-кодов из `batch_audit.py:421–518`. Таблица отсортирована по номеру.
+Complete list of E-codes from `batch_audit.py:421–518`. Table is sorted by code number.
 
-| Код | Описание | Severity |
+| Code | Description | Severity |
 |---|---|---|
-| E1 | invalid_entity (entity не в VALID_ENTITY_TYPES) | P0 |
-| E2 | UNKNOWN_no_rule (нет правила) | BLOCKER |
-| E3 | invalid_state (state не в VALID_STATES) | P0 |
-| E4 | state mismatch by vendor (data-driven, см. E4_STATE_VALIDATORS) | P1 |
-| E5 | hw_type на non-HW (entity ∉ {HW, BASE}) | P0 |
-| E6 | device_type на wrong entity (entity ∉ {HW, LOGISTIC, BASE}) | P0 — BASE исключён |
-| E7 | hw_type не в HW_TYPE_VOCAB | P1 |
-| E8 | HW + PRESENT без hw_type (power_cord, enablement_kit исключены) | P1 |
+| E1 | invalid_entity (entity not in VALID_ENTITY_TYPES) | P0 |
+| E2 | UNKNOWN_no_rule (no rule matched) | BLOCKER |
+| E3 | invalid_state (state not in VALID_STATES) | P0 |
+| E4 | state mismatch by vendor (data-driven, see E4_STATE_VALIDATORS) | P1 |
+| E5 | hw_type on non-HW row (entity ∉ {HW, BASE}) | P0 |
+| E6 | device_type on wrong entity (entity ∉ {HW, LOGISTIC, BASE}) | P0 — BASE excluded |
+| E7 | hw_type not in HW_TYPE_VOCAB | P1 |
+| E8 | HW + PRESENT without hw_type (power_cord, enablement_kit excluded) | P1 |
 | E9 | device_type → hw_type mapping mismatch / missing | P1 |
-| E10 | hw_type на BASE — сужен: device_type на BASE валиден; срабатывает только если у BASE есть hw_type | P0 |
-| E11 | hw_type на CONFIG | P0 |
-| E12 | hw_type или device_type на NOTE | P0 |
-| E13 | LOGISTIC с физическим device_type (power_cord/cable/sfp_cable/fiber_cable) | P0 |
-| E14 | CONFIG похож на blank_filler (Dummy/Blank/Filler в name, нет device_type; SKU NXK-AF-PE исключён) | P1 |
-| E15 | BASE без device_type (норма, инфо) | INFO |
-| E16 | blank_filler + ABSENT (заглушка в слоте; SKU 412-AASK, 470-BCHP исключены) | INFO |
-| E17 | HW без device_type и без hw_type (пайплайн не определил тип) | P1 |
-| E18 | LOGISTIC с физическим keyword (cord/cable/rail/bracket/mount/kit/rack/pdu/ups), нет device_type | P0 |
+| E10 | hw_type on BASE — narrowed: device_type on BASE is valid; fires only when BASE has hw_type | P0 |
+| E11 | hw_type on CONFIG | P0 |
+| E12 | hw_type or device_type on NOTE | P0 |
+| E13 | LOGISTIC with physical device_type (power_cord/cable/sfp_cable/fiber_cable) | P0 |
+| E14 | CONFIG resembling blank_filler (Dummy/Blank/Filler in name, no device_type; SKU NXK-AF-PE excluded) | P1 |
+| E15 | BASE without device_type (normal, INFO) | INFO |
+| E16 | blank_filler + ABSENT (placeholder in slot; SKUs 412-AASK, 470-BCHP excluded) | INFO |
+| E17 | HW without device_type and without hw_type (pipeline could not determine type) | P1 |
+| E18 | LOGISTIC with physical keyword (cord/cable/rail/bracket/mount/kit/rack/pdu/ups), no device_type | P0 |
 
-### Теги pipeline_check в *_audited.xlsx
-- **AI_MISMATCH** — AI не согласен с пайплайном (голубой)
-- **AI_SUGGEST** — пайплайн не определил device_type, AI предлагает (зелёный)
-- **MANUAL_CHECK** — AI неуверен (оранжевый)
-- **E2** — UNKNOWN (красный, BLOCKER)
-
----
-
-## ИЗВЕСТНЫЙ TECH DEBT (P2, не в scope текущего плана)
-
-> Зафиксировать как `ARCHITECTURE_RISKS.md` перед добавлением 4-го вендора
-
-1. `batch_audit.py` читает Excel (`pd.read_excel`) вместо `classification.jsonl` — Excel leakage сохраняется
-2. Alias sprawl в `batch_audit.py` (`DEVICE_TYPE_ALIASES`, `_ALIASES`, `HW_TYPE_TRUST`,
-   `DEVICE_TYPE_TRUST`, `ENTITY_TRUST_PIPELINE`) — решается одной canonical schema
-3. `batch_audit.py` = 1489 LOC (вырос с 1280), потенциальный god-object
-4. TOTAL folders создают confusion при прогонах (удвоение branded/audited файлов)
-5. ✅ DONE (audit_1E Step 2, 6147b3a): DEVICE_TYPE_MAP грузится из YAML;
-   `detect_vendor_from_path()` принимает known_vendors; `--vendor` choices динамические;
-   E4 data-driven через `E4_STATE_VALIDATORS` + `_check_e4()`. См. CURRENT_STATE.md § audit_1E
-6. ✅ DONE (audit_1E Step 1, a5e15d3): `VENDOR_EXTRA_COLS` удалён;
-   заменён на `VendorAdapter.get_extra_cols()` (default []), переопределён
-   в `HPEAdapter` (5 cols) и `CiscoAdapter` (2 cols); `annotated_writer` принимает `extra_cols` параметром
-7. `core/parser.py` фактически dell-specific (sentinel "Module Name", см. docstring),
-   но живёт в core/ — Cisco/HPE/Lenovo используют свои `parser.py` в `src/vendors/<vendor>/`
-8. `lenovo_rules.yaml` пока без полного golden покрытия — `golden/` содержит только dl/ccw/hp;
-   `tests/test_lenovo_*.py` опираются на rules-unit + parser/normalizer тесты
-9. `run_audit.ps1` запускает только Dell + HPE + Cisco (lenovo не прописан); прогон
-   за 2026-04-30 21:17 (см. OUTPUT/audit_report.json) делал lenovo руками или через `main.py --batch-dir`
+### pipeline_check tags in *_audited.xlsx
+- **AI_MISMATCH** — AI disagrees with pipeline (light blue)
+- **AI_SUGGEST** — pipeline did not determine device_type; AI suggests one (green)
+- **MANUAL_CHECK** — AI is unsure (orange)
+- **E2** — UNKNOWN (red, BLOCKER)
 
 ---
 
-## РОЛИ ИНСТРУМЕНТОВ
+## Known Tech Debt (P2, out of scope for the current plan)
 
-| Инструмент | Роль |
+> Capture as `ARCHITECTURE_RISKS.md` before adding a 4th vendor
+
+1. `batch_audit.py` reads Excel (`pd.read_excel`) instead of `classification.jsonl` — Excel leakage persists
+2. Alias sprawl in `batch_audit.py` (`DEVICE_TYPE_ALIASES`, `_ALIASES`, `HW_TYPE_TRUST`,
+   `DEVICE_TYPE_TRUST`, `ENTITY_TRUST_PIPELINE`) — to be resolved by a single canonical schema
+3. `batch_audit.py` = 1489 LOC (grew from 1280), potential god-object
+4. TOTAL folders cause confusion during runs (branded/audited files are duplicated)
+5. ✅ DONE (audit_1E Step 2, 6147b3a): DEVICE_TYPE_MAP is loaded from YAML;
+   `detect_vendor_from_path()` accepts known_vendors; `--vendor` choices are dynamic;
+   E4 is data-driven via `E4_STATE_VALIDATORS` + `_check_e4()`. See archive at `.planning/archive/CURRENT_STATE-2026-05-10.md` § audit_1E
+6. ✅ DONE (audit_1E Step 1, a5e15d3): `VENDOR_EXTRA_COLS` removed;
+   replaced with `VendorAdapter.get_extra_cols()` (default []), overridden
+   in `HPEAdapter` (5 cols) and `CiscoAdapter` (2 cols); `annotated_writer` takes `extra_cols` as a parameter
+7. `core/parser.py` is actually Dell-specific (sentinel "Module Name", see docstring),
+   but lives in core/ — Cisco/HPE/Lenovo use their own `parser.py` files under `src/vendors/<vendor>/`
+8. `lenovo_rules.yaml` still lacks full golden coverage — `golden/` contains only dl/ccw/hp;
+   `tests/test_lenovo_*.py` rely on rules-unit + parser/normalizer tests
+9. `run_audit.ps1` runs only Dell + HPE + Cisco (lenovo not wired); the 2026-04-30 21:17 run
+   (see OUTPUT/audit_report.json) processed lenovo manually or via `main.py --batch-dir`
+
+For broader BLOCKER/IMPORTANT/NICE-TO-FIX context see `.planning/codebase/CONCERNS.md`.
+
+---
+
+## Tool Roles
+
+| Tool | Role |
 |---|---|
-| **Cursor** (Pro) | пишет/меняет код и документы — исполнитель |
-| **Claude** (Pro) | архитектурные выводы, аудит, проектирование изменений |
-| **ChatGPT** (Plus) | управляет шагами, PowerShell-команды, итоговый вердикт |
-| **Gemini** | опционально — "второе мнение" по финальному отчёту |
+| **Cursor** (Pro) | writes / modifies code and docs — executor |
+| **Claude** (Pro) | architectural conclusions, audit, change design |
+| **ChatGPT** (Plus) | drives steps, PowerShell commands, final verdict |
+| **Gemini** | optional — "second opinion" on the final report |
 
 ---
 
-## ЦИКЛ РАЗРАБОТКИ
+## Development Cycle
 
 ```
 PRE-CHECK → PLAN (Master Plan) → CURSOR IMPLEMENT → POST-CHECK → AUDIT (1A–1G) → DOC UPDATE
 ```
 
-| Сценарий | Шаги |
+| Scenario | Steps |
 |---|---|
-| Маленькая правка YAML | PRE → BATCH AUDIT MASTER PLAN → Cursor → POST |
-| Новая фича / рефакторинг | PRE → MASTER PLAN A → Cursor → POST → 1A–1G |
-| После FAIL аудита | MASTER PLAN B (fix) → Cursor → POST → 1G |
-| Обновление документации | 1A–1G → DOC UPDATE MASTER PLAN → Cursor |
+| Small YAML edit | PRE → BATCH AUDIT MASTER PLAN → Cursor → POST |
+| New feature / refactor | PRE → MASTER PLAN A → Cursor → POST → 1A–1G |
+| After FAIL audit | MASTER PLAN B (fix) → Cursor → POST → 1G |
+| Documentation update | 1A–1G → DOC UPDATE MASTER PLAN → Cursor |
 
 ---
 
-## ЖЁСТКИЕ ПРАВИЛА ДЛЯ CLAUDE-ОКОН
+## Hard Rules for Claude Windows
 
-- **R1.** Каждый шаг = отдельное новое окно Claude
-- **R2.** В каждом окне читать ТОЛЬКО перечисленные файлы
-- **R3.** Каждый ответ заканчивается блоком SUMMARY:
+- **R1.** Each step = a separate new Claude window (Cowork mode is exempt).
+- **R2.** Read ONLY the files explicitly listed for that window.
+- **R3.** Every reply ends with a SUMMARY block:
   ```
   CLAIMS: …
-  EVIDENCE: claim_id → file + место + цитата ≤2 строки
-  SEVERITY: P0/P1/P2 на каждый claim
-  ACTION: что делать
+  EVIDENCE: claim_id → file + location + quote ≤2 lines
+  SEVERITY: P0/P1/P2 per claim
+  ACTION: what to do
   ```
-- **R4.** Утверждение "tracked в git" требует доказательства, иначе — НЕПОДТВЕРЖДЕНО
-- **R5.** В финальное окно (1G) идут ТОЛЬКО SUMMARY-блоки, не весь текст
+- **R4.** A "tracked in git" claim requires a SHA — otherwise UNCONFIRMED.
+- **R5.** Only SUMMARY blocks reach the final 1G window — never the full text.
 
-### Уровни серьёзности
-- **P0** — BLOCKER: нельзя продолжать (сломаны тесты, вырос UNKNOWN, нарушен контракт)
-- **P1** — IMPORTANT: исправить в ближайшем цикле (отстаёт документация, слепые зоны)
-- **P2** — NICE: улучшения качества (рефакторинг, косметика)
+### Severity Levels
+- **P0** — BLOCKER: cannot proceed (tests broken, UNKNOWN rose, contract violated)
+- **P1** — IMPORTANT: fix in the next cycle (docs drift, blind spots)
+- **P2** — NICE: quality improvements (refactor, cosmetics)
 
 ---
 
-## РЕКОМЕНДУЕМЫЕ МОДЕЛИ ПО ШАГАМ
+## Recommended Models per Step
 
-| Шаг | Модель | Extended |
+| Step | Model | Extended |
 |---|---|---|
-| PRE-CHECK, POST-CHECK, чеклист (1A, 1C, 1G) | Sonnet 4.6 | OFF |
-| Архитектура, стыки, документация, тесты (1B, 1D, 1E, 1F) | Opus 4.6 | ON |
-| Master Plan генерация | Opus 4.6 | ON |
-| Batch Audit анализ | Opus 4.6 | ON |
+| PRE-CHECK, POST-CHECK, checklist (1A, 1C, 1G) | Sonnet 4.6 | OFF |
+| Architecture, integration points, docs, tests (1B, 1D, 1E, 1F) | Opus 4.6 | ON |
+| Master Plan generation | Opus 4.6 | ON |
+| Batch Audit analysis | Opus 4.6 | ON |
 
 ---
 
-## ПРОМПТЫ — где лежат
+## Prompts — Location
 
-Файл с готовыми промптами для всех шагов:
-**`prompts/`** (папка с отдельными .md файлами для каждого шага)
-См. `prompts/README.md` для навигации.
+Ready-to-use prompts for every step:
+**`prompts/`** (folder with one .md file per step)
+See `prompts/README.md` for navigation.
