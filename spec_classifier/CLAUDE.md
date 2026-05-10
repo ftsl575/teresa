@@ -242,66 +242,8 @@ For broader BLOCKER/IMPORTANT/NICE-TO-FIX context see `.planning/codebase/CONCER
 
 ---
 
-## Tool Roles
-
-| Tool | Role |
-|---|---|
-| **Cursor** (Pro) | writes / modifies code and docs — executor |
-| **Claude** (Pro) | architectural conclusions, audit, change design |
-| **ChatGPT** (Plus) | drives steps, PowerShell commands, final verdict |
-| **Gemini** | optional — "second opinion" on the final report |
-
----
-
 ## Development Cycle
 
-```
-PRE-CHECK → PLAN (Master Plan) → CURSOR IMPLEMENT → POST-CHECK → AUDIT (1A–1G) → DOC UPDATE
-```
-
-| Scenario | Steps |
-|---|---|
-| Small YAML edit | PRE → BATCH AUDIT MASTER PLAN → Cursor → POST |
-| New feature / refactor | PRE → MASTER PLAN A → Cursor → POST → 1A–1G |
-| After FAIL audit | MASTER PLAN B (fix) → Cursor → POST → 1G |
-| Documentation update | 1A–1G → DOC UPDATE MASTER PLAN → Cursor |
-
----
-
-## Hard Rules for Claude Windows
-
-- **R1.** Each step = a separate new Claude window (Cowork mode is exempt).
-- **R2.** Read ONLY the files explicitly listed for that window.
-- **R3.** Every reply ends with a SUMMARY block:
-  ```
-  CLAIMS: …
-  EVIDENCE: claim_id → file + location + quote ≤2 lines
-  SEVERITY: P0/P1/P2 per claim
-  ACTION: what to do
-  ```
-- **R4.** A "tracked in git" claim requires a SHA — otherwise UNCONFIRMED.
-- **R5.** Only SUMMARY blocks reach the final 1G window — never the full text.
-
-### Severity Levels
-- **P0** — BLOCKER: cannot proceed (tests broken, UNKNOWN rose, contract violated)
-- **P1** — IMPORTANT: fix in the next cycle (docs drift, blind spots)
-- **P2** — NICE: quality improvements (refactor, cosmetics)
-
----
-
-## Recommended Models per Step
-
-| Step | Model | Extended |
-|---|---|---|
-| PRE-CHECK, POST-CHECK, checklist (1A, 1C, 1G) | Sonnet 4.6 | OFF |
-| Architecture, integration points, docs, tests (1B, 1D, 1E, 1F) | Opus 4.6 | ON |
-| Master Plan generation | Opus 4.6 | ON |
-| Batch Audit analysis | Opus 4.6 | ON |
-
----
-
-## Prompts — Location
-
-Ready-to-use prompts for every step:
-**`prompts/`** (folder with one .md file per step)
-See `prompts/README.md` for navigation.
+This project uses the GSD-native cycle (Discuss → Plan → Execute → Verify).
+See [/CONTRIBUTING.md](../CONTRIBUTING.md) for the canonical workflow,
+pytest invocation, PR conventions, and the project's "do not fix" rules.
