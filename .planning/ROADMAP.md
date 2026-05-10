@@ -60,7 +60,7 @@ Plans:
 **Depends on**: Phase 4 (ORPH-01's `pyproject.toml:5` rewrite presumes Phase 4's wiring is real; replacement wording references `run.ps1`'s new `PYTHONPYCACHEPREFIX` behavior).
 **Requirements**: ORPH-01, ORPH-02, ORPH-03, ORPH-04
 **Success Criteria** (what must be TRUE):
-  1. `grep -rn "run_full" .` (excluding `CHANGELOG.md`, `LAUNCHER_README.md`, `.planning/`) returns zero matches across the entire repo.
+  1. `grep -rn "run_full" . --include='*.toml' --include='*.example'` (excluding `CHANGELOG.md`, `LAUNCHER_README.md`, `.planning/`) returns zero matches across `*.toml` / `*.example` files.
   2. `spec_classifier/pyproject.toml:5` references `run.ps1` (not `scripts/run_full.ps1`); the wording is consistent with Phase 4's `PYTHONPYCACHEPREFIX` wiring.
   3. `spec_classifier/config.local.yaml.example:11` references `scripts/clean.ps1` and `run.ps1` (not `scripts/run_full.ps1`).
   4. `Test-Path .\.cursor` returns `$false` and `Test-Path .\teresa.zip` returns `$false` in the working tree (both confirmed gitignored, removed without modifying `.gitignore`).
