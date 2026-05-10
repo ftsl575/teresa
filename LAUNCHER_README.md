@@ -49,7 +49,7 @@ GUI or pass `-NoAi` to the CLI — rule-based audit (E1–E18) still runs.
 
 ## Adding a new vendor (e.g. xFusion)
 
-1. Implement adapter (see `prompts/00_VENDOR-RECON.md`).
+1. Implement adapter (see [`spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md`](spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md)).
 2. In `run.ps1`: append `"xfusion"` to `$ALL_VENDORS`.
 3. In `teresa_gui.py`: move `"xfusion"` from `VENDORS_DISABLED` to
    `VENDORS_ACTIVE`.
