@@ -24,7 +24,6 @@
 | `docs/dev/NEW_VENDOR_GUIDE.md` | How do I add a new vendor (adapter, rules, tests)? |
 | `docs/dev/ONE_BUTTON_RUN.md` | How do I run tests and batch with one script (Windows)? |
 | `docs/dev/TESTING_GUIDE.md` | How do I run tests and update golden? |
-| `docs/dev/CONTRIBUTING.md` | How do I work in this repo? |
 | `docs/dev/OPERATIONAL_NOTES.md` | How do I run batch jobs and manage artifacts? |
 | `docs/product/TECHNICAL_OVERVIEW.md` | How does the pipeline work internally? |
 | `CHANGELOG.md` | What changed in each version? |
@@ -33,9 +32,10 @@
 | `batch_audit.py` | How do I run post-pipeline rule checks (E1–E18) and LLM verification across all vendor outputs? |
 | `cluster_audit.py` | How do I cluster unclassified/UNKNOWN rows to discover new rules? |
 | `CLAUDE.md` | Project context for Cowork / Claude Desktop sessions |
-| `prompts/README.md` | Prompt library — step templates for dev cycle |
 
 ## Conventions
 
 - **Normative docs** (`product/`, `user/`, `schemas/`, `rules/`, `dev/`, `taxonomy/`): must stay in sync
   with code. Update docs in the same commit as any behavior change.
+
+> **Repo-root contributor doc:** see [/CONTRIBUTING.md](../../CONTRIBUTING.md) for the GSD-native development cycle and contribution rules.
