@@ -30,7 +30,8 @@ Full details: [`.planning/milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.m
 **Sequential dependency:** Phases run 4 → 5 → 6 strictly. Plan 2 rewrites `pyproject.toml:5` to wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state. Do not parallelize.
 
 - [ ] **Phase 4: Cache Redirect** — Wire `PYTHONPYCACHEPREFIX` from `temp_root` through `run.ps1` and `teresa_gui.py`; default-on `clean.ps1` with `-NoClean` opt-out; doc reflection in `ONE_BUTTON_RUN.md`.
-- [x] **Phase 5: Orphan Cleanup** — Kill stale `scripts/run_full.ps1` references in `pyproject.toml` and `config.local.yaml.example`; remove residual `.cursor/` and `teresa.zip`. (completed 2026-05-10)
+- [x] **Phase 5: Orphan Cleanup** — Kill stale `scripts/run_full.ps1` references in `pyproject.toml` and `config.local.yaml.example`; remove residual `.cursor/` and `teresa.zip`.
+ (completed 2026-05-10)
 - [ ] **Phase 6: Doc-vs-Impl Drift Sweep** — Mechanical claim sweep across 13 `docs/` + 3 root markdown files; trim CLI prose in 2 named docs; create `DOC_INVARIANTS.md` with ≥5 mechanical checks; re-sweep returns 0.
 
 ## Phase Details
@@ -87,7 +88,15 @@ Plans:
 **Pytest skip-ratio gate**: Run `pytest -q` from `spec_classifier/`; session must finish without tripping the 0.50 skip-ratio guard. Doc edits cannot affect test discovery.
 **Goldens byte-equal gate**: `git diff --stat -- spec_classifier/golden/` MUST be empty across the phase window. No `--update-golden`.
 **No new tech-stack constraint**: `DOC_INVARIANTS.md` checks may invoke only Python 3.10, `openpyxl`, `pandas`, `pyyaml`, `pytest`, plus standard shell utilities (`grep`, `Test-Path`). No new runtime dependencies introduced.
-**Plans**: TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Sweep root README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md (DRIFT-01) + initialize 06-DRIFT-AUDIT.md
+- [ ] 06-02-PLAN.md — Sweep docs/dev/ NEW_VENDOR_GUIDE.md, OPERATIONAL_NOTES.md, TESTING_GUIDE.md (DRIFT-01)
+- [ ] 06-03-PLAN.md — Sweep docs/user/ CLI_CONFIG_REFERENCE.md, USER_GUIDE.md + product/TECHNICAL_OVERVIEW.md + schemas/DATA_CONTRACTS.md + rules/RULES_AUTHORING_GUIDE.md + taxonomy/{hw_type_taxonomy,cycle2_summary}.md (DRIFT-01)
+- [ ] 06-04-PLAN.md — run.ps1 help block (D-05) + trim ONE_BUTTON_RUN.md and RUN_PATHS_AND_IO_LAYOUT.md (DRIFT-01, DRIFT-02)
+- [ ] 06-05-PLAN.md — Surgical patches to .planning/codebase/STACK.md:79 + INTEGRATIONS.md:55,150 (DRIFT-04)
+- [ ] 06-06-PLAN.md — Wave 2: Create DOC_INVARIANTS.md + update DOCS_INDEX.md + finalize 06-DRIFT-AUDIT.md tally + SC #1/#4 verification gate (DRIFT-03, DRIFT-04)
 
 ## Progress
 
@@ -101,7 +110,7 @@ Phases execute in numeric order; v1.1 is strictly sequential: 4 → 5 → 6. No 
 | 3. Workflow | v1.0 | 3/3 | Complete | 2026-05-10 |
 | 4. Cache Redirect | v1.1 | 0/3 | Planning complete | - |
 | 5. Orphan Cleanup | v1.1 | 1/1 | Complete   | 2026-05-10 |
-| 6. Doc-vs-Impl Drift Sweep | v1.1 | 0/TBD | Not started | - |
+| 6. Doc-vs-Impl Drift Sweep | v1.1 | 0/6 | Planning complete | - |
 
 ## Coverage
 
