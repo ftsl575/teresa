@@ -48,7 +48,12 @@ Full details: [`.planning/milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.m
 **D-22 guard step**: `git diff --stat HEAD~ -- spec_classifier/src spec_classifier/rules spec_classifier/golden spec_classifier/tests spec_classifier/batch_audit.py spec_classifier/cluster_audit.py spec_classifier/main.py spec_classifier/conftest.py` MUST be empty. Any nonzero diff inside D-22 protected paths = phase gate FAIL.
 **Pytest skip-ratio gate**: Run `pytest -q` from `spec_classifier/`; session must finish without tripping `conftest.py::pytest_sessionfinish` `skipped/total > 0.50` guard. Record `passed/skipped/failed/xfailed` counts in the phase SUMMARY.
 **Goldens byte-equal gate**: `git diff --stat -- spec_classifier/golden/` MUST be empty across the phase window (40 `*_expected.jsonl` fixtures unchanged byte-for-byte). No `--update-golden` runs sanctioned in v1.1.
-**Plans**: TBD (single plan likely; orchestrator decides during `/gsd-plan-phase 4`)
+**Plans:** 3 plans (Wave 1, all parallel — disjoint files)
+
+Plans:
+- [ ] 04-01-PLAN.md — run.ps1: -NoClean switch, temp_root parse, PYTHONPYCACHEPREFIX/PYTEST_ADDOPTS env vars, default-on clean.ps1 invocation (CACHE-01, CACHE-03)
+- [ ] 04-02-PLAN.md — teresa_gui.py: _discover_temp_path() + cache-redirect env vars set in main() before QApplication (CACHE-02)
+- [ ] 04-03-PLAN.md — ONE_BUTTON_RUN.md: 3 coordinated edits (numbered list, switches block, Workspace cleanup section) (CACHE-04)
 
 ### Phase 5: Orphan Cleanup
 **Goal**: All references to the deleted `scripts/run_full.ps1` are gone from canonical config files, replaced with wording that's true post-Phase-4 (i.e., `run.ps1` sets `PYTHONPYCACHEPREFIX` automatically). The local `.cursor/` directory and `teresa.zip` sandbox artifact are removed from the working tree. `CHANGELOG.md` and `LAUNCHER_README.md:4` retain their historical mentions per D-18 / D-19 historical-content convention.
@@ -91,7 +96,7 @@ Phases execute in numeric order; v1.1 is strictly sequential: 4 → 5 → 6. No 
 | 1. Hygiene | v1.0 | 4/4 | Complete | 2026-05-10 |
 | 2. Docs | v1.0 | 6/6 | Complete | 2026-05-10 |
 | 3. Workflow | v1.0 | 3/3 | Complete | 2026-05-10 |
-| 4. Cache Redirect | v1.1 | 0/TBD | Not started | - |
+| 4. Cache Redirect | v1.1 | 0/3 | Planning complete | - |
 | 5. Orphan Cleanup | v1.1 | 0/TBD | Not started | - |
 | 6. Doc-vs-Impl Drift Sweep | v1.1 | 0/TBD | Not started | - |
 
