@@ -21,7 +21,7 @@ Documentation refresh — drift fixed, accuracy verified against the codebase.
 
 - [x] **DOC-01**: Root `README.md` is refreshed — elevator pitch is current, repo layout note matches reality, Quick Start instructions are runnable as written.
 - [x] **DOC-02**: `spec_classifier/README.md` is refreshed — CLI usage, config layering, output paths, and golden workflow all match the current code; no broken cross-references.
-- [ ] **DOC-03**: `spec_classifier/docs/` tree is audited — `DOCS_INDEX.md` lists every present doc, every listed doc still exists, stale content is removed or rewritten, broken cross-references are fixed.
+- [x] **DOC-03**: `spec_classifier/docs/` tree is audited — `DOCS_INDEX.md` lists every present doc, every listed doc still exists, stale content is removed or rewritten, broken cross-references are fixed.
 - [x] **DOC-04**: Root `CLAUDE.md` and `spec_classifier/CLAUDE.md` overlap is removed — root keeps a thin pointer + repo-layout note, the deep reference stays in `spec_classifier/CLAUDE.md`, no business rule or pipeline detail is duplicated across both.
 - [x] **DOC-05**: `spec_classifier/CHANGELOG.md` and `spec_classifier/CURRENT_STATE.md` are refreshed against current state OR archived (`.planning/archive/` or removed) with a note on the replacement source-of-truth (git log, GSD artifacts).
 
@@ -80,7 +80,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HYG-03 | Phase 1 | Complete |
 | DOC-01 | Phase 2 | Complete |
 | DOC-02 | Phase 2 | Complete |
-| DOC-03 | Phase 2 | Pending |
+| DOC-03 | Phase 2 | Complete |
 | DOC-04 | Phase 2 | Complete |
 | DOC-05 | Phase 2 | Complete |
 | WF-01 | Phase 3 | Pending |
