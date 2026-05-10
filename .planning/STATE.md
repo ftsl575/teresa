@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-01-PLAN.md (WF-01)
-last_updated: "2026-05-10T04:34:02.810Z"
+last_updated: "2026-05-10T04:49:35.301Z"
 last_activity: 2026-05-10
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 13
-  completed_plans: 11
-  percent: 85
+  completed_plans: 12
+  percent: 92
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 ## Current Position
 
 Phase: 3 (workflow) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-05-10
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [█████████░] 85%
 | Phase 02-docs P02-05 | 180 | 3 tasks | 15 files |
 | Phase 02-docs P02-06 | 30 | 3 tasks | 3 files |
 | Phase 03-workflow P01 | 5 | 3 tasks | 13 files |
+| Phase 03-workflow PP02 | 9 | 6 tasks tasks | 6 files files |
 
 ## Accumulated Context
 
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - [Phase ?]: Root README.md: C:\venv framed as suggestion not hard requirement
 - [Phase ?]: WF-01 complete: spec_classifier/prompts/ (11 files, Russian) folder-scoped git mv'd to .planning/archive/prompts-2026-05-10/; archive README rewritten in English with D-03/D-04 11-row mapping table; LAUNCHER_README.md line 52 repointed to NEW_VENDOR_GUIDE.md per D-05
 - [Phase ?]: Phase 3 P01 used 3 atomic per-task commits (c8a0977/85f9d22/ea4f050) per executor binding instruction; plan's <verification> step 7 single-commit suggestion overridden in favor of orchestrator success-criteria 'Each task committed individually' (Phase 1/2 atomic-commit convention)
+- [Phase ?]: Phase 3 P02 (WF-02) complete: /CONTRIBUTING.md authored (155 lines, 8 D-10 sections, GSD-cycle command-by-command per D-13, do-not-fix verbatim per D-15); inner CONTRIBUTING.md archived; deep+root CLAUDE.md updated to symmetric forward-pointers; DOCS_INDEX.md cleaned; CHANGELOG.md Phase 3 entry added under [Unreleased]
+- [Phase ?]: Phase 3 P02 used 6 atomic per-task commits (2e2edfb/cb2b3ee/94bc2af/98a8109/936b0b0/f16cc85) per executor binding instruction; plan's <verification> step 8 single-commit suggestion overridden in favor of orchestrator success-criteria 'Each task committed individually' (Phase 1/2/3-01 atomic-commit convention)
+- [Phase ?]: PowerShell verifier UTF-8 read pattern documented (extends Plan 03-01's .ps1-file-not-Command pattern): use [System.IO.File]::ReadAllText(absolutePath, [System.Text.Encoding]::UTF8) instead of Get-Content -Raw; Get-Content -Raw on PS 5.1 silently converts UTF-8 em-dashes to Cyrillic via system codepage, producing false-positive 'Russian residue' warnings
 
 ### Pending Todos
 
@@ -112,6 +116,6 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-10T04:34:02.799Z
+Last session: 2026-05-10T04:49:24.932Z
 Stopped at: Completed 03-01-PLAN.md (WF-01)
 Resume file: None
