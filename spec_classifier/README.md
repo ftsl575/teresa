@@ -36,44 +36,47 @@ Install dependencies into the external venv: `pip install -r requirements.txt` (
 
 ## Quick Start
 
-По умолчанию вход и выход — каталоги `input` и `output` относительно текущей директории (или из config). Репозиторий остаётся только с кодом.
+By default, INPUT and OUTPUT are the directories `input/` and `output/` relative to the current directory (or as set in config). The repository stays code-only.
 
 ```bash
 cd spec_classifier
 pip install -r requirements.txt
 
-# Создать папки (один раз)
+# Create folders (one-time)
 mkdir input
 mkdir output
 
-# Положить .xlsx в input/, затем:
+# Drop .xlsx files into input/, then:
 
-# Одиночный Dell
+# Single Dell file
 python main.py --input input/dl1.xlsx
 
-# Одиночный Cisco CCW
+# Single Cisco CCW file
 python main.py --input input/ccw_1.xlsx --vendor cisco
 
-# Batch: все .xlsx из input
+# Batch: every .xlsx in input
 python main.py --batch-dir input
 ```
 
-**Где искать результат:** `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (Dell), `output/cisco_run/run-.../` (Cisco) или `output/hpe_run/run-.../` (HPE). Подробно: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
+**Where to find results:** `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (Dell), `output/cisco_run/run-.../` (Cisco), or `output/hpe_run/run-.../` (HPE). Details: [docs/user/RUN_PATHS_AND_IO_LAYOUT.md](docs/user/RUN_PATHS_AND_IO_LAYOUT.md), [docs/user/CLI_CONFIG_REFERENCE.md](docs/user/CLI_CONFIG_REFERENCE.md).
 
 ---
 
 ## One-button run (Windows)
 
+From the repo root:
+
 ```powershell
-.\scripts\run_full.ps1
+..\run.ps1                              # full pipeline + audit + cluster + pytest
+..\run.ps1 -TestsOnly                   # pytest only
+..\run.ps1 -Vendor huawei -NoAi -SkipTests   # smoke (single vendor, no AI)
 ```
 
-Запускает тесты + batch-прогон всех вендоров. Логи в `temp_root/diag/runs/<timestamp>/` (temp_root из config.local.yaml).
+The orchestrator lives at the repo root, not under `spec_classifier/scripts/`. See [`../LAUNCHER_README.md`](../LAUNCHER_README.md) for full launcher details.
 
-- Только тесты: `.\scripts\run_tests.ps1`
-- Чистка мусора: `.\scripts\clean.ps1`
+- Clean transient artifacts: `.\scripts\clean.ps1`
 
-Настройка путей: скопировать `config.local.yaml.example` → `config.local.yaml`, задать свои пути. Подробнее: [docs/dev/ONE_BUTTON_RUN.md](docs/dev/ONE_BUTTON_RUN.md).
+Configure paths: copy `config.local.yaml.example` → `config.local.yaml` and set `paths.input_root` / `paths.output_root`. Details: [docs/dev/ONE_BUTTON_RUN.md](docs/dev/ONE_BUTTON_RUN.md).
 
 ---
 
@@ -173,7 +176,7 @@ pytest tests/ -v --tb=short
 # Regression only
 pytest tests/test_regression.py -v
 
-# Cisco тесты
+# Cisco-specific tests
 pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
        tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 ```
@@ -201,8 +204,8 @@ pytest tests/test_regression.py -v
 | `Rules file not found` | `vendor_rules` in config invalid | Check `config.yaml` → `vendor_rules` path |
 | Regression test fails | Rules changed without golden update | Run `--save-golden`, review diff carefully |
 | `unknown_rows.csv` not empty | Input has rows matching no rule | Review patterns; add rules per `docs/rules/RULES_AUTHORING_GUIDE.md` |
-| `Sheet 'Price Estimate' not found` | Cisco файл содержит другой лист | Убедитесь что загружен именно CCW export; список листов будет в сообщении об ошибке |
-| `--vendor cisco` — нет `_branded.xlsx` | Ожидаемо | Cisco branded spec не создаётся |
+| `Sheet 'Price Estimate' not found` | Cisco file contains a different sheet | Ensure you are loading a CCW export; the list of sheets is included in the error message |
+| `--vendor cisco` — no `_branded.xlsx` | Expected | Cisco branded spec is not generated |
 
 ---
 
