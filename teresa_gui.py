@@ -551,7 +551,7 @@ def main():
         except Exception:
             pass
     os.environ["PYTHONPYCACHEPREFIX"] = str(Path(temp_root) / "__pycache__")
-    pytest_cache_arg = f"-o cache_dir={Path(temp_root) / '.pytest_cache'}"
+    pytest_cache_arg = f'-o cache_dir="{Path(temp_root) / ".pytest_cache"}"'
     if os.environ.get("PYTEST_ADDOPTS"):
         os.environ["PYTEST_ADDOPTS"] = f"{os.environ['PYTEST_ADDOPTS']} {pytest_cache_arg}"
     else:

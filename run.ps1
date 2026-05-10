@@ -44,7 +44,7 @@ if (Test-Path $ConfigLocal) {
 
 # Redirect Python bytecode + pytest cache to $TempRoot (out of the repo tree).
 $env:PYTHONPYCACHEPREFIX = Join-Path $TempRoot "__pycache__"
-$pytestCacheArg = "-o cache_dir=$(Join-Path $TempRoot '.pytest_cache')"
+$pytestCacheArg = "-o cache_dir=`"$(Join-Path $TempRoot '.pytest_cache')`""
 if ($env:PYTEST_ADDOPTS) {
     $env:PYTEST_ADDOPTS = "$env:PYTEST_ADDOPTS $pytestCacheArg"
 } else {
