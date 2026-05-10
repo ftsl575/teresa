@@ -52,7 +52,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - No documentation of intent to fix the load-bearing tech debt items in `.planning/codebase/CONCERNS.md` BLOCKER section; if mentioned, frame as "intentional, see CONCERNS.md".
 - No new doc files invented beyond what the requirements call for (the separate onboarding guide is explicitly Out of Scope per PROJECT.md).
 **Plans**: 6 plans
-- [ ] 02-01-PLAN.md — DOC-04: translate spec_classifier/CLAUDE.md to English + dedup root CLAUDE.md
+- [x] 02-01-PLAN.md — DOC-04: translate spec_classifier/CLAUDE.md to English + dedup root CLAUDE.md
 - [ ] 02-02-PLAN.md — DOC-05: refresh CHANGELOG to English-unified release notes + archive CURRENT_STATE.md
 - [ ] 02-03-PLAN.md — DOC-01: author root README.md from scratch (~80–120 lines)
 - [ ] 02-04-PLAN.md — DOC-02: refresh spec_classifier/README.md drift fixes

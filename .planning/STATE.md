@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 2 context gathered
-last_updated: "2026-05-10T00:39:25.159Z"
+status: executing
+stopped_at: Completed Plan 02-01 (DOC-04 CLAUDE.md split + RU->EN translation)
+last_updated: "2026-05-10T01:42:48.515Z"
 last_activity: 2026-05-10
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 10
+  completed_plans: 5
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 01 — hygiene
+**Current focus:** Phase 02 — docs
 
 ## Current Position
 
-Phase: 01 (hygiene) — COMPLETE
-Plan: 4 of 4 (all complete)
-Status: Phase 1 complete; ready for Phase 2
+Phase: 02 (docs) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
 Last activity: 2026-05-10
 
-Progress: [██████████] 100% (Phase 1)
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 01-hygiene P01 | 45 | 3 tasks | 17 files |
 | Phase 01-hygiene P02 | 60 | 1 tasks | 2 files |
 | Phase 01-hygiene P03 | 10 | 3 tasks | 1 files |
+| Phase 02-docs P01 | 25 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase ?]: HYG-01 complete: per-context placeholder scheme applied per D-01; zero C:\Users\G\ residue in 17 tracked files; C:\venv intact per D-04
 - [Phase ?]: HYG-02 gitignore consolidation
 - [Phase ?]: HYG-03 complete: commits.txt (51 MB artifact) removed; verify_teresa_audit_actionables.py kept (2 live doc references confirmed)
+- [Phase ?]: DOC-04 complete: spec_classifier/CLAUDE.md translated RU->EN (303->307 lines); root CLAUDE.md collapsed to thin pointer + 5 critical rules (130->74 lines); sanctioned overlap is the 5 critical business rules verbatim per D-03
+- [Phase ?]: Root CLAUDE.md uses unprefixed numbering (1.-5.) for the 5 critical rules to avoid colliding with deep file's R1.-R5. hard-rules numbering (forbidden duplication per the plan's verify gate)
+- [Phase ?]: D-08 archive forward-pointer placed in deep CLAUDE.md (Current State + Tech Debt item 5) -- depends on Plan 02-05 creating .planning/archive/CURRENT_STATE-2026-05-10.md before Phase 2 verification gate (Plan 02-06)
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-10T00:39:25.145Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-docs/02-CONTEXT.md
+Last session: 2026-05-10T01:42:48.504Z
+Stopped at: Completed Plan 02-01 (DOC-04 CLAUDE.md split + RU->EN translation)
+Resume file: None
