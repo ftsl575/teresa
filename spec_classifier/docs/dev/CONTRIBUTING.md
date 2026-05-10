@@ -1,5 +1,7 @@
 # Участие в разработке — spec_classifier (teresa)
 
+> **Note:** This file describes pre-GSD conventions. The current GSD-native development cycle will be documented at `<repo-root>/CONTRIBUTING.md` in Phase 3 (WF-02). For now, refer to `spec_classifier/CLAUDE.md` § Development Cycle for the active workflow.
+
 ## 1. Структура репозитория
 
 ```
