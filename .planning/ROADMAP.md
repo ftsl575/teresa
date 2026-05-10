@@ -13,7 +13,7 @@ This milestone is hygiene-first. Three phases take the brownfield repo from drif
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Hygiene** - Scrub hardcoded `C:\Users\G\` paths, consolidate dual `.gitignore`, remove dead/orphan files
-- [ ] **Phase 2: Docs** - Refresh both READMEs, audit `docs/` tree, deduplicate root vs `spec_classifier/CLAUDE.md`, reconcile or archive `CHANGELOG.md` / `CURRENT_STATE.md`
+- [x] **Phase 2: Docs** - Refresh both READMEs, audit `docs/` tree, deduplicate root vs `spec_classifier/CLAUDE.md`, reconcile or archive `CHANGELOG.md` / `CURRENT_STATE.md`
 - [ ] **Phase 3: Workflow** - Retire pre-GSD `prompts/` templates and author repo-root `CONTRIBUTING.md` documenting the GSD cycle
 
 ## Phase Details
@@ -57,7 +57,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-03-PLAN.md — DOC-01: author root README.md from scratch (~80–120 lines)
 - [x] 02-04-PLAN.md — DOC-02: refresh spec_classifier/README.md drift fixes
 - [x] 02-05-PLAN.md — DOC-03: audit spec_classifier/docs/ tree end-to-end + DOCS_INDEX 1:1
-- [ ] 02-06-PLAN.md — D-23/D-24 verification gate + final commits per requirement
+- [x] 02-06-PLAN.md — D-23/D-24 verification gate + final commits per requirement
 
 ### Phase 3: Workflow
 **Goal**: Future contributors and future-Claude have one obvious development cycle to follow (the GSD cycle), the legacy `prompts/00..08` + `COWORK_OPUS_FULL_AUDIT.md` cannot accidentally be reused as the canonical process, and the "do not fix" tech-debt rules are explicitly carried into `CONTRIBUTING.md` so they survive the next refactor PR.
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hygiene | 4/4 | Complete | 2026-05-10 |
-| 2. Docs | 5/6 | In Progress|  |
+| 2. Docs | 6/6 | Complete | 2026-05-10 |
 | 3. Workflow | 0/TBD | Not started | - |
 
 ---
