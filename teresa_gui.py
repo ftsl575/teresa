@@ -420,6 +420,19 @@ class TeresaWindow(QMainWindow):
                 pass
         return str(Path.home() / "Desktop" / "OUTPUT")
 
+    def _discover_temp_path(self) -> str:
+        cfg = REPO_ROOT / "spec_classifier" / "config.local.yaml"
+        if cfg.exists():
+            try:
+                text = cfg.read_text(encoding="utf-8")
+                for line in text.splitlines():
+                    line = line.strip()
+                    if line.startswith("temp_root:"):
+                        return line.split(":", 1)[1].strip().strip('"').strip("'")
+            except Exception:
+                pass
+        return str(Path.home() / "Desktop" / "temporary")
+
     # ── Actions ─────────────────────────────────────────────────────────────
 
     def _refresh_key_status(self):
@@ -521,6 +534,29 @@ class TeresaWindow(QMainWindow):
 # ─── Entry point ────────────────────────────────────────────────────────────
 
 def main():
+    # Redirect runtime cache artifacts (Python bytecode, pytest cache) to temp_root
+    # BEFORE QApplication and BEFORE any subprocess.Popen so spawned PowerShell
+    # children inherit the env vars. This is defense-in-depth — run.ps1 also sets
+    # these from the same temp_root source per D-13.
+    cfg = REPO_ROOT / "spec_classifier" / "config.local.yaml"
+    temp_root = str(Path.home() / "Desktop" / "temporary")
+    if cfg.exists():
+        try:
+            text = cfg.read_text(encoding="utf-8")
+            for line in text.splitlines():
+                line = line.strip()
+                if line.startswith("temp_root:"):
+                    temp_root = line.split(":", 1)[1].strip().strip('"').strip("'")
+                    break
+        except Exception:
+            pass
+    os.environ["PYTHONPYCACHEPREFIX"] = str(Path(temp_root) / "__pycache__")
+    pytest_cache_arg = f"-o cache_dir={Path(temp_root) / '.pytest_cache'}"
+    if os.environ.get("PYTEST_ADDOPTS"):
+        os.environ["PYTEST_ADDOPTS"] = f"{os.environ['PYTEST_ADDOPTS']} {pytest_cache_arg}"
+    else:
+        os.environ["PYTEST_ADDOPTS"] = pytest_cache_arg
+
     app = QApplication(sys.argv)
     app.setStyle("Fusion")  # consistent base look across Windows versions
     win = TeresaWindow()
