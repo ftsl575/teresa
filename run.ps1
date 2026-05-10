@@ -15,7 +15,8 @@ param(
     [string]$Vendor = "",
     [switch]$NoAi,
     [switch]$TestsOnly,
-    [switch]$SkipTests
+    [switch]$SkipTests,
+    [switch]$NoClean
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,14 +33,39 @@ if (-not (Test-Path $MainPy)) {
 # Read INPUT/OUTPUT from config.local.yaml (or use defaults under user's Desktop).
 $InputRoot  = "$env:USERPROFILE\Desktop\INPUT"
 $OutputRoot = "$env:USERPROFILE\Desktop\OUTPUT"
+$TempRoot   = "$env:USERPROFILE\Desktop\temporary"
 $ConfigLocal = Join-Path $SpecDir "config.local.yaml"
 if (Test-Path $ConfigLocal) {
     $cfg = Get-Content $ConfigLocal -Raw -Encoding UTF8
     if ($cfg -match '(?m)^\s*input_root:\s*["'']?([^"''\r\n]+)["'']?\s*$')  { $InputRoot  = $Matches[1].Trim() }
     if ($cfg -match '(?m)^\s*output_root:\s*["'']?([^"''\r\n]+)["'']?\s*$') { $OutputRoot = $Matches[1].Trim() }
+    if ($cfg -match '(?m)^\s*temp_root:\s*["'']?([^"''\r\n]+)["'']?\s*$')   { $TempRoot   = $Matches[1].Trim() }
+}
+
+# Redirect Python bytecode + pytest cache to $TempRoot (out of the repo tree).
+$env:PYTHONPYCACHEPREFIX = Join-Path $TempRoot "__pycache__"
+$pytestCacheArg = "-o cache_dir=$(Join-Path $TempRoot '.pytest_cache')"
+if ($env:PYTEST_ADDOPTS) {
+    $env:PYTEST_ADDOPTS = "$env:PYTEST_ADDOPTS $pytestCacheArg"
+} else {
+    $env:PYTEST_ADDOPTS = $pytestCacheArg
 }
 
 Set-Location $SpecDir
+
+# ── Workspace cleanup (default-on; opt out with -NoClean) ────────────────────
+if (-not $NoClean) {
+    $CleanScript = Join-Path $SpecDir "scripts\clean.ps1"
+    if (Test-Path $CleanScript) {
+        try {
+            & $CleanScript
+        } catch {
+            Write-Host "clean.ps1 failed: $($_.Exception.Message) -- continuing" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "clean.ps1 not found at $CleanScript -- skipping cleanup" -ForegroundColor Yellow
+    }
+}
 
 # Active vendors (kept here as single source of truth for the script).
 $ALL_VENDORS = @("dell", "cisco", "hpe", "lenovo", "huawei", "xfusion")
@@ -65,6 +91,7 @@ Write-Host " Output:   $OutputRoot"
 Write-Host " Vendors:  $($VendorsToRun -join ', ')"
 Write-Host " AI audit: $(if ($NoAi) { 'OFF (rule-based only)' } else { 'ON (gpt-4o-mini)' })"
 Write-Host " Tests:    $(if ($TestsOnly) { 'tests only' } elseif ($SkipTests) { 'skipped' } else { 'after pipeline' })"
+Write-Host " Clean:    $(if ($NoClean) { 'OFF (manual)' } else { 'ON (clean.ps1 at start)' })"
 Write-Host "=================================================================" -ForegroundColor Cyan
 
 # ── 0) Tests-only short-circuit ─────────────────────────────────────────────
