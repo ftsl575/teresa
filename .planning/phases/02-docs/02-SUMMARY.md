@@ -146,7 +146,7 @@ All per-task commits from Plans 02-01 through 02-05 (already on main):
 | 16 | 02-05 plan metadata | `0133995` | docs(02-05): complete docs/ tree audit plan (DOC-03) |
 | 17 | 02-06 gate artifacts | `b3c9e16` | docs(02): phase 2 verification gate + SUMMARY (DOC-01..05) |
 | 18 | 02-06 phase wrap-up | `17e8a1f` | docs(02): phase 2 complete — state + roadmap updates (DOC-01..05) |
-| 19 | 02-06 SHA back-fill | `<sha-pending>` | docs(02): back-fill commit SHAs and gate verdict in phase 2 summary |
+| 19 | 02-06 SHA back-fill | `972d5ed` | docs(02): back-fill commit SHAs and gate verdict in phase 2 summary |
 
 ---
 
@@ -202,7 +202,7 @@ None — Phase 2 is documentation-only. No network endpoints, auth paths, file a
 - ROADMAP.md Phase 2 checkbox [x]: CONFIRMED
 - Goldens unchanged (git diff --stat 334278a..HEAD -- golden/ empty): CONFIRMED (Step 5 PASS)
 - Pytest 774 passed, 0 failed, exit 0: CONFIRMED (Step 6 PASS)
-- SHA back-fill commit: row 19 `<sha-pending>` — back-filled after this commit lands (Task 6.7)
+- SHA back-fill commit `972d5ed`: FOUND in git log
 
 ---
 
