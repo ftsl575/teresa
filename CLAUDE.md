@@ -69,6 +69,6 @@ cosmetic edits can silently flip classification.
 ## Tooling roles
 
 The repo carries a `.cursor/` tree (gitignored) used by the GSD (Get Shit Done) workflow
-when driving from Cursor; treat it as informational. The current canonical development
-cycle (PRE-CHECK → PLAN → IMPLEMENT → POST-CHECK → AUDIT 1A–1G) is documented in
-`spec_classifier/CLAUDE.md`.
+when driving from Cursor; treat it as informational. The canonical development cycle
+(Discuss → Plan → Execute → Verify, GSD-native) is documented in
+[`/CONTRIBUTING.md`](CONTRIBUTING.md).
