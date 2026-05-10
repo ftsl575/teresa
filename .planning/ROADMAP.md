@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Hygiene** - Scrub hardcoded `C:\Users\G\` paths, consolidate dual `.gitignore`, remove dead/orphan files
 - [x] **Phase 2: Docs** - Refresh both READMEs, audit `docs/` tree, deduplicate root vs `spec_classifier/CLAUDE.md`, reconcile or archive `CHANGELOG.md` / `CURRENT_STATE.md`
-- [ ] **Phase 3: Workflow** - Retire pre-GSD `prompts/` templates and author repo-root `CONTRIBUTING.md` documenting the GSD cycle
+- [x] **Phase 3: Workflow** - Retire pre-GSD `prompts/` templates and author repo-root `CONTRIBUTING.md` documenting the GSD cycle
 
 ## Phase Details
 
@@ -74,7 +74,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 03-01-PLAN.md — WF-01 retire spec_classifier/prompts/ to .planning/archive/ + repoint LAUNCHER_README.md
 - [x] 03-02-PLAN.md — WF-02 author root /CONTRIBUTING.md (~150-200 lines) + cross-ref cleanup (inner CONTRIBUTING archive, deep + root CLAUDE.md pointers, DOCS_INDEX.md row drops + breadcrumb, CHANGELOG entry)
-- [ ] 03-03-PLAN.md — D-20 7-step verification gate + final commits + STATE/ROADMAP/REQUIREMENTS updates
+- [x] 03-03-PLAN.md — D-20 7-step verification gate + final commits + STATE/ROADMAP/REQUIREMENTS updates
 
 ## Progress
 
@@ -85,7 +85,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 |-------|----------------|--------|-----------|
 | 1. Hygiene | 4/4 | Complete | 2026-05-10 |
 | 2. Docs | 6/6 | Complete | 2026-05-10 |
-| 3. Workflow | 2/3 | In Progress|  |
+| 3. Workflow | 3/3 | Complete | 2026-05-10 |
 
 ---
 *Roadmap created: 2026-05-10*
