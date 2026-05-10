@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-05-10T03:48:00.829Z"
+status: executing
+stopped_at: Completed 03-01-PLAN.md (WF-01)
+last_updated: "2026-05-10T04:34:02.810Z"
 last_activity: 2026-05-10
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_plans: 13
+  completed_plans: 11
+  percent: 85
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 02 — docs
+**Current focus:** Phase 3 — workflow
 
 ## Current Position
 
-Phase: 02 (docs) — COMPLETE; Phase 03 (workflow) — NOT STARTED
-Plan: 6 of 6 (Phase 2 complete)
-Status: Phase 2 complete; awaiting Phase 3 start
+Phase: 3 (workflow) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-05-10
 
-Progress: [██████████] 100% (Phase 2 complete; Phase 3 TBD)
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [██████████] 100% (Phase 2 complete; Phase 3 TBD)
 | Phase 02-docs P04 | 15 | 2 tasks | 1 files |
 | Phase 02-docs P02-05 | 180 | 3 tasks | 15 files |
 | Phase 02-docs P02-06 | 30 | 3 tasks | 3 files |
+| Phase 03-workflow P01 | 5 | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Root CLAUDE.md uses unprefixed numbering (1.-5.) for the 5 critical rules to avoid colliding with deep file's R1.-R5. hard-rules numbering (forbidden duplication per the plan's verify gate)
 - [Phase ?]: D-08 archive forward-pointer placed in deep CLAUDE.md (Current State + Tech Debt item 5) -- depends on Plan 02-05 creating .planning/archive/CURRENT_STATE-2026-05-10.md before Phase 2 verification gate (Plan 02-06)
 - [Phase ?]: Root README.md: C:\venv framed as suggestion not hard requirement
+- [Phase ?]: WF-01 complete: spec_classifier/prompts/ (11 files, Russian) folder-scoped git mv'd to .planning/archive/prompts-2026-05-10/; archive README rewritten in English with D-03/D-04 11-row mapping table; LAUNCHER_README.md line 52 repointed to NEW_VENDOR_GUIDE.md per D-05
+- [Phase ?]: Phase 3 P01 used 3 atomic per-task commits (c8a0977/85f9d22/ea4f050) per executor binding instruction; plan's <verification> step 7 single-commit suggestion overridden in favor of orchestrator success-criteria 'Each task committed individually' (Phase 1/2 atomic-commit convention)
 
 ### Pending Todos
 
@@ -109,6 +112,6 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-10T03:48:00.818Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-workflow/03-CONTEXT.md
+Last session: 2026-05-10T04:34:02.799Z
+Stopped at: Completed 03-01-PLAN.md (WF-01)
+Resume file: None

@@ -72,7 +72,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - The retire decision per template (delete vs archive vs deprecation-stub) is documented in the phase SUMMARY so the rationale survives.
 - No edits to `spec_classifier/CLAUDE.md` business-rule sections, even if it currently references the retired prompts (update the cross-reference only).
 **Plans**: 3 plans
-- [ ] 03-01-PLAN.md — WF-01 retire spec_classifier/prompts/ to .planning/archive/ + repoint LAUNCHER_README.md
+- [x] 03-01-PLAN.md — WF-01 retire spec_classifier/prompts/ to .planning/archive/ + repoint LAUNCHER_README.md
 - [ ] 03-02-PLAN.md — WF-02 author root /CONTRIBUTING.md (~150-200 lines) + cross-ref cleanup (inner CONTRIBUTING archive, deep + root CLAUDE.md pointers, DOCS_INDEX.md row drops + breadcrumb, CHANGELOG entry)
 - [ ] 03-03-PLAN.md — D-20 7-step verification gate + final commits + STATE/ROADMAP/REQUIREMENTS updates
 
@@ -85,7 +85,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 |-------|----------------|--------|-----------|
 | 1. Hygiene | 4/4 | Complete | 2026-05-10 |
 | 2. Docs | 6/6 | Complete | 2026-05-10 |
-| 3. Workflow | 0/3 | Not started | - |
+| 3. Workflow | 1/3 | In Progress|  |
 
 ---
 *Roadmap created: 2026-05-10*

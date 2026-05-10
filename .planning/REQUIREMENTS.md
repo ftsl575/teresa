@@ -29,7 +29,7 @@ Documentation refresh — drift fixed, accuracy verified against the codebase.
 
 GSD-native development cycle — adopt and document.
 
-- [ ] **WF-01**: Pre-GSD prompt templates (`spec_classifier/prompts/00_VENDOR-RECON.md` through `08_CHATGPT-SYSTEM-PROMPTS.md` plus `COWORK_OPUS_FULL_AUDIT.md`) are retired — deleted, archived under `.planning/archive/`, or clearly marked as deprecated with a pointer to the GSD-native equivalent. `prompts/README.md` updated accordingly.
+- [x] **WF-01**: Pre-GSD prompt templates (`spec_classifier/prompts/00_VENDOR-RECON.md` through `08_CHATGPT-SYSTEM-PROMPTS.md` plus `COWORK_OPUS_FULL_AUDIT.md`) are retired — deleted, archived under `.planning/archive/`, or clearly marked as deprecated with a pointer to the GSD-native equivalent. `prompts/README.md` updated accordingly.
 - [ ] **WF-02**: `CONTRIBUTING.md` exists at the repo root documenting the GSD development cycle (`/gsd-discuss-phase` → `/gsd-plan-phase` → `/gsd-execute-phase` → `/gsd-verify-work`), how to run tests, how to add a vendor (pointer to `spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md`), and the project's "do not fix" tech-debt rules.
 
 ## v2 Requirements
@@ -83,7 +83,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOC-03 | Phase 2 | Complete |
 | DOC-04 | Phase 2 | Complete |
 | DOC-05 | Phase 2 | Complete |
-| WF-01 | Phase 3 | Pending |
+| WF-01 | Phase 3 | Complete |
 | WF-02 | Phase 3 | Pending |
 
 **Coverage:**
