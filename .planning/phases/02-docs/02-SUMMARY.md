@@ -144,8 +144,8 @@ All per-task commits from Plans 02-01 through 02-05 (already on main):
 | 14 | 02-05 Task 5.2 batch3 | `9c10a07` | chore(02-05): docs/ audit drift fixes — batch 3/3 (DOC-03) |
 | 15 | 02-05 Task 5.3 | `8a6e9c0` | docs(02-05): assess CONTRIBUTING.md as legacy; add Phase-3 forwarding note (DOC-03) |
 | 16 | 02-05 plan metadata | `0133995` | docs(02-05): complete docs/ tree audit plan (DOC-03) |
-| 17 | 02-06 gate artifacts | `<sha-pending>` | docs(02): phase 2 verification gate — 02-VERIFICATION.md + 02-READ-REPORT.md (DOC-01..05) |
-| 18 | 02-06 phase wrap-up | `<sha-pending>` | docs(02): phase 2 complete — 02-SUMMARY.md + state updates (DOC-01..05) |
+| 17 | 02-06 gate artifacts | `b3c9e16` | docs(02): phase 2 verification gate + SUMMARY (DOC-01..05) |
+| 18 | 02-06 phase wrap-up | `17e8a1f` | docs(02): phase 2 complete — state + roadmap updates (DOC-01..05) |
 | 19 | 02-06 SHA back-fill | `<sha-pending>` | docs(02): back-fill commit SHAs and gate verdict in phase 2 summary |
 
 ---
@@ -189,9 +189,20 @@ None — Phase 2 is documentation-only. No network endpoints, auth paths, file a
 
 ---
 
-## Self-Check: PENDING
+## Self-Check: PASSED
 
-Self-check will be completed after Task 6.6 commits land and Task 6.7 back-fills SHAs.
+- `02-VERIFICATION.md` exists: CONFIRMED (b3c9e16)
+- `02-READ-REPORT.md` exists: CONFIRMED (b3c9e16)
+- `02-SUMMARY.md` exists: CONFIRMED (b3c9e16 — authored PRE-commit per B-1 fix)
+- `02-DOC-AUDIT.md` exists: CONFIRMED (9c10a07 from Plan 02-05)
+- `02-CONTRIBUTING-AUDIT.md` exists: CONFIRMED (8a6e9c0 from Plan 02-05)
+- Gate closure commit `b3c9e16`: FOUND in git log
+- State wrap-up commit `17e8a1f`: FOUND in git log
+- All 5 DOC-* requirements marked Complete in REQUIREMENTS.md: CONFIRMED
+- ROADMAP.md Phase 2 checkbox [x]: CONFIRMED
+- Goldens unchanged (git diff --stat 334278a..HEAD -- golden/ empty): CONFIRMED (Step 5 PASS)
+- Pytest 774 passed, 0 failed, exit 0: CONFIRMED (Step 6 PASS)
+- SHA back-fill commit: row 19 `<sha-pending>` — back-filled after this commit lands (Task 6.7)
 
 ---
 
