@@ -8,5 +8,5 @@ paths:
   output_root: "C:\\Users\\<USERNAME>\\Desktop\\OUTPUT"
 
 # Where to redirect temporary files (.pytest_cache, __pycache__).
-# Used by scripts/clean.ps1 and scripts/run_full.ps1.
+# Used by scripts/clean.ps1, run.ps1, and teresa_gui.py.
 temp_root: "C:\\Users\\<USERNAME>\\Desktop\\temporary"
