@@ -68,7 +68,10 @@ Plans:
 **D-22 guard step**: `git diff --stat` for the phase window MUST show zero bytes changed inside `spec_classifier/{src,rules,golden,tests,batch_audit.py,cluster_audit.py,main.py,conftest.py}`. Any nonzero diff = phase gate FAIL.
 **Pytest skip-ratio gate**: Run `pytest -q` from `spec_classifier/`; session must finish without tripping the 0.50 skip-ratio guard. Phase 5 cannot lower the active-test ratio below threshold.
 **Goldens byte-equal gate**: `git diff --stat -- spec_classifier/golden/` MUST be empty across the phase window. No `--update-golden`.
-**Plans**: TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 05-01-PLAN.md — T1 ROADMAP §SC-1 grep-scope tightening, T2 ORPH-01 pyproject.toml rewrite, T3 ORPH-02 config.local.yaml.example rewrite, T4 ORPH-03 .cursor/ removal, T5 ORPH-04 teresa.zip removal
 
 ### Phase 6: Doc-vs-Impl Drift Sweep
 **Goal**: Every "code does X" claim across the 13 `spec_classifier/docs/` files and the 3 root markdown files (`README.md`, `CLAUDE.md`, `CONTRIBUTING.md`) is mechanically verified post-Phase-4-and-5; drifted claims are removed (preferred) or fixed; `RUN_PATHS_AND_IO_LAYOUT.md` and `ONE_BUTTON_RUN.md` are trimmed of duplicated CLI-flag prose; `docs/dev/DOC_INVARIANTS.md` is created with ≥5 mechanical drift invariants; a fresh re-sweep returns 0 drift claims.
@@ -97,7 +100,7 @@ Phases execute in numeric order; v1.1 is strictly sequential: 4 → 5 → 6. No 
 | 2. Docs | v1.0 | 6/6 | Complete | 2026-05-10 |
 | 3. Workflow | v1.0 | 3/3 | Complete | 2026-05-10 |
 | 4. Cache Redirect | v1.1 | 0/3 | Planning complete | - |
-| 5. Orphan Cleanup | v1.1 | 0/TBD | Not started | - |
+| 5. Orphan Cleanup | v1.1 | 0/1 | Planning complete | - |
 | 6. Doc-vs-Impl Drift Sweep | v1.1 | 0/TBD | Not started | - |
 
 ## Coverage
