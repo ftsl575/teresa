@@ -1,101 +1,106 @@
 # Spec Classifier — Technical Overview (Multivendor)
 
-Документ описывает **фактическую** реализацию проекта (код в репозитории). Источники: код в `src/`, `main.py`, тесты в `tests/`, `config.yaml`.
+This document describes the **actual** implementation of the project (code in the repository). Sources: code in `src/`, `main.py`, tests in `tests/`, `config.yaml`.
 
 ---
 
-## 1. Назначение системы
+## 1. System purpose
 
-Система — **пайплайн** для классификации вендорных спецификаций (Dell, Cisco CCW, HPE) в формате Excel:
+The system is a **pipeline** for classifying vendor specifications (Dell, Cisco CCW, HPE, Lenovo, xFusion, Huawei) in Excel format:
 
-- **Вход:** один Excel-файл (`.xlsx`) с таблицей спецификации (столбцы в том числе: Module Name, Option Name, SKUs, Qty, Option List Price).
-- **Выход:**
-  - папка прогона `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (например `dell_run/run-2026-02-28__13-24-32-dl1/`) под каталогом output_dir, с артефактами (JSON, CSV, Excel);
-  - очищенная спецификация `cleaned_spec.xlsx` (только выбранные типы и состояние);
-  - аннотированный исходный файл `<stem>_annotated.xlsx` (все строки + шесть колонок: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id);
-  - брендированная спецификация `<stem>_branded.xlsx` (группировка по серверу и типам сущностей).
+- **Input:** one Excel file (`.xlsx`) with a specification table.
+- **Output:**
+  - a run folder `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` (e.g. `dell_run/run-2026-02-28__13-24-32-dl1/`) under `output_dir`, with artifacts (JSON, CSV, Excel);
+  - cleaned specification `cleaned_spec.xlsx` (only selected types and state);
+  - annotated source file `<stem>_annotated.xlsx` (all rows + six columns: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id);
+  - branded specification `<stem>_branded.xlsx` (grouped by server and entity type sections).
 
-Классификация **детерминированная**, на основе правил из YAML (регулярные выражения по полям `module_name` и `option_name`). Строки делятся на **HEADER** (разделители) и **ITEM** (позиции); для ITEM задаются тип сущности (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) и состояние (PRESENT, ABSENT, DISABLED). Поддерживаемые вендоры: **Dell** (формат Dell spec export, заголовок "Module Name"), **Cisco CCW** (формат Cisco Commerce Workspace export, лист "Price Estimate", заголовок "Line Number" + "Part Number") и **HPE** (формат QuoteBuilder BOM, лист "BOM", колонки Product #, Product Description). Вендор задаётся флагом `--vendor {dell,cisco,hpe}`.
+Classification is **deterministic**, based on rules from YAML (regular expressions on the `module_name` and `option_name` fields). Rows are divided into **HEADER** (separators) and **ITEM** (line items); for ITEM rows, an entity type (BASE, HW, SOFTWARE, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN) and state (PRESENT, ABSENT, DISABLED) are assigned.
+
+Supported vendors: **Dell** (Dell spec export, header "Module Name"), **Cisco CCW** (Cisco Commerce Workspace export, sheet "Price Estimate", header "Line Number" + "Part Number"), **HPE** (QuoteBuilder BOM, sheet "BOM", columns Product #, Product Description), **Lenovo** (DCSC export, sheet "Configuration" or first sheet), **xFusion** (FusionServer eDeal export), **Huawei** (eDeal export for ICT/Server/Storage/WLAN). Vendor is set with the `--vendor {dell,cisco,hpe,lenovo,huawei,xfusion}` flag.
 
 ---
 
-## 2. Архитектура пайплайна (по шагам)
+## 2. Pipeline architecture (step by step)
 
-Реализованная последовательность в `main.py`:
+Implemented sequence in `main.py`:
 
-1. **Загрузка конфига** — `config.yaml` (UTF-8, `yaml.safe_load`). Путь к правилам берётся через `adapter.get_rules_file()`, который возвращает значение из `config["vendor_rules"][vendor]` (или fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`; HPE: `rules/hpe_rules.yaml`.
-2. **Парсинг Excel** — `adapter.parse(str(input_path))` (vendor-specific):
-   - Dell: ищет строку заголовка по ячейке `"Module Name"` в первых 20 строках (`src.vendors.dell.adapter` → `src.core.parser`);
-   - Cisco: ищет строку заголовка по одновременному наличию `"Line Number"` и `"Part Number"` на листе `"Price Estimate"` (`src.vendors.cisco.parser`);
-   - HPE: читает лист `"BOM"`, строго первая строка — заголовок (no preamble); детектирует конец данных по sentinel `"total"` (`src.vendors.hpe.parser`).
-3. **Нормализация** — `adapter.normalize(raw_rows)` (vendor-specific):
+1. **Config loading** — `config.yaml` (UTF-8, `yaml.safe_load`). The rules path is taken via `adapter.get_rules_file()`, which returns the value from `config["vendor_rules"][vendor]` (or fallback). Dell: `rules/dell_rules.yaml`; Cisco: `rules/cisco_rules.yaml`; HPE: `rules/hpe_rules.yaml`; Lenovo: `rules/lenovo_rules.yaml`; Huawei: `rules/huawei_rules.yaml`; xFusion: `rules/xfusion_rules.yaml`.
+2. **Excel parsing** — `adapter.parse(str(input_path))` (vendor-specific):
+   - Dell: finds the header row by the cell `"Module Name"` in the first 20 rows (`src.vendors.dell.adapter` → `src.core.parser`); note: `src/core/parser.py` is Dell-specific despite living in `core/` — a known tech-debt item;
+   - Cisco: finds the header row by the simultaneous presence of `"Line Number"` and `"Part Number"` on the sheet `"Price Estimate"` (`src.vendors.cisco.parser`);
+   - HPE: reads sheet `"BOM"`, strictly first row is the header (no preamble); detects data end by the sentinel `"total"` (`src.vendors.hpe.parser`);
+   - Lenovo/xFusion/Huawei: vendor-specific parsers in `src/vendors/<vendor>/parser.py`.
+3. **Normalization** — `adapter.normalize(raw_rows)` (vendor-specific):
    - Dell: `src.core.normalizer.normalize_row` → `NormalizedRow`;
-   - Cisco: `src.vendors.cisco.normalizer.normalize_cisco_rows` → `CiscoNormalizedRow` (duck-type compatible с NormalizedRow, содержит дополнительные Cisco-поля);
-   - HPE: `src.vendors.hpe.normalizer.normalize_hpe_rows` → `HPENormalizedRow` (duck-type compatible с NormalizedRow; vendor-поля: `product_type`, `extended_price`, `lead_time`, `config_name`, `is_factory_integrated`).
-4. **Загрузка правил** — `src.rules.rules_engine.RuleSet.load(rules_path)` (YAML, UTF-8). Правила разложены по атрибутам: `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, плюс `get_state_rules()` из `state_rules.absent_keywords`.
-5. **Классификация** — для каждой нормализованной строки `src.core.classifier.classify_row(row, ruleset)`:
-   - если `row_kind == HEADER` → результат с `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
-   - иначе: сначала `detect_state(option_name, state_rules)` (PRESENT/ABSENT/DISABLED), затем проверка правил по приоритету: BASE → SERVICE → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW; при отсутствии совпадений → UNKNOWN.
-6. **Создание папки прогона** — создаётся `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` под `output_dir` через `create_run_folder(vendor_base, input_filename, stamp)`, где `vendor_base = output_dir / f"{vendor}_run"` (например `dell_run/run-2026-02-28__13-24-32-dl1/`).
-7. **Сохранение артефактов:**
+   - Cisco: `src.vendors.cisco.normalizer.normalize_cisco_rows` → `CiscoNormalizedRow` (duck-type compatible with NormalizedRow, contains additional Cisco fields);
+   - HPE: `src.vendors.hpe.normalizer.normalize_hpe_rows` → `HPENormalizedRow` (duck-type compatible with NormalizedRow; vendor fields: `product_type`, `extended_price`, `lead_time`, `config_name`, `is_factory_integrated`);
+   - Lenovo/xFusion/Huawei: vendor-specific normalizers in `src/vendors/<vendor>/normalizer.py`.
+4. **Rules loading** — `src.rules.rules_engine.RuleSet.load(rules_path)` (YAML, UTF-8). Rules are organized by attribute: `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, plus `get_state_rules()` from `state_rules.absent_keywords`.
+5. **Classification** — for each normalized row `src.core.classifier.classify_row(row, ruleset)`:
+   - if `row_kind == HEADER` → result with `entity_type=None`, `state=None`, `matched_rule_id="HEADER-SKIP"`;
+   - otherwise: first `detect_state(option_name, state_rules)` (PRESENT/ABSENT/DISABLED), then rules checked by priority: BASE → SERVICE → LOGISTIC → SOFTWARE → NOTE → CONFIG → HW; no match → UNKNOWN.
+6. **Run folder creation** — `{vendor}_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` is created under `output_dir` via `create_run_folder(vendor_base, input_filename, stamp)`, where `vendor_base = output_dir / f"{vendor}_run"` (e.g. `dell_run/run-2026-02-28__13-24-32-dl1/`).
+7. **Artifact saving:**
    - `src.outputs.json_writer`: `save_rows_raw`, `save_rows_normalized`, `save_classification`, `save_unknown_rows`, `save_header_rows`;
-   - `src.diagnostics.stats_collector`: `collect_stats(classification_results)` и `save_run_summary(stats, run_folder)`;
-   - `src.outputs.excel_writer.generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)` → `cleaned_spec.xlsx`;
+   - `src.diagnostics.stats_collector`: `collect_stats(classification_results)` and `save_run_summary(stats, run_folder)`;
+   - `src.outputs.excel_writer.generate_cleaned_spec(...)` → `cleaned_spec.xlsx`;
    - `src.outputs.annotated_writer.generate_annotated_source_excel(...)` → `<stem>_annotated.xlsx`;
-   - `src.outputs.branded_spec_writer.generate_branded_spec(...)` → `<stem>_branded.xlsx`.
-   **Режим batch:** создаётся папка TOTAL через `create_total_folder()` и копирование трёх презентационных файлов через `copy_to_total()`.
-8. **Опционально: golden** — при флагах `--save-golden` или `--update-golden` формируются строки в формате golden и запись в `golden/<stem>_expected.jsonl`; для `--update-golden` перед перезаписью запрашивается подтверждение (y/n).
-9. **Логирование** — после создания папки прогона в корневой логгер добавляется `FileHandler(run_folder / "run.log")`. В stdout выводится краткий summary (total_rows, header_rows_count, item_rows_count, entity_type_counts, unknown_count, run_folder).
+   - `src.outputs.branded_spec_writer.generate_branded_spec(...)` → `<stem>_branded.xlsx` (only when `adapter.generates_branded_spec()` returns True).
+   **Batch mode:** a TOTAL folder is created via `create_total_folder()` and three presentation files are copied via `copy_to_total()`.
+8. **Optional: golden** — with flags `--save-golden` or `--update-golden`, golden rows are built and written to `golden/<stem>_expected.jsonl`; for `--update-golden`, confirmation is requested (y/n) before overwriting.
+9. **Logging** — after the run folder is created, a `FileHandler(run_folder / "run.log")` is added to the root logger. A brief summary is printed to stdout (total_rows, header_rows_count, item_rows_count, entity_type_counts, unknown_count, run_folder).
 
-Ошибки: при отсутствии файла или невалидном YAML — сообщение в stderr и `exit(1)`; при исключении в пайплайне — `log.exception` и `return 1`.
-
----
-
-## 3. Форматы входа/выхода
-
-**Вход**
-
-- **Dell:** первый лист, строка заголовка определяется по ячейке `"Module Name"` в первых 20 строках. Ожидаемые столбцы: Module Name, Option Name, SKUs, Qty, Option List Price (Group Name, Group ID, Product Name, Option ID опционально).
-- **Cisco CCW:** лист `"Price Estimate"`, строка заголовка — по одновременному наличию `"Line Number"` + `"Part Number"` в первых 100 строках.
-- **HPE:** лист `"BOM"`, первая строка — заголовок (no preamble). Ожидаемые столбцы: Product #, Product Description, Qty, Unit Price (USD), Config Name.
-- **Конфиг:** `config.yaml` — ключи `cleaned_spec` (в т.ч. `include_types`, `include_only_present`, `exclude_headers`) и `vendor_rules`.
-
-**Выход (в `run_folder`)**
-
-| Файл | Описание |
-|------|----------|
-| `rows_raw.json` | Сырые строки (list of dict), как после парсера; `json.dump(..., indent=2, ensure_ascii=False)`. |
-| `rows_normalized.json` | Нормализованные строки с `row_kind` и полями `NormalizedRow`. |
-| `classification.jsonl` | Одна строка — один JSON: `row_kind`, `entity_type`, `state`, `matched_rule_id`, `warnings`. |
-| `unknown_rows.csv` | Только ITEM-строки с `entity_type == UNKNOWN`; кодировка UTF-8-sig. |
-| `header_rows.csv` | Только строки с `row_kind == HEADER`; UTF-8-sig. |
-| `run_summary.json` | Агрегаты: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
-| `cleaned_spec.xlsx` | Подмножество ITEM: типы из `config["cleaned_spec"]["include_types"]`, при `include_only_present` только state PRESENT. Колонки: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. |
-| `<stem>_annotated.xlsx` | Копия исходного листа (построчно), добавлены шесть колонок: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id; строки не удаляются; запись с `header=False`. |
-| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по типу сущности; колонки SKU, Option Name, Qty, Price. Строки до первого BASE выводятся в preamble-блок. Только Dell. |
-| `run.log` | Текстовый лог этапов пайплайна. |
-
-Типы сущностей в коде: `EntityType` в `src/core/classifier.py` — BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN. Состояния: `State` в `src/core/state_detector.py` — PRESENT, ABSENT, DISABLED.
+Errors: if the file is missing or YAML is invalid — message to stderr and `exit(1)`; on pipeline exception — `log.exception` and `return 1`.
 
 ---
 
-## 4. CLI и режимы работы
+## 3. Input/output formats
 
-Точка входа: `main.py`. Аргументы (argparse):
+**Input**
 
-| Аргумент | Обязательность | Описание |
-|----------|----------------|----------|
-| `--input` | обязателен в single-file режиме | Путь к входному Excel. |
-| `--batch-dir` | обязателен в batch режиме | Директория с .xlsx; обрабатываются все файлы; создаются per-run папки и папка TOTAL. |
-| `--config` | нет (по умолчанию `config.yaml`) | Путь к YAML-конфигу. |
-| `--vendor` | нет (default: `dell`) | `dell`, `cisco` или `hpe`. Выбирает адаптер парсинга/нормализации и файл правил. |
-| `--output-dir` | нет (по умолчанию: `config paths.output_root`, иначе `cwd/output` — см. `main.py`) | Каталог для подпапок прогонов; внутри создаётся `{vendor}_run/run-.../`. |
-| `--save-golden` | флаг | После пайплайна записать результат в `golden/<stem>_expected.jsonl` без подтверждения. |
-| `--update-golden` | флаг | То же, но с запросом «Overwrite golden? [y/N]:»; при не-y запись не выполняется. |
+- **Dell:** first sheet, header row located by cell `"Module Name"` in the first 20 rows. Expected columns: Module Name, Option Name, SKUs, Qty, Option List Price (Group Name, Group ID, Product Name, Option ID optional).
+- **Cisco CCW:** sheet `"Price Estimate"`, header row — by simultaneous presence of `"Line Number"` + `"Part Number"` in the first 100 rows.
+- **HPE:** sheet `"BOM"`, first row is header (no preamble). Expected columns: Product #, Product Description, Qty, Unit Price (USD), Config Name.
+- **Lenovo/xFusion/Huawei:** vendor-specific format; see `docs/user/USER_GUIDE.md` for details.
+- **Config:** `config.yaml` — keys `cleaned_spec` (incl. `include_types`, `include_only_present`, `exclude_headers`) and `vendor_rules`.
 
-Именование папок прогонов: под `output_dir` создаётся подкаталог `{vendor}_run` (например `dell_run`, `cisco_run`, `hpe_run`), внутри — **одиночный запуск** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — те же папки по файлам плюс `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` с агрегированными презентационными файлами.
+**Output (in `run_folder`)**
 
-Пути к файлам разрешаются относительно текущей рабочей директории, если не заданы абсолютные. Примеры:
+| File | Description |
+|------|-------------|
+| `rows_raw.json` | Raw rows (list of dict), as after the parser; `json.dump(..., indent=2, ensure_ascii=False)`. |
+| `rows_normalized.json` | Normalized rows with `row_kind` and `NormalizedRow` fields. |
+| `classification.jsonl` | One row — one JSON: `row_kind`, `entity_type`, `state`, `matched_rule_id`, `warnings`. |
+| `unknown_rows.csv` | Only ITEM rows with `entity_type == UNKNOWN`; encoding UTF-8-sig. |
+| `header_rows.csv` | Only rows with `row_kind == HEADER`; UTF-8-sig. |
+| `run_summary.json` | Aggregates: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
+| `cleaned_spec.xlsx` | ITEM subset: types from `config["cleaned_spec"]["include_types"]`, with `include_only_present` only state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. |
+| `<stem>_annotated.xlsx` | Copy of the source sheet (row-by-row), with six columns added: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id; rows not deleted; written with `header=False`. |
+| `<stem>_branded.xlsx` | Branded specification: grouped by BASE (server) and entity type sections; columns SKU, Option Name, Qty, Price. Rows before the first BASE go into a preamble block. Only for vendors where `adapter.generates_branded_spec()` returns True. |
+| `run.log` | Text log of pipeline stages. |
+
+Entity types in code: `EntityType` in `src/core/classifier.py` — BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN. States: `State` in `src/core/state_detector.py` — PRESENT, ABSENT, DISABLED.
+
+---
+
+## 4. CLI and operation modes
+
+Entry point: `main.py`. Arguments (argparse):
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `--input` | yes (single-file mode) | Path to input Excel. |
+| `--batch-dir` | yes (batch mode) | Directory with .xlsx; all files are processed; per-run folders and a TOTAL folder are created. |
+| `--config` | no (default `config.yaml`) | Path to YAML config. |
+| `--vendor` | no (default: `dell`) | `dell`, `cisco`, `hpe`, `lenovo`, `huawei`, or `xfusion`. Selects the parsing/normalization adapter and rules file. |
+| `--output-dir` | no (default: `config paths.output_root`, otherwise `cwd/output`) | Directory for run sub-folders; `{vendor}_run/run-.../` is created inside. |
+| `--save-golden` | flag | After pipeline, write result to `golden/<stem>_expected.jsonl` without confirmation. |
+| `--update-golden` | flag | Same, but asks "Overwrite golden? [y/N]:"; if not y, write is skipped. |
+
+Run folder naming: under `output_dir` a sub-dir `{vendor}_run` is created (e.g. `dell_run`, `cisco_run`, `hpe_run`, `lenovo_run`, `huawei_run`, `xfusion_run`), inside — **single run** — `run-YYYY-MM-DD__HH-MM-SS-<stem>/`; **batch** — same folders per file plus `run-YYYY-MM-DD__HH-MM-SS-TOTAL/` with aggregated presentation files.
+
+Paths are resolved relative to the current working directory unless absolute paths are given. Examples:
 
 ```bash
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"
@@ -107,43 +112,43 @@ python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --update-gol
 
 ## 5. Golden / Regression
 
-**Формат golden-файла** — JSONL в `golden/<stem>_expected.jsonl` (например, `golden/dl1_expected.jsonl`). Одна строка — один JSON-объект с полями:
+**Golden file format** — JSONL in `golden/<stem>_expected.jsonl` (e.g. `golden/dl1_expected.jsonl`). One row — one JSON object with fields:
 
 - `source_row_index` (int)
 - `row_kind` ("ITEM" | "HEADER")
-- `entity_type` (строка или null)
-- `state` (строка или null)
-- `matched_rule_id` (строка)
-- `device_type` (строка или null)
-- `hw_type` (строка или null)
-- `skus` (список строк)
+- `entity_type` (string or null)
+- `state` (string or null)
+- `matched_rule_id` (string)
+- `device_type` (string or null)
+- `hw_type` (string or null)
+- `skus` (list of strings)
 
-Генерация: при запуске с `--save-golden` или после подтверждения при `--update-golden` в `main.py` вызываются `_build_golden_rows(normalized_rows, classification_results)` и `_save_golden(golden_rows, golden_path)`.
+Generation: when running with `--save-golden` or after confirmation with `--update-golden`, `main.py` calls `_build_golden_rows(normalized_rows, classification_results)` and `_save_golden(golden_rows, golden_path)`.
 
-**Регрессионные тесты** — `tests/test_regression.py`. Параметризация по имени файла (`dl1.xlsx`, `dl2.xlsx`). Для каждого файла:
+**Regression tests** — `tests/test_regression.py`. Parameterized by filename (`dl1.xlsx`, `dl2.xlsx`). For each file:
 
-- если нет входного файла в paths.input_root — тест пропускается;
-- если нет `golden/<stem>_expected.jsonl` — тест пропускается с сообщением про `--save-golden`;
-- иначе: в тесте выполняется тот же пайплайн (parse → normalize → load RuleSet → classify), строится список записей в формате golden и построчно сравнивается с загруженным golden по полям `entity_type`, `state`, `matched_rule_id`, `skus`; при расхождении — падение с выводом номера строки и отличий.
+- if no input file in `paths.input_root` — test is skipped;
+- if no `golden/<stem>_expected.jsonl` — test is skipped with a message about `--save-golden`;
+- otherwise: the same pipeline (parse → normalize → load RuleSet → classify), build a list of records in golden format and compare row-by-row with the loaded golden on fields `entity_type`, `state`, `matched_rule_id`, `skus`; on mismatch — fail with row number and diff output.
 
 ---
 
 ## 6. Annotated export
 
-Реализация: `src/outputs/annotated_writer.py`, функция `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder, *, header_row_index=None, sheet_name=None)`.
+Implementation: `src/outputs/annotated_writer.py`, function `generate_annotated_source_excel(raw_rows, normalized_rows, classification_results, original_excel_path, run_folder, *, header_row_index=None, sheet_name=None)`.
 
-- Исходный Excel читается через `pandas.read_excel(..., header=None, sheet_name=...)`. Параметр `sheet_name` передаётся из `adapter.get_source_sheet_name()` (в `main.py`): `None` → лист с индексом 0 (Dell, Cisco); строка → именованный лист (HPE → `"BOM"`). Строка заголовка передаётся как `header_row_index` из адаптера (результат `adapter.parse()`). Dell-парсер больше не вызывается внутри `annotated_writer`. Это обеспечивает корректную работу для всех вендоров.
-- К таблице добавляются шесть колонок: "Entity Type", "State", "device_type", "hw_type", "row_kind", "matched_rule_id". В строке заголовка в этих ячейках пишутся соответствующие подписи.
-- Для остальных строк результат классификации берётся по `source_row_index` (1-based номер строки в Excel). Если `row_kind == ITEM` — в новые ячейки пишутся `entity_type.value`, `state.value`, `device_type`, `hw_type`, `matched_rule_id`; иначе — пусто.
-- Результат сохраняется в `run_folder / "<stem>_annotated.xlsx"` через `to_excel(..., index=False, header=False, engine="openpyxl")`, чтобы число строк совпадало с исходным файлом.
+- The source Excel is read via `pandas.read_excel(..., header=None, sheet_name=...)`. The `sheet_name` parameter is passed from `adapter.get_source_sheet_name()` (in `main.py`): `None` → sheet at index 0 (Dell, Cisco); string → named sheet (HPE → `"BOM"`). The header row is passed as `header_row_index` from the adapter (result of `adapter.parse()`). The Dell parser is no longer called inside `annotated_writer`. This ensures correct operation for all vendors.
+- Six columns are added to the table: "Entity Type", "State", "device_type", "hw_type", "row_kind", "matched_rule_id". In the header row, these cells contain the corresponding labels.
+- For other rows, the classification result is taken by `source_row_index` (1-based row number in Excel). If `row_kind == ITEM` — the new cells are filled with `entity_type.value`, `state.value`, `device_type`, `hw_type`, `matched_rule_id`; otherwise — empty.
+- Result saved to `run_folder / "<stem>_annotated.xlsx"` via `to_excel(..., index=False, header=False, engine="openpyxl")`, so the row count matches the source file.
 
-Вызов выполняется в `main.py` после `generate_cleaned_spec`.
+Call is made in `main.py` after `generate_cleaned_spec`.
 
 ---
 
-## 7. Структура проекта
+## 7. Project structure
 
-Реальная структура по репозиторию:
+Real structure from the repository:
 
 ```
 spec_classifier/
@@ -151,162 +156,133 @@ spec_classifier/
 ├── config.yaml
 ├── rules/
 │   ├── dell_rules.yaml
-│   ├── cisco_rules.yaml          # Cisco rules (service_duration_months, bundles, etc.)
-│   └── hpe_rules.yaml            # HPE rules (82 device_type rules, BASE/HW/SERVICE/CONFIG/SOFTWARE/LOGISTIC)
+│   ├── cisco_rules.yaml       # Cisco rules (service_duration_months, bundles, etc.)
+│   ├── hpe_rules.yaml         # HPE rules (device_type rules, BASE/HW/SERVICE/CONFIG/SOFTWARE/LOGISTIC)
+│   ├── lenovo_rules.yaml
+│   ├── huawei_rules.yaml
+│   └── xfusion_rules.yaml
 ├── src/
-│   ├── core/                     # parser, normalizer, classifier, state_detector
-│   ├── rules/                    # rules_engine.py
-│   ├── outputs/                  # json_writer, excel_writer, annotated_writer, branded_spec_writer
-│   ├── diagnostics/              # run_manager, stats_collector
+│   ├── core/                  # parser (Dell-specific, see tech debt), normalizer, classifier, state_detector
+│   ├── rules/                 # rules_engine.py
+│   ├── outputs/               # json_writer, excel_writer, annotated_writer, branded_spec_writer
+│   ├── diagnostics/           # run_manager, stats_collector
 │   └── vendors/
-│       ├── base.py               # VendorAdapter ABC
+│       ├── base.py            # VendorAdapter ABC
 │       ├── dell/
-│       │   └── adapter.py        # DellAdapter
+│       │   └── adapter.py     # DellAdapter
 │       ├── cisco/
-│       │   ├── parser.py         # CCW parser
-│       │   ├── normalizer.py     # CiscoNormalizedRow
-│       │   └── adapter.py        # CiscoAdapter
-│       └── hpe/
-│           ├── parser.py         # HPE BOM parser (sheet "BOM", no preamble)
-│           ├── normalizer.py     # HPENormalizedRow
-│           └── adapter.py        # HPEAdapter
+│       │   ├── parser.py      # CCW parser
+│       │   ├── normalizer.py  # CiscoNormalizedRow
+│       │   └── adapter.py     # CiscoAdapter
+│       ├── hpe/
+│       │   ├── parser.py      # HPE BOM parser (sheet "BOM", no preamble)
+│       │   ├── normalizer.py  # HPENormalizedRow
+│       │   └── adapter.py     # HPEAdapter
+│       ├── lenovo/
+│       │   ├── parser.py      # Lenovo DCSC parser
+│       │   ├── normalizer.py  # LenovoNormalizedRow
+│       │   └── adapter.py     # LenovoAdapter
+│       ├── huawei/
+│       │   ├── parser.py      # Huawei eDeal parser
+│       │   ├── normalizer.py  # HuaweiNormalizedRow
+│       │   └── adapter.py     # HuaweiAdapter
+│       └── xfusion/
+│           ├── parser.py      # xFusion FusionServer parser
+│           ├── normalizer.py  # XFusionNormalizedRow
+│           └── adapter.py     # XFusionAdapter
 ├── tests/
-│   ├── (все существующие Dell-тесты)
-│   ├── test_cisco_parser.py      # CCW parse_excel на ccw_1/ccw_2
-│   ├── test_cisco_normalizer.py  # CiscoNormalizedRow / Cisco normalizer
-│   ├── test_regression_cisco.py  # регрессия Cisco по golden
-│   ├── test_unknown_threshold_cisco.py  # unknown_threshold для Cisco
-│   ├── test_hpe_parser.py        # HPE parser unit (in-memory)
-│   ├── test_hpe_normalizer.py    # HPENormalizedRow unit (in-memory)
-│   ├── test_hpe_rules_unit.py    # classify_row на HPE строках (in-memory)
-│   ├── test_regression_hpe.py    # регрессия HPE по golden (skip при отсутствии файлов)
-│   └── test_unknown_threshold_hpe.py  # unknown_threshold для HPE (hp1–hp8)
+│   ├── (Dell tests)
+│   ├── test_cisco_parser.py / test_cisco_normalizer.py
+│   ├── test_regression_cisco.py / test_unknown_threshold_cisco.py
+│   ├── test_hpe_parser.py / test_hpe_normalizer.py / test_hpe_rules_unit.py
+│   ├── test_regression_hpe.py / test_unknown_threshold_hpe.py
+│   ├── test_lenovo_parser.py / test_lenovo_normalizer.py / test_lenovo_rules_unit.py
+│   ├── test_huawei_parser.py / test_huawei_normalizer.py / test_regression_huawei.py
+│   └── test_xfusion_parser.py / test_xfusion_normalizer.py
 ├── golden/
-│   ├── dl1_expected.jsonl
-│   ├── dl2_expected.jsonl
-│   ├── dl3_expected.jsonl
-│   ├── dl4_expected.jsonl
-│   ├── dl5_expected.jsonl
-│   ├── ccw_1_expected.jsonl      # Cisco golden (Price Estimate, 26 строк)
-│   ├── ccw_2_expected.jsonl      # Cisco golden (Price Estimate, 82 строки)
-│   ├── hp1_expected.jsonl        # HPE golden
-│   ├── hp2_expected.jsonl
-│   ├── hp3_expected.jsonl
-│   ├── hp4_expected.jsonl
-│   ├── hp5_expected.jsonl
-│   ├── hp6_expected.jsonl
-│   ├── hp7_expected.jsonl
-│   └── hp8_expected.jsonl
-├── <output_dir>/                 # по умолчанию из config paths.output_root или cwd/output
+│   ├── dl1_expected.jsonl … dl5_expected.jsonl
+│   ├── ccw_1_expected.jsonl, ccw_2_expected.jsonl
+│   ├── hp1_expected.jsonl … hp8_expected.jsonl
+│   ├── L1_expected.jsonl … L11_expected.jsonl
+│   ├── hu1_expected.jsonl … hu5_expected.jsonl
+│   └── xf1_expected.jsonl … xf10_expected.jsonl
+├── <output_dir>/              # from config paths.output_root or cwd/output
 │   ├── dell_run/
-│   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Dell
 │   ├── cisco_run/
-│   │   └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов Cisco
-│   └── hpe_run/
-│       └── run-YYYY-MM-DD__HH-MM-SS-<stem>/   # артефакты прогонов HPE
+│   ├── hpe_run/
+│   ├── lenovo_run/
+│   ├── huawei_run/
+│   └── xfusion_run/
 └── docs/
-    └── TECHNICAL_OVERVIEW.md
+    └── (see docs/DOCS_INDEX.md)
 ```
 
-Отдельного модуля для сохранения `rules_stats.json` в коде нет; статистика по правилам входит в `run_summary.json` в поле `rules_stats`.
+There is no separate module for saving `rules_stats.json`; rule statistics are part of `run_summary.json` in the `rules_stats` field.
 
 ---
 
-## 8. Тестовая стратегия
+## 8. Testing strategy
 
-- **Smoke** (`tests/test_smoke.py`): один прогон на dl1.xlsx (из paths.input_root), проверка создания всех перечисленных артефактов в папке прогона (в т.ч. `rows_raw.json`, `rows_normalized.json`, `classification.jsonl`, `unknown_rows.csv`, `header_rows.csv`, `run_summary.json`). При отсутствии файла — skip.
-- **Cisco-тесты**:
-  - `test_cisco_parser.py` — `parse_excel` на `ccw_1.xlsx` и `ccw_2.xlsx` из paths.input_root (ожидается 26 и 82 строки соответственно).
-  - `test_cisco_normalizer.py` — проверка полей `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone` для нормализованных Cisco-строк.
-  - `test_regression_cisco.py` — построчная регрессия по `golden/ccw_1_expected.jsonl` и `golden/ccw_2_expected.jsonl`.
-  - `test_unknown_threshold_cisco.py` — проверка, что `unknown_count == 0` для обоих CCW-файлов.
-- **HPE-тесты**:
-  - `test_hpe_parser.py` — unit-тесты HPE BOM parser (in-memory workbooks: валидный BOM, пустой файл, отсутствие листа BOM, FileNotFoundError).
-  - `test_hpe_normalizer.py` — unit-тесты HPENormalizedRow: маппинг полей, empty/NaN, `is_factory_integrated`, fallback qty/price, option_id/sku split.
-  - `test_hpe_rules_unit.py` — `classify_row` на HPE строках: HW, SERVICE, LOGISTIC, UNKNOWN, CONFIG (Factory Integrated).
-  - `test_regression_hpe.py` — построчная регрессия по golden (hp1–hp8); skip при отсутствии файлов.
-  - `test_unknown_threshold_hpe.py` — gate (`unknown_count == 0`) и guardrail (≤5%) для hp1–hp8; skip при отсутствии файлов.
-- **Unit-тесты:**
-  - `test_normalizer.py` — `detect_row_kind` (HEADER/ITEM), `normalize_row` (SKUs, qty, option_price, NaN/пустоты).
-  - `test_state_detector.py` — `detect_state` по правилам из YAML (ABSENT, DISABLED, PRESENT по умолчанию).
-  - `test_rules_unit.py` — классификация: HEADER→HEADER-SKIP, BASE, SOFTWARE (в т.ч. Embedded Systems Management, Dell Secure Onboarding), HW (Chassis Configuration), SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN, state в результате.
-  - `test_excel_writer.py` — наличие `cleaned_spec.xlsx`, отсутствие HEADER в нём, только типы из `include_types`, только PRESENT при `include_only_present`.
-  - `test_annotated_writer.py` — наличие `<stem>_annotated.xlsx`, совпадение числа строк с исходным, наличие колонок Entity Type, State, device_type, hw_type, row_kind, matched_rule_id и заполненных значений для ITEM.
-- **CLI** (`test_cli.py`): запуск `main.py --input ... --config config.yaml --output-dir output` через subprocess; проверка exit code 0, наличия в stdout подстроки `total_rows`, наличия в `output/run-*` файлов `cleaned_spec.xlsx` и `run_summary.json`.
-- **Regression** (`test_regression.py`): см. раздел 5; при отличии выводится diff по строкам.
+- **Smoke** (`tests/test_smoke.py`): one run on `dl1.xlsx` (from `paths.input_root`), check that all listed artifacts are created in the run folder. Skipped if file is missing.
+- **Vendor unit tests**: parser, normalizer, rules-unit tests per vendor.
+- **Regression tests** (`test_regression*.py`): row-by-row comparison with golden for each vendor.
+- **Unknown threshold tests**: `test_unknown_threshold*.py` — gate (`unknown_count == 0`) and guardrail (≤5%) per vendor.
+- **Unit tests:**
+  - `test_normalizer.py` — `detect_row_kind` (HEADER/ITEM), `normalize_row` (SKUs, qty, option_price, NaN/empty values).
+  - `test_state_detector.py` — `detect_state` by rules from YAML (ABSENT, DISABLED, PRESENT by default).
+  - `test_rules_unit.py` — classification: HEADER→HEADER-SKIP, BASE, SOFTWARE, HW, SERVICE, LOGISTIC, NOTE, CONFIG, UNKNOWN, state in result.
+  - `test_excel_writer.py` — presence of `cleaned_spec.xlsx`, absence of HEADER in it, only types from `include_types`, only PRESENT with `include_only_present`.
+  - `test_annotated_writer.py` — presence of `<stem>_annotated.xlsx`, row count matches source, presence of columns Entity Type, State, device_type, hw_type, row_kind, matched_rule_id with filled values for ITEM.
+- **CLI** (`test_cli.py`): runs `main.py --input ... --config config.yaml --output-dir output` via subprocess; checks exit code 0, presence in stdout of `total_rows`, presence of `cleaned_spec.xlsx` and `run_summary.json` in `output/run-*`.
+- **Regression** (`test_regression.py`): see section 5; on mismatch outputs a diff by rows.
 
-Зависимости тестов: при отсутствии входного файла (paths.input_root) или golden тесты помечаются как skip, где это реализовано.
+Test dependencies: if the input file (`paths.input_root`) or golden is missing, tests are skipped where implemented. Session gate: `conftest.py` (`MAX_SKIP_RATIO = 0.50`) fails the session if `skipped/total > 0.50` or `passed == 0`.
 
 ---
 
-## 9. Ограничения и допущения
+## 9. Limitations and assumptions
 
-- **Три вендора:** Dell (`rules/dell_rules.yaml`), Cisco (`rules/cisco_rules.yaml`), HPE (`rules/hpe_rules.yaml`). Cisco читает лист `"Price Estimate"` (строго, без fallback). Заголовок Cisco определяется по одновременному наличию `"Line Number"` и `"Part Number"`. SKU в Cisco: trailing-часть удаляется. HPE читает лист `"BOM"` с колонками Product #, Product Description. Branded spec для Cisco и HPE не создаётся.
-- **Один лист:** парсер работает с одним конкретным листом (Dell/Cisco — первый лист; HPE — лист `"BOM"`). Аннотированный экспорт использует `sheet_name` из `adapter.get_source_sheet_name()` для чтения того же листа.
-- **Заголовок:** строка заголовка ищется по точному совпадению ячейки с `"Module Name"` в первых 20 строках; при отсутствии — `find_header_row` возвращает `None`, `parse_excel` бросает `ValueError`.
-- **Кодировки:** конфиг и YAML правил читаются в UTF-8; CSV пишутся в UTF-8-sig для корректного открытия в Excel.
-- **Порядок строк:** соответствие нормализованных строк и результатов классификации — по индексу в списках; в аннотированном экспорте привязка к строке листа по `source_row_index` (1-based), считая, что первая строка листа в pandas — индекс 0 (Excel row 1).
-- **Правила:** порядок проверки типов сущностей фиксирован в `classifier.py`; порядок правил внутри каждой группы задаётся YAML (первое совпадение выигрывает). Версия правил хранится в YAML (`version`) и доступна как `RuleSet.version`; в артефактах прогона отдельно не сохраняется.
-- **Конфиг:** переключение типов для cleaned spec и флаг `include_only_present` задаются только через `config.yaml`; в CLI нет отдельных флагов для них.
+- **Six vendors:** Dell, Cisco, HPE, Lenovo, xFusion, Huawei. Each has its own parser and normalizer.
+- **Cisco:** reads sheet `"Price Estimate"` (strict, no fallback). Header determined by simultaneous presence of `"Line Number"` and `"Part Number"`. SKU in Cisco: trailing `=` is removed.
+- **HPE:** reads sheet `"BOM"` with columns Product #, Product Description. No branded spec.
+- **One sheet:** the parser works with one specific sheet (Dell/Cisco — first sheet; HPE — sheet `"BOM"`; Lenovo — sheet "Configuration" or first). Annotated export uses `sheet_name` from `adapter.get_source_sheet_name()` to read the same sheet.
+- **Header:** the header row is located by exact match of a cell to the vendor-specific sentinel in the first N rows; if absent — `find_header_row` returns `None`, `parse_excel` raises `ValueError`. For Dell: `"Module Name"` in first 20 rows (limit is hard-coded in `src/core/parser.py:26` — known tech debt).
+- **Encodings:** config and YAML rules are read in UTF-8; CSV files are written in UTF-8-sig for correct opening in Excel.
+- **Row order:** correspondence between normalized rows and classification results — by index in lists; in annotated export, binding to the sheet row is by `source_row_index` (1-based), assuming the first sheet row in pandas is index 0 (Excel row 1).
+- **Rules:** entity type check order is fixed in `classifier.py`; rule order within each group is set by YAML (first match wins). Rule version is stored in YAML (`version`) and available as `RuleSet.version`; not saved separately in run artifacts.
+- **Config:** switching types for cleaned spec and the `include_only_present` flag are set only through `config.yaml`; no separate CLI flags.
 
 ---
 
-## 10. Как расширять правила
+## 10. How to extend rules
 
-Каждый вендор имеет свой файл правил: `rules/dell_rules.yaml`, `rules/cisco_rules.yaml`, `rules/hpe_rules.yaml`. Структура единая: `version`, `state_rules`, `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, `device_type_rules`, `hw_type_rules`. Правила в каждой группе применяются в порядке «первое совпадение выигрывает» (`re.IGNORECASE`).
+Each vendor has its own rules file: `rules/dell_rules.yaml`, `rules/cisco_rules.yaml`, etc. Structure is uniform: `version`, `state_rules`, `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`, `device_type_rules`, `hw_type_rules`. Rules in each group are applied in first-match order (`re.IGNORECASE`).
 
-Пример на основе `rules/dell_rules.yaml`:
+Adding a rule — see `docs/rules/RULES_AUTHORING_GUIDE.md`.
 
-- **Файл правил:** `rules/dell_rules.yaml`. Структура: `version`, `state_rules.absent_keywords`, затем группы `base_rules`, `service_rules`, `logistic_rules`, `software_rules`, `note_rules`, `config_rules`, `hw_rules`. Каждое правило — объект с полями `field` (`module_name` или `option_name`), `pattern` (regex), `entity_type`, `rule_id`. Для state — `pattern`, `state` (ABSENT/DISABLED), `rule_id`.
-- **Добавление правил:** добавить в нужную группу новый элемент с уникальным `rule_id`. Порядок в группе важен: срабатывает первое совпадение. Регулярные выражения применяются без учёта регистра (`re.IGNORECASE` в `match_rule` и `detect_state`).
-- **Новый тип сущности:** потребует изменений в коде: enum `EntityType` в `classifier.py`, ветка в `classify_row`, при необходимости — секция в YAML и её чтение в `RuleSet`. В текущей реализации новых типов без правок кода добавить нельзя.
-- **Регрессия:** после изменения правил или логики классификации нужно обновить golden (`--update-golden` с подтверждением) и перезапустить `pytest tests/test_regression.py`, при необходимости обновить `CHANGELOG.md` по принятой в проекте практике.
-
-Cisco-правила: файл `rules/cisco_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`, `is_bundle_root` (строки `"true"`/`"false"` в нижнем регистре), `service_duration_months`. После изменения `rules/cisco_rules.yaml` рекомендуется запускать:
+After adding or changing rules in YAML, run:
 
 ```bash
-python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
-python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_2.xlsx" --vendor cisco --save-golden
-pytest tests/test_regression_cisco.py -v
+python main.py --batch-dir INPUT/<vendor> --vendor <vendor>
+python batch_audit.py --output-dir OUTPUT --vendor <vendor> --no-ai
 ```
 
-HPE-правила: файл `rules/hpe_rules.yaml`. Доступные поля для матчинга: `module_name`, `option_name`, `sku`. Все classify-правила HPE ориентированы на `option_name` (BOM не содержит отдельного module_name). После изменения `rules/hpe_rules.yaml` рекомендуется запускать:
+Check `audit_report.json`: the count of E2 (UNKNOWN_no_rule) should decrease.
 
-```bash
-python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe --save-golden
-pytest tests/test_regression_hpe.py -v
-pytest tests/test_hpe_rules_unit.py -v
-```
-
----
-
-### 10.1 Аудит после изменения правил
-
-После добавления или изменения правил в YAML рекомендуется:
-
-1. Прогнать пайплайн по всем файлам изменённого вендора:
-   `python main.py --batch-dir INPUT/<vendor> --vendor <vendor>`
-2. Запустить batch_audit:
-   `python batch_audit.py --output-dir OUTPUT [--vendor <vendor>]`
-3. Проверить `audit_report.json`: количество `REAL_BUG` должно уменьшиться.
-4. Опционально — кластеризация нераспознанных строк:
-   `python cluster_audit.py --output-dir OUTPUT`
-5. Итерировать правки YAML до приемлемого уровня `REAL_BUG`.
-
-> **Примечание:** `REAL_BUG` и другие audit labels — диагностическая эвристика,
-> а не абсолютный ground truth. Результаты нужно интерпретировать вместе
-> с конкретными примерами строк и regression tests.
-
-Подробнее о workflow: `prompts/06_BATCH-AUDIT-MASTER-PLAN.md`.
+For the full recommended workflow after rule changes, see `docs/rules/RULES_AUTHORING_GUIDE.md` § "Step-by-step rule addition".
 
 ---
 
 ## 11. Known Limitations and Risks
 
-- **First-match rule sensitivity:** Entity classification and device_type assignment use first-match semantics within each rule category. Overlapping regex patterns between rules in the same category may cause shadowing: a rule placed earlier in the YAML will match instead of a more specific rule placed later. There is no automated overlap detection. Mitigation: when adding rules, run all 5 test datasets and inspect golden diffs before committing.
+- **First-match rule sensitivity:** Entity classification and device_type assignment use first-match semantics within each rule category. Overlapping regex patterns between rules in the same category may cause shadowing: a rule placed earlier in the YAML will match instead of a more specific rule placed later. There is no automated overlap detection. See `.planning/codebase/CONCERNS.md` for details.
 
-- **Golden file coupling:** Golden files (golden/*_expected.jsonl) compare exact field values (entity_type, state, matched_rule_id, device_type, skus). Any change to normalization behavior (whitespace handling, SKU parsing order) or serialization will cause regression failures across all datasets. This is intentional — the golden files are the classification contract. However, it means that non-functional refactoring of the normalizer or parser requires golden regeneration and careful diff review.
+- **Golden file coupling:** Golden files (`golden/*_expected.jsonl`) compare exact field values (entity_type, state, matched_rule_id, device_type, skus). Any change to normalization behavior (whitespace handling, SKU parsing order) or serialization will cause regression failures across all datasets. This is intentional — the golden files are the classification contract.
 
-- **No automated rule overlap checker:** There is currently no lint or CI check to detect regex overlap between rules in the same category. This is deferred; at the current rule count (~30 rules), manual review during PR is sufficient. If the rule set grows significantly, an automated tool should be built.
+- **No automated rule overlap checker:** There is currently no lint or CI check to detect regex overlap between rules in the same category. At the current rule count, manual review during PR is sufficient.
 
-- **run_summary.json is schema-free:** There is no formal schema or validation for run_summary.json. Fields are added by collect_stats() and by main.py. Tests only assert on unknown_count and item_rows_count. Other fields could silently change type or disappear without test failure. Consider adding a schema test if the summary grows in scope.
+- **run_summary.json is schema-free:** There is no formal schema or validation for `run_summary.json`. Fields are added by `collect_stats()` and by `main.py`. Tests only assert on `unknown_count` and `item_rows_count`.
+
+- **`core/parser.py` is Dell-specific:** Despite living in `core/`, `src/core/parser.py` is a Dell-only parser (sentinel `"Module Name"`, hard-coded scan limit of 20 rows). All other vendors use their own `parser.py` in `src/vendors/<vendor>/`. See `.planning/codebase/CONCERNS.md` for the fix approach.
+
+- **`batch_audit.py` reads Excel, not JSONL:** The audit step reads from `*_annotated.xlsx` (a presentation artifact) rather than from `classification.jsonl` (the canonical output). This is a known tech-debt item — do not "fix" it as part of unrelated work; it requires a dedicated migration. See `.planning/codebase/CONCERNS.md`.

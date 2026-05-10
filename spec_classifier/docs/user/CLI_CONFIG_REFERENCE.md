@@ -1,105 +1,120 @@
-# Справка по CLI и config — spec_classifier
+# CLI and Config Reference — spec_classifier
 
-Подробное описание путей ввода/вывода, приоритетов и структуры каталогов: **[RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md)**.
+Detailed description of input/output paths, priorities, and directory structure: **[RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md)**.
 
-## 1. CLI-параметры
+## 1. CLI parameters
 
-| Параметр | Обязателен | По умолчанию | Описание |
-|----------|------------|--------------|----------|
-| `--input PATH` | Да (single-file) | — | Путь к входному .xlsx. |
-| `--batch-dir PATH` | Да (batch) | — | Директория с .xlsx; обрабатываются все файлы по алфавиту. |
-| `--vendor VENDOR` | Нет | `dell` | Вендор: `dell` (spec export), `cisco` (CCW export) или `hpe` (BOM). Выбирает адаптер парсинга и файл правил. |
-| `--config PATH` | Нет | `config.yaml` | Путь к YAML-конфигу. |
-| `--output-dir PATH` | Нет | из config `paths.output_root` или `C:\Users\<USERNAME>\Desktop\OUTPUT` | Верхний корень вывода. Внутри создаются подпапки по вендору: `dell_run/`, `cisco_run/`, `hpe_run/`, а в них — папки прогонов `run-YYYY-MM-DD__HH-MM-SS-<stem>/`. |
-| `--batch` | Нет | — | Batch: все .xlsx из input_root (config или Desktop\\INPUT). |
-| `--save-golden` | Нет | — | Сохранить golden без подтверждения. |
-| `--update-golden` | Нет | — | Перезаписать golden с подтверждением (y/N). |
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `--input PATH` | Yes (single-file) | — | Path to the input `.xlsx` file. |
+| `--batch-dir PATH` | Yes (batch) | — | Directory with `.xlsx` files; all files are processed alphabetically. |
+| `--vendor VENDOR` | No | `dell` | Vendor: `dell`, `cisco`, `hpe`, `lenovo`, `huawei`, `xfusion`. Selects the parsing adapter and rules file. |
+| `--config PATH` | No | `config.yaml` | Path to the YAML config. |
+| `--output-dir PATH` | No | from config `paths.output_root` or `cwd/output` | Output root. Vendor sub-dirs are created inside: `dell_run/`, `cisco_run/`, `hpe_run/`, `lenovo_run/`, `huawei_run/`, `xfusion_run/`, each containing run folders `run-YYYY-MM-DD__HH-MM-SS-<stem>/`. |
+| `--batch` | No | — | Batch: all `.xlsx` from `input_root` (config or default). |
+| `--save-golden` | No | — | Save golden without confirmation. |
+| `--update-golden` | No | — | Overwrite golden with confirmation (y/N). |
 
-Примечание: нужен ровно один из `--input`, `--batch-dir` или `--batch`.
-
----
-
-## 2. Структура вывода (соответствует out.zip)
-
-**output_root** — это верхний корень вывода (по умолчанию `C:\Users\<USERNAME>\Desktop\OUTPUT`). Внутри него автоматически создаются подпапки по вендору:
-
-- `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для Dell (в т.ч. `<stem>_branded.xlsx`, `run.log`)
-- `output_root/cisco_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для Cisco (без branded, с `run.log`)
-- `output_root/hpe_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — для HPE (без branded, с `run.log`)
-
-Без `--output-dir` используется `paths.output_root` из config или `C:\Users\<USERNAME>\Desktop\OUTPUT`; в репозитории артефакты не создаются. Полное описание: [RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md).
+Note: exactly one of `--input`, `--batch-dir`, or `--batch` is required.
 
 ---
 
-## 3. Примеры
+## 2. Output structure
 
-Все примеры используют внешние пути по умолчанию (Desktop\INPUT, Desktop\OUTPUT). См. [RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md) для создания папок и чеклиста.
+**output_root** is the top-level output root (default: `cwd/output` or `config paths.output_root`). Vendor sub-dirs are automatically created inside:
+
+- `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Dell (includes `<stem>_branded.xlsx`, `run.log`)
+- `output_root/cisco_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Cisco (no branded, has `run.log`)
+- `output_root/hpe_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — HPE (no branded, has `run.log`)
+- `output_root/lenovo_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Lenovo
+- `output_root/huawei_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Huawei
+- `output_root/xfusion_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — xFusion
+
+Without `--output-dir`, uses `paths.output_root` from config or `cwd/output`; no artifacts are created inside the repository. Full description: [RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md).
+
+---
+
+## 3. Examples
+
+All examples use the default external paths (`Desktop\INPUT`, `Desktop\OUTPUT`). See [RUN_PATHS_AND_IO_LAYOUT.md](RUN_PATHS_AND_IO_LAYOUT.md) for folder creation and checklist.
 
 ```powershell
-# Одиночный Dell (результат: C:\Users\<USERNAME>\Desktop\OUTPUT\dell_run\run-...-<stem>\)
+# Single Dell file (result: C:\Users\<USERNAME>\Desktop\OUTPUT\dell_run\run-...-<stem>\)
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"
 
-# Явный output-root (результат: D:\results\dell_run\run-...\)
+# Explicit output-root (result: D:\results\dell_run\run-...\)
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --output-dir "D:\results"
 
-# Batch: все .xlsx из INPUT
+# Batch: all .xlsx from INPUT
 python main.py --batch-dir "C:\Users\<USERNAME>\Desktop\INPUT"
 python main.py --batch
 
-# Cisco CCW (результат: OUTPUT\cisco_run\run-...-<stem>\)
+# Cisco CCW (result: OUTPUT\cisco_run\run-...-<stem>\)
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco
 
 # Cisco batch
 python main.py --batch-dir "C:\Users\<USERNAME>\Desktop\INPUT" --vendor cisco
 
-# HPE одиночный прогон (результат: OUTPUT\hpe_run\run-...-<stem>\)
+# HPE single run (result: OUTPUT\hpe_run\run-...-<stem>\)
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hp1.xlsx" --vendor hpe
 
 # HPE batch
 python main.py --batch-dir "C:\Users\<USERNAME>\Desktop\INPUT\hpe" --vendor hpe
 
-# Сохранить golden (в репо: golden/<stem>_expected.jsonl)
+# Lenovo
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\lenovo\L1.xlsx" --vendor lenovo
+
+# xFusion
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\xfusion\xf1.xlsx" --vendor xfusion
+
+# Huawei
+python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\huawei\hu1.xlsx" --vendor huawei
+
+# Save golden (in repo: golden/<stem>_expected.jsonl)
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden
 
-# Обновить golden интерактивно
+# Update golden interactively
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --update-golden
 ```
 
 ---
 
-## 4. config.yaml — схема
+## 4. config.yaml schema
 
 ```yaml
-# Корни ввода/вывода (опционально). CLI --output-dir / --batch-dir переопределяют.
+# Input/output roots (optional). CLI --output-dir / --batch-dir override.
 paths:
   input_root: "input"
   output_root: "output"
 
-# Пути к файлам правил по вендору (используется при --vendor)
+# Rule file paths per vendor (used with --vendor)
 vendor_rules:
-  dell: "rules/dell_rules.yaml"
-  cisco: "rules/cisco_rules.yaml"
-  hpe: "rules/hpe_rules.yaml"
+  dell:    "rules/dell_rules.yaml"
+  cisco:   "rules/cisco_rules.yaml"
+  hpe:     "rules/hpe_rules.yaml"
+  lenovo:  "rules/lenovo_rules.yaml"
+  huawei:  "rules/huawei_rules.yaml"
+  xfusion: "rules/xfusion_rules.yaml"
 
 cleaned_spec:
-  # Типы сущностей для cleaned_spec.xlsx
-  # Допустимые: BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN
+  # Entity types for cleaned_spec.xlsx
+  # Allowed: BASE, HW, CONFIG, SOFTWARE, SERVICE, LOGISTIC, NOTE, UNKNOWN
   include_types:
     - BASE
     - HW
     - SOFTWARE
     - SERVICE
 
-  # true = включать только строки с state=PRESENT
+  # true = include only rows with state=PRESENT
   include_only_present: true
 ```
 
 ---
 
-## 5. Гарантии совместимости
+## 5. Compatibility guarantees
 
-- Ключи `cleaned_spec.include_types`, `include_only_present` стабильны с v1.0.0.
-- `vendor_rules` — маппинг `vendor` → путь к YAML-правилам; определяет файл правил для каждого вендора.
-- Неизвестные ключи в config.yaml игнорируются (forward-compatible).
-- Пути разрешаются относительно текущей рабочей директории (CWD), а не от расположения config-файла.
-- Изменения, ломающие контракт конфига, отражаются в MAJOR версии и в CHANGELOG.
+- Keys `cleaned_spec.include_types`, `include_only_present` have been stable since v1.0.0.
+- `vendor_rules` — mapping of `vendor` → path to YAML rules; determines the rules file for each vendor.
+- Unknown keys in `config.yaml` are ignored (forward-compatible).
+- Paths are resolved relative to the current working directory (CWD), not relative to the config file location.
+- Changes breaking the config contract are reflected in a MAJOR version and in `CHANGELOG.md`.

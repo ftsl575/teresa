@@ -1,29 +1,29 @@
 # Run Paths & I/O Layout — Input/Output roots
 
-## Цель: репозиторий только с кодом
+## Goal: code-only repository
 
-Папка teresa/ (spec_classifier/) содержит ТОЛЬКО исходный код, правила, документацию и тесты. Входные данные, результаты прогонов, кеши и временные файлы ВСЕГДА хранятся СНАРУЖИ.
+The `teresa/` folder (`spec_classifier/`) contains ONLY source code, rules, documentation, and tests. Input data, run results, caches, and temporary files are ALWAYS stored OUTSIDE.
 
 ## Data Isolation Policy
 
-Четыре директории ВСЕГДА раздельные:
+Four directories are ALWAYS separate:
 
-| Роль      | Путь                           | Содержимое                          |
-|-----------|--------------------------------|-------------------------------------|
-| CODE      | C:\Users\<USERNAME>\Desktop\teresa      | Только .py, .yaml, .md, .ps1, тесты |
-| INPUT     | C:\Users\<USERNAME>\Desktop\INPUT       | Исходные .xlsx с конфигуратора      |
-| OUTPUT    | C:\Users\<USERNAME>\Desktop\OUTPUT      | Результаты прогонов (run folders)   |
-| TEMPORARY | C:\Users\<USERNAME>\Desktop\temporary  | __pycache__, .pytest_cache, diag/   |
+| Role      | Path                                    | Contents                              |
+|-----------|-----------------------------------------|---------------------------------------|
+| CODE      | `C:\Users\<USERNAME>\Desktop\teresa`    | Only `.py`, `.yaml`, `.md`, `.ps1`, tests |
+| INPUT     | `C:\Users\<USERNAME>\Desktop\INPUT`     | Source `.xlsx` files from configurator |
+| OUTPUT    | `C:\Users\<USERNAME>\Desktop\OUTPUT`    | Run results (run folders)             |
+| TEMPORARY | `C:\Users\<USERNAME>\Desktop\temporary` | `__pycache__`, `.pytest_cache`, `diag/` |
 
-Как это обеспечивается:
+How this is enforced:
 
-1. config.local.yaml задаёт абсолютные пути (не коммитится).
-2. pyproject.toml редиректит .pytest_cache в ../../temporary/ (из spec_classifier → Desktop\temporary\.pytest_cache).
-3. Скрипты (run_full.ps1, run_tests.ps1) выставляют PYTHONPYCACHEPREFIX для __pycache__.
-4. .gitignore блокирует input/, output/, temporary/, __pycache__/, .pytest_cache/.
-5. clean.ps1 удаляет любой просочившийся мусор из repo.
+1. `config.local.yaml` sets absolute paths (not committed to git).
+2. `pyproject.toml` redirects `.pytest_cache` to `../../temporary/` (from `spec_classifier` → `Desktop\temporary\.pytest_cache`).
+3. `run.ps1` (repo root) sets `PYTHONPYCACHEPREFIX` for `__pycache__`.
+4. `.gitignore` blocks `input/`, `output/`, `temporary/`, `__pycache__/`, `.pytest_cache/`.
+5. `clean.ps1` removes any leaked cache files from the repo.
 
-ОБЯЗАТЕЛЬНО перед распространением (zip, отправка): запустить `scripts\clean.ps1` для удаления кешей из repo.
+Before distributing (zip, sending): run `spec_classifier\scripts\clean.ps1` to remove caches from the repo.
 
 ---
 
@@ -33,62 +33,68 @@ The virtual environment is **external** to the repository. Current path: `C:\ven
 
 ---
 
-## Папки по умолчанию
+## Default folders
 
-| Назначение | Путь по умолчанию |
-|------------|-------------------|
-| **INPUT**  | `input/` (относительно cwd) — каталог с входными .xlsx (одиночный файл задаётся путём к файлу; для batch — каталог с файлами). |
-| **OUTPUT** | `output/` (относительно cwd) — верхний корень вывода; внутри создаются `dell_run/`, `cisco_run/`, `hpe_run/`, затем папки прогонов. |
-| **TEMP**   | **Не используется.** Пайплайн работает в памяти (parse → normalize → classify) и пишет только в итоговую run-папку. Отдельная временная директория не требуется. В будущем TEMP может понадобиться только при появлении промежуточной записи на диск (например, распаковка больших архивов или кэширование нормализованных данных). |
+| Purpose   | Default path |
+|-----------|-------------|
+| **INPUT** | `input/` (relative to cwd) — directory with input `.xlsx` files (single file is specified by file path; for batch — directory of files). |
+| **OUTPUT** | `output/` (relative to cwd) — output root; `dell_run/`, `cisco_run/`, `hpe_run/`, `lenovo_run/`, `huawei_run/`, `xfusion_run/` are created inside, then run folders. |
+| **TEMP** | **Not used.** The pipeline works in memory (parse → normalize → classify) and writes only to the final run folder. A separate temp directory is not required. |
 
 ---
 
-## Рекомендуемая структура INPUT папки
+## Recommended INPUT folder structure
 
-При работе с несколькими вендорами рекомендуется держать файлы в отдельных подпапках:
+When working with multiple vendors, keep files in separate sub-folders:
 
 ```
 input/
-  dell/    <- dl*.xlsx
-  cisco/   <- ccw*.xlsx
-  hpe/     <- hp*.xlsx
+  dell/      <- dl*.xlsx
+  cisco/     <- ccw*.xlsx
+  hpe/       <- hp*.xlsx
+  lenovo/    <- L*.xlsx
+  huawei/    <- hu*.xlsx
+  xfusion/   <- xf*.xlsx
 ```
 
-Подпапки `dell/`, `cisco/`, `hpe/` используются системой как стандартные пути при вызове `get_input_root_dell()` / `get_input_root_cisco()` / `get_input_root_hpe()` (см. `conftest.py`). Если подпапка отсутствует, используется корень `input_root`.
+Sub-folders `dell/`, `cisco/`, `hpe/` etc. are used by the system as standard paths when calling `get_input_root_dell()` / `get_input_root_cisco()` / `get_input_root_hpe()` etc. (see `conftest.py`). If the sub-folder is missing, the `input_root` is used.
 
-Запуск:
+Run:
 
 ```bash
-python main.py --batch-dir input/dell --vendor dell
-python main.py --batch-dir input/cisco --vendor cisco
-python main.py --batch-dir input/hpe --vendor hpe
+python main.py --batch-dir input/dell    --vendor dell
+python main.py --batch-dir input/cisco   --vendor cisco
+python main.py --batch-dir input/hpe     --vendor hpe
+python main.py --batch-dir input/lenovo  --vendor lenovo
+python main.py --batch-dir input/huawei  --vendor huawei
+python main.py --batch-dir input/xfusion --vendor xfusion
 ```
 
-Это предотвращает попытку обработать файлы одного вендора адаптером другого.
+This prevents files from one vendor being processed by another vendor's adapter.
 
 ---
 
-## Приоритет конфигурации путей
+## Configuration path priority
 
-1. **CLI** — явные аргументы имеют наивысший приоритет:  
-   `--output-dir`, `--batch-dir` (или каталог, указанный в `--input` для одиночного файла).
-2. **config.yaml** — секция `paths`:  
-   `paths.input_root`, `paths.output_root` (используются, если соответствующий CLI-аргумент не передан).
-3. **Дефолты** — если в config нет `paths` или ключа:  
-   `input`, `output` (относительно текущей директории).
+1. **CLI** — explicit arguments take highest priority:
+   `--output-dir`, `--batch-dir` (or directory specified in `--input` for a single file).
+2. **config.yaml** — `paths` section:
+   `paths.input_root`, `paths.output_root` (used when the corresponding CLI argument is not passed).
+3. **Defaults** — if `paths` or the key is missing from config:
+   `input`, `output` (relative to current directory).
 
 ---
 
-## Точное дерево вывода (соответствует out.zip)
+## Exact output tree
 
-Верхний уровень — **output_root** (по умолчанию `output/`). Под ним создаются подпапки по вендору и затем папки прогонов.
+Top level — **output_root** (default `output/`). Vendor sub-dirs and run folders are created below.
 
 ### Dell
 
 ```
 output/
   dell_run/
-    run-YYYY-MM-DD__HH-MM-SS-<stem>\
+    run-YYYY-MM-DD__HH-MM-SS-<stem>/
       rows_raw.json
       rows_normalized.json
       classification.jsonl
@@ -101,14 +107,14 @@ output/
       <stem>_branded.xlsx
 ```
 
-- В каждом run-каталоге Dell присутствуют все перечисленные артефакты, включая **run.log** и **&lt;stem&gt;_branded.xlsx**.
+- Every Dell run folder contains all listed artifacts, including **run.log** and **\<stem\>_branded.xlsx**.
 
 ### Cisco
 
 ```
 output/
   cisco_run/
-    run-YYYY-MM-DD__HH-MM-SS-<stem>\
+    run-YYYY-MM-DD__HH-MM-SS-<stem>/
       rows_raw.json
       rows_normalized.json
       classification.jsonl
@@ -120,14 +126,14 @@ output/
       <stem>_annotated.xlsx
 ```
 
-- Для Cisco **нет** файла `<stem>_branded.xlsx` — только перечисленные выше. **run.log** есть в каждом run.
+- For Cisco, there is **no** `<stem>_branded.xlsx`. **run.log** is present in every run.
 
 ### HPE
 
 ```
 output/
   hpe_run/
-    run-YYYY-MM-DD__HH-MM-SS-<stem>\
+    run-YYYY-MM-DD__HH-MM-SS-<stem>/
       rows_raw.json
       rows_normalized.json
       classification.jsonl
@@ -139,60 +145,58 @@ output/
       <stem>_annotated.xlsx
 ```
 
-- Для HPE **нет** файла `<stem>_branded.xlsx` — только перечисленные выше. **run.log** есть в каждом run.
+- For HPE, there is **no** `<stem>_branded.xlsx`. **run.log** is present in every run.
 
 ### Batch (TOTAL)
 
-В режиме batch дополнительно создаётся папка агрегации:  
-`output_root\<vendor>_run\run-YYYY-MM-DD__HH-MM-SS-TOTAL\` с копиями presentation-файлов из каждого прогона (с префиксом stem).
+In batch mode, an aggregation folder is additionally created:
+`output_root\<vendor>_run\run-YYYY-MM-DD__HH-MM-SS-TOTAL\` with copies of the presentation files from each run (with stem prefix).
 
 ---
 
-## Примеры команд
+## Example commands
 
-### Создание папок INPUT и OUTPUT
+### Create INPUT and OUTPUT folders
 
 ```bash
 mkdir input
 mkdir output
 ```
 
-### Одиночный прогон Dell
+### Single Dell run
 
 ```bash
 cd spec_classifier
-# Положите dl1.xlsx в input/, затем:
+# Place dl1.xlsx in input/, then:
 python main.py --input input/dl1.xlsx
-# Результат: output/dell_run/run-YYYY-MM-DD__HH-MM-SS-dl1/
+# Result: output/dell_run/run-YYYY-MM-DD__HH-MM-SS-dl1/
 ```
 
-### Одиночный прогон Cisco
+### Single Cisco run
 
 ```bash
 cd spec_classifier
 python main.py --input input/ccw_1.xlsx --vendor cisco
-# Результат: output/cisco_run/run-YYYY-MM-DD__HH-MM-SS-ccw_1/
+# Result: output/cisco_run/run-YYYY-MM-DD__HH-MM-SS-ccw_1/
 ```
 
-### Одиночный прогон HPE
+### Single HPE run
 
 ```bash
 cd spec_classifier
 python main.py --input input/hpe/hp1.xlsx --vendor hpe
-# Результат: output/hpe_run/run-YYYY-MM-DD__HH-MM-SS-hp1/
+# Result: output/hpe_run/run-YYYY-MM-DD__HH-MM-SS-hp1/
 ```
 
-### Batch (все .xlsx из input)
+### Batch (all .xlsx from input)
 
 ```bash
 cd spec_classifier
 python main.py --batch-dir input
-# или, если в config.yaml задан paths.input_root:
-python main.py --batch-dir input
-# Результат: output/dell_run/run-...-<stem>/ для каждого файла + run-...-TOTAL/
+# Result: output/dell_run/run-...-<stem>/ for each file + run-...-TOTAL/
 ```
 
-### Запуск тестов
+### Run tests
 
 ```bash
 cd spec_classifier
@@ -201,81 +205,77 @@ python -m pytest tests/ -v --tb=short
 
 ---
 
-## Не делайте так (частые ошибки)
+## Common mistakes
 
-- **Не указывайте `--output-dir output` при запуске из репозитория** — тогда артефакты появятся в `spec_classifier/output/` и засорят репо.
-- **Не коммитьте** каталоги `.venv/`, `__pycache__/`, `.pytest_cache/`, а также любые `out/`, `output/` с результатами прогонов.
-- **Не запускайте pipeline без config.local.yaml** — relative defaults создадут input/ и output/ внутри repo.
-- **Не запускайте `python -m pytest` напрямую без скриптов** — используйте `scripts\run_tests.ps1` (редиректит все кеши). Если IDE запускает pytest напрямую — pyproject.toml перенаправит .pytest_cache, но __pycache__ всё равно появится (удалить через clean.ps1).
-
----
-
-## Чеклист: «ничего не пишется в репо»
-
-1. Запустите `scripts\clean.ps1`.
-2. Проверьте: `dir spec_classifier` — нет __pycache__, .pytest_cache, input/, output/, temporary/, diag/.
-3. Проверьте: config.local.yaml НЕ должен попадать в архив/отправку (он в .gitignore).
-4. В .gitignore присутствуют: input/, output/, temporary/, __pycache__/, .pytest_cache/, config.local.yaml.
+- **Do not specify `--output-dir output` when running from the repository** — artifacts will appear in `spec_classifier/output/` and pollute the repo.
+- **Do not commit** `.venv/`, `__pycache__/`, `.pytest_cache/`, or any `out/`, `output/` with run results.
+- **Do not run the pipeline without `config.local.yaml`** — relative defaults will create `input/` and `output/` inside the repo.
+- **Do not run `python -m pytest` directly without `run.ps1`** when you want to ensure all caches go to `Desktop\temporary`. If the IDE runs pytest directly, `pyproject.toml` will redirect `.pytest_cache`, but `__pycache__` may still appear (remove via `clean.ps1`).
 
 ---
+
+## Checklist: "nothing is written to the repo"
+
+1. Run `spec_classifier\scripts\clean.ps1`.
+2. Check: `dir spec_classifier` — no `__pycache__`, `.pytest_cache`, `input/`, `output/`, `temporary/`, `diag/`.
+3. Check: `config.local.yaml` must NOT end up in an archive/send (it is in `.gitignore`).
+4. Verify `.gitignore` contains: `input/`, `output/`, `temporary/`, `__pycache__/`, `.pytest_cache/`, `config.local.yaml`.
 
 ---
 
 ## Audit & Cluster Output Paths
 
-`batch_audit.py` и `cluster_audit.py` создают артефакты рядом с вендорными run-папками или в явно указанной директории.
+`batch_audit.py` and `cluster_audit.py` create artifacts next to the vendor run folders or in the explicitly specified directory.
 
 ### batch_audit.py
 
 ```
 output/
-  dell_run/                         <- уже существует от основного прогона
-    audit_summary.xlsx              <- сводный Excel с E-кодами по всем файлам
-    audit_report.json               <- полный JSON-отчёт (bugs, yaml_candidates, rule_issues, stats)
-    <stem>_annotated_audited.xlsx   <- копия annotated с добавленной колонкой pipeline_check
+  audit_report.json              <- full JSON report (bugs, yaml_candidates, rule_issues, stats)
+  audit_summary.xlsx             <- summary Excel with E-codes across all files
+  <vendor>_run/
+    <run-folder>/
+      <stem>_annotated_audited.xlsx  <- annotated copy + pipeline_check column
 ```
 
-Запуск:
+Run:
 
 ```bash
-python batch_audit.py --output-dir output/dell_run --vendor dell
-python batch_audit.py --output-dir output/hpe_run  --vendor hpe
-# Артефакты пишутся в <output-dir>/ (по умолчанию) или в --output-dir <dir>
+python batch_audit.py --output-dir "C:\Users\<USERNAME>\Desktop\OUTPUT" --no-ai
+python batch_audit.py --output-dir "C:\Users\<USERNAME>\Desktop\OUTPUT" --vendor hpe
 ```
 
-Ключевые артефакты:
+Key artifacts:
 
-| Файл | Содержимое |
-|------|-----------|
-| `audit_summary.xlsx` | Одна строка на прогон: vendor, file, issues count, E-коды, SKU, Module. |
-| `audit_report.json` | Полный отчёт: bugs, yaml_candidates, rule_issues, claude_prompt. |
-| `*_annotated_audited.xlsx` | Исходный annotated + колонка `pipeline_check` (OK или E-коды). |
+| File | Contents |
+|------|---------|
+| `audit_report.json` | Full report: bugs, yaml_candidates, rule_issues, claude_prompt. |
+| `audit_summary.xlsx` | One row per issue: vendor, file, issue count, E-codes, SKU, Module. |
+| `*_annotated_audited.xlsx` | Source annotated + `pipeline_check` column (OK or E-codes). |
 
 ### cluster_audit.py
 
 ```
 output/
-  dell_run/
-    cluster_summary.xlsx            <- кластеры UNKNOWN-строк с proposed_device_type
+  cluster_summary.xlsx            <- UNKNOWN row clusters with proposed_device_type
 ```
 
-Запуск:
+Run:
 
 ```bash
-python cluster_audit.py --output-dir output/dell_run --vendor dell
-python cluster_audit.py --output-dir output/hpe_run  --vendor hpe
-# Результаты в <output-dir>/ или в --output-dir <dir>
+python cluster_audit.py --output-dir "C:\Users\<USERNAME>\Desktop\OUTPUT"
+python cluster_audit.py --output-dir "C:\Users\<USERNAME>\Desktop\OUTPUT" --dry-run
 ```
 
-Ключевые артефакты:
+Key artifacts:
 
-| Файл | Содержимое |
-|------|-----------|
-| `cluster_summary.xlsx` | Кластеры: cluster_id, count, vendors, top_terms, proposed_device_type, examples, suggested_yaml_rule. |
+| File | Contents |
+|------|---------|
+| `cluster_summary.xlsx` | Clusters: `cluster_id`, `count`, `vendors`, `top_terms`, `proposed_device_type`, examples, `suggested_yaml_rule`. |
 
 ---
 
-## См. также
+## See also
 
-- [CLI_CONFIG_REFERENCE.md](CLI_CONFIG_REFERENCE.md) — все параметры CLI и config.
-- [DOCS_INDEX.md](../DOCS_INDEX.md) — индекс документации.
+- [CLI_CONFIG_REFERENCE.md](CLI_CONFIG_REFERENCE.md) — all CLI parameters and config.
+- [DOCS_INDEX.md](../DOCS_INDEX.md) — documentation index.

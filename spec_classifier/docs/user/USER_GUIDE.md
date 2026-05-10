@@ -1,143 +1,143 @@
-# Руководство пользователя — spec_classifier
+# User Guide — spec_classifier
 
-## 1. Назначение
+## 1. Purpose
 
-Система классифицирует строки спецификаций (Dell, Cisco CCW, HPE QuoteBuilder BOM, Lenovo DCSC, xFusion FusionServer eDeal, Huawei eDeal) в формате Excel: определяет тип сущности (BASE, HW, SOFTWARE и др.), состояние (PRESENT/ABSENT/DISABLED), тип устройства и тип железа. Результат — детерминированный; классификация выполняется по правилам из YAML и regex, без ML. На выходе — папка прогона с JSON/CSV/Excel артефактами и очищенной/аннотированной/брендированной спецификацией.
+The system classifies rows from vendor specifications (Dell, Cisco CCW, HPE QuoteBuilder BOM, Lenovo DCSC, xFusion FusionServer eDeal, Huawei eDeal) in Excel format: determines the entity type (BASE, HW, SOFTWARE, etc.), state (PRESENT/ABSENT/DISABLED), device type, and hardware type. The result is deterministic; classification is performed using rules from YAML and regex, with no ML. Output is a run folder with JSON/CSV/Excel artifacts and a cleaned/annotated/branded specification.
 
 ---
 
-## 2. Поддерживаемые входные файлы
+## 2. Supported input files
 
-Каждый вендор имеет свой формат входного файла. Вендор задаётся флагом `--vendor`.
+Each vendor has its own input file format. The vendor is specified with the `--vendor` flag.
 
-**Dell (`--vendor dell`, по умолчанию):**
+**Dell (`--vendor dell`, default):**
 
-- **Формат:** `.xlsx`, первый лист.
-- **Строка заголовка:** в первых 20 строках должна быть ячейка с текстом `"Module Name"`. По ней определяется заголовок таблицы.
-- **Ожидаемые столбцы:** Module Name, Option Name, SKUs, Qty, Option List Price.
-- **Опциональные:** Group Name, Group ID, Product Name, Option ID.
-- **Ограничения:** один лист, один файл за запуск в single-file режиме; для нескольких файлов — режим `--batch-dir`.
+- **Format:** `.xlsx`, first sheet.
+- **Header row:** within the first 20 rows there must be a cell with the text `"Module Name"`. This is used to locate the table header.
+- **Expected columns:** Module Name, Option Name, SKUs, Qty, Option List Price.
+- **Optional:** Group Name, Group ID, Product Name, Option ID.
+- **Limitations:** one sheet, one file per run in single-file mode; for multiple files — use `--batch-dir`.
 
 **Cisco CCW (`--vendor cisco`):**
 
-- Формат: `.xlsx`, лист `"Price Estimate"` (строго, без fallback).
-- Строка заголовка: ищется по одновременному наличию `"Line Number"` и `"Part Number"` в первых 100 строках.
-- Ожидаемые столбцы: Line Number, Part Number, Description, Qty, Unit List Price, Unit Net Price, Disc(%), Extended Net Price, Service Duration (Months), Smart Account Mandatory, Estimated Lead Time (Days).
-- Особенности: trailing `=` в Part Number удаляется автоматически; пустой Part Number внутри данных допустим (конец данных определяется по последней непустой ячейке Part Number).
+- Format: `.xlsx`, sheet `"Price Estimate"` (strict, no fallback).
+- Header row: located by the simultaneous presence of `"Line Number"` and `"Part Number"` in the first 100 rows.
+- Expected columns: Line Number, Part Number, Description, Qty, Unit List Price, Unit Net Price, Disc(%), Extended Net Price, Service Duration (Months), Smart Account Mandatory, Estimated Lead Time (Days).
+- Details: trailing `=` in Part Number is removed automatically; an empty Part Number within data is allowed (data end is determined by the last non-empty Part Number cell).
 
 **HPE QuoteBuilder BOM (`--vendor hpe`):**
 
-- Формат: `.xlsx`, лист `"BOM"` (строго, без fallback).
-- Строка заголовка: строго первая строка листа (row 0), no preamble.
-- Ожидаемые столбцы: Product #, Product Description, Qty, Unit Price (USD), Config Name. Опционально: Product Type, Extended List Price (USD), Estimated Availability Lead Time.
-- Особенности: `Product #` используется полностью как `option_id`; базовый SKU (до первого пробела) записывается в `skus[0]`. Колонка `Config Name` отображается в `group_name` и `module_name`. Строка `"Factory Integrated"` классифицируется как `CONFIG` (правило `CONFIG-H-001`). Конец данных: первая строка, у которой первая непустая ячейка = `"total"` (без учёта регистра).
+- Format: `.xlsx`, sheet `"BOM"` (strict, no fallback).
+- Header row: strictly the first row of the sheet (row 0), no preamble.
+- Expected columns: Product #, Product Description, Qty, Unit Price (USD), Config Name. Optional: Product Type, Extended List Price (USD), Estimated Availability Lead Time.
+- Details: `Product #` is used as `option_id` in full; the base SKU (up to the first space) goes into `skus[0]`. The `Config Name` column maps to `group_name` and `module_name`. The row `"Factory Integrated"` is classified as `CONFIG` (rule `CONFIG-H-001`). Data end: the first row where the first non-empty cell equals `"total"` (case-insensitive).
 
 **Lenovo DCSC (`--vendor lenovo`):**
 
-- Формат: `.xlsx`, лист "Configuration" или первый лист (DCSC экспорт).
-- Строка заголовка: ищется по наличию ячеек `"Option Name"` / `"Option ID"` в первых ~20 строках.
-- Ожидаемые столбцы: Option ID, Option Name, Quantity, Unit Price; опционально Module / Category.
-- Особенности: BASE machine type кодируется как `[A-Z0-9]{4}CTO` (например `7D5GCTO1WW`); XClarity Controller FOD строки (`7S0X…`) намеренно исключены через negative lookahead `^(?!7S)` и попадают в правила SOFTWARE. Поддерживаются: `device_type=motherboard` (HW-L-040, "System Board"/"MB"; → `hw_type=chassis`), `device_type=bezel` ("Blowing Rock"/Security Bezel; → `hw_type=accessory`, Lenovo-local), GPU Base (`BASE-L-020`; → `entity_type=BASE, device_type=server`).
+- Format: `.xlsx`, sheet "Configuration" or first sheet (DCSC export).
+- Header row: located by the presence of cells `"Option Name"` / `"Option ID"` in the first ~20 rows.
+- Expected columns: Option ID, Option Name, Quantity, Unit Price; optional Module / Category.
+- Details: BASE machine type is encoded as `[A-Z0-9]{4}CTO` (e.g. `7D5GCTO1WW`); XClarity Controller FOD rows (`7S0X…`) are intentionally excluded via negative lookahead `^(?!7S)` and route to SOFTWARE rules. Supported: `device_type=motherboard` (HW-L-040, "System Board"/"MB"; → `hw_type=chassis`), `device_type=bezel` ("Blowing Rock"/Security Bezel; → `hw_type=accessory`, Lenovo-local), GPU Base (`BASE-L-020`; → `entity_type=BASE, device_type=server`).
 
 **xFusion FusionServer eDeal (`--vendor xfusion`):**
 
-- Формат: `.xlsx`, лист с конфигурацией FusionServer.
-- Строка заголовка: ищется по наличию `"Configuration Name"` / `"Component Type"`.
-- Ожидаемые столбцы: Part Number / Material Code, Component Type, Description, Quantity, Unit Price.
-- Особенности: BASE machine type использует G-prefix part numbers (`BASE-XF-001` / `DT-XF-021`). Поддерживается `device_type=backplane` (`DT-XF-022-BACKPLANE` → `hw_type=backplane`).
+- Format: `.xlsx`, sheet with FusionServer configuration.
+- Header row: located by the presence of `"Configuration Name"` / `"Component Type"`.
+- Expected columns: Part Number / Material Code, Component Type, Description, Quantity, Unit Price.
+- Details: BASE machine type uses G-prefix part numbers (`BASE-XF-001` / `DT-XF-021`). Supports `device_type=backplane` (`DT-XF-022-BACKPLANE` → `hw_type=backplane`).
 
 **Huawei eDeal (`--vendor huawei`):**
 
-- Формат: `.xlsx`, листы для ICT/Server/Storage/WLAN каталогов.
-- Строка заголовка: ищется по наличию `"Material Code"` / `"Description"`.
-- Особенности: поддерживаются `device_type=storage_enclosure` (Disk Enclosure семейство OceanStor → `hw_type=storage_enclosure`, новый тип в HW_TYPE_VOCAB v2.1.0) и `device_type=io_module` (SmartIO модули → `hw_type=io_module`). BASE для AirEngine/AC точек доступа: `entity_type=BASE, device_type=wireless_ap`.
+- Format: `.xlsx`, sheets for ICT/Server/Storage/WLAN catalogs.
+- Header row: located by the presence of `"Material Code"` / `"Description"`.
+- Details: supports `device_type=storage_enclosure` (Disk Enclosure OceanStor family → `hw_type=storage_enclosure`, new type in HW_TYPE_VOCAB v2.1.0) and `device_type=io_module` (SmartIO modules → `hw_type=io_module`). BASE for AirEngine/AC access points: `entity_type=BASE, device_type=wireless_ap`.
 
 ---
 
-## 3. Запуск и результаты
+## 3. Running and results
 
-Минимальный пример:
+Minimal example:
 
 ```bash
 cd spec_classifier
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"
 ```
 
-Результат — папка `output/run-YYYY-MM-DD__HH-MM-SS-dl1/` (или с суффиксом `_1`, `_2` при коллизии). В ней — все артефакты прогона. Итоги смотрите в `run_summary.json` и `unknown_rows.csv`.
+Result — folder `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-dl1/` (or with suffix `_1`, `_2` on collision). Inside — all run artifacts. Review results in `run_summary.json` and `unknown_rows.csv`.
 
 ---
 
-## 4. Артефакты прогона
+## 4. Run artifacts
 
-| Файл | Описание |
-|------|----------|
-| `classification.jsonl` | Одна строка — один JSON с полями классификации по каждой строке (entity_type, state, device_type, hw_type, matched_rule_id и др.). |
-| `run_summary.json` | Сводка: total_rows, entity_type_counts, state_counts, unknown_count, device_type_counts, hw_type_counts, rules_file_hash, input_file, run_timestamp. |
-| `cleaned_spec.xlsx` | Отфильтрованная спецификация: типы из конфига (BASE, HW, SOFTWARE, SERVICE), только PRESENT (если `include_only_present: true`). |
-| `<stem>_annotated.xlsx` | Исходный файл + 6 колонок: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id. Все строки сохранены. |
-| `<stem>_branded.xlsx` | Брендированная спецификация: группировка по BASE (сервер) и секциям по entity_type; блок «Не установлено» для ABSENT при необходимости. ⚠️ Не создаётся для Cisco CCW прогонов. |
-| `unknown_rows.csv` | Строки с entity_type = UNKNOWN. Колонки: source_row_index, option_id, module_name, option_name, skus, qty, option_price, matched_rule_id. Ревизия после каждого прогона. |
-| `rows_raw.json` | Сырые строки после парсера (отладка). |
-| `rows_normalized.json` | Нормализованные строки с row_kind (отладка). |
-| `header_rows.csv` | Строки-разделители секций (HEADER). |
-| `run.log` | Лог пайплайна для этого прогона. |
+| File | Description |
+|------|-------------|
+| `classification.jsonl` | One row — one JSON with classification fields for each row (entity_type, state, device_type, hw_type, matched_rule_id, etc.). |
+| `run_summary.json` | Summary: total_rows, entity_type_counts, state_counts, unknown_count, device_type_counts, hw_type_counts, rules_file_hash, input_file, run_timestamp. |
+| `cleaned_spec.xlsx` | Filtered specification: types from config (BASE, HW, SOFTWARE, SERVICE), PRESENT only (if `include_only_present: true`). |
+| `<stem>_annotated.xlsx` | Source file + 6 columns: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id. All rows preserved. |
+| `<stem>_branded.xlsx` | Branded specification: grouped by BASE (server) and sections by entity_type; "Not installed" block for ABSENT if needed. Not created for Cisco CCW runs. |
+| `unknown_rows.csv` | Rows with entity_type = UNKNOWN. Columns: source_row_index, option_id, module_name, option_name, skus, qty, option_price, matched_rule_id. Review after every run. |
+| `rows_raw.json` | Raw rows after the parser (debug). |
+| `rows_normalized.json` | Normalized rows with row_kind (debug). |
+| `header_rows.csv` | Section separator rows (HEADER). |
+| `run.log` | Pipeline log for this run. |
 
 ---
 
-## 5. TOTAL-папка (batch mode)
+## 5. TOTAL folder (batch mode)
 
-При запуске с `--batch-dir` создаётся общая папка сессии: `output/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`. В неё копируются три презентационных файла из каждого per-run каталога:
+When running with `--batch-dir`, a session summary folder is created: `output/<vendor>_run/run-YYYY-MM-DD__HH-MM-SS-TOTAL/`. It receives copies of three presentation files from each per-run folder:
 
 - `<stem>_cleaned_spec.xlsx`
 - `<stem>_annotated.xlsx`
 - `<stem>_branded.xlsx`
 
-Используйте TOTAL для передачи клиенту или консолидации результатов одной сессии.
+Use TOTAL for handing off to the client or consolidating a single session's results.
 
 ---
 
-## 6. Интерпретация полей классификации
+## 6. Interpreting classification fields
 
-- **row_kind:** HEADER — разделитель секции (пустые Module Name, Option Name, SKUs); ITEM — позиция спецификации.
-- **source_row_index:** 1-based номер строки в исходном Excel (для аудита и сопоставления с листом).
-- **entity_type:** один из 8 типов. Примеры: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, Power Cord), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives), UNKNOWN (ни одно правило не сработало).
-- **state:** PRESENT — опция присутствует; ABSENT — не установлена (например «No TPM», «No HDD», «Empty»); DISABLED — отключена (например «Disabled»).
-- **device_type:** уточнение для HW/LOGISTIC. Полный список значений (источник истины — `device_type_rules` в `rules/<vendor>_rules.yaml`):
+- **row_kind:** `HEADER` — section separator (empty Module Name, Option Name, SKUs); `ITEM` — specification line item.
+- **source_row_index:** 1-based row number in the source Excel (for auditing and cross-referencing with the sheet).
+- **entity_type:** one of 8 types. Examples: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, Power Cord), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives), UNKNOWN (no rule matched).
+- **state:** PRESENT — option is present; ABSENT — not installed (e.g. "No TPM", "No HDD", "Empty"); DISABLED — disabled (e.g. "Disabled").
+- **device_type:** refinement for HW/LOGISTIC rows. The authoritative source is `device_type_rules` in `rules/<vendor>_rules.yaml`. Common values by category:
 
-  | Категория | Значения |
-  |-----------|---------|
-  | Compute | `cpu`, `ram`, `gpu`, `memory` |
+  | Category | Values |
+  |----------|--------|
+  | Compute | `cpu`, `memory`, `gpu` |
   | Storage | `storage_nvme`, `storage_ssd`, `storage_hdd`, `storage_drive`, `storage_controller`, `raid_controller`, `hba`, `drive_cage`, `backplane`, `storage_enclosure`, `io_module` |
-  | Network | `nic`, `network_adapter`, `transceiver`, `cable`, `sfp_cable`, `fiber_cable` |
+  | Network | `network_adapter`, `transceiver`, `cable`, `sfp_cable`, `fiber_cable` |
   | Power | `psu`, `power_cord` |
   | Mechanical | `fan`, `heatsink`, `riser`, `chassis`, `motherboard`, `rail`, `blank_filler`, `bezel`, `battery` |
   | Management | `management`, `tpm`, `accessory` |
   | Infrastructure | `server`, `switch`, `storage_system`, `wireless_ap` |
 
-  Может быть null, если правило не назначило device_type. Список расширяется при добавлении новых вендоров (MINOR-изменение).
-- **hw_type:** тип железа для HW-строк. 26 значений (v2.1.0): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_enclosure, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. Для не-HW или неразрешённых HW — null.
-- **matched_rule_id:** идентификатор сработавшего правила (например HW-002, SERVICE-001). UNKNOWN-000 — совпадений нет.
-- **warnings:** список предупреждений (например «hw_type unresolved for HW row»); обычно пуст.
+  May be null if no rule assigned a device_type. The list grows when new vendors are added (MINOR change).
+- **hw_type:** hardware type for HW rows. 26 values (v2.6.0 taxonomy): server, switch, storage_system, wireless_ap, cpu, memory, gpu, storage_drive, storage_enclosure, storage_controller, hba, backplane, io_module, network_adapter, transceiver, cable, psu, fan, heatsink, riser, chassis, rail, blank_filler, management, tpm, accessory. For non-HW or unresolved HW — null.
+- **matched_rule_id:** identifier of the matched rule (e.g. `HW-002`, `SERVICE-001`). `UNKNOWN-000` — no matches.
+- **warnings:** list of warnings (e.g. "hw_type unresolved for HW row"); usually empty.
 
 ---
 
-## 7. Рекомендованный рабочий процесс
+## 7. Recommended workflow
 
-1. Запустить прогон: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"`.
-2. Проверить `unknown_rows.csv`.
-3. Если `unknown_count > 0`: добавить или скорректировать правило в `dell_rules.yaml` → запустить снова → проверить diff в классификации.
-4. При принятии изменений: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden` и `pytest tests/test_regression.py -v`.
-5. Если `unknown_count = 0` и регрессия зелёная — готово.
+1. Run: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"`.
+2. Check `unknown_rows.csv`.
+3. If `unknown_count > 0`: add or adjust a rule in `dell_rules.yaml` → re-run → check diff in classification.
+4. When accepting changes: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden` and `pytest tests/test_regression.py -v`.
+5. If `unknown_count = 0` and regression is green — done.
 
-Для Cisco CCW: шаги аналогичны, но с `--vendor cisco` и правилами в `rules/cisco_rules.yaml`. Цель — `unknown_count = 0` на `ccw_1` и `ccw_2`.
+For Cisco CCW: steps are analogous, but with `--vendor cisco` and rules in `rules/cisco_rules.yaml`. Target — `unknown_count = 0` on `ccw_1` and `ccw_2`.
 
-Для HPE: шаги аналогичны, но с `--vendor hpe` и правилами в `rules/hpe_rules.yaml`. Входные файлы рекомендуется хранить в `INPUT\hpe\`. Цель — `unknown_count = 0` на всех BOM-файлах (hp1–hp8).
+For HPE: steps are analogous, but with `--vendor hpe` and rules in `rules/hpe_rules.yaml`. Input files are recommended to be stored in `INPUT\hpe\`. Target — `unknown_count = 0` on all BOM files (hp1–hp8).
 
 ```powershell
 python main.py --vendor hpe --input "C:\Users\<USERNAME>\Desktop\INPUT\hpe\hp1.xlsx"
 ```
 
-Для Lenovo / xFusion / Huawei: аналогично, с соответствующим `--vendor` и правилами `rules/<vendor>_rules.yaml`. Lenovo input → `INPUT\lenovo\` (L1.xlsx … L11.xlsx, regression goldens сгенерированы в PR-4c).
+For Lenovo / xFusion / Huawei: analogous, with the corresponding `--vendor` and rules `rules/<vendor>_rules.yaml`. Lenovo input → `INPUT\lenovo\` (L1.xlsx … L11.xlsx, regression goldens generated in PR-4c).
 
 ```powershell
 python main.py --vendor lenovo  --input "C:\Users\<USERNAME>\Desktop\INPUT\lenovo\L1.xlsx"
@@ -149,18 +149,18 @@ python main.py --vendor huawei  --input "C:\Users\<USERNAME>\Desktop\INPUT\huawe
 
 ## 8. cleaned_spec.xlsx
 
-Включаются только ITEM-строки с entity_type из `config.cleaned_spec.include_types` (по умолчанию BASE, HW, SOFTWARE, SERVICE). При `include_only_present: true` — только строки с state PRESENT. Колонки: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. HEADER и остальные типы/состояния в файл не попадают.
+Only ITEM rows with entity_type from `config.cleaned_spec.include_types` (default: BASE, HW, SOFTWARE, SERVICE) are included. With `include_only_present: true` — only rows with state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. HEADER rows and other types/states are not included.
 
-Для HPE: колонки Group Name / Group ID заполняются из `Config Name` (название конфигурации сервера). Это позволяет идентифицировать принадлежность строки к конкретному серверу в multi-config BOM.
+For HPE: Group Name / Group ID columns are populated from `Config Name` (server configuration name). This allows identifying which server a row belongs to in a multi-config BOM.
 
 ---
 
 ## 9. branded_spec.xlsx
 
-Структура: сначала BASE-строка (сервер), затем секции по entity_type. Внутри секций — сгруппированные позиции с колонками SKU, Option Name, Qty, Price. Может быть блок «Не установлено» для ABSENT-строк. Если в спецификации есть ITEM-строки до первого BASE, они выводятся в блоке «Позиции без привязки к серверу» (preamble). Файл предназначен для презентации клиенту. ⚠️ Не создаётся для Cisco CCW и HPE прогонов.
+Structure: first the BASE row (server), then sections by entity_type. Within sections — grouped items with columns SKU, Option Name, Qty, Price. May include a "Not installed" block for ABSENT rows. If there are ITEM rows before the first BASE, they appear in a "Items without server" preamble block. The file is intended for client presentation. Not created for Cisco CCW and HPE runs.
 
 ---
 
 ## 10. annotated.xlsx
 
-Исходный лист без удаления строк; добавлены 6 колонок: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id. Соответствие строке листа — по source_row_index (1-based). Все строки сохранены для аудита и ручной проверки.
+The source sheet without removing any rows; 6 columns added: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id. Row correspondence is by source_row_index (1-based). All rows are preserved for auditing and manual review.
