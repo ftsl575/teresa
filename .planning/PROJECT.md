@@ -23,19 +23,23 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 - ✓ Windows launcher: PowerShell orchestrator + double-click .bat + PyQt6 GUI — existing
 - ✓ Output artifacts: `classification.jsonl`, `cleaned_spec.xlsx`, `<stem>_annotated.xlsx`, branded spec (Dell-only), TOTAL aggregation — existing
 
+<!-- v1.0 Cleanup & Workflow Setup milestone — closed 2026-05-10 -->
+
+- ✓ Hardcoded `C:\Users\G\` username scrubbed from committed examples and docs (replaced with per-context placeholders) — Validated in Phase 1: Hygiene (HYG-01)
+- ✓ Dual `.gitignore` consolidated into single root file — Validated in Phase 1: Hygiene (HYG-02)
+- ✓ Dead / orphan files removed (`commits.txt` + investigated keep list) — Validated in Phase 1: Hygiene (HYG-03)
+- ✓ Both READMEs refreshed — root README authored from scratch (129 lines), `spec_classifier/README.md` drift fixed (289 lines); Quick Start runnable verbatim — Validated in Phase 2: Docs (DOC-01, DOC-02)
+- ✓ `spec_classifier/docs/` tree audited — DOCS_INDEX 1:1, all 13 files drift-corrected — Validated in Phase 2: Docs (DOC-03)
+- ✓ Duplicate content between root `CLAUDE.md` and `spec_classifier/CLAUDE.md` removed — root = thin pointer (74 lines) + 5 critical rules; deep reference translated RU→EN (307 lines) — Validated in Phase 2: Docs (DOC-04)
+- ✓ Stale tracking docs refreshed or archived — `CHANGELOG.md` unified to English release-notes; `CURRENT_STATE.md` archived to `.planning/archive/` — Validated in Phase 2: Docs (DOC-05)
+- ✓ Old pre-GSD prompts (`spec_classifier/prompts/00–08` + `COWORK_OPUS_FULL_AUDIT.md`) retired — `git mv` to `.planning/archive/prompts-2026-05-10/` with English mapping README — Validated in Phase 3: Workflow (WF-01)
+- ✓ Root `CONTRIBUTING.md` authored (155 lines, English, tool-agnostic) — GSD-cycle commands literal, pytest + skip-ratio gate, NEW_VENDOR_GUIDE pointer, "do not fix" rules verbatim — Validated in Phase 3: Workflow (WF-02)
+
 ### Active
 
-<!-- Cleanup & workflow milestone -->
+<!-- v1.0 milestone closed 2026-05-10. Next milestone: v2.0 (classification rule improvements + new vendor onboarding per REQUIREMENTS.md v2 backlog). -->
 
-- [ ] Old pre-GSD prompts (`spec_classifier/prompts/00–08` + `COWORK_OPUS_FULL_AUDIT.md`) retired or repurposed
-- [ ] Stale tracking docs (`CHANGELOG.md`, `CURRENT_STATE.md`) refreshed or archived
-- [ ] Duplicate content between root `CLAUDE.md` and `spec_classifier/CLAUDE.md` removed (both files kept; root = thin pointer, deep one stays under `spec_classifier/`)
-- [ ] Hardcoded `C:\Users\G\` username scrubbed from committed examples and docs (replaced with `<USERNAME>` placeholder)
-- [ ] Dual `.gitignore` consolidated (root + `spec_classifier/.gitignore`)
-- [ ] Dead / orphan files identified and removed (unimported modules, `commits.txt`, `.bak`, etc.)
-- [ ] Both READMEs (root `README.md` + `spec_classifier/README.md`) refreshed — drift fixed, Quick Start verified working
-- [ ] `spec_classifier/docs/` tree audited (`DOCS_INDEX.md` accurate, stale content removed, drift corrected)
-- [ ] `CONTRIBUTING.md` authored documenting the GSD development cycle for future contributors
+- (no active requirements — v1.0 milestone complete)
 
 ### Out of Scope
 
@@ -94,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-10 after initialization*
+*Last updated: 2026-05-10 after Phase 3 (Workflow) — v1.0 cleanup-and-workflow milestone closed; ready for `/gsd-complete-milestone`.*
