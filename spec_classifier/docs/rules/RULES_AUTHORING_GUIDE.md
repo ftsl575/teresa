@@ -1,133 +1,137 @@
-# Руководство по правилам — spec_classifier
+# Rules Authoring Guide — spec_classifier
 
-## 1. Обзор
+## 1. Overview
 
-Правила хранятся в `rules/dell_rules.yaml` (Dell), `rules/cisco_rules.yaml` (Cisco) и `rules/hpe_rules.yaml` (HPE). Файл выбирается через `--vendor {dell,cisco,hpe}` и секцию `vendor_rules` в `config.yaml`. Классификация детерминирована; для каждой ITEM-строки применяется первое совпадение (first-match) в заданном порядке категорий и внутри каждой категории; семантика одинакова для всех вендоров.
-
----
-
-## 2. Структура YAML
-
-- **version** — версия набора правил (например 1.1.0).
-- **state_rules** — определение state (absent_keywords, present_override_keywords).
-- **base_rules, service_rules, logistic_rules, software_rules, note_rules, config_rules, hw_rules** — правила типа сущности (entity_type).
-- **device_type_rules** — второй проход: назначение device_type для HW/LOGISTIC.
-- **hw_type_rules** — третий проход: назначение hw_type для HW (device_type_map, rule_id_map, rules).
+Rules are stored in `rules/dell_rules.yaml` (Dell), `rules/cisco_rules.yaml` (Cisco), `rules/hpe_rules.yaml` (HPE), `rules/lenovo_rules.yaml` (Lenovo), `rules/huawei_rules.yaml` (Huawei), and `rules/xfusion_rules.yaml` (xFusion). The file is selected via `--vendor {dell,cisco,hpe,lenovo,huawei,xfusion}` and the `vendor_rules` section in `config.yaml`. Classification is deterministic; for each ITEM row, the first match (first-match) is applied in the given category order and within each category; semantics are the same for all vendors.
 
 ---
 
-## 3. Порядок классификации entity_type
+## 2. YAML structure
 
-| Приоритет | Категория | Описание |
-|-----------|-----------|----------|
-| 1 | BASE | Базовая система (Base, PowerEdge R6xx). |
-| 2 | SERVICE | Услуги (ProSupport, Warranty). |
-| 3 | LOGISTIC | Логистика (Shipping, упаковка, документы, доставка). |
-| 4 | SOFTWARE | ПО (Embedded Systems Management, OS). |
-| 5 | NOTE | Информационные заметки. |
-| 6 | CONFIG | Конфигурация (No Cable, RAID). |
-| 7 | HW | Железо (Processor, Memory, Drives, Power Cord, кабели). |
-| 8 | UNKNOWN | Нет совпадений. |
+- **version** — rule set version (e.g. 1.1.0).
+- **state_rules** — state definition (absent_keywords, present_override_keywords).
+- **base_rules, service_rules, logistic_rules, software_rules, note_rules, config_rules, hw_rules** — entity_type rules.
+- **device_type_rules** — second pass: device_type assignment for HW/LOGISTIC.
+- **hw_type_rules** — third pass: hw_type assignment for HW (device_type_map, rule_id_map, rules).
 
 ---
 
-## 4. Формат entity-правила
+## 3. entity_type classification order
+
+| Priority | Category | Description |
+|----------|----------|-------------|
+| 1 | BASE | Base system (Base, PowerEdge R6xx). |
+| 2 | SERVICE | Services (ProSupport, Warranty). |
+| 3 | LOGISTIC | Logistics (Shipping, packaging, documents, delivery). |
+| 4 | SOFTWARE | Software (Embedded Systems Management, OS). |
+| 5 | NOTE | Informational notes. |
+| 6 | CONFIG | Configuration (No Cable, RAID). |
+| 7 | HW | Hardware (Processor, Memory, Drives, Power Cord, cables). |
+| 8 | UNKNOWN | No matches. |
+
+---
+
+## 4. Entity rule format
 
 ```yaml
-- field: module_name   # или option_name
-  pattern: 'regex'     # всегда re.IGNORECASE
-  entity_type: HW      # информационно
-  rule_id: HW-002      # уникальный, не переиспользуется
+- field: module_name   # or option_name
+  pattern: 'regex'     # always re.IGNORECASE
+  entity_type: HW      # informational
+  rule_id: HW-002      # unique, not reused
 ```
 
 ---
 
-## 5. State-правила
+## 5. State rules
 
-- **absent_keywords:** pattern + state: ABSENT (или DISABLED) + rule_id. Проверка по option_name.
-- **present_override_keywords:** переопределение на PRESENT (например «N Rear Blanks»).
-
----
-
-## 6. device_type-правила
-
-В секции `device_type_rules.rules` у правила указывается поле **device_type** (вместо entity_type). Применяются только к ITEM с entity_type из `applies_to` (HW, LOGISTIC) и при matched_rule_id != UNKNOWN-000.
+- **absent_keywords:** pattern + state: ABSENT (or DISABLED) + rule_id. Checked against option_name.
+- **present_override_keywords:** override to PRESENT (e.g. "N Rear Blanks").
 
 ---
 
-## 7. hw_type_rules — три слоя
+## 6. device_type rules
 
-1. **device_type_map:** маппинг device_type → hw_type (например nic → network_adapter).
-2. **rule_id_map:** маппинг matched_rule_id → hw_type (например HW-001 → chassis).
-3. **rules:** список правил с полем **hw_type** и pattern по module_name/option_name; первое совпадение выигрывает. Порядок правил важен.
+In the `device_type_rules.rules` section, a rule specifies the **device_type** field (instead of entity_type). Applied only to ITEM rows with entity_type from `applies_to` (HW, LOGISTIC) and when `matched_rule_id != UNKNOWN-000`.
 
 ---
 
-## 8. Конвенция именования rule_id
+## 7. hw_type_rules — three layers
 
-Формат: `<CATEGORY>-[<VENDOR_CODE>-]<NNN>`
+1. **device_type_map:** mapping device_type → hw_type (e.g. nic → network_adapter).
+2. **rule_id_map:** mapping matched_rule_id → hw_type (e.g. HW-001 → chassis).
+3. **rules:** list of rules with **hw_type** field and pattern on module_name/option_name; first match wins. Rule order matters.
 
-| Вендор | Код | Пример |
-|--------|-----|--------|
-| Dell | (без кода) | BASE-001, HW-002, STATE-001 |
+---
+
+## 8. rule_id naming convention
+
+Format: `<CATEGORY>-[<VENDOR_CODE>-]<NNN>`
+
+| Vendor | Code | Example |
+|--------|------|---------|
+| Dell | (no code) | BASE-001, HW-002, STATE-001 |
 | Cisco | C | BASE-C-001, HW-C-001, STATE-C-001 |
-| Новый вендор (HPE) | H | BASE-H-001, HW-H-001 |
+| HPE | H | BASE-H-001, HW-H-001 |
+| Lenovo | L | BASE-L-001, HW-L-001, DT-L-001 |
+| Huawei | HU | BASE-HU-001, HW-HU-001, DT-HU-001 |
+| xFusion | XF | BASE-XF-001, HW-XF-001, DT-XF-001 |
 
-- **NNN** — трёхзначный номер в рамках категории и вендора.
-- **rule_id** глобально уникален (не только в рамках одного YAML-файла).
-- **Зарезервированные:** HEADER-SKIP, UNKNOWN-000 — не переиспользовать.
+- **NNN** — three-digit number within the category and vendor.
+- **rule_id** is globally unique (not just within one YAML file).
+- **Reserved:** HEADER-SKIP, UNKNOWN-000 — do not reuse.
 
-Изменение или переименование rule_id требует обновления golden (`--save-golden` / `--update-golden`) и записи в CHANGELOG.
-
----
-
-## 9. Пошаговое добавление правила
-
-1. Сформулировать критерий (regex по module_name или option_name).
-2. Проверить regex на тестовых строках (в т.ч. на всех датасетах dl1–dl5 (для Dell) или ccw_1, ccw_2 (для Cisco)).
-3. Выбрать категорию и место в YAML (после более специфичных правил).
-4. Добавить правило с уникальным rule_id.
-5. Запустить пайплайн на всех тестовых файлах вендора:
-   - Dell: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"` (и dl2..dl5)
-   - Cisco: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco` (и ccw_2)
-6. Проверить unknown_rows.csv и run_summary.json.
-7. При необходимости добавить unit-тест в test_rules_unit.py или test_device_type.py.
-8. Обновить golden (`--save-golden`) и прогнать test_regression.py.
-9. Обновить CHANGELOG.md и при необходимости документацию.
+Changing or renaming a rule_id requires updating golden (`--save-golden` / `--update-golden`) and recording the change in CHANGELOG.
 
 ---
 
-## 10. Анти-паттерны
+## 9. Step-by-step rule addition
 
-- **Слишком широкий pattern:** например голый `\bOCP\b` перехватывает «OCP 3.0 Accessories»; сужать контекст.
-- **Negative lookahead без проверки на всех датасетах:** может сломать другие строки.
-- **Shadowed rule:** правило, стоящее после более общего и никогда не срабатывающее — проверять порядок.
-- **Дублирование rule_id:** один rule_id не должен встречаться в разных целях (entity vs device_type vs hw_type — допустимо одно и то же значение в разных секциях только если это один и тот же логический rule).
-- **Изменение rule_id без обновления golden:** регрессия упадёт; обновлять golden и описывать в CHANGELOG.
-
----
-
-## 11. Типовые паттерны
-
-- **Точное совпадение:** `'^Base$'`, `'^Chassis\s+Configuration$'`.
-- **Префикс/вхождение:** `'\b(Processor|Memory\s+Capacity)\b'`.
-- **Negative lookahead:** `'(?i)\b((?<!GPU\s)Blanks?|Filler)\b'` — исключить «GPU Blanks».
-- **Два условия (AND):** `'(?i)(?=.*No\s+BOSS)(?=.*Rear\s+Blank).*'`.
+1. Formulate the criterion (regex on module_name or option_name).
+2. Test the regex on test rows (including all datasets for the vendor).
+3. Choose the category and position in YAML (after more specific rules).
+4. Add the rule with a unique rule_id.
+5. Run the pipeline on all test files for the vendor:
+   - Dell: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx"` (and dl2..dl5)
+   - Cisco: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco` (and ccw_2)
+   - HPE/Lenovo/Huawei/xFusion: analogous with the corresponding `--vendor` flag
+6. Check `unknown_rows.csv` and `run_summary.json`.
+7. Add a unit test to `test_rules_unit.py` or `test_<vendor>_rules_unit.py` if needed.
+8. Update golden (`--save-golden`) and run `test_regression*.py`.
+9. Update `CHANGELOG.md` and documentation if needed.
 
 ---
 
-## 12. Версионирование правил
+## 10. Anti-patterns
 
-При изменении правил обновлять поле **version** в `dell_rules.yaml`, `cisco_rules.yaml` или `hpe_rules.yaml` соответственно. SHA-256 файла правил записывается в run_summary.json (rules_file_hash) для воспроизводимости.
+- **Too broad a pattern:** e.g. bare `\bOCP\b` catches "OCP 3.0 Accessories"; narrow the context.
+- **Negative lookahead without testing on all datasets:** can break other rows.
+- **Shadowed rule:** a rule placed after a more general one that never fires — check order.
+- **Duplicate rule_id:** one rule_id must not appear for different purposes (entity vs device_type vs hw_type — the same value in different sections is allowed only if it is the same logical rule).
+- **Changing rule_id without updating golden:** regression will fail; update golden and describe in CHANGELOG.
 
 ---
 
-## 13. Cisco-правила
+## 11. Typical patterns
 
-- **Файл:** `rules/cisco_rules.yaml`.
-- **Доступные поля для `field`:** `module_name`, `option_name`, `sku`, `is_bundle_root` (значения `"true"`/`"false"` в нижнем регистре), `service_duration_months`.
-- **Примечание:** `sku` матчится только по `skus[0]` (MVP limitation). При наличии multi-SKU строк рекомендуется расширить логику.
-- **После изменений:**
+- **Exact match:** `'^Base$'`, `'^Chassis\s+Configuration$'`.
+- **Prefix/substring:** `'\b(Processor|Memory\s+Capacity)\b'`.
+- **Negative lookahead:** `'(?i)\b((?<!GPU\s)Blanks?|Filler)\b'` — exclude "GPU Blanks".
+- **Two conditions (AND):** `'(?i)(?=.*No\s+BOSS)(?=.*Rear\s+Blank).*'`.
+
+---
+
+## 12. Rule versioning
+
+When changing rules, update the **version** field in `dell_rules.yaml`, `cisco_rules.yaml`, or the corresponding vendor file. The SHA-256 of the rules file is written to `run_summary.json` (`rules_file_hash`) for reproducibility.
+
+---
+
+## 13. Cisco rules
+
+- **File:** `rules/cisco_rules.yaml`.
+- **Available fields for `field`:** `module_name`, `option_name`, `sku`, `is_bundle_root` (values `"true"`/`"false"` in lowercase), `service_duration_months`.
+- **Note:** `sku` is matched only against `skus[0]` (MVP limitation). With multi-SKU rows, consider extending the logic.
+- **After changes:**
 
 ```bash
 python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden
@@ -137,18 +141,22 @@ pytest tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 
 ---
 
-## power_cord: hw_type намеренно отсутствует
+## power_cord: hw_type is intentionally absent
 
-`power_cord` — единственный `device_type`, который намеренно не маппится в `hw_type` через `hw_type_rules.device_type_map`. Значение `hw_type` остаётся `None` по умолчанию.
+`power_cord` is the only `device_type` that is intentionally not mapped to `hw_type` via `hw_type_rules.device_type_map`. The `hw_type` value remains `None` by default.
 
-Это сознательное решение, не пропуск. Причина: power cord не является аппаратным компонентом с классифицируемым типом оборудования.
+This is a deliberate decision, not an oversight. Reason: a power cord is not a hardware component with a classifiable hardware type.
 
-**Важно для авторов правил:** не добавляйте `hw_type: null` как поле в `device_type_rules.rules` — это поле инертно для движка (`match_device_type_rule()` читает только `field` и `pattern`). Назначение `hw_type` происходит отдельным проходом через `hw_type_rules`. Запись `hw_type: null` в `device_type_rules` не меняет поведение и вводит в заблуждение.
+**Important for rule authors:** do not add `hw_type: null` as a field in `device_type_rules.rules` — this field is inert for the engine (`match_device_type_rule()` reads only `field` and `pattern`). `hw_type` assignment happens in a separate pass through `hw_type_rules`. Writing `hw_type: null` in `device_type_rules` does not change behavior and is misleading.
+
+The `_E8_NO_HW_TYPE_DEVICES = {"power_cord", "enablement_kit"}` set in `batch_audit.py` excludes these device types from the E8 audit check ("HW + PRESENT without hw_type"). This is intentional — do not remove these exceptions.
+
+See `.planning/codebase/CONCERNS.md` for the full "do not fix" context.
 
 ---
 
-## HPE: hw_type зависит только от device_type_map (Layer 1)
+## HPE: hw_type depends only on device_type_map (Layer 1)
 
-HPE `hw_type_rules` используют только Layer 1 (`device_type_map`). Layers 2–3 (`rule_id_map`, `rules`) пусты.
+HPE `hw_type_rules` use only Layer 1 (`device_type_map`). Layers 2–3 (`rule_id_map`, `rules`) are empty.
 
-**Предупреждение:** при добавлении нового `device_type` для HPE необходимо ОДНОВРЕМЕННО добавить маппинг в `hw_type_rules.device_type_map`. Если маппинг не добавлен → `hw_type` останется `None`, строка будет помечена как «hw_type unresolved for HW row» в диагностике, но выделенного E-кода для этого случая нет. Это тихий дефект.
+**Warning:** when adding a new `device_type` for HPE, you MUST simultaneously add the mapping to `hw_type_rules.device_type_map`. If the mapping is not added → `hw_type` will remain `None`, the row will be flagged as "hw_type unresolved for HW row" in diagnostics, but there is no dedicated E-code for this case. This is a silent defect.

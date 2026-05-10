@@ -1,5 +1,4 @@
 # hw_type Taxonomy — Universal Device Type Dictionary
-## Универсальный словарь типов устройств / spec_classifier teresa
 
 **Version:** v2.6.0  
 **Date:** 2026-05-02  
@@ -40,84 +39,84 @@
 
 ---
 
-## Зафиксированные решения
+## Recorded decisions
 
-| # | Вопрос | Решение |
-|---|--------|---------|
-| 1 | hba vs storage_controller — разделять? | **Да.** `hba` = FC HBA + SAS HBA (любой host bus adapter без встроенного RAID). `storage_controller` = только RAID с кешем/батареей (PERC/Smart Array/BOSS/MegaRAID). |
-| 2 | transceiver выделять из sfp_cable? | **Да.** SFP/SFP28/QSFP **модули** → `transceiver`. DAC/AOC/patch cord → `cable`. |
-| 3 | BASE rows нужен hw_type? | **Нет.** `hw_type_applies_to: [HW]`. BASE rows не получают `hw_type` — тип изделия читается из `device_type`. |
-| 4 | enablement_kit — hw_type или device_type? | **Только `device_type`.** `entity_type=HW`, `device_type=enablement_kit`, `hw_type=None`. В `HW_TYPE_VOCAB` **не входит**. |
-| 5 | software_license/service в hw_type? | **Нет.** `hw_type_applies_to` = `[HW]`. SOFTWARE/SERVICE — только `entity_type`. |
-| 6 | power_cord — hw_type или device_type? | **Только `device_type`.** `hw_type_applies_to` = `[HW]`. Строки `power_cord` имеют `entity_type=HW`, `hw_type=None` (намеренно, per business rules). |
-
----
-
-## Словарь (26 значений hw_type)
-
-### Группа 1 — Основное изделие (только BASE rows)
-
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `server` | Server / Compute Node | Сервер / Вычислительный узел | PowerEdge R660, ProLiant DL380 Gen12 CTO, ThinkSystem SR630 V3, 1288H V7 |
-| `switch` | Switch / Router | Коммутатор / Маршрутизатор | N9K-C93180YC-FX3, Catalyst 9500-48Y4C, C8500L-8S4X, S5700 |
-| `storage_system` | Storage System | Система хранения данных | OceanStor Dorado 5000 V6 NVMe Controller Enclosure |
-| `wireless_ap` | Wireless AP / Controller | Точка доступа Wi-Fi / Контроллер | AirEngine 9700-M1, AirEngine 5761R-11, AC6805 |
-
-> `hw_type_applies_to: [HW]`. BASE rows используют `device_type` для идентификации изделия; `hw_type` не присваивается.
+| # | Question | Decision |
+|---|----------|---------|
+| 1 | hba vs storage_controller — separate? | **Yes.** `hba` = FC HBA + SAS HBA (any host bus adapter without on-board RAID). `storage_controller` = RAID-only with cache/battery (PERC/Smart Array/BOSS/MegaRAID). |
+| 2 | Separate transceiver from sfp_cable? | **Yes.** SFP/SFP28/QSFP **modules** → `transceiver`. DAC/AOC/patch cord → `cable`. |
+| 3 | Do BASE rows need hw_type? | **No.** `hw_type_applies_to: [HW]`. BASE rows do not receive `hw_type` — the product type is read from `device_type`. |
+| 4 | enablement_kit — hw_type or device_type? | **device_type only.** `entity_type=HW`, `device_type=enablement_kit`, `hw_type=None`. Not in `HW_TYPE_VOCAB`. |
+| 5 | software_license/service in hw_type? | **No.** `hw_type_applies_to` = `[HW]`. SOFTWARE/SERVICE — entity_type only. |
+| 6 | power_cord — hw_type or device_type? | **device_type only.** `hw_type_applies_to` = `[HW]`. `power_cord` rows have `entity_type=HW`, `hw_type=None` (intentional, per business rules). |
 
 ---
 
-### Группа 2 — Вычислительные компоненты
+## Vocabulary (26 hw_type values)
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `cpu` | Processor / CPU | Процессор | Intel Xeon 6737P, AMD EPYC 9374F, Intel Xeon Silver 4509Y |
-| `memory` | Memory / RAM | Оперативная память | HPE 64GB DDR5-6400 RDIMM, ThinkSystem 32GB TruDDR5, MEM-C8500L-16GB |
-| `gpu` | GPU / AI Accelerator | Графический / AI-ускоритель | NVIDIA H200 NVL 141GB PCIe, NVIDIA L40 48GB, NVIDIA L4 24GB |
+### Group 1 — Base product (BASE rows only)
 
-> **Миграция:** `ram` → `memory`.
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `server` | Server / Compute Node | PowerEdge R660, ProLiant DL380 Gen12 CTO, ThinkSystem SR630 V3, 1288H V7 |
+| `switch` | Switch / Router | N9K-C93180YC-FX3, Catalyst 9500-48Y4C, C8500L-8S4X, S5700 |
+| `storage_system` | Storage System | OceanStor Dorado 5000 V6 NVMe Controller Enclosure |
+| `wireless_ap` | Wireless AP / Controller | AirEngine 9700-M1, AirEngine 5761R-11, AC6805 |
 
----
-
-### Группа 3 — Подсистема хранения
-
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `storage_drive` | Storage Drive | Накопитель (SSD / HDD / NVMe) | HPE 3.84TB NVMe U.3, HPE 480GB SATA SSD, ThinkSystem VA 480GB, Dorado 7.68TB NVMe |
-| `storage_controller` | Storage Controller / RAID | RAID-контроллер | HPE MR416i-o OCP, PERC H965i, BOSS card, MegaRAID, Smart Array с кешем/батареей |
-| `hba` | HBA (FC / SAS) | Адаптер шины (FC / SAS HBA) | HPE SN1620E 32Gb FC SecureHBA, SN1610E 32Gb FC, Emulex LPe32002 32Gb FC, HBA465e SAS, Broadcom SAS HBA |
-| `backplane` | Backplane / Drive Cage | Объединительная панель / Корзина | HPE Tri-Mode U.3 Drive Cage Kit, ThinkSystem 1U 8×2.5" SAS/SATA Backplane, xFusion FusionServer Backplane |
-| `storage_enclosure` | Storage Enclosure / Disk Enclosure | Дисковый отсек СХД (внешний) | Huawei OceanStor Disk Enclosure, Lenovo D1224 (планируется), Dell PowerVault MDxxx (планируется) |
-| `io_module` | I/O Module (Storage) | Интерфейсный модуль СХД | 4p SmartIO FC SFP28 (OceanStor), 2p 40Gb ETH QSFP+, 4p 25Gb RDMA Scale-out |
-
-> **Миграция:** `ssd` + `hdd` + `nvme` → `storage_drive`. `hba` device_type → `hw_type: hba` (было `storage_controller`).
-
-**Граница `hba` / `storage_controller`:**
-
-| Тип | `hw_type` | Признаки |
-|-----|-----------|----------|
-| FC HBA | `hba` | "Fibre Channel", "FC HBA", "SecureHBA", "HBA", модели Emulex/QLogic/Broadcom HBA |
-| SAS HBA (passthrough) | `hba` | "SAS HBA", "Host Bus Adapter", HBA465e, режим passthrough/JBOD без RAID |
-| RAID-контроллер | `storage_controller` | "PERC", "Smart Array", "RAID", "MR4xx", "BOSS", "MegaRAID", наличие кеша/BBU |
-
-> `io_module` только для СХД Huawei OceanStor — подключаемые интерфейсные модули в корпус массива, не серверные PCIe-карты.
+> `hw_type_applies_to: [HW]`. BASE rows use `device_type` to identify the product; `hw_type` is not assigned.
 
 ---
 
-### Группа 4 — Сетевые компоненты
+### Group 2 — Compute components
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `network_adapter` | Network Adapter (NIC) | Сетевой адаптер (NIC / OCP) | Mellanox MCX631432AS SFP28 OCP3, Broadcom BCM57414 OCP3, Intel E810-CQDA2 100Gb |
-| `transceiver` | Optical Transceiver | Оптический трансивер | HPE 25Gb SFP28 SR 100m, SFP-25G-SR-S=, QSFP-100G-LR-S=, GLC-SX-MMD=, OMXD300201 SFP+ |
-| `cable` | Cable (DAC / AOC / Fiber / Signal) | Кабель (DAC / AOC / оптический / сигнальный) | QSFP-100G-CU1M= DAC, HPE Premier Flex LC/LC OM4, SFP28-SFP28-25 AOC, XC-0405Y021 |
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `cpu` | Processor / CPU | Intel Xeon 6737P, AMD EPYC 9374F, Intel Xeon Silver 4509Y |
+| `memory` | Memory / RAM | HPE 64GB DDR5-6400 RDIMM, ThinkSystem 32GB TruDDR5, MEM-C8500L-16GB |
+| `gpu` | GPU / AI Accelerator | NVIDIA H200 NVL 141GB PCIe, NVIDIA L40 48GB, NVIDIA L4 24GB |
 
-> **Миграция:** `sfp_cable` разделяется — SFP/QSFP оптические модули → `device_type: transceiver` → `hw_type: transceiver`; DAC/AOC/patch cord остаются через `device_type: sfp_cable` → `hw_type: cable`.
+> **Migration:** `ram` → `memory`.
 
-**Граница `transceiver` / `cable` по паттернам SKU:**
+---
 
-| Паттерн в SKU | `hw_type` | Пример |
+### Group 3 — Storage subsystem
+
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `storage_drive` | Storage Drive | HPE 3.84TB NVMe U.3, HPE 480GB SATA SSD, ThinkSystem VA 480GB, Dorado 7.68TB NVMe |
+| `storage_controller` | Storage Controller / RAID | HPE MR416i-o OCP, PERC H965i, BOSS card, MegaRAID, Smart Array with cache/BBU |
+| `hba` | HBA (FC / SAS) | HPE SN1620E 32Gb FC SecureHBA, SN1610E 32Gb FC, Emulex LPe32002 32Gb FC, HBA465e SAS, Broadcom SAS HBA |
+| `backplane` | Backplane / Drive Cage | HPE Tri-Mode U.3 Drive Cage Kit, ThinkSystem 1U 8×2.5" SAS/SATA Backplane, xFusion FusionServer Backplane |
+| `storage_enclosure` | Storage Enclosure / Disk Enclosure | Huawei OceanStor Disk Enclosure, Lenovo D1224 (planned), Dell PowerVault MDxxx (planned) |
+| `io_module` | I/O Module (Storage) | 4p SmartIO FC SFP28 (OceanStor), 2p 40Gb ETH QSFP+, 4p 25Gb RDMA Scale-out |
+
+> **Migration:** `ssd` + `hdd` + `nvme` → `storage_drive`. `hba` device_type → `hw_type: hba` (was `storage_controller`).
+
+**`hba` / `storage_controller` boundary:**
+
+| Type | `hw_type` | Identifiers |
+|------|-----------|------------|
+| FC HBA | `hba` | "Fibre Channel", "FC HBA", "SecureHBA", "HBA", Emulex/QLogic/Broadcom HBA models |
+| SAS HBA (passthrough) | `hba` | "SAS HBA", "Host Bus Adapter", HBA465e, passthrough/JBOD mode without RAID |
+| RAID controller | `storage_controller` | "PERC", "Smart Array", "RAID", "MR4xx", "BOSS", "MegaRAID", cache/BBU present |
+
+> `io_module` is for Huawei OceanStor storage only — pluggable interface modules in a storage array enclosure, not server PCIe cards.
+
+---
+
+### Group 4 — Network components
+
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `network_adapter` | Network Adapter (NIC) | Mellanox MCX631432AS SFP28 OCP3, Broadcom BCM57414 OCP3, Intel E810-CQDA2 100Gb |
+| `transceiver` | Optical Transceiver | HPE 25Gb SFP28 SR 100m, SFP-25G-SR-S=, QSFP-100G-LR-S=, GLC-SX-MMD=, OMXD300201 SFP+ |
+| `cable` | Cable (DAC / AOC / Fiber / Signal) | QSFP-100G-CU1M= DAC, HPE Premier Flex LC/LC OM4, SFP28-SFP28-25 AOC, XC-0405Y021 |
+
+> **Migration:** `sfp_cable` split — SFP/QSFP optical modules → `device_type: transceiver` → `hw_type: transceiver`; DAC/AOC/patch cord stays via `device_type: sfp_cable` → `hw_type: cable`.
+
+**`transceiver` / `cable` boundary by SKU patterns:**
+
+| Pattern in SKU | `hw_type` | Example |
 |---|---|---|
 | `-SR`, `-LR`, `-ER`, `-MMD`, `-LH`, `-CSR` | `transceiver` | SFP-25G-SR-S=, GLC-LH-SMD= |
 | `-CU{N}M` (passive copper) | `cable` | QSFP-100G-CU1M= |
@@ -126,138 +125,138 @@
 
 ---
 
-### Группа 5 — Питание
+### Group 5 — Power
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `psu` | Power Supply Unit | Блок питания | HPE 2400W M-CRPS Titanium, NXA-PAC-650W-PE, ThinkSystem 750W Platinum, PAC900S12-T1 900W |
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `psu` | Power Supply Unit | HPE 2400W M-CRPS Titanium, NXA-PAC-650W-PE, ThinkSystem 750W Platinum, PAC900S12-T1 900W |
 
-> **Кабели питания** (`power_cord`): `entity_type=HW`, `device_type=power_cord`, `hw_type=None` (намеренно, per business rules). Тип читается из `device_type`.
-
----
-
-### Группа 6 — Охлаждение
-
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `fan` | Fan Module / Fan Kit | Модуль вентиляторов | HPE 2U High Performance Fan Kit, NXA-FAN-35CFM-PE, 4056+ Fan module, C9K-T1-FANTRAY |
-| `heatsink` | Heatsink / Thermal Kit | Радиатор / термокит | HPE High Performance 2U Heat Sink Kit, ThinkSystem SR630 V3 Standard Heat Sink |
-
-> **Миграция:** `cpu_heatsink` → `heatsink`.
+> **Power cords** (`power_cord`): `entity_type=HW`, `device_type=power_cord`, `hw_type=None` (intentional, per business rules). The type is read from `device_type`.
 
 ---
 
-### Группа 7 — Расширение и механика
+### Group 6 — Cooling
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `riser` | PCIe Riser / Expansion Card | Плата расширения / Riser | HPE x8/x16/x8 Secondary Riser Kit, ThinkSystem 1U x16/x16 BF Riser1, 1×16X SLOT PCIe5.0 |
-| `chassis` | Chassis / System Board | Шасси / Системная плата | ThinkSystem SR630 V3 MB, ThinkSystem V3 1U 10×2.5" Chassis |
-| `rail` | Rail Kit / Rack Hardware | Направляющие / Крепёж для стойки | HPE Easy Install Rail 3 Kit, ThinkSystem Toolless Slide Rail Kit v2, Ball Bearing Rail Kit |
-| `blank_filler` | Blank / Filler / Dummy PID | Заглушка / Филлер | HPE DDR4 DIMM Blank Kit, ThinkSystem 1×1 2.5" HDD Filler, NXK-AF-PE Airflow Dummy |
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `fan` | Fan Module / Fan Kit | HPE 2U High Performance Fan Kit, NXA-FAN-35CFM-PE, 4056+ Fan module, C9K-T1-FANTRAY |
+| `heatsink` | Heatsink / Thermal Kit | HPE High Performance 2U Heat Sink Kit, ThinkSystem SR630 V3 Standard Heat Sink |
 
-> **Миграция:** `mounting_kit` → `rail`. `blank` → `blank_filler`. `motherboard` → поглощается в `chassis`.
+> **Migration:** `cpu_heatsink` → `heatsink`.
 
 ---
 
-### Группа 8 — Управление и безопасность
+### Group 7 — Expansion and mechanical
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `management` | Management Module / BMC License | Модуль управления / BMC | HPE iLO Advanced License, XClarity Controller Platinum, HPE OneView FIO Bundle, Lenovo Front Operator Panel (LCD/LED status display) |
-| `tpm` | TPM / Security / Root-of-Trust Module | Модуль безопасности TPM / RoT | TPM 2.0, Dell TPM 2.0 v3, Lenovo Root of Trust Module, RoT Module (PR-9a Q7b) |
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `riser` | PCIe Riser / Expansion Card | HPE x8/x16/x8 Secondary Riser Kit, ThinkSystem 1U x16/x16 BF Riser1, 1×16X SLOT PCIe5.0 |
+| `chassis` | Chassis / System Board | ThinkSystem SR630 V3 MB, ThinkSystem V3 1U 10×2.5" Chassis |
+| `rail` | Rail Kit / Rack Hardware | HPE Easy Install Rail 3 Kit, ThinkSystem Toolless Slide Rail Kit v2, Ball Bearing Rail Kit |
+| `blank_filler` | Blank / Filler / Dummy PID | HPE DDR4 DIMM Blank Kit, ThinkSystem 1×1 2.5" HDD Filler, NXK-AF-PE Airflow Dummy |
+
+> **Migration:** `mounting_kit` → `rail`. `blank` → `blank_filler`. `motherboard` absorbed into `chassis`.
+
+---
+
+### Group 8 — Management and security
+
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `management` | Management Module / BMC License | HPE iLO Advanced License, XClarity Controller Platinum, HPE OneView FIO Bundle, Lenovo Front Operator Panel (LCD/LED status display) |
+| `tpm` | TPM / Security / Root-of-Trust Module | TPM 2.0, Dell TPM 2.0 v3, Lenovo Root of Trust Module, RoT Module (PR-9a Q7b) |
 
 > **PR-9a Q7b:** `tpm` is a **shared bucket** for both TPM 2.0 modules and Root of Trust (RoT) security modules. Lenovo documents these together as "Firmware and Root of Trust/TPM 2.0 Security Module"; both classes are functionally part of the platform's hardware root of trust and share the same management/security plane.
 
 ---
 
-### Группа 9 — Аксессуары
+### Group 9 — Accessories
 
-| Код (`hw_type`) | English Name | Русское наименование | Примеры |
-|---|---|---|---|
-| `accessory` | Accessory / Misc Hardware | Аксессуар / Прочее | NVIDIA NVLink Bridge 2-way/4-way, C9300L-STACK-A Stacking Module, RFID, Antenna |
+| Code (`hw_type`) | English Name | Examples |
+|---|---|---|
+| `accessory` | Accessory / Misc Hardware | NVIDIA NVLink Bridge 2-way/4-way, C9300L-STACK-A Stacking Module, RFID, Antenna |
 
 ---
 
-## Отдельные device_type (вне HW_TYPE_VOCAB)
+## Standalone device_type values (outside HW_TYPE_VOCAB)
 
-Эти значения существуют **только на уровне `device_type`**; `hw_type` либо `None`, либо мапится в существующий bucket через `device_type_map`:
+These values exist **at the `device_type` level only**; `hw_type` is either `None` or mapped into an existing bucket via `device_type_map`:
 
-| `device_type` | Описание | `entity_type` | `hw_type` |
+| `device_type` | Description | `entity_type` | `hw_type` |
 |---|---|---|---|
-| `power_cord` | Кабель питания (C13/C14/C15/C19) | HW | `None` |
-| `enablement_kit` | Enablement / Option Kit (HPE FIO, xFusion option cables) | HW | `None` — намеренно |
-| `front_panel` | Front Operator Panel / LCD system info display (LEDs, диагностический экран, ASM-модуль) | HW | `management` (Lenovo PR-9a Q7a) |
+| `power_cord` | Power cord (C13/C14/C15/C19) | HW | `None` |
+| `enablement_kit` | Enablement / Option Kit (HPE FIO, xFusion option cables) | HW | `None` — intentional |
+| `front_panel` | Front Operator Panel / LCD system info display (LEDs, diagnostic screen, ASM module) | HW | `management` (Lenovo PR-9a Q7a) |
 | `power_distribution_board` | Internal PDB / power interface board / power interconnect board | HW | `chassis` (Lenovo + HPE PR-9b Q8) |
-| `interconnect_board` | PCIe Switch / Retimer / I-O Board (internal) | HW | `chassis` (Lenovo PR-9b Q8; slot reserved HPE) |
+| `interconnect_board` | PCIe Switch / Retimer / I/O Board (internal) | HW | `chassis` (Lenovo PR-9b Q8; slot reserved HPE) |
 | `drive_cage` | HDD / HD / NVMe cage | HW | `backplane` (Lenovo PR-9c — HPE PR-3 precedent) |
 | `media_bay` | Standard / generic media bay (front-mounted) | HW | `chassis` (Lenovo PR-9c Q9) |
-| `air_duct` | Air Duct / Airduct — направляющая потока (не heatsink, не fan) | HW | `accessory` (Lenovo + xFusion PR-10) |
+| `air_duct` | Air Duct / Airduct — airflow guide (not heatsink, not fan) | HW | `accessory` (Lenovo + xFusion PR-10) |
 | `optical_drive` | DVD-RW / ODD / Optical Drive | HW | `storage_drive` (HPE PR-10) |
 
 ---
 
-## Итоговый HW_TYPE_VOCAB (26 значений)
+## Final HW_TYPE_VOCAB (26 values)
 
 ```python
 HW_TYPE_VOCAB = frozenset({
-    # Основное изделие (BASE rows)
+    # Base product (BASE rows)
     "server", "switch", "storage_system", "wireless_ap",
-    # Вычислительные компоненты
+    # Compute components
     "cpu", "memory", "gpu",
-    # Подсистема хранения
+    # Storage subsystem
     "storage_drive", "storage_enclosure", "storage_controller", "hba", "backplane", "io_module",
-    # Сеть
+    # Network
     "network_adapter", "transceiver", "cable",
-    # Питание
+    # Power
     "psu",
-    # Охлаждение
+    # Cooling
     "fan", "heatsink",
-    # Расширение и механика
+    # Expansion and mechanical
     "riser", "chassis", "rail", "blank_filler",
-    # Управление
+    # Management
     "management", "tpm",
-    # Аксессуары
+    # Accessories
     "accessory",
 })
 ```
 
 ---
 
-## Таблица миграции (old → new)
+## Migration table (old → new)
 
-| Старый `hw_type` | Новый `hw_type` | Тип изменения | Затрагивает golden |
+| Old `hw_type` | New `hw_type` | Change type | Affects golden |
 |---|---|---|---|
-| `cpu` | `cpu` | без изменений | — |
-| `ram` | `memory` | переименование | dl1–dl5 |
-| `ssd` | `storage_drive` | объединение | dl1–dl5 |
-| `hdd` | `storage_drive` | объединение | dl1–dl5 |
-| `nvme` | `storage_drive` | объединение | dl1–dl5 |
-| `storage_controller` | `storage_controller` | без изменений | — |
-| *(device_type=hba → hw_type=storage_controller)* | `hba` | исправление маппинга | dl1–dl5 |
-| `backplane` | `backplane` | без изменений | — |
-| — | `io_module` | новый тип | только новые вендоры |
-| `network_adapter` | `network_adapter` | без изменений | — |
-| `cable` | `cable` | сужение scope | — |
-| *(sfp_cable → network_adapter для SFP/QSFP модулей)* | `transceiver` | исправление: модули ≠ NIC | ccw_1, ccw_2 |
-| `psu` | `psu` | без изменений | — |
+| `cpu` | `cpu` | no change | — |
+| `ram` | `memory` | rename | dl1–dl5 |
+| `ssd` | `storage_drive` | merge | dl1–dl5 |
+| `hdd` | `storage_drive` | merge | dl1–dl5 |
+| `nvme` | `storage_drive` | merge | dl1–dl5 |
+| `storage_controller` | `storage_controller` | no change | — |
+| *(device_type=hba → hw_type=storage_controller)* | `hba` | mapping fix | dl1–dl5 |
+| `backplane` | `backplane` | no change | — |
+| — | `io_module` | new type | new vendors only |
+| `network_adapter` | `network_adapter` | no change | — |
+| `cable` | `cable` | scope narrowed | — |
+| *(sfp_cable → network_adapter for SFP/QSFP modules)* | `transceiver` | fix: modules ≠ NIC | ccw_1, ccw_2 |
+| `psu` | `psu` | no change | — |
 | *(device_type=power_cord)* | `None` | intentional, per business rules | — |
-| `fan` | `fan` | без изменений | — |
-| `cpu_heatsink` | `heatsink` | переименование | dl2–dl5 |
-| `riser` | `riser` | без изменений | — |
-| `chassis` | `chassis` | без изменений | — |
-| `gpu` | `gpu` | без изменений | — |
-| `tpm` | `tpm` | без изменений | — |
-| `motherboard` | `chassis` | поглощение | dl (редкие) |
-| `mounting_kit` | `rail` | переименование | dl1–dl5, ccw_1, ccw_2 |
-| `blank` | `blank_filler` | переименование | dl1–dl5, ccw_2 |
-| `management` | `management` | без изменений | — |
-| — | `server` | новый тип (BASE) | только новые вендоры |
-| — | `switch` | новый тип (BASE) | ccw golden при добавлении BASE rules |
-| — | `storage_system` | новый тип (BASE) | только новые вендоры |
-| — | `wireless_ap` | новый тип (BASE) | только новые вендоры |
-| — | `accessory` | новый тип | ccw_2 (stacking module) |
-| — | `storage_enclosure` | новый тип (Q2 cross-vendor) | huawei `DT-HU-008` (storage_enclosure) |
+| `fan` | `fan` | no change | — |
+| `cpu_heatsink` | `heatsink` | rename | dl2–dl5 |
+| `riser` | `riser` | no change | — |
+| `chassis` | `chassis` | no change | — |
+| `gpu` | `gpu` | no change | — |
+| `tpm` | `tpm` | no change | — |
+| `motherboard` | `chassis` | absorbed | dl (rare) |
+| `mounting_kit` | `rail` | rename | dl1–dl5, ccw_1, ccw_2 |
+| `blank` | `blank_filler` | rename | dl1–dl5, ccw_2 |
+| `management` | `management` | no change | — |
+| — | `server` | new type (BASE) | new vendors only |
+| — | `switch` | new type (BASE) | ccw golden when adding BASE rules |
+| — | `storage_system` | new type (BASE) | new vendors only |
+| — | `wireless_ap` | new type (BASE) | new vendors only |
+| — | `accessory` | new type | ccw_2 (stacking module) |
+| — | `storage_enclosure` | new type (Q2 cross-vendor) | huawei `DT-HU-008` (storage_enclosure) |
 | `motherboard` | `chassis` | reaffirmed Lenovo precedent (Q1) | lenovo `HW-L-040 + DT-L-040` (motherboard:chassis), dell legacy |
 | `accessory` (Lenovo Front Operator Panel) | `management` (via `device_type=front_panel`) | promotion (Q7a, PR-9a) | lenovo L1, L3, L10, L11 — 5 rows reclassified |
 | `accessory` (Lenovo RoT Module) | `tpm` (via `device_type=tpm`) | promotion (Q7b, PR-9a) | lenovo L3, L4, L5, L6, L11 — 7 rows reclassified |
@@ -372,9 +371,9 @@ The global `DEVICE_TYPE_ALIASES["bezel"] = "chassis"` in `batch_audit.py` is pre
 
 ---
 
-## Матрица покрытия по вендорам
+## Vendor coverage matrix
 
-| `hw_type` | Dell | HPE | Cisco | Lenovo | xFusion | Huawei СХД | Huawei WLAN |
+| `hw_type` | Dell | HPE | Cisco | Lenovo | xFusion | Huawei SAN | Huawei WLAN |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | `server` | ✓ | ✓ | — | ✓ | ✓ | — | — |
 | `switch` | — | — | ✓ | — | — | — | ✓ |
@@ -414,49 +413,49 @@ The global `DEVICE_TYPE_ALIASES["bezel"] = "chassis"` in `batch_audit.py` is pre
 
 ---
 
-## YAML-контракт (шпаргалка для правил)
+## YAML contract (rules cheatsheet)
 
 ```yaml
-# hw_type_rules.applies_to — только HW; BASE и LOGISTIC намеренно не включаются
+# hw_type_rules.applies_to — HW only; BASE and LOGISTIC intentionally excluded
 hw_type_rules:
   applies_to: [HW]
 
-# device_type_rules.applies_to — для текущих YAML: HW, LOGISTIC, BASE
+# device_type_rules.applies_to — current YAMLs: HW, LOGISTIC, BASE
 device_type_rules:
   applies_to: [HW, LOGISTIC, BASE]
 
-# device_type_map — исправить hba:
+# device_type_map — note hba correction:
 device_type_map:
-  hba: hba                       # было: hba → storage_controller  ← ИСПРАВИТЬ
+  hba: hba                       # was: hba → storage_controller  ← FIXED
   raid_controller: storage_controller
-  transceiver: transceiver       # новый device_type для SFP/QSFP модулей
-  sfp_cable: cable               # DAC/AOC/patch cord → cable (без изменений)
+  transceiver: transceiver       # new device_type for SFP/QSFP modules
+  sfp_cable: cable               # DAC/AOC/patch cord → cable (unchanged)
 
-# Кабели питания — hw_type=None (intentional, per business rules):
+# Power cords — hw_type=None (intentional, per business rules):
 # entity_type=HW, device_type=power_cord, hw_type=None
 
-# Enablement kits — hw_type не присваивается:
-# entity_type=HW, device_type=enablement_kit, hw_type=None ← намеренно
+# Enablement kits — hw_type not assigned:
+# entity_type=HW, device_type=enablement_kit, hw_type=None  ← intentional
 ```
 
 ---
 
-## Фильтрация в отчётах
+## Filtering in reports
 
-| Задача | Фильтр |
-|--------|--------|
-| Все серверы в спецификации | `entity_type=BASE AND hw_type=server` |
-| Сетевое оборудование (коммутаторы) | `entity_type=BASE AND hw_type=switch` |
-| Все накопители (SSD+HDD+NVMe вместе) | `hw_type=storage_drive` |
-| FC и SAS HBA (не RAID) | `hw_type=hba` |
-| Только RAID-контроллеры | `hw_type=storage_controller` |
-| Оптика для портов (трансиверы) | `hw_type=transceiver` |
-| Кабели сигнальные (DAC/AOC/fiber) | `hw_type=cable` |
-| Кабели питания | `device_type=power_cord` |
+| Task | Filter |
+|------|--------|
+| All servers in spec | `entity_type=BASE AND hw_type=server` |
+| Network equipment (switches) | `entity_type=BASE AND hw_type=switch` |
+| All storage drives (SSD+HDD+NVMe combined) | `hw_type=storage_drive` |
+| FC and SAS HBA (non-RAID) | `hw_type=hba` |
+| RAID controllers only | `hw_type=storage_controller` |
+| Optical transceivers (port optics) | `hw_type=transceiver` |
+| Signal cables (DAC/AOC/fiber) | `hw_type=cable` |
+| Power cords | `device_type=power_cord` |
 | Enablement / option kits | `device_type=enablement_kit` |
-| Стоимость охлаждения | `hw_type IN (fan, heatsink)` |
-| Управление (iDRAC/iLO/XCC) | `hw_type=management` |
+| Cooling cost | `hw_type IN (fan, heatsink)` |
+| Management (iDRAC/iLO/XCC) | `hw_type=management` |
 
 ---
 
-*Source of truth для `HW_TYPE_VOCAB` в `src/core/classifier.py` и всех `*_rules.yaml`. Версия v2.6.0 — PR-11: консолидация cycle 2 (master matrix выше); **новых hw_type в cycle 2 не было**.*
+*Source of truth for `HW_TYPE_VOCAB` is `src/core/classifier.py` and all `*_rules.yaml`. Version v2.6.0 — PR-11: cycle 2 consolidation (master matrix above); **no new hw_type literals were added in cycle 2**.*

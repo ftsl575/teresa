@@ -1,4 +1,4 @@
-# Documentation Index — Spec Classifier (Dell + Cisco CCW + HPE)
+# Documentation Index — Spec Classifier
 
 ## Structure
 
@@ -29,9 +29,9 @@
 | `docs/product/TECHNICAL_OVERVIEW.md` | How does the pipeline work internally? |
 | `CHANGELOG.md` | What changed in each version? |
 | `docs/taxonomy/hw_type_taxonomy.md` | What are the allowed hw_type values and the exact meaning/boundaries? |
+| `docs/taxonomy/cycle2_summary.md` | What device_type changes were made in cycle 2 (PR-8–PR-11)? |
 | `batch_audit.py` | How do I run post-pipeline rule checks (E1–E18) and LLM verification across all vendor outputs? |
 | `cluster_audit.py` | How do I cluster unclassified/UNKNOWN rows to discover new rules? |
-
 | `CLAUDE.md` | Project context for Cowork / Claude Desktop sessions |
 | `prompts/README.md` | Prompt library — step templates for dev cycle |
 
