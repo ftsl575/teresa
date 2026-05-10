@@ -1,59 +1,34 @@
-# prompts/ — Библиотека промптов Teresa
+# Archived Prompt Library (Pre-GSD)
 
-Готовые промпты для каждого шага цикла разработки.
-Открывай нужный файл, копируй промпт — не нужно грузить steps_plan_for_FTSL_v2.txt.
+> **Archived:** 2026-05-10
+> **Status:** Historical record — superseded by the GSD-native development cycle documented in [`/CONTRIBUTING.md`](../../../CONTRIBUTING.md).
 
----
+This folder is the retired pre-GSD prompt library that documented the legacy
+PRE-CHECK → MASTER-PLAN → CURSOR-IMPLEMENT → POST-CHECK → AUDIT 1A–1G workflow.
+The original 10 prompt files (00..08, plus `COWORK_OPUS_FULL_AUDIT.md`) are
+preserved verbatim in their original Russian as a historical record. They are
+NOT the active workflow — see the per-file mapping below for the GSD-native
+replacement of each retired prompt.
 
-## Режим работы
+## Per-file Mapping
 
-**Claude.ai (окна):** загружай `teresa.zip` + `OUTPUT.rar` как вложения.
-**Cowork (этот режим):** архивы не нужны — Claude имеет прямой доступ к папкам репо, INPUT и OUTPUT. Просто скажи: _"запусти шаг 1A"_ — и всё.
-Правило R1 ("каждый шаг = отдельное окно") в Cowork **не применяется** — все шаги можно выполнять в одной сессии.
-
----
-
-## Структура
-
-| Файл | Когда использовать |
+| Retired prompt | GSD-native equivalent |
 |---|---|
-| `00_VENDOR-RECON.md` | Только для нового вендора: разведка формата xlsx → VENDOR_FORMAT_SPEC.md (вход для 02_MASTER-PLAN) |
-| `01_PRE-CHECK.md` | Перед любыми изменениями — зафиксировать baseline |
-| `02_MASTER-PLAN.md` | Сгенерировать план для Cursor (вариант A=новая фича, B=fix FAIL) |
-| `03_CURSOR-IMPLEMENT.md` | Промпт для вставки в Cursor |
-| `04_POST-CHECK.md` | После реализации — собрать факты |
-| `05_AUDIT-1A-1G.md` | Полный аудит (6 окон Claude + финальный вердикт) |
-| `06_BATCH-AUDIT-MASTER-PLAN.md` | Анализ audit_report.json + план правок YAML |
-| `07_DOC-UPDATE-MASTER-PLAN.md` | Обновление документации после цикла фиксов |
-| `08_CHATGPT-SYSTEM-PROMPTS.md` | System prompts для ChatGPT (3 варианта) |
+| `00_VENDOR-RECON.md` | [`spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md`](../../../spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md) |
+| `01_PRE-CHECK.md` | `/gsd-discuss-phase` (or `/gsd-progress` for status) |
+| `02_MASTER-PLAN.md` | `/gsd-plan-phase` |
+| `03_CURSOR-IMPLEMENT.md` | `/gsd-execute-phase` |
+| `04_POST-CHECK.md` | `/gsd-verify-work` |
+| `05_AUDIT-1A-1G.md` | `/gsd-audit-fix` (and `/gsd-code-review` for the focused review pieces) |
+| `06_BATCH-AUDIT-MASTER-PLAN.md` | run `python batch_audit.py` then `/gsd-plan-phase` against the findings |
+| `07_DOC-UPDATE-MASTER-PLAN.md` | `/gsd-docs-update` |
+| `08_CHATGPT-SYSTEM-PROMPTS.md` | no GSD equivalent (these were ChatGPT-specific system prompts) |
+| `COWORK_OPUS_FULL_AUDIT.md` | `/gsd-audit-fix` or `/gsd-code-review` for the audit cycle (audit-mode, not a per-step prompt) |
+| `README.md` | superseded by this English README + [`/CONTRIBUTING.md`](../../../CONTRIBUTING.md) |
 
----
+## Canonical Doc
 
-## Быстрый сценарий: маленькая правка YAML
-
-```
-01_PRE-CHECK → 06_BATCH-AUDIT-MASTER-PLAN → 03_CURSOR-IMPLEMENT → 04_POST-CHECK
-```
-
-## Быстрый сценарий: новая фича
-
-```
-01_PRE-CHECK → 02_MASTER-PLAN (A) → 03_CURSOR-IMPLEMENT → 04_POST-CHECK → (опц.) 05_AUDIT-1G
-```
-
-## Полный цикл: новый вендор / большой рефакторинг
-
-```
-00_VENDOR-RECON (только для нового вендора) → 01 → 02A → 03 → 04 → 05 (1A–1G) → 07_DOC-UPDATE
-```
-⚠ ВАЖНО: документацию (07) обновлять ПОСЛЕ всех кодовых правок,
-не между ними. Иначе — бесконечный цикл "код → доки устарели → фикс доков → код".
-
-## После FAIL аудита
-
-```
-02B (fix) → 03 → 04 → 05_1G → 07_DOC-UPDATE
-```
-⚠ НЕ включать архитектурный долг (P2) и doc-drifts в скоуп фикса.
-Закрывать ТОЛЬКО P0. P1 только если они блокируют секцию (FAIL).
-Архитектурный долг → TECH_DEBT.md, вне аудитного цикла.
+The current development cycle (Discuss → Plan → Execute → Verify, GSD-native),
+pytest invocation, PR conventions, and the project's "do not fix" tech-debt
+rules are documented in [`/CONTRIBUTING.md`](../../../CONTRIBUTING.md).
+Run `/gsd-help` for the full list of GSD commands.
