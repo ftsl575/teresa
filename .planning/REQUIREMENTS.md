@@ -27,10 +27,10 @@ Requirements for milestone v1.1. Each maps to one phase via the roadmap.
 
 ### Orphan Cleanup (ORPH) — Plan 2: Orphan cleanup
 
-- [ ] **ORPH-01**: `spec_classifier/pyproject.toml:5` no longer references the deleted `scripts/run_full.ps1`; replaced with a wording true post-CACHE-01 (e.g., "Set it in your shell profile or use run.ps1 (sets PYTHONPYCACHEPREFIX automatically).").
-- [ ] **ORPH-02**: `spec_classifier/config.local.yaml.example:11` no longer references `scripts/run_full.ps1` (rewritten to "Used by scripts/clean.ps1 and run.ps1." or equivalent).
-- [ ] **ORPH-03**: Local `.cursor/` directory removed from working tree (gitignored, residual from pre-GSD Cursor era).
-- [ ] **ORPH-04**: Local `teresa.zip` sandbox artifact removed from working tree.
+- [x] **ORPH-01**: `spec_classifier/pyproject.toml:5` no longer references the deleted `scripts/run_full.ps1`; replaced with a wording true post-CACHE-01 (e.g., "Set it in your shell profile or use run.ps1 (sets PYTHONPYCACHEPREFIX automatically).").
+- [x] **ORPH-02**: `spec_classifier/config.local.yaml.example:11` no longer references `scripts/run_full.ps1` (rewritten to "Used by scripts/clean.ps1 and run.ps1." or equivalent).
+- [x] **ORPH-03**: Local `.cursor/` directory removed from working tree (gitignored, residual from pre-GSD Cursor era).
+- [x] **ORPH-04**: Local `teresa.zip` sandbox artifact removed from working tree.
 
 **Verification:** `grep -rn "run_full" . --include='*.toml' --include='*.example'` (excluding `CHANGELOG.md`, `LAUNCHER_README.md`, `.planning/`) → 0 matches. `LAUNCHER_README.md:4` retains its historical "replaces three legacy scripts" mention per D-18 / D-19 historical-content convention.
 
@@ -110,10 +110,10 @@ Phase mapping filled by the roadmapper agent during roadmap creation (2026-05-10
 | CACHE-02 | Phase 4 | Pending |
 | CACHE-03 | Phase 4 | Pending |
 | CACHE-04 | Phase 4 | Pending |
-| ORPH-01 | Phase 5 | Pending |
-| ORPH-02 | Phase 5 | Pending |
-| ORPH-03 | Phase 5 | Pending |
-| ORPH-04 | Phase 5 | Pending |
+| ORPH-01 | Phase 5 | Complete |
+| ORPH-02 | Phase 5 | Complete |
+| ORPH-03 | Phase 5 | Complete |
+| ORPH-04 | Phase 5 | Complete |
 | DRIFT-01 | Phase 6 | Pending |
 | DRIFT-02 | Phase 6 | Pending |
 | DRIFT-03 | Phase 6 | Pending |

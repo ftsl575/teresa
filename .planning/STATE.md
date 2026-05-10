@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
-status: planning
-stopped_at: Phase 5 context gathered
-last_updated: "2026-05-10T17:06:37.800Z"
+status: verifying
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-05-10T17:38:03.416Z"
 last_activity: 2026-05-10
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 04 — cache-redirect
+**Current focus:** Phase 05 — orphan-cleanup
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
-Status: Ready to plan
+Phase: 05 (orphan-cleanup) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
 Last activity: 2026-05-10
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -70,6 +70,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-workflow P01 | 5 | 3 tasks | 13 files |
 | Phase 03-workflow PP02 | 9 | 6 tasks tasks | 6 files files |
 | Phase 03-workflow P03 | 25 | 7 tasks | 6 files |
+| Phase 05 P01 | ~4 min | 5 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - [v1.1 Init]: `DOC_INVARIANTS.md` (DRIFT-03) is in scope despite "no creation" framing — tooling/meta-doc materializing the v1.0 retrospective lesson. Domain content (per-vendor docs) remains v1.2 scope.
 - [v1.1 Init]: `load_config_with_local()` regex-parser consolidation explicitly out of scope; Phase 4 extends the existing 4+-site regex pattern to `temp_root` only. Helper consolidation deferred to its own milestone (CONCERNS.md § IMPORTANT).
 - [v1.1 Init]: Roadmap created 2026-05-10 — 3 phases (4 Cache Redirect, 5 Orphan Cleanup, 6 Doc-vs-Impl Drift Sweep); 12/12 requirements mapped, no orphans.
+- [Phase 5]: Phase 5 closed: orphan refs purged, .cursor/ + teresa.zip removed, ROADMAP §SC-1 grep tightened to *.toml/*.example scope; Check 5 dispositioned as substantive PASS / literal FAIL (plan-author casing slip, file byte-equal to phase-start)
 
 ### Pending Todos
 
@@ -127,9 +129,9 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-10T17:06:37.790Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-orphan-cleanup/05-CONTEXT.md
+Last session: 2026-05-10T17:38:03.406Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
 
 ## Operator Next Steps
 
