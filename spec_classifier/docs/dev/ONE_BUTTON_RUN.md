@@ -9,13 +9,14 @@
 
 ## What run.ps1 does
 
-1. Finds the repo root
-2. Runs the classification pipeline for each active vendor (dell, cisco, hpe, lenovo, huawei, xfusion)
-3. Runs `batch_audit.py` (E-code audit; add `-NoAi` to skip the LLM step)
-4. Runs `cluster_audit.py`
-5. Saves logs to the OUTPUT directory
-6. Runs pytest if not `-SkipTests`
-7. Prints a summary
+1. Cleans prior `__pycache__` / `.pytest_cache` from `temp_root` and the working tree (skip with `-NoClean`)
+2. Finds the repo root
+3. Runs the classification pipeline for each active vendor (dell, cisco, hpe, lenovo, huawei, xfusion)
+4. Runs `batch_audit.py` (E-code audit; add `-NoAi` to skip the LLM step)
+5. Runs `cluster_audit.py`
+6. Saves logs to the OUTPUT directory
+7. Runs pytest if not `-SkipTests`
+8. Prints a summary
 
 ## Configuration
 
@@ -40,14 +41,14 @@ copy config.local.yaml.example config.local.yaml
 .\run.ps1 -Vendor dell                 # one vendor end-to-end
 .\run.ps1 -TestsOnly                   # pytest only
 .\run.ps1 -SkipTests                   # full run without pytest at the end
+.\run.ps1 -NoClean                     # skip the start-of-run clean.ps1 sweep
 .\run.ps1 -Vendor huawei -NoAi -SkipTests  # smoke run
 ```
 
 ## Workspace cleanup
 
+`run.ps1` invokes `.\spec_classifier\scripts\clean.ps1` automatically at the start of every run. Pass `-NoClean` to opt out. To clean manually without running the pipeline:
+
 ```powershell
 .\spec_classifier\scripts\clean.ps1
 ```
-
-Removes `__pycache__`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache` from the working tree.
-Does not touch: golden files, OUTPUT.
