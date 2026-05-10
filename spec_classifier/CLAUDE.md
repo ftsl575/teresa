@@ -1,32 +1,32 @@
-# CLAUDE.md — Контекст проекта Teresa / spec_classifier
-> Этот файл читается автоматически в Cowork и Claude Desktop.
-> Цель: не грузить репо в каждом окне. Обновляй после каждого значимого цикла.
-> Последнее обновление: 2026-05-02
-> Последний коммит: 06d64c1 PR-4c: Lenovo final (Bezel + UNKNOWN-3 + drive_cage alias flip + goldens creation)
-> Последний прогон: 2026-04-30 21:17 (4 vendors, 26 files, 4338 rows; см. OUTPUT/audit_report.json)
+# CLAUDE.md — Project Context: Teresa / spec_classifier
+> This file is read automatically by Cowork and Claude Desktop.
+> Purpose: avoid loading the repo into every window. Update after each significant cycle.
+> Last updated: 2026-05-10
+> Last commit: 06d64c1 PR-4c: Lenovo final (Bezel + UNKNOWN-3 + drive_cage alias flip + goldens creation)
+> Last run: 2026-04-30 21:17 (4 vendors, 26 files, 4338 rows; see OUTPUT/audit_report.json)
 
 ---
 
-## ПРОЕКТ
+## Project
 
-**Teresa** — пайплайн классификации оборудования из Excel BOM (Bill of Materials).
-Вендоры: **Dell / Cisco / HPE / Lenovo / xFusion / Huawei**.
-Каждая строка классифицируется по полям:
+**Teresa** — a pipeline that classifies hardware from Excel BOM (Bill of Materials) files.
+Vendors: **Dell / Cisco / HPE / Lenovo / xFusion / Huawei**.
+Every row is classified by the following fields:
 
-| Поле | Значения |
+| Field / Values | Values |
 |---|---|
 | `entity_type` | BASE / HW / CONFIG / SOFTWARE / SERVICE / LOGISTIC / NOTE / UNKNOWN |
 | `hw_type` | server / switch / cpu / memory / gpu / storage_drive / … |
-| `device_type` | уточнение: ram, nic, raid_controller, cable, chassis, … |
-| `state` | PRESENT / ABSENT / DISABLED (DISABLED — для строк типа "Disabled" в Lenovo/Dell, см. E4) |
-| `row_kind` | HEADER / ITEM ← добавлено в annotated_writer в последнем цикле |
+| `device_type` | refinement: ram, nic, raid_controller, cable, chassis, … |
+| `state` | PRESENT / ABSENT / DISABLED (DISABLED — for rows like "Disabled" in Lenovo/Dell, see E4) |
+| `row_kind` | HEADER / ITEM ← added in annotated_writer in the recent cycle |
 
 ---
 
-## ПУТИ (Windows)
+## Paths (Windows)
 
 ```
-Репо:    C:\Users\<USERNAME>\Desktop\teresa\spec_classifier
+Repo:    C:\Users\<USERNAME>\Desktop\teresa\spec_classifier
 Input:   C:\Users\<USERNAME>\Desktop\INPUT  (dell/, hpe/, cisco/)
 Output:  C:\Users\<USERNAME>\Desktop\OUTPUT
 Temp:    C:\Users\<USERNAME>\Desktop\temporary
@@ -34,20 +34,22 @@ Temp:    C:\Users\<USERNAME>\Desktop\temporary
 
 ---
 
-## ТЕКУЩЕЕ СОСТОЯНИЕ (v1.3.x, после audit_1G → PASS)
+## Current State (v1.3.x, after audit_1G → PASS)
 
-### Тесты
+> Historical state snapshot archived to `.planning/archive/CURRENT_STATE-2026-05-10.md`. Live source-of-truth for project status going forward: `.planning/STATE.md`.
+
+### Tests
 ```
-pytest --collect-only: 420 tests collected (244 def-функций по 31 файлам)
+pytest --collect-only: 420 tests collected (244 def-functions across 31 files)
   — 71 batch_audit
   — 43 cluster_audit
   — 51 lenovo (parser + normalizer + rules)
   — 30 hpe_rules_unit
-  — остальные: dell/cisco/нормализаторы/writer'ы/regression/smoke/state_detector/...
-Все PASS на момент 2026-04-30.
+  — others: dell/cisco/normalizers/writers/regression/smoke/state_detector/...
+All PASS as of 2026-04-30.
 ```
 
-### Структура INPUT
+### INPUT layout
 ```
 INPUT/
   dell/    dl1.xlsx … dl5.xlsx
@@ -56,36 +58,36 @@ INPUT/
   lenovo/  L1.xlsx … L11.xlsx
 ```
 
-### Структура OUTPUT (после полного прогона + аудита)
+### OUTPUT layout (after full run + audit)
 ```
-OUTPUT/  (вне репо: C:\Users\<USERNAME>\Desktop\OUTPUT, в .gitignore)
+OUTPUT/  (outside the repo: C:\Users\<USERNAME>\Desktop\OUTPUT, gitignored)
   dell_run/  cisco_run/  hpe_run/  lenovo_run/
     run-YYYY-MM-DD__HH-MM-SS-<stem>/
       classification.jsonl, run_summary.json
       cleaned_spec.xlsx, <stem>_annotated.xlsx
-      <stem>_branded.xlsx           ← все вендоры (с f2a2300)
-      <stem>_annotated_audited.xlsx ← batch_audit.py пишет внутрь run-папки
+      <stem>_branded.xlsx           ← all vendors (since f2a2300)
+      <stem>_annotated_audited.xlsx ← batch_audit.py writes inside the run folder
       unknown_rows.csv, rows_raw.json, rows_normalized.json
       header_rows.csv, run.log
-    run-…-TOTAL/   ← агрегация (содержит копии branded.xlsx всех файлов)
-  audit_report.json       ← batch_audit.py (на корне OUTPUT/)
-  audit_summary.xlsx      ← batch_audit.py (на корне OUTPUT/)
-  cluster_summary.xlsx    ← cluster_audit.py (на корне OUTPUT/)
+    run-…-TOTAL/   ← aggregation (contains branded.xlsx copies for every file)
+  audit_report.json       ← batch_audit.py (at OUTPUT/ root)
+  audit_summary.xlsx      ← batch_audit.py (at OUTPUT/ root)
+  cluster_summary.xlsx    ← cluster_audit.py (at OUTPUT/ root)
 ```
 
-### Ключевые файлы репо
+### Key repo files
 ```
 spec_classifier/
-  batch_audit.py          — аудит E-кодов (E1–E18) + AI mismatch, 1489 LOC
-  cluster_audit.py        — кластеризация UNKNOWN/AI_MISMATCH строк, 547 LOC
-  scripts/update_golden_from_tests.py  — НЕ СУЩЕСТВУЕТ как отдельный скрипт
-                            ↑ функциональность есть в main.py --update-golden
+  batch_audit.py          — E-code audit (E1–E18) + AI mismatch, 1489 LOC
+  cluster_audit.py        — clustering of UNKNOWN/AI_MISMATCH rows, 547 LOC
+  scripts/update_golden_from_tests.py  — DOES NOT EXIST as a standalone script
+                            ↑ functionality lives in main.py --update-golden
   rules/  dell_rules.yaml (93), cisco_rules.yaml (63), hpe_rules.yaml (143),
-          lenovo_rules.yaml (112)   ← счёт по rule_id
+          lenovo_rules.yaml (112)   ← rule_id count
   golden/ dl1..dl5, ccw_1..ccw_2, hp1..hp8 _expected.jsonl
-          (lenovo golden пока отсутствует — golden ещё не сгенерирован)
-  docs/   (нормативные документы; см. CURRENT_STATE.md, CHANGELOG.md)
-  src/core/   classifier.py, normalizer.py, parser.py (Dell-specific, см. Tech Debt)
+          (lenovo golden absent — not yet generated)
+  docs/   (normative documents; see archive at `.planning/archive/CURRENT_STATE-2026-05-10.md`, CHANGELOG.md)
+  src/core/   classifier.py, normalizer.py, parser.py (Dell-specific, see Tech Debt)
   src/vendors/  dell/, cisco/, hpe/, lenovo/
   src/outputs/  annotated_writer.py, excel_writer.py, branded_spec_writer.py, …
   tests/  test_batch_audit.py (def 31 / collected 71)
@@ -93,32 +95,32 @@ spec_classifier/
           test_hpe_rules_unit.py (def 6 / collected 30)
           test_lenovo_rules_unit.py + test_lenovo_normalizer.py
             + test_lenovo_parser.py (def 27 / collected 51)
-          плюс test_dec_acceptance, test_device_type, test_state_detector,
+          plus test_dec_acceptance, test_device_type, test_state_detector,
           test_normalizer, test_rules_traceability, test_schema_validation,
-          regression/unknown_threshold per vendor — итого 31 файл, 420 collected
+          regression/unknown_threshold per vendor — total: 31 files, 420 collected
 ```
 
 ---
 
-## CLI КОМАНДЫ
+## CLI Commands
 
 ```powershell
-# Прогон пайплайна
+# Run the pipeline
 python main.py --batch-dir <INPUT/vendor> --vendor <vendor>
 
-# Аудит без AI (быстро)
+# Audit without AI (fast)
 python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --no-ai
 
-# Аудит конкретного вендора с AI
+# Audit a single vendor with AI
 python batch_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT --vendor hpe
 
-# Кластеризация
+# Clustering
 python cluster_audit.py --output-dir C:\Users\<USERNAME>\Desktop\OUTPUT
 
-# Тесты
+# Tests
 pytest tests/ -v --tb=short
 
-# Обновление golden
+# Update golden
 python main.py --update-golden
 ```
 
