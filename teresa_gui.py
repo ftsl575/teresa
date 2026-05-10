@@ -548,8 +548,16 @@ def main():
                 if line.startswith("temp_root:"):
                     temp_root = line.split(":", 1)[1].strip().strip('"').strip("'")
                     break
-        except Exception:
-            pass
+        except Exception as e:
+            # Don't crash the GUI on a malformed config — fall back to default.
+            # But DO log: silent swallow + the new env-var redirect would let
+            # GUI parent and run.ps1 child diverge on the same temp_root,
+            # writing __pycache__ to two locations. See REVIEW WR-04.
+            print(
+                f"[teresa_gui] WARN: failed to parse temp_root from {cfg}: {e}; "
+                f"using fallback {temp_root}",
+                file=sys.stderr,
+            )
     os.environ["PYTHONPYCACHEPREFIX"] = str(Path(temp_root) / "__pycache__")
     pytest_cache_arg = f'-o cache_dir="{Path(temp_root) / ".pytest_cache"}"'
     if os.environ.get("PYTEST_ADDOPTS"):
