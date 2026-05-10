@@ -24,6 +24,11 @@ Versioning: [SemVer](https://semver.org/).
 - docs: archived `spec_classifier/CURRENT_STATE.md` to `.planning/archive/CURRENT_STATE-2026-05-10.md`. Live status now tracked in `.planning/STATE.md` (GSD).
 - docs: refreshed `CHANGELOG.md` — unified to English; one logical change per entry; grouped by milestone.
 
+### Changed (Phase 3 — Workflow, 2026-05-10)
+- chore(workflow): retired `spec_classifier/prompts/` to `.planning/archive/prompts-2026-05-10/`; the GSD-native cycle is now documented at `/CONTRIBUTING.md` (new file).
+- chore(workflow): archived `spec_classifier/docs/dev/CONTRIBUTING.md` to `.planning/archive/CONTRIBUTING-2026-05-10.md`; superseded by `/CONTRIBUTING.md`.
+- docs(workflow): replaced legacy "Development Cycle" block in `spec_classifier/CLAUDE.md` with a pointer to `/CONTRIBUTING.md`; updated root `CLAUDE.md` § Tooling roles symmetric pointer; cleaned `spec_classifier/docs/DOCS_INDEX.md` (dropped retired-doc rows, added See-also breadcrumb).
+
 ### Added
 - build(launcher): unified run scripts into `run.ps1` + PyQt6 GUI (`teresa_gui.py`) + double-click launcher (`teresa.bat`). Replaces legacy `run_audit.ps1`, `scripts/run_full.ps1`, `scripts/run_tests.ps1`. Wired Lenovo + Huawei into auto-detection (`0080f45`).
 - feat(HPEAdapter): `get_extra_cols()` returns 5 HPE-specific annotated Excel columns (Config Name, Lead Time, Extended Price, Product Type, Factory Integrated)
