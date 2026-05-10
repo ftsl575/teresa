@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
-status: planning
-last_updated: "2026-05-10T12:03:24.267Z"
+status: ready_to_plan
+last_updated: "2026-05-10T12:30:00.000Z"
 last_activity: 2026-05-10
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,37 +20,42 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Milestone v1.1 — Periphery cleanup (residual). Defining requirements.
+**Current focus:** Milestone v1.1 — Periphery cleanup (residual). Roadmap created (Phases 4-6); ready to plan Phase 4.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-10 — Milestone v1.1 started
+Phase: 4 of 6 (Cache Redirect) — first phase of v1.1
+Plan: — (none yet; awaiting `/gsd-plan-phase 4`)
+Status: Not started — ready to plan
+Last activity: 2026-05-10 — v1.1 ROADMAP.md created with 3 phases (4, 5, 6); 12/12 requirements mapped
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 0 (v1.1)
 - Average duration: —
-- Total execution time: 0.0 hours
+- Total execution time: 0.0 hours (v1.1)
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Hygiene | 0 | — | — |
-| 2. Docs | 0 | — | — |
-| 3. Workflow | 0 | — | — |
+| 4. Cache Redirect | 0 | — | — |
+| 5. Orphan Cleanup | 0 | — | — |
+| 6. Doc-vs-Impl Drift Sweep | 0 | — | — |
 
 **Recent Trend:**
 
-- Last 5 plans: —
-- Trend: — (no data yet)
+- Last 5 plans: — (v1.1 not started)
+- Trend: — (no v1.1 data yet)
 
 *Updated after each plan completion*
+
+**v1.0 history (preserved for trend continuity):**
+
 | Phase 01-hygiene P01 | 45 | 3 tasks | 17 files |
 | Phase 01-hygiene P02 | 60 | 1 tasks | 2 files |
 | Phase 01-hygiene P03 | 10 | 3 tasks | 1 files |
@@ -75,21 +80,13 @@ Recent decisions affecting current work:
 - Init: Keep both `CLAUDE.md` files; deduplicate overlap (root = thin pointer, deep ref stays in `spec_classifier/`).
 - Init: Strip `C:\Users\G\` username only; do not de-Windowize launchers.
 - Init: Honor "do not fix" tech debt — `power_cord=None`, Excel-reading audit, `core/parser.py` Dell-specificity, `HW_TYPE_VOCAB` duplication, YAML rule order.
-- [Phase ?]: HYG-01 complete: per-context placeholder scheme applied per D-01; zero C:\Users\G\ residue in 17 tracked files; C:\venv intact per D-04
-- [Phase ?]: HYG-02 gitignore consolidation
-- [Phase ?]: HYG-03 complete: commits.txt (51 MB artifact) removed; verify_teresa_audit_actionables.py kept (2 live doc references confirmed)
-- [Phase ?]: DOC-04 complete: spec_classifier/CLAUDE.md translated RU->EN (303->307 lines); root CLAUDE.md collapsed to thin pointer + 5 critical rules (130->74 lines); sanctioned overlap is the 5 critical business rules verbatim per D-03
-- [Phase ?]: Root CLAUDE.md uses unprefixed numbering (1.-5.) for the 5 critical rules to avoid colliding with deep file's R1.-R5. hard-rules numbering (forbidden duplication per the plan's verify gate)
-- [Phase ?]: D-08 archive forward-pointer placed in deep CLAUDE.md (Current State + Tech Debt item 5) -- depends on Plan 02-05 creating .planning/archive/CURRENT_STATE-2026-05-10.md before Phase 2 verification gate (Plan 02-06)
-- [Phase ?]: Root README.md: C:\venv framed as suggestion not hard requirement
-- [Phase ?]: WF-01 complete: spec_classifier/prompts/ (11 files, Russian) folder-scoped git mv'd to .planning/archive/prompts-2026-05-10/; archive README rewritten in English with D-03/D-04 11-row mapping table; LAUNCHER_README.md line 52 repointed to NEW_VENDOR_GUIDE.md per D-05
-- [Phase ?]: Phase 3 P01 used 3 atomic per-task commits (c8a0977/85f9d22/ea4f050) per executor binding instruction; plan's <verification> step 7 single-commit suggestion overridden in favor of orchestrator success-criteria 'Each task committed individually' (Phase 1/2 atomic-commit convention)
-- [Phase ?]: Phase 3 P02 (WF-02) complete: /CONTRIBUTING.md authored (155 lines, 8 D-10 sections, GSD-cycle command-by-command per D-13, do-not-fix verbatim per D-15); inner CONTRIBUTING.md archived; deep+root CLAUDE.md updated to symmetric forward-pointers; DOCS_INDEX.md cleaned; CHANGELOG.md Phase 3 entry added under [Unreleased]
-- [Phase ?]: Phase 3 P02 used 6 atomic per-task commits (2e2edfb/cb2b3ee/94bc2af/98a8109/936b0b0/f16cc85) per executor binding instruction; plan's <verification> step 8 single-commit suggestion overridden in favor of orchestrator success-criteria 'Each task committed individually' (Phase 1/2/3-01 atomic-commit convention)
-- [Phase ?]: PowerShell verifier UTF-8 read pattern documented (extends Plan 03-01's .ps1-file-not-Command pattern): use [System.IO.File]::ReadAllText(absolutePath, [System.Text.Encoding]::UTF8) instead of Get-Content -Raw; Get-Content -Raw on PS 5.1 silently converts UTF-8 em-dashes to Cyrillic via system codepage, producing false-positive 'Russian residue' warnings
-- [Phase 3]: WF-01 + WF-02 complete; D-20 7-step verification gate PASS; v1.0 cleanup-and-workflow milestone closed (10/10 requirements Complete: HYG-01..03, DOC-01..05, WF-01..02)
-- [Phase 3]: Auto-mode chain pipeline auto-approved Task 3.4 diff-review (human-verify) checkpoint per orchestrator <auto_mode> binding instruction; auth-gate / human-action checkpoints would still halt — none in this plan
-- [Phase 3]: Phase 3 SHA back-fill (Task 3.7) became a no-op because Plans 03-01 + 03-02 each self-committed atomic + plan-metadata commits BEFORE the gate plan ran; all SHAs available at SUMMARY-author time; only the wrap-up commit's own self-reference remains as <sha-pending> (intentional, acceptable per Task 3.7 acceptance criteria)
+- [Phase 3]: WF-01 + WF-02 complete; D-20 7-step verification gate PASS; v1.0 cleanup-and-workflow milestone closed (10/10 requirements Complete: HYG-01..03, DOC-01..05, WF-01..02).
+- [Phase 3]: Auto-mode chain pipeline auto-approved Task 3.4 diff-review (human-verify) checkpoint per orchestrator <auto_mode> binding instruction; auth-gate / human-action checkpoints would still halt — none in this plan.
+- [Phase 3]: Phase 3 SHA back-fill (Task 3.7) became a no-op because Plans 03-01 + 03-02 each self-committed atomic + plan-metadata commits BEFORE the gate plan ran; only the wrap-up commit's own self-reference remains as <sha-pending> (intentional, acceptable per Task 3.7 acceptance criteria).
+- [v1.1 Init]: Sequential plan execution required (Phase 4 → 5 → 6). Plan 2 (ORPH-01) rewrites `pyproject.toml:5` to wording only true post-Phase-4; Plan 3 sweep relies on post-Phase-4-and-5 tree. Parallel execution unsound.
+- [v1.1 Init]: `DOC_INVARIANTS.md` (DRIFT-03) is in scope despite "no creation" framing — tooling/meta-doc materializing the v1.0 retrospective lesson. Domain content (per-vendor docs) remains v1.2 scope.
+- [v1.1 Init]: `load_config_with_local()` regex-parser consolidation explicitly out of scope; Phase 4 extends the existing 4+-site regex pattern to `temp_root` only. Helper consolidation deferred to its own milestone (CONCERNS.md § IMPORTANT).
+- [v1.1 Init]: Roadmap created 2026-05-10 — 3 phases (4 Cache Redirect, 5 Orphan Cleanup, 6 Doc-vs-Impl Drift Sweep); 12/12 requirements mapped, no orphans.
 
 ### Pending Todos
 
@@ -105,6 +102,13 @@ Carried from `.planning/codebase/CONCERNS.md` BLOCKER section as load-bearing ex
 - YAML rule order is load-bearing — never sort or reorder rule blocks.
 - `HW_TYPE_VOCAB` duplicated across `classifier.py` and `batch_audit.py` — tracked but not selected for this milestone.
 
+**v1.1 phase-gate constraints (apply every phase):**
+
+- D-22 protected paths: any diff inside `spec_classifier/{src,rules,golden,tests,batch_audit.py,cluster_audit.py,main.py,conftest.py}` = phase gate FAIL.
+- Pytest skip-guard: session fails if `skipped/total > 0.50`. Each phase verification runs `pytest -q`.
+- Goldens byte-equal: all 40 `spec_classifier/golden/*_expected.jsonl` fixtures must remain byte-equal. No `--update-golden` in v1.1.
+- No tech-stack additions: Python 3.10, openpyxl, pandas, pyyaml, pytest only.
+
 ## Deferred Items
 
 Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
@@ -114,13 +118,17 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 | Classification | CLAS-01 rule improvements, CLAS-02 new vendor onboarding | v2 | 2026-05-10 |
 | Cross-Platform | PLAT-01 `run.sh`, PLAT-02 de-Windows GUI | v2 | 2026-05-10 |
 | Automation | AUTO-01 CI pipeline, AUTO-02 pre-commit rule-id schema | v2 | 2026-05-10 |
+| Per-vendor knowledge | VKB-01..04 (PART_NUMBERS, SHEET_LAYOUT, CATALOG_CONVENTIONS, RULES_RATIONALE) | v1.2 | 2026-05-10 |
+| 3-level taxonomy spec | TAX-01..04 (paper spec, level boundaries, migration plan, entity_type fate) | v2.0 | 2026-05-10 |
+| 3-level taxonomy impl | IMPL-01..04 (engine, 6 YAML, goldens regen, audit re-wire) | v2.1 | 2026-05-10 |
+| Config-overlay helper | `load_config_with_local()` consolidation (4+ regex sites) | post-v1.1 | 2026-05-10 |
 
 ## Session Continuity
 
-Last session: 2026-05-10T07:55:48Z
-Stopped at: Phase 3 verification gate PASS — v1.0 milestone closed
+Last session: 2026-05-10T12:30:00Z
+Stopped at: v1.1 ROADMAP.md created — 12/12 requirements mapped to Phases 4-6; ready for `/gsd-plan-phase 4`
 Resume file: None
 
 ## Operator Next Steps
 
-- Define v1.1 requirements (driven by `/gsd-new-milestone` workflow), then approve roadmap, then `/gsd-discuss-phase` for the first new phase.
+- `/gsd-plan-phase 4` to plan Phase 4 (Cache Redirect — CACHE-01..04). Phases 5 and 6 are gated on Phase 4 completion (sequential dependency).

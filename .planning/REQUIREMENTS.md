@@ -102,29 +102,31 @@ Explicitly excluded. Each carries reasoning to prevent re-adding.
 
 ## Traceability
 
-Phase mapping is filled by the roadmapper agent during roadmap creation.
+Phase mapping filled by the roadmapper agent during roadmap creation (2026-05-10).
 
 | Requirement | Phase | Status |
 |---|---|---|
-| CACHE-01 | TBD | Pending |
-| CACHE-02 | TBD | Pending |
-| CACHE-03 | TBD | Pending |
-| CACHE-04 | TBD | Pending |
-| ORPH-01 | TBD | Pending |
-| ORPH-02 | TBD | Pending |
-| ORPH-03 | TBD | Pending |
-| ORPH-04 | TBD | Pending |
-| DRIFT-01 | TBD | Pending |
-| DRIFT-02 | TBD | Pending |
-| DRIFT-03 | TBD | Pending |
-| DRIFT-04 | TBD | Pending |
+| CACHE-01 | Phase 4 | Pending |
+| CACHE-02 | Phase 4 | Pending |
+| CACHE-03 | Phase 4 | Pending |
+| CACHE-04 | Phase 4 | Pending |
+| ORPH-01 | Phase 5 | Pending |
+| ORPH-02 | Phase 5 | Pending |
+| ORPH-03 | Phase 5 | Pending |
+| ORPH-04 | Phase 5 | Pending |
+| DRIFT-01 | Phase 6 | Pending |
+| DRIFT-02 | Phase 6 | Pending |
+| DRIFT-03 | Phase 6 | Pending |
+| DRIFT-04 | Phase 6 | Pending |
 
 **Coverage:**
 
 - v1.1 requirements: 12 total
-- Mapped to phases: 0 (filled by roadmap)
-- Unmapped: 12 (expected pre-roadmap)
+- Mapped to phases: 12 / Unmapped: 0 ✓
+- Phase 4 (Cache Redirect): 4 reqs (CACHE-01..04)
+- Phase 5 (Orphan Cleanup): 4 reqs (ORPH-01..04)
+- Phase 6 (Doc-vs-Impl Drift Sweep): 4 reqs (DRIFT-01..04)
 
 ---
 *Requirements defined: 2026-05-10*
-*Last updated: 2026-05-10 after initial definition for milestone v1.1*
+*Last updated: 2026-05-10 — traceability filled after ROADMAP.md creation (Phases 4, 5, 6).*
