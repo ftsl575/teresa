@@ -55,7 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-01-PLAN.md — DOC-04: translate spec_classifier/CLAUDE.md to English + dedup root CLAUDE.md
 - [x] 02-02-PLAN.md — DOC-05: refresh CHANGELOG to English-unified release notes + archive CURRENT_STATE.md
 - [x] 02-03-PLAN.md — DOC-01: author root README.md from scratch (~80–120 lines)
-- [ ] 02-04-PLAN.md — DOC-02: refresh spec_classifier/README.md drift fixes
+- [x] 02-04-PLAN.md — DOC-02: refresh spec_classifier/README.md drift fixes
 - [ ] 02-05-PLAN.md — DOC-03: audit spec_classifier/docs/ tree end-to-end + DOCS_INDEX 1:1
 - [ ] 02-06-PLAN.md — D-23/D-24 verification gate + final commits per requirement
 
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hygiene | 4/4 | Complete | 2026-05-10 |
-| 2. Docs | 3/6 | In Progress|  |
+| 2. Docs | 4/6 | In Progress|  |
 | 3. Workflow | 0/TBD | Not started | - |
 
 ---
