@@ -1,8 +1,8 @@
 ---
 phase: 04-cache-redirect
 verified: 2026-05-10T00:00:00Z
-status: human_needed
-score: 5/5 must-haves verified (mechanism); 3/5 require human end-to-end runtime confirmation
+status: passed
+score: 5/5 must-haves verified (mechanism); 4/4 human UAT items passed (see 04-HUMAN-UAT.md)
 overrides_applied: 0
 human_verification:
   - test: "End-to-end run.ps1 -Vendor huawei -NoAi -SkipTests"
@@ -23,9 +23,9 @@ human_verification:
 
 **Phase Goal:** Runtime `__pycache__` and `.pytest_cache` artifacts land in `$temp_root\__pycache__` (outside the repo working tree) for every entry point — `run.ps1`, `teresa.bat`, and `teresa_gui.py`. `run.ps1` cleans by default with a `-NoClean` opt-out, and `ONE_BUTTON_RUN.md` reflects the new contract.
 
-**Verified:** 2026-05-10T00:00:00Z
-**Status:** human_needed
-**Re-verification:** No — initial verification
+**Verified:** 2026-05-10T00:00:00Z (mechanism); 2026-05-10T19:10:00Z (human UAT)
+**Status:** passed
+**Re-verification:** No — UAT closed by operator after fix commits 03e717f, e5557d5
 
 ## Goal Achievement
 

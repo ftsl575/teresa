@@ -46,6 +46,12 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 - ✓ Old pre-GSD prompts (`spec_classifier/prompts/00–08` + `COWORK_OPUS_FULL_AUDIT.md`) retired — `git mv` to `.planning/archive/prompts-2026-05-10/` with English mapping README — Validated in Phase 3: Workflow (WF-01)
 - ✓ Root `CONTRIBUTING.md` authored (155 lines, English, tool-agnostic) — GSD-cycle commands literal, pytest + skip-ratio gate, NEW_VENDOR_GUIDE pointer, "do not fix" rules verbatim — Validated in Phase 3: Workflow (WF-02)
 
+<!-- v1.1 Phase 4 — Cache Redirect closed 2026-05-10 -->
+
+- ✓ `run.ps1` sets `PYTHONPYCACHEPREFIX` and `PYTEST_ADDOPTS` from `config.local.yaml::temp_root` before any Python invocation; `clean.ps1` runs by default with `-NoClean` opt-out — Validated in Phase 4: Cache Redirect (CACHE-01, CACHE-03)
+- ✓ `teresa_gui.py` `main()` sets the same env vars before `QApplication` so subprocess-spawned PowerShell children inherit the redirect — Validated in Phase 4: Cache Redirect (CACHE-02)
+- ✓ `spec_classifier/docs/dev/ONE_BUTTON_RUN.md` reflects the new clean-by-default + cache-redirect contract; `-NoClean` and `clean.ps1` co-occur in the "Workspace cleanup" section — Validated in Phase 4: Cache Redirect (CACHE-04)
+
 ### Active
 
 <!-- v1.1 Periphery cleanup (residual). Requirements derived from MILESTONE-CONTEXT.md → 3 sequential plans. Mapped to phases during roadmap creation. -->
@@ -113,4 +119,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-10 after starting milestone v1.1 (Periphery cleanup, residual).*
+*Last updated: 2026-05-10 after Phase 4 (Cache Redirect) completion — CACHE-01..04 validated.*
