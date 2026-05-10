@@ -1,40 +1,53 @@
 # One-Button Run — spec_classifier
 
-## Быстрый старт
+## Quick start
 
 ```powershell
-.\scripts\run_full.ps1
+# From the repo root (teresa/):
+.\run.ps1
 ```
 
-## Что делает run_full.ps1
+## What run.ps1 does
 
-1. Находит корень репо
-2. Перенаправляет .pytest_cache и __pycache__ в temp_root (из config.local.yaml или ./temporary)
-3. Запускает pytest
-4. Запускает batch-прогон для каждого вендора (если есть файлы)
-5. Сохраняет логи в temp_root/diag/runs/<timestamp>/
-6. Печатает итог
+1. Finds the repo root
+2. Runs the classification pipeline for each active vendor (dell, cisco, hpe, lenovo, huawei, xfusion)
+3. Runs `batch_audit.py` (E-code audit; add `-NoAi` to skip the LLM step)
+4. Runs `cluster_audit.py`
+5. Saves logs to the OUTPUT directory
+6. Runs pytest if not `-SkipTests`
+7. Prints a summary
 
-## Конфигурация путей
+## Configuration
 
-Три уровня (от низкого к высокому приоритету):
+Three levels (lowest to highest priority):
 
-1. **config.yaml** — дефолты (относительные, в репо)
-2. **config.local.yaml** — личные пути (НЕ в git)
-3. CLI параметры / параметры скрипта
+1. **config.yaml** — defaults (relative paths, in repo)
+2. **config.local.yaml** — personal paths (NOT in git)
+3. CLI parameters / script parameters
 
-## Настройка config.local.yaml
+## Setting up config.local.yaml
 
 ```powershell
+cd spec_classifier
 copy config.local.yaml.example config.local.yaml
-# Отредактировать пути под свою машину
+# Edit paths for your machine
 ```
 
-## Чистка мусора
+## Useful run.ps1 switches
 
 ```powershell
-.\scripts\clean.ps1
+.\run.ps1 -NoAi                        # rule-based audit only (no OPENAI_API_KEY needed)
+.\run.ps1 -Vendor dell                 # one vendor end-to-end
+.\run.ps1 -TestsOnly                   # pytest only
+.\run.ps1 -SkipTests                   # full run without pytest at the end
+.\run.ps1 -Vendor huawei -NoAi -SkipTests  # smoke run
 ```
 
-Удаляет __pycache__, .pytest_cache, .ruff_cache, .mypy_cache и diag/ из temp_root и рабочего дерева.  
-Не трогает: golden, output.
+## Workspace cleanup
+
+```powershell
+.\spec_classifier\scripts\clean.ps1
+```
+
+Removes `__pycache__`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache` from the working tree.
+Does not touch: golden files, OUTPUT.

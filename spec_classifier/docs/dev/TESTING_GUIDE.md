@@ -1,118 +1,134 @@
-# Руководство по тестированию — Spec Classifier (Dell + Cisco CCW + HPE)
+# Testing Guide — Spec Classifier
 
-## 1. Тестовая стратегия
+## 1. Testing strategy
 
-- **Unit (без xlsx):** test_rules_unit, test_state_detector, test_normalizer — не требуют тестовых Excel.
-- **Integration (с xlsx):** прогон пайплайна на dlN.xlsx из `C:\Users\<USERNAME>\Desktop\INPUT\`; проверка артефактов (test_smoke, test_excel_writer, test_annotated_writer, test_cli).
-- **Regression (xlsx + golden):** test_regression — построчное сравнение с golden/<stem>_expected.jsonl.
-- **Acceptance:** test_unknown_threshold (лимит unknown), test_dec_acceptance и др. по необходимости.
-- **Cisco Unit:** test_cisco_parser — parse_excel на ccw_1/ccw_2 (26 и 82 строки); test_cisco_normalizer — bundle_id, parent_line_number, is_bundle_root, module_name, standalone.
-- **Cisco Regression:** test_regression_cisco — построчное сравнение с golden/ccw_1_expected.jsonl и ccw_2_expected.jsonl.
-- **Cisco Threshold:** test_unknown_threshold_cisco — unknown_count = 0 для ccw_1 и ccw_2.
-- **HPE Unit:** test_hpe_parser — parse на hp1–hp8 (лист BOM, col_map); test_hpe_normalizer — HPENormalizedRow vendor extensions; test_hpe_rules_unit — 25 параметризованных device_type/hw_type кейсов по всем HPE device_types.
-- **HPE Regression:** test_regression_hpe — построчное сравнение с golden/hp1–hp8_expected.jsonl.
-- **HPE Threshold:** test_unknown_threshold_hpe — unknown_count = 0 для hp1–hp8.
+- **Unit (no xlsx):** `test_rules_unit`, `test_state_detector`, `test_normalizer` — do not require test Excel files.
+- **Integration (with xlsx):** pipeline run on `dlN.xlsx` from `C:\Users\<USERNAME>\Desktop\INPUT\`; artifact verification (`test_smoke`, `test_excel_writer`, `test_annotated_writer`, `test_cli`).
+- **Regression (xlsx + golden):** `test_regression` — row-by-row comparison with `golden/<stem>_expected.jsonl`.
+- **Acceptance:** `test_unknown_threshold` (unknown limit), `test_dec_acceptance`, etc. as needed.
+- **Cisco Unit:** `test_cisco_parser` — `parse_excel` on `ccw_1`/`ccw_2` (26 and 82 rows); `test_cisco_normalizer` — `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone`.
+- **Cisco Regression:** `test_regression_cisco` — row-by-row comparison with `golden/ccw_1_expected.jsonl` and `golden/ccw_2_expected.jsonl`.
+- **Cisco Threshold:** `test_unknown_threshold_cisco` — `unknown_count = 0` for `ccw_1` and `ccw_2`.
+- **HPE Unit:** `test_hpe_parser` — parse on `hp1–hp8` (sheet BOM, col_map); `test_hpe_normalizer` — `HPENormalizedRow` vendor extensions; `test_hpe_rules_unit` — 25+ parametrized `device_type`/`hw_type` cases for all HPE device types.
+- **HPE Regression:** `test_regression_hpe` — row-by-row comparison with `golden/hp1–hp8_expected.jsonl`.
+- **HPE Threshold:** `test_unknown_threshold_hpe` — `unknown_count = 0` for `hp1–hp8`.
+- **Lenovo:** `test_lenovo_parser`, `test_lenovo_normalizer`, `test_lenovo_rules_unit`, `test_regression_lenovo`, `test_unknown_threshold` (Lenovo fixtures).
+- **Huawei / xFusion:** `test_huawei_parser`, `test_huawei_normalizer`, `test_regression_huawei`, `test_xfusion_parser`, `test_xfusion_normalizer`, `test_unknown_threshold_huawei`, `test_unknown_threshold_xfusion`.
 
 ---
 
-## 2. Быстрый запуск
+## 2. Quick start
 
 ```bash
-# Unit без xlsx
+# Unit without xlsx
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py -v
 
-# С xlsx (smoke + CLI)
+# With xlsx (smoke + CLI)
 pytest tests/test_smoke.py tests/test_cli.py -v
 
-# Регрессия (нужны входные файлы в INPUT\ и golden\)
+# Regression (requires INPUT files and golden/)
 pytest tests/test_regression.py -v
 
-# Вся батарея
+# Full suite
 pytest tests/ -v --tb=short
 
-# Cisco тесты
+# Cisco tests
 pytest tests/test_cisco_parser.py tests/test_cisco_normalizer.py \
        tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py -v
 
-# HPE тесты
+# HPE tests
 pytest tests/test_hpe_parser.py tests/test_hpe_normalizer.py \
        tests/test_hpe_rules_unit.py \
        tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py -v
+
+# Lenovo tests
+pytest tests/test_lenovo_parser.py tests/test_lenovo_normalizer.py \
+       tests/test_lenovo_rules_unit.py -v
+
+# Huawei / xFusion tests
+pytest tests/test_huawei_parser.py tests/test_huawei_normalizer.py \
+       tests/test_regression_huawei.py tests/test_xfusion_parser.py \
+       tests/test_xfusion_normalizer.py -v
 ```
 
 ---
 
-## 3. Тестовые данные
+## 3. Test data
 
-Входные xlsx не хранятся в git. Размещайте их в `C:\Users\<USERNAME>\Desktop\INPUT\` (или укажите свой путь в `config.local.yaml → paths.input_root`). При отсутствии файла тесты пропускаются (skip) с сообщением.
-
----
-
-## 4. Golden-файлы
-
-- **Генерация:** `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden` → создаётся `golden/dl1_expected.jsonl`.
-- **Обновление:** `--update-golden` с интерактивным подтверждением (y/N). В CI — `--save-golden`.
-- **Сравниваемые поля:** entity_type, state, matched_rule_id, device_type, hw_type, skus (и другие, заданные в тесте).
-- **Политика:** обновлять golden только осознанно после изменения правил/логики; в PR обязательно описание diff и ревью.
-- **Cisco golden:** `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`. Генерация: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden` (аналогично для ccw_2). После изменения `cisco_rules.yaml` — обновить оба Cisco golden.
+Input xlsx files are not stored in git. Place them in `C:\Users\<USERNAME>\Desktop\INPUT\` (or specify your path in `config.local.yaml → paths.input_root`). If the file is missing, tests are skipped with a message.
 
 ---
 
-## 5. Добавление unit-теста
+## 4. Golden files
 
-Шаблон в tests/test_rules_unit.py или test_device_type.py: создать нормализованную строку (или использовать фикстуру), вызвать classify_row(row, ruleset), assert result.entity_type / state / matched_rule_id / device_type / hw_type. Для правил — загрузить RuleSet из dell_rules.yaml (через conftest/project_root).
+- **Generation:** `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dl1.xlsx" --save-golden` → creates `golden/dl1_expected.jsonl`.
+- **Update:** `--update-golden` with interactive confirmation (y/N). In CI — `--save-golden`.
+- **Compared fields:** `entity_type`, `state`, `matched_rule_id`, `device_type`, `hw_type`, `skus` (and others, as defined in the test).
+- **Policy:** update golden only deliberately after rule/logic changes; always include a diff description and review in the PR.
+- **Cisco golden:** `golden/ccw_1_expected.jsonl`, `golden/ccw_2_expected.jsonl`. Generation: `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_1.xlsx" --vendor cisco --save-golden` (same for `ccw_2`). After changing `cisco_rules.yaml` — update both Cisco golden files.
+
+---
+
+## 5. Adding a unit test
+
+Template in `tests/test_rules_unit.py` or `test_device_type.py`: create a normalized row (or use a fixture), call `classify_row(row, ruleset)`, assert `result.entity_type` / `state` / `matched_rule_id` / `device_type` / `hw_type`. For rules — load `RuleSet` from `dell_rules.yaml` (via `conftest`/`project_root`).
 
 ---
 
 ## 6. CI gate
 
-Минимальная команда для проверки перед коммитом:
+Minimum command to verify before a commit:
 
 ```bash
 pytest tests/test_rules_unit.py tests/test_state_detector.py tests/test_normalizer.py \
        tests/test_regression.py tests/test_unknown_threshold.py \
        tests/test_regression_cisco.py tests/test_unknown_threshold_cisco.py \
        tests/test_hpe_parser.py tests/test_hpe_normalizer.py tests/test_hpe_rules_unit.py \
-       tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py -v --tb=short
+       tests/test_regression_hpe.py tests/test_unknown_threshold_hpe.py \
+       tests/test_lenovo_rules_unit.py tests/test_lenovo_normalizer.py \
+       tests/test_regression_huawei.py tests/test_xfusion_parser.py \
+       -v --tb=short
 ```
 
-При отсутствии входных файлов или golden часть тестов будет пропущена; unit-тесты и регрессия (если файлы есть) должны быть зелёными.
+When INPUT files or golden files are missing, some tests will be skipped; unit tests and regression tests (when files are present) must be green.
+
+**Session gate:** `conftest.py` (`MAX_SKIP_RATIO = 0.50`) fails the session if `skipped/total > 0.50` or if `passed == 0` while tests were collected. Missing `paths.input_root` is a hard error.
 
 ---
 
 ## 7. Unknown threshold gate
 
-Тест test_unknown_threshold ограничивает долю UNKNOWN-строк (например 5%). При превышении лимита — добавлять правила, а не поднимать порог и не обновлять golden без обоснования.
+The `test_unknown_threshold` test limits the UNKNOWN row fraction (e.g. 5%). If the limit is exceeded — add rules rather than raising the threshold or updating golden without justification.
 
 ---
 
-## 8. Работа с новым датасетом
+## 8. Working with a new dataset
 
-1. Положить xlsx в `C:\Users\<USERNAME>\Desktop\INPUT\dlN.xlsx`.
-2. Запустить `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dlN.xlsx" --save-golden`.
-3. Проверить unknown_rows.csv и run_summary.
-4. При необходимости добавить правила и повторить.
-5. Добавить параметр в parametrize в test_regression.py (и при необходимости в другие тесты).
-6. Запустить полный набор тестов.
-7. Закоммитить golden/dlN_expected.jsonl и изменения тестов.
+1. Place xlsx in `C:\Users\<USERNAME>\Desktop\INPUT\dlN.xlsx`.
+2. Run `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\dlN.xlsx" --save-golden`.
+3. Check `unknown_rows.csv` and `run_summary`.
+4. Add rules if needed and re-run.
+5. Add the parameter to the `parametrize` list in `test_regression.py` (and other tests as needed).
+6. Run the full test suite.
+7. Commit `golden/dlN_expected.jsonl` and test changes.
 
-### Новый Cisco датасет (ccwN.xlsx)
+### New Cisco dataset (ccwN.xlsx)
 
-1. Положить в `C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx`.
-2. Запустить `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco`.
-3. Проверить `unknown_rows.csv` и `run_summary.json` (цель: `unknown_count = 0`).
-4. При `unknown > 0`: добавить правила в `rules/cisco_rules.yaml`, повторить шаг 2.
-5. Запустить `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`.
-6. Добавить `ccw_N` в `@pytest.mark.parametrize` в `test_regression_cisco.py`.
-7. Запустить `pytest tests/ -v` и закоммитить `golden/ccw_N_expected.jsonl`.
+1. Place in `C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx`.
+2. Run `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco`.
+3. Check `unknown_rows.csv` and `run_summary.json` (target: `unknown_count = 0`).
+4. If `unknown > 0`: add rules to `rules/cisco_rules.yaml`, repeat step 2.
+5. Run `python main.py --input "C:\Users\<USERNAME>\Desktop\INPUT\ccw_N.xlsx" --vendor cisco --save-golden`.
+6. Add `ccw_N` to `@pytest.mark.parametrize` in `test_regression_cisco.py`.
+7. Run `pytest tests/ -v` and commit `golden/ccw_N_expected.jsonl`.
 
-### Новый HPE датасет (hpN.xlsx)
+### New HPE dataset (hpN.xlsx)
 
-1. Положить в директорию, указанную в `config.local.yaml → paths.input_root`.
-2. Запустить `python main.py --input ".../hpN.xlsx" --vendor hpe`.
-3. Проверить `unknown_rows.csv` и `run_summary.json` (цель: `unknown_count = 0`).
-4. При `unknown > 0`: добавить правила в `rules/hpe_rules.yaml`, повторить шаг 2.
-   **Внимание:** при изменении `hpe_rules.yaml` обязательно обновить HPE golden (hp1–hp8).
-5. Запустить `python main.py --input ".../hpN.xlsx" --vendor hpe --save-golden`.
-6. Добавить `hpN` в `@pytest.mark.parametrize` в `test_regression_hpe.py`.
-7. Запустить `pytest tests/ -v` и закоммитить `golden/hpN_expected.jsonl`.
+1. Place in the directory specified in `config.local.yaml → paths.input_root`.
+2. Run `python main.py --input ".../hpN.xlsx" --vendor hpe`.
+3. Check `unknown_rows.csv` and `run_summary.json` (target: `unknown_count = 0`).
+4. If `unknown > 0`: add rules to `rules/hpe_rules.yaml`, repeat step 2.
+   **Note:** when changing `hpe_rules.yaml`, always update the HPE golden files (hp1–hp8).
+5. Run `python main.py --input ".../hpN.xlsx" --vendor hpe --save-golden`.
+6. Add `hpN` to `@pytest.mark.parametrize` in `test_regression_hpe.py`.
+7. Run `pytest tests/ -v` and commit `golden/hpN_expected.jsonl`.
