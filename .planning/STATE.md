@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: Awaiting next milestone
-stopped_at: Phase 3 verification gate PASS — v1.0 milestone closed
-last_updated: "2026-05-10T10:24:09.293Z"
-last_activity: 2026-05-10 — Milestone v1.0 completed and archived
+milestone: v1.1
+milestone_name: Periphery cleanup (residual)
+status: planning
+last_updated: "2026-05-10T12:03:24.267Z"
+last_activity: 2026-05-10
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 13
-  completed_plans: 13
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 03 (workflow) — COMPLETE; v1.0 milestone closed
+**Current focus:** Milestone v1.1 — Periphery cleanup (residual). Defining requirements.
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-05-10 — Milestone v1.0 completed and archived
+Status: Defining requirements
+Last activity: 2026-05-10 — Milestone v1.1 started
 
 ## Performance Metrics
 
@@ -124,4 +123,4 @@ Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Define v1.1 requirements (driven by `/gsd-new-milestone` workflow), then approve roadmap, then `/gsd-discuss-phase` for the first new phase.

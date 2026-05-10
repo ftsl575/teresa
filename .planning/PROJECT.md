@@ -8,6 +8,17 @@ Teresa is a deterministic, rule-based Excel-spec classifier for hardware vendor 
 
 The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
 
+## Current Milestone: v1.1 Periphery cleanup (residual)
+
+**Goal:** Throw out residual periphery v1.0 missed — close the runtime-cache architectural gap (`PYTHONPYCACHEPREFIX`), kill orphan references and on-disk junk, and add a doc-vs-impl drift sweep with a mechanical-invariants doc. No code/rules/golden changes.
+
+**Target features:**
+- Wire-up runtime cache redirect: `run.ps1` + `teresa_gui.py` set `PYTHONPYCACHEPREFIX` from `config.local.yaml::temp_root` before any Python invocation; `run.ps1` calls `clean.ps1` by default with `-NoClean` opt-out.
+- Orphan cleanup: fix two stale `scripts/run_full.ps1` references; remove local `.cursor/` and `teresa.zip`. Leave `CHANGELOG.md` and `LAUNCHER_README.md:4` historical (D-18).
+- Doc-vs-impl sweep + trim class A: mechanically check every "code does X" claim across the doc tree, prefer removing drifted claims over editing, trim excess CLI prose, and create `docs/dev/DOC_INVARIANTS.md` with ≥5 mechanical drift checks.
+
+**Sequential dependency:** Plans must run 1 → 2 → 3 (Plan 2 rewrites `pyproject.toml:5` to a wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state).
+
 ## Requirements
 
 ### Validated
@@ -37,9 +48,9 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 
 ### Active
 
-<!-- v1.0 milestone closed 2026-05-10. Next milestone: v2.0 (classification rule improvements + new vendor onboarding per REQUIREMENTS.md v2 backlog). -->
+<!-- v1.1 Periphery cleanup (residual). Requirements derived from MILESTONE-CONTEXT.md → 3 sequential plans. Mapped to phases during roadmap creation. -->
 
-- (no active requirements — v1.0 milestone complete)
+(populated by REQUIREMENTS.md / roadmap step — see `## Current Milestone: v1.1` block above)
 
 ### Out of Scope
 
@@ -73,6 +84,10 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| One milestone — one work | "Throw out → structure → plan → steps with tests" methodology; v1.1 is cleanup-only; per-vendor knowledge docs are v1.2; classifier rule changes are v2.x | — Pending |
+| Sequential plan execution for v1.1 (1 → 2 → 3) | Plan 2 rewrites `pyproject.toml:5` to a wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state. Parallel execution is unsound | — Pending |
+| `DOC_INVARIANTS.md` is in scope despite "no creation" framing | Tooling/meta-doc materializing the v1.0 retrospective lesson (doc-vs-impl drift not caught by read-pass); domain content (per-vendor docs) stays excluded — that's v1.2 | — Pending |
+| Acknowledged debt extension: `config.local.yaml` regex parser | Plan 1 extends an existing 4+-site regex pattern to `temp_root`. Consolidation into `load_config_with_local()` helper deferred to its own milestone (CONCERNS.md § IMPORTANT) — explicit non-goal here | — Pending |
 | Cleanup before classification improvements | User wants a hygienic base before iterating on rules; reduces "fix" PRs that revert intentional behavior | — Pending |
 | Keep both `CLAUDE.md` files; deduplicate overlap | Root stays a thin pointer; deep reference stays with the code in `spec_classifier/` | — Pending |
 | "Done" = clean diff + green tests + GSD-native workflow | Compound criterion: cosmetic cleanup alone is insufficient | — Pending |
@@ -98,4 +113,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-10 after Phase 3 (Workflow) — v1.0 cleanup-and-workflow milestone closed; ready for `/gsd-complete-milestone`.*
+*Last updated: 2026-05-10 after starting milestone v1.1 (Periphery cleanup, residual).*
