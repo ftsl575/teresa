@@ -51,9 +51,9 @@ Full details: [`.planning/milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.m
 **Plans:** 3 plans (Wave 1, all parallel — disjoint files)
 
 Plans:
-- [ ] 04-01-PLAN.md — run.ps1: -NoClean switch, temp_root parse, PYTHONPYCACHEPREFIX/PYTEST_ADDOPTS env vars, default-on clean.ps1 invocation (CACHE-01, CACHE-03)
-- [ ] 04-02-PLAN.md — teresa_gui.py: _discover_temp_path() + cache-redirect env vars set in main() before QApplication (CACHE-02)
-- [ ] 04-03-PLAN.md — ONE_BUTTON_RUN.md: 3 coordinated edits (numbered list, switches block, Workspace cleanup section) (CACHE-04)
+- [x] 04-01-PLAN.md — run.ps1: -NoClean switch, temp_root parse, PYTHONPYCACHEPREFIX/PYTEST_ADDOPTS env vars, default-on clean.ps1 invocation (CACHE-01, CACHE-03)
+- [x] 04-02-PLAN.md — teresa_gui.py: _discover_temp_path() + cache-redirect env vars set in main() before QApplication (CACHE-02)
+- [x] 04-03-PLAN.md — ONE_BUTTON_RUN.md: 3 coordinated edits (numbered list, switches block, Workspace cleanup section) (CACHE-04)
 
 ### Phase 5: Orphan Cleanup
 **Goal**: All references to the deleted `scripts/run_full.ps1` are gone from canonical config files, replaced with wording that's true post-Phase-4 (i.e., `run.ps1` sets `PYTHONPYCACHEPREFIX` automatically). The local `.cursor/` directory and `teresa.zip` sandbox artifact are removed from the working tree. `CHANGELOG.md` and `LAUNCHER_README.md:4` retain their historical mentions per D-18 / D-19 historical-content convention.
