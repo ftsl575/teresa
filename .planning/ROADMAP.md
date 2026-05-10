@@ -51,7 +51,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 - No business-rule re-derivation â€” copy/preserve the existing wording in `spec_classifier/CLAUDE.md` (`power_cord=None`, LOGISTIC scope, BASE rules, alias-table semantics, "do not fix" markers all stay verbatim where they live today).
 - No documentation of intent to fix the load-bearing tech debt items in `.planning/codebase/CONCERNS.md` BLOCKER section; if mentioned, frame as "intentional, see CONCERNS.md".
 - No new doc files invented beyond what the requirements call for (the separate onboarding guide is explicitly Out of Scope per PROJECT.md).
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 02-01-PLAN.md — DOC-04: translate spec_classifier/CLAUDE.md to English + dedup root CLAUDE.md
+- [ ] 02-02-PLAN.md — DOC-05: refresh CHANGELOG to English-unified release notes + archive CURRENT_STATE.md
+- [ ] 02-03-PLAN.md — DOC-01: author root README.md from scratch (~80–120 lines)
+- [ ] 02-04-PLAN.md — DOC-02: refresh spec_classifier/README.md drift fixes
+- [ ] 02-05-PLAN.md — DOC-03: audit spec_classifier/docs/ tree end-to-end + DOCS_INDEX 1:1
+- [ ] 02-06-PLAN.md — D-23/D-24 verification gate + final commits per requirement
 
 ### Phase 3: Workflow
 **Goal**: Future contributors and future-Claude have one obvious development cycle to follow (the GSD cycle), the legacy `prompts/00..08` + `COWORK_OPUS_FULL_AUDIT.md` cannot accidentally be reused as the canonical process, and the "do not fix" tech-debt rules are explicitly carried into `CONTRIBUTING.md` so they survive the next refactor PR.
@@ -75,7 +81,7 @@ Phases execute in numeric order: 1 â†’ 2 â†’ 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hygiene | 4/4 | Complete | 2026-05-10 |
-| 2. Docs | 0/TBD | Not started | - |
+| 2. Docs | 0/6 | Not started | - |
 | 3. Workflow | 0/TBD | Not started | - |
 
 ---
