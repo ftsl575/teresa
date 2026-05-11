@@ -25,6 +25,7 @@
 | `docs/dev/ONE_BUTTON_RUN.md` | How do I run tests and batch with one script (Windows)? |
 | `docs/dev/TESTING_GUIDE.md` | How do I run tests and update golden? |
 | `docs/dev/OPERATIONAL_NOTES.md` | How do I run batch jobs and manage artifacts? |
+| `docs/dev/DOC_INVARIANTS.md` | What mechanical drift checks must hold for the doc tree (8 Bash one-liners, doc-of-record per Phase 6 DRIFT-03)? |
 | `docs/product/TECHNICAL_OVERVIEW.md` | How does the pipeline work internally? |
 | `CHANGELOG.md` | What changed in each version? |
 | `docs/taxonomy/hw_type_taxonomy.md` | What are the allowed hw_type values and the exact meaning/boundaries? |
