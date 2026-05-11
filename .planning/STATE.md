@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
 status: executing
-stopped_at: Phase 6 plan 04 complete
-last_updated: "2026-05-11T00:55:00.000Z"
+stopped_at: Phase 6 plan 05 complete
+last_updated: "2026-05-11T00:52:21Z"
 last_activity: 2026-05-11
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 10
-  completed_plans: 8
-  percent: 80
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 ## Current Position
 
 Phase: 06 (doc-vs-impl-drift-sweep) — EXECUTING
-Plan: 5 of 6
-Status: Ready to execute
+Plan: 6 of 6
+Status: Ready to execute (final plan)
 Last activity: 2026-05-11
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [████████░░] 80%
 | Phase 06-doc-vs-impl-drift-sweep P02 | 5min | 3 tasks | 4 files |
 | Phase 06 P03 | 10min | 3 tasks | 3 files |
 | Phase 06 P04 | ~6min | 3 tasks | 4 files |
+| Phase 06 P05 | ~1min | 1 task | 3 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,7 @@ Recent decisions affecting current work:
 - [Phase ?]: Plan 06-02: dev-docs sweep found 4 drifts in 71 claims (1 patch line-num ref, 3 removes volatile counts); --update-golden retained per real code reality
 - [Phase ?]: [Phase 6 / Plan 03]: 7 user/product/schema/rules/taxonomy docs swept; 86 claims verified (5 patches: 2 schema-column omissions in USER_GUIDE+TECHNICAL_OVERVIEW, 2 business-rule violations USER_GUIDE Power Cord+TECHNICAL_OVERVIEW HPE no-branded, 1 line-number ref); 0 removes; 81 no_drift; D-22 byte-equal; goldens byte-equal
 - [Phase 6 / Plan 04]: DRIFT-02 closed end-to-end — run.ps1 now ships .SYNOPSIS/.DESCRIPTION/5 .PARAMETER/6 .EXAMPLE help block (RU header at lines 1-13 SHA-frozen, comments-only edit, B-3 zero-deletion gate PASS); ONE_BUTTON_RUN.md trimmed 54→50 with "run .\\run.ps1 -?" pointer (Phase 4 CACHE-04 -NoClean+clean.ps1 co-occurrence preserved); RUN_PATHS_AND_IO_LAYOUT.md trimmed 281→264 with top pointer to run.ps1 -? + ONE_BUTTON_RUN.md, PYTHONPYCACHEPREFIX claim PATCHED to Phase 4 D-13 vocabulary (run.ps1 + teresa_gui co-mention + PYTEST_ADDOPTS partner); 44 sweep rows appended (16 ONE_BUTTON_RUN + 28 RUN_PATHS, 1 patch + 43 no_drift); D-22 byte-equal; goldens byte-equal; DOC_INVARIANTS #8 prerequisite landed.
+- [Phase 6 / Plan 05]: DRIFT-04 closed — 3 surgical line patches landed in .planning/codebase/ (STACK.md:79 + INTEGRATIONS.md:55,150). Both stale PYTHONPYCACHEPREFIX bullets replaced with Phase 5 D-05/D-06 canonical defense-in-depth vocabulary (PYTHONPYCACHEPREFIX + PYTEST_ADDOPTS env vars set by run.ps1 AND teresa_gui.py from config.local.yaml::temp_root); INTEGRATIONS.md:55 hardcoded `C:\\Users\\G\\Desktop\\temporary` username leak replaced with `C:\\Users\\<USERNAME>\\Desktop\\temporary` per HYG-01 placeholder convention (v1.0 HYG-01 retroactive miss-fix). 3 patch rows appended to 06-DRIFT-AUDIT.md using N-2-fixed column shape (bare check_command + parenthesized pre-state context in resolution column). Single atomic `docs(06): T1 ...` commit per planner discretion (D-21 borderline doc-class call). D-22 byte-equal; goldens byte-equal. Commit: 44447d3.
 
 ### Pending Todos
 
@@ -136,8 +138,8 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-11T00:55:00.000Z
-Stopped at: Phase 6 plan 04 complete
+Last session: 2026-05-11T00:52:21Z
+Stopped at: Phase 6 plan 05 complete
 Resume file: None
 
 ## Operator Next Steps
