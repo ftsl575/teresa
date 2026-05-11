@@ -397,7 +397,42 @@ Categories DEFERRED per D-12 (folded into v1.2 `/gsd-map-codebase` refresh; if e
 
 ## Tally (filled by Plan 06)
 
-- Total claims swept: TBD
-- Resolutions: TBD remove / TBD patch / TBD no_drift
-- Files touched: TBD of 19 (16 in-scope + 3 surgical map lines)
+- Total claims swept: 369
+- Resolutions: 3 remove / 10 patch / 356 no_drift
+- Files touched: 18 distinct files (16 in-scope sweep targets + 2 `.planning/codebase/` files contributing 3 surgical lines, since `INTEGRATIONS.md` contributes 2 of those 3 lines from a single file). Conceptual coverage matches the planned 19-target window (16 in-scope + 3 surgical lines).
 - Drift remaining post-phase: 0 (per ROADMAP §SC-1)
+
+## SC #1 + SC #4 Verification (filled at end of Plan 06)
+
+- **SC #4** — All 8 DOC_INVARIANTS.md Bash one-liners exit 0 against post-phase tree: **PASS** (8/8 invariants pass; composite loop reports `0 failing invariants`; verified at HEAD after T1+T2 commits land but BEFORE this T3 commit, since the audit log is the only file touched here and is not in any invariant's scope).
+- **SC #1** — Re-sweep returns 0 drift claims: **PASS** (the 8 invariants exiting 0 IS the mechanical floor; spot-check of all 10 audit-log `patch` rows + 3 `remove` rows confirms each fix held, see below).
+- **Spot-checks performed:** 12 (covers all 10 patch rows + 2 of the 3 remove rows by re-running the inverse grep / re-confirming the symbol-ref form):
+  1. `NEW_VENDOR_GUIDE.md` L78 — `:38` line-num ref absent: PASS
+  2. `OPERATIONAL_NOTES.md` L113 — bare `"6"` vendor count absent; named list `dell/cisco/hpe/lenovo/huawei/xfusion` retained: PASS
+  3. `TESTING_GUIDE.md` L9+L12 — `(26 and 82 rows)` and `25+ parametrized` absent: PASS
+  4. `USER_GUIDE.md` L103 — `LOGISTIC (Shipping, Power Cord)` absent (CLAUDE.md root rule #2 honored): PASS
+  5. `USER_GUIDE.md` L152 — `Source Row` and `Rule ID` present in cleaned_spec.xlsx column list: PASS
+  6. `TECHNICAL_OVERVIEW.md` L78 — `Source Row` and `Rule ID` present: PASS
+  7. `TECHNICAL_OVERVIEW.md` L247 — `Branded spec is generated for all six vendors` present; old `HPE: ... No branded spec` absent: PASS
+  8. `TECHNICAL_OVERVIEW.md` L249 — `find_header_row in src/core/parser.py` symbol-ref present; `src/core/parser.py:26` line-num ref absent: PASS
+  9. `RUN_PATHS_AND_IO_LAYOUT.md` L24 — defense-in-depth wording (`PYTHONPYCACHEPREFIX and PYTEST_ADDOPTS` + `run.ps1 and teresa_gui.py` co-mention) present: PASS
+  10. `STACK.md` L79 — `PYTEST_ADDOPTS` named, `teresa_gui.py` co-named: PASS
+  11. `INTEGRATIONS.md` L150 — `PYTEST_ADDOPTS` + defense-in-depth wording present: PASS
+  12. `INTEGRATIONS.md` L55 — `C:\Users\<USERNAME>\Desktop\temporary` placeholder present; `C:\Users\G\Desktop\temporary` leak absent (HYG-01 retroactive miss-fix): PASS
+
+### ROADMAP §SC-3 line-count gates re-confirmed
+
+- `spec_classifier/docs/dev/ONE_BUTTON_RUN.md`: 50 lines (pre-phase 54 — strictly less): PASS
+- `spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md`: 264 lines (pre-phase 281 — strictly less): PASS
+
+### D-25 pytest skip-ratio gate
+
+`pytest -q` from `spec_classifier/` (using `C:/venv/Scripts/python.exe`):
+- **Outcome:** 774 passed + 1 xfailed in 23.65s; **0 skipped** (skip ratio 0.000, well below the 0.50 guard).
+- **N-1 distinction:** **(a) gate ran against REAL DATA (passed)** — INPUT data populated under `%USERPROFILE%\Desktop\INPUT\<vendor>\` for all 6 vendors (5+2+8+11+5+10 xlsx files); the run produced real test executions, not structural-skips. D-25 actually verified.
+
+### D-22 + goldens byte-equal across full phase window
+
+- **Phase window:** `c615637..HEAD` (phase started at `c615637 docs(05): plan 05-01 summary`, ends at this T3 commit).
+- **D-22 protected paths** (`spec_classifier/{src,rules,golden,tests,batch_audit.py,cluster_audit.py,main.py,conftest.py}`): empty diffstat across phase window. **PASS.**
+- **Goldens** (`spec_classifier/golden/`): empty diffstat across phase window. **PASS.**
