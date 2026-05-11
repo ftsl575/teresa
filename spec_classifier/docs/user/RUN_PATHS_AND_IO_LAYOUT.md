@@ -1,5 +1,7 @@
 # Run Paths & I/O Layout — Input/Output roots
 
+For run.ps1 switches, see `run.ps1 -?` or [docs/dev/ONE_BUTTON_RUN.md](../dev/ONE_BUTTON_RUN.md). For path discovery internals, see below.
+
 ## Goal: code-only repository
 
 The `teresa/` folder (`spec_classifier/`) contains ONLY source code, rules, documentation, and tests. Input data, run results, caches, and temporary files are ALWAYS stored OUTSIDE.
@@ -19,11 +21,9 @@ How this is enforced:
 
 1. `config.local.yaml` sets absolute paths (not committed to git).
 2. `pyproject.toml` redirects `.pytest_cache` to `../../temporary/` (from `spec_classifier` → `Desktop\temporary\.pytest_cache`).
-3. `run.ps1` (repo root) sets `PYTHONPYCACHEPREFIX` for `__pycache__`.
+3. `PYTHONPYCACHEPREFIX` and `PYTEST_ADDOPTS` env vars are exported by both `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root` (Phase 4 defense-in-depth) so `__pycache__` and `.pytest_cache` land under the temp root regardless of entry point.
 4. `.gitignore` blocks `input/`, `output/`, `temporary/`, `__pycache__/`, `.pytest_cache/`.
-5. `clean.ps1` removes any leaked cache files from the repo.
-
-Before distributing (zip, sending): run `spec_classifier\scripts\clean.ps1` to remove caches from the repo.
+5. `clean.ps1` removes any leaked cache files from the repo (also invoked by `run.ps1` at the start of every run unless `-NoClean`).
 
 ---
 
@@ -196,13 +196,6 @@ python main.py --batch-dir input
 # Result: output/dell_run/run-...-<stem>/ for each file + run-...-TOTAL/
 ```
 
-### Run tests
-
-```bash
-cd spec_classifier
-python -m pytest tests/ -v --tb=short
-```
-
 ---
 
 ## Common mistakes
@@ -210,16 +203,6 @@ python -m pytest tests/ -v --tb=short
 - **Do not specify `--output-dir output` when running from the repository** — artifacts will appear in `spec_classifier/output/` and pollute the repo.
 - **Do not commit** `.venv/`, `__pycache__/`, `.pytest_cache/`, or any `out/`, `output/` with run results.
 - **Do not run the pipeline without `config.local.yaml`** — relative defaults will create `input/` and `output/` inside the repo.
-- **Do not run `python -m pytest` directly without `run.ps1`** when you want to ensure all caches go to `Desktop\temporary`. If the IDE runs pytest directly, `pyproject.toml` will redirect `.pytest_cache`, but `__pycache__` may still appear (remove via `clean.ps1`).
-
----
-
-## Checklist: "nothing is written to the repo"
-
-1. Run `spec_classifier\scripts\clean.ps1`.
-2. Check: `dir spec_classifier` — no `__pycache__`, `.pytest_cache`, `input/`, `output/`, `temporary/`, `diag/`.
-3. Check: `config.local.yaml` must NOT end up in an archive/send (it is in `.gitignore`).
-4. Verify `.gitignore` contains: `input/`, `output/`, `temporary/`, `__pycache__/`, `.pytest_cache/`, `config.local.yaml`.
 
 ---
 
