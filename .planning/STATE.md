@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
 status: executing
-stopped_at: Phase 6 plan 01 complete
-last_updated: "2026-05-11T00:39:13.224Z"
+stopped_at: Phase 6 plan 04 complete
+last_updated: "2026-05-11T00:55:00.000Z"
 last_activity: 2026-05-11
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 10
-  completed_plans: 7
-  percent: 70
+  completed_plans: 8
+  percent: 80
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 ## Current Position
 
 Phase: 06 (doc-vs-impl-drift-sweep) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-05-11
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Progress: [███████░░░] 70%
 | Phase 05 P01 | ~4 min | 5 tasks | 5 files |
 | Phase 06-doc-vs-impl-drift-sweep P02 | 5min | 3 tasks | 4 files |
 | Phase 06 P03 | 10min | 3 tasks | 3 files |
+| Phase 06 P04 | ~6min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,7 @@ Recent decisions affecting current work:
 - [Phase 6 / Plan 01]: 4 root/index docs (README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md) mechanically swept; 108 claims verified (31+25+27+25); zero drift found; all 4 sweep targets byte-equal; 06-DRIFT-AUDIT.md initialized with skeleton + 108 no_drift rows; D-22 paths byte-equal; goldens byte-equal.
 - [Phase ?]: Plan 06-02: dev-docs sweep found 4 drifts in 71 claims (1 patch line-num ref, 3 removes volatile counts); --update-golden retained per real code reality
 - [Phase ?]: [Phase 6 / Plan 03]: 7 user/product/schema/rules/taxonomy docs swept; 86 claims verified (5 patches: 2 schema-column omissions in USER_GUIDE+TECHNICAL_OVERVIEW, 2 business-rule violations USER_GUIDE Power Cord+TECHNICAL_OVERVIEW HPE no-branded, 1 line-number ref); 0 removes; 81 no_drift; D-22 byte-equal; goldens byte-equal
+- [Phase 6 / Plan 04]: DRIFT-02 closed end-to-end — run.ps1 now ships .SYNOPSIS/.DESCRIPTION/5 .PARAMETER/6 .EXAMPLE help block (RU header at lines 1-13 SHA-frozen, comments-only edit, B-3 zero-deletion gate PASS); ONE_BUTTON_RUN.md trimmed 54→50 with "run .\\run.ps1 -?" pointer (Phase 4 CACHE-04 -NoClean+clean.ps1 co-occurrence preserved); RUN_PATHS_AND_IO_LAYOUT.md trimmed 281→264 with top pointer to run.ps1 -? + ONE_BUTTON_RUN.md, PYTHONPYCACHEPREFIX claim PATCHED to Phase 4 D-13 vocabulary (run.ps1 + teresa_gui co-mention + PYTEST_ADDOPTS partner); 44 sweep rows appended (16 ONE_BUTTON_RUN + 28 RUN_PATHS, 1 patch + 43 no_drift); D-22 byte-equal; goldens byte-equal; DOC_INVARIANTS #8 prerequisite landed.
 
 ### Pending Todos
 
@@ -134,8 +136,8 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-11T00:38:45.092Z
-Stopped at: Phase 6 plan 01 complete
+Last session: 2026-05-11T00:55:00.000Z
+Stopped at: Phase 6 plan 04 complete
 Resume file: None
 
 ## Operator Next Steps

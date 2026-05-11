@@ -94,7 +94,7 @@ Plans:
 - [x] 06-01-PLAN.md — Sweep root README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md (DRIFT-01) + initialize 06-DRIFT-AUDIT.md
 - [x] 06-02-PLAN.md — Sweep docs/dev/ NEW_VENDOR_GUIDE.md, OPERATIONAL_NOTES.md, TESTING_GUIDE.md (DRIFT-01)
 - [x] 06-03-PLAN.md — Sweep docs/user/ CLI_CONFIG_REFERENCE.md, USER_GUIDE.md + product/TECHNICAL_OVERVIEW.md + schemas/DATA_CONTRACTS.md + rules/RULES_AUTHORING_GUIDE.md + taxonomy/{hw_type_taxonomy,cycle2_summary}.md (DRIFT-01)
-- [ ] 06-04-PLAN.md — run.ps1 help block (D-05) + trim ONE_BUTTON_RUN.md and RUN_PATHS_AND_IO_LAYOUT.md (DRIFT-01, DRIFT-02)
+- [x] 06-04-PLAN.md — run.ps1 help block (D-05) + trim ONE_BUTTON_RUN.md and RUN_PATHS_AND_IO_LAYOUT.md (DRIFT-01, DRIFT-02)
 - [ ] 06-05-PLAN.md — Surgical patches to .planning/codebase/STACK.md:79 + INTEGRATIONS.md:55,150 (DRIFT-04)
 - [ ] 06-06-PLAN.md — Wave 2: Create DOC_INVARIANTS.md + update DOCS_INDEX.md + finalize 06-DRIFT-AUDIT.md tally + SC #1/#4 verification gate (DRIFT-03, DRIFT-04)
 
