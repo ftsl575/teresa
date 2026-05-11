@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
-status: ready-for-verification
+status: milestone_complete
 stopped_at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 ready for /gsd-verify-work 6 + /gsd-complete-milestone)
 last_updated: "2026-05-11T01:05:44Z"
 last_activity: 2026-05-11
 progress:
   total_phases: 3
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 10
   completed_plans: 10
-  percent: 100
+  percent: 133
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 
 ## Current Position
 
-Phase: 06 (doc-vs-impl-drift-sweep) — COMPLETE
-Plan: 6 of 6 (DONE)
-Status: Phase 6 closed end-to-end; v1.1 ready for /gsd-verify-work 6 + /gsd-complete-milestone
+Phase: 06
+Plan: Not started
+Status: Milestone complete
 Last activity: 2026-05-11
 
 Progress: [██████████] 100%
@@ -36,7 +36,7 @@ Progress: [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 3 (v1.1)
+- Total plans completed: 9 (v1.1)
 - Average duration: —
 - Total execution time: 0.0 hours (v1.1)
 
@@ -48,6 +48,7 @@ Progress: [██████████] 100%
 | 5. Orphan Cleanup | 0 | — | — |
 | 6. Doc-vs-Impl Drift Sweep | 0 | — | — |
 | 04 | 3 | - | - |
+| 06 | 6 | - | - |
 
 **Recent Trend:**
 
