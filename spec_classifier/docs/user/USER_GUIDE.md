@@ -100,7 +100,7 @@ Use TOTAL for handing off to the client or consolidating a single session's resu
 
 - **row_kind:** `HEADER` — section separator (empty Module Name, Option Name, SKUs); `ITEM` — specification line item.
 - **source_row_index:** 1-based row number in the source Excel (for auditing and cross-referencing with the sheet).
-- **entity_type:** one of 8 types. Examples: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, Power Cord), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives), UNKNOWN (no rule matched).
+- **entity_type:** one of 8 types. Examples: BASE (Base, PowerEdge R660), SERVICE (ProSupport, Warranty), LOGISTIC (Shipping, packaging, freight), SOFTWARE (Embedded Systems Management), NOTE (supports ONLY), CONFIG (No Cable, RAID Configuration), HW (Processor, Memory, Hard Drives, Power Cord, cables, rails), UNKNOWN (no rule matched).
 - **state:** PRESENT — option is present; ABSENT — not installed (e.g. "No TPM", "No HDD", "Empty"); DISABLED — disabled (e.g. "Disabled").
 - **device_type:** refinement for HW/LOGISTIC rows. The authoritative source is `device_type_rules` in `rules/<vendor>_rules.yaml`. Common values by category:
 
@@ -149,7 +149,7 @@ python main.py --vendor huawei  --input "C:\Users\<USERNAME>\Desktop\INPUT\huawe
 
 ## 8. cleaned_spec.xlsx
 
-Only ITEM rows with entity_type from `config.cleaned_spec.include_types` (default: BASE, HW, SOFTWARE, SERVICE) are included. With `include_only_present: true` — only rows with state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. HEADER rows and other types/states are not included.
+Only ITEM rows with entity_type from `config.cleaned_spec.include_types` (default: BASE, HW, SOFTWARE, SERVICE) are included. With `include_only_present: true` — only rows with state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State, Source Row, Rule ID. HEADER rows and other types/states are not included.
 
 For HPE: Group Name / Group ID columns are populated from `Config Name` (server configuration name). This allows identifying which server a row belongs to in a multi-config BOM.
 
