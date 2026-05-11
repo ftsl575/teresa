@@ -19,7 +19,9 @@ findings:
   warning: 4
   info: 0
   total: 5
-status: issues_found
+status: resolved
+resolved_in_commit: ad2da91
+resolved_summary: "All 5 findings (CR-01 + WR-01..04) fixed in commit ad2da91; pytest 774 passed + 1 xfailed; all 8 DOC_INVARIANTS exit 0; D-22 + goldens byte-equal; RU header SHA frozen value preserved."
 ---
 
 # Phase 6: Code Review Report
