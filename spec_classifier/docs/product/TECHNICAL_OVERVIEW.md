@@ -75,7 +75,7 @@ Errors: if the file is missing or YAML is invalid — message to stderr and `exi
 | `unknown_rows.csv` | Only ITEM rows with `entity_type == UNKNOWN`; encoding UTF-8-sig. |
 | `header_rows.csv` | Only rows with `row_kind == HEADER`; UTF-8-sig. |
 | `run_summary.json` | Aggregates: `total_rows`, `header_rows_count`, `item_rows_count`, `entity_type_counts`, `state_counts`, `unknown_count`, `rules_stats`, `device_type_counts`, `hw_type_counts`, `hw_type_null_count`, `rules_file_hash`, `input_file`, `run_timestamp`. |
-| `cleaned_spec.xlsx` | ITEM subset: types from `config["cleaned_spec"]["include_types"]`, with `include_only_present` only state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State. |
+| `cleaned_spec.xlsx` | ITEM subset: types from `config["cleaned_spec"]["include_types"]`, with `include_only_present` only state PRESENT. Columns: Group Name, Group ID, Module Name, Option Name, SKUs, Qty, Option ID, Unit Price, Device Type, HW Type, Entity Type, State, Source Row, Rule ID. |
 | `<stem>_annotated.xlsx` | Copy of the source sheet (row-by-row), with six columns added: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id; rows not deleted; written with `header=False`. |
 | `<stem>_branded.xlsx` | Branded specification: grouped by BASE (server) and entity type sections; columns SKU, Option Name, Qty, Price. Rows before the first BASE go into a preamble block. Only for vendors where `adapter.generates_branded_spec()` returns True. |
 | `run.log` | Text log of pipeline stages. |
@@ -244,9 +244,9 @@ Test dependencies: if the input file (`paths.input_root`) or golden is missing, 
 
 - **Six vendors:** Dell, Cisco, HPE, Lenovo, xFusion, Huawei. Each has its own parser and normalizer.
 - **Cisco:** reads sheet `"Price Estimate"` (strict, no fallback). Header determined by simultaneous presence of `"Line Number"` and `"Part Number"`. SKU in Cisco: trailing `=` is removed.
-- **HPE:** reads sheet `"BOM"` with columns Product #, Product Description. No branded spec.
+- **HPE:** reads sheet `"BOM"` with columns Product #, Product Description. Branded spec is generated for all six vendors (per `adapter.generates_branded_spec()` in `src/vendors/<vendor>/adapter.py`).
 - **One sheet:** the parser works with one specific sheet (Dell/Cisco — first sheet; HPE — sheet `"BOM"`; Lenovo — sheet "Configuration" or first). Annotated export uses `sheet_name` from `adapter.get_source_sheet_name()` to read the same sheet.
-- **Header:** the header row is located by exact match of a cell to the vendor-specific sentinel in the first N rows; if absent — `find_header_row` returns `None`, `parse_excel` raises `ValueError`. For Dell: `"Module Name"` in first 20 rows (limit is hard-coded in `src/core/parser.py:26` — known tech debt).
+- **Header:** the header row is located by exact match of a cell to the vendor-specific sentinel in the first N rows; if absent — `find_header_row` returns `None`, `parse_excel` raises `ValueError`. For Dell: `"Module Name"` in first 20 rows (limit hard-coded inside `find_header_row` in `src/core/parser.py` — known tech debt).
 - **Encodings:** config and YAML rules are read in UTF-8; CSV files are written in UTF-8-sig for correct opening in Excel.
 - **Row order:** correspondence between normalized rows and classification results — by index in lists; in annotated export, binding to the sheet row is by `source_row_index` (1-based), assuming the first sheet row in pandas is index 0 (Excel row 1).
 - **Rules:** entity type check order is fixed in `classifier.py`; rule order within each group is set by YAML (first match wins). Rule version is stored in YAML (`version`) and available as `RuleSet.version`; not saved separately in run artifacts.
