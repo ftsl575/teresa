@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
-status: executing
-stopped_at: Phase 6 plan 05 complete
-last_updated: "2026-05-11T00:52:21Z"
+status: ready-for-verification
+stopped_at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 ready for /gsd-verify-work 6 + /gsd-complete-milestone)
+last_updated: "2026-05-11T01:05:44Z"
 last_activity: 2026-05-11
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 
 ## Current Position
 
-Phase: 06 (doc-vs-impl-drift-sweep) — EXECUTING
-Plan: 6 of 6
-Status: Ready to execute (final plan)
+Phase: 06 (doc-vs-impl-drift-sweep) — COMPLETE
+Plan: 6 of 6 (DONE)
+Status: Phase 6 closed end-to-end; v1.1 ready for /gsd-verify-work 6 + /gsd-complete-milestone
 Last activity: 2026-05-11
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -75,6 +75,7 @@ Progress: [█████████░] 90%
 | Phase 06 P03 | 10min | 3 tasks | 3 files |
 | Phase 06 P04 | ~6min | 3 tasks | 4 files |
 | Phase 06 P05 | ~1min | 1 task | 3 files |
+| Phase 06 P06 | ~5min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 6 / Plan 03]: 7 user/product/schema/rules/taxonomy docs swept; 86 claims verified (5 patches: 2 schema-column omissions in USER_GUIDE+TECHNICAL_OVERVIEW, 2 business-rule violations USER_GUIDE Power Cord+TECHNICAL_OVERVIEW HPE no-branded, 1 line-number ref); 0 removes; 81 no_drift; D-22 byte-equal; goldens byte-equal
 - [Phase 6 / Plan 04]: DRIFT-02 closed end-to-end — run.ps1 now ships .SYNOPSIS/.DESCRIPTION/5 .PARAMETER/6 .EXAMPLE help block (RU header at lines 1-13 SHA-frozen, comments-only edit, B-3 zero-deletion gate PASS); ONE_BUTTON_RUN.md trimmed 54→50 with "run .\\run.ps1 -?" pointer (Phase 4 CACHE-04 -NoClean+clean.ps1 co-occurrence preserved); RUN_PATHS_AND_IO_LAYOUT.md trimmed 281→264 with top pointer to run.ps1 -? + ONE_BUTTON_RUN.md, PYTHONPYCACHEPREFIX claim PATCHED to Phase 4 D-13 vocabulary (run.ps1 + teresa_gui co-mention + PYTEST_ADDOPTS partner); 44 sweep rows appended (16 ONE_BUTTON_RUN + 28 RUN_PATHS, 1 patch + 43 no_drift); D-22 byte-equal; goldens byte-equal; DOC_INVARIANTS #8 prerequisite landed.
 - [Phase 6 / Plan 05]: DRIFT-04 closed — 3 surgical line patches landed in .planning/codebase/ (STACK.md:79 + INTEGRATIONS.md:55,150). Both stale PYTHONPYCACHEPREFIX bullets replaced with Phase 5 D-05/D-06 canonical defense-in-depth vocabulary (PYTHONPYCACHEPREFIX + PYTEST_ADDOPTS env vars set by run.ps1 AND teresa_gui.py from config.local.yaml::temp_root); INTEGRATIONS.md:55 hardcoded `C:\\Users\\G\\Desktop\\temporary` username leak replaced with `C:\\Users\\<USERNAME>\\Desktop\\temporary` per HYG-01 placeholder convention (v1.0 HYG-01 retroactive miss-fix). 3 patch rows appended to 06-DRIFT-AUDIT.md using N-2-fixed column shape (bare check_command + parenthesized pre-state context in resolution column). Single atomic `docs(06): T1 ...` commit per planner discretion (D-21 borderline doc-class call). D-22 byte-equal; goldens byte-equal. Commit: 44447d3.
+- [Phase 6 / Plan 06]: DRIFT-03 + DRIFT-04 closed end-to-end. T1 cffcc38 created spec_classifier/docs/dev/DOC_INVARIANTS.md (128 lines, 8 mechanical Bash-one-liner invariants per D-15..D-20: PYTHONPYCACHEPREFIX in run.ps1+teresa_gui.py, PYTEST_ADDOPTS, clean.ps1, no run_full orphans, power_cord intentionally unmapped, six vendors, .SYNOPSIS help block); T2 7b84b65 added DOC_INVARIANTS.md entry to spec_classifier/docs/DOCS_INDEX.md (1:1 contract preserved, role-grouped placement after OPERATIONAL_NOTES.md); T3 c762167 finalized 06-DRIFT-AUDIT.md Tally (369 claims swept / 356 no_drift / 10 patch / 3 remove / 18 distinct files; conceptual 19 = 16 in-scope + 3 surgical lines reconciled inline since INTEGRATIONS.md contributes 2 of 3 surgical lines from one file) + appended SC #1 + SC #4 verification subsection (8/8 invariants exit 0; 12 patch-row spot-checks PASS; SC #3 line-count gates re-confirmed 50<54 and 264<281; D-25 pytest 774 passed + 1 xfailed + 0 skipped in 23.65s — REAL DATA outcome (a) per N-1 distinction since INPUT populated for all 6 vendors; D-22 + goldens byte-equal across full phase window c615637..HEAD). Phase 6 metadata commit c48bed5. ROADMAP §SC-1, §SC-2, §SC-3, §SC-4, §SC-5 all PASS. v1.1 milestone ready for /gsd-verify-work 6 + /gsd-complete-milestone.
+- [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
 
 ### Pending Todos
 
@@ -138,10 +141,12 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-11T00:52:21Z
-Stopped at: Phase 6 plan 05 complete
+Last session: 2026-05-11T01:05:44Z
+Stopped at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 milestone ready for verification)
 Resume file: None
 
 ## Operator Next Steps
 
-- `/gsd-plan-phase 4` to plan Phase 4 (Cache Redirect — CACHE-01..04). Phases 5 and 6 are gated on Phase 4 completion (sequential dependency).
+- `/gsd-verify-work 6` to produce `.planning/phases/06-doc-vs-impl-drift-sweep/06-VERIFICATION.md`. Phase 6 Plan 06 SUMMARY references it ahead of creation per the Plan 06 output spec.
+- After Phase 6 verification: `/gsd-complete-milestone v1.1` (or equivalent) to close the v1.1 Periphery cleanup milestone. All 12 v1.1 requirements are now Complete (CACHE-01..04 in Phase 4, ORPH-01..04 in Phase 5, DRIFT-01..04 in Phase 6).
+- Bookkeeping touch-up: address the Phase 4 row stale entry in `.planning/ROADMAP.md` Progress table (currently shows "0/3 Planning complete"; should read "3/3 Complete | 2026-05-10"). See `.planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md` — this is a pre-existing roadmap-bookkeeping drift not introduced by Plan 06-06; recommended to roll into the milestone-close step.

@@ -37,9 +37,9 @@ Requirements for milestone v1.1. Each maps to one phase via the roadmap.
 ### Doc-vs-Impl Drift Sweep (DRIFT) — Plan 3: Doc-vs-impl sweep + trim class A
 
 - [x] **DRIFT-01**: All 13 files under `spec_classifier/docs/` plus root `CLAUDE.md`, `CONTRIBUTING.md`, `README.md` undergo a mechanical sweep of every "code does X" claim (grep / `Test-Path` / runtime check). Drifted claims are either fixed or removed; preference is **remove > patch**.
-- [ ] **DRIFT-02**: `RUN_PATHS_AND_IO_LAYOUT.md` and `ONE_BUTTON_RUN.md` are trimmed of excessive CLI-flag prose; inline duplication replaced by pointer to `run.ps1 -?`.
-- [ ] **DRIFT-03**: `docs/dev/DOC_INVARIANTS.md` is created with ≥5 mechanical drift invariants (e.g., `grep -q "PYTHONPYCACHEPREFIX" run.ps1` exit-code 0).
-- [ ] **DRIFT-04**: Re-running the sweep against the corrected tree produces 0 drift claims.
+- [x] **DRIFT-02**: `RUN_PATHS_AND_IO_LAYOUT.md` and `ONE_BUTTON_RUN.md` are trimmed of excessive CLI-flag prose; inline duplication replaced by pointer to `run.ps1 -?`.
+- [x] **DRIFT-03**: `docs/dev/DOC_INVARIANTS.md` is created with ≥5 mechanical drift invariants (e.g., `grep -q "PYTHONPYCACHEPREFIX" run.ps1` exit-code 0).
+- [x] **DRIFT-04**: Re-running the sweep against the corrected tree produces 0 drift claims.
 
 **Justification for `DOC_INVARIANTS.md` creation in a "no-creation" cleanup milestone:** This is tooling/meta-doc materializing the v1.1 retrospective lesson — doc-vs-impl drift is not caught by read-pass audits (v1.0 DOC-03 missed `RUN_PATHS_AND_IO_LAYOUT.md:22` claiming `PYTHONPYCACHEPREFIX` was wired up). Domain content (per-vendor knowledge docs) remains excluded — that's v1.2.
 
@@ -115,9 +115,9 @@ Phase mapping filled by the roadmapper agent during roadmap creation (2026-05-10
 | ORPH-03 | Phase 5 | Complete |
 | ORPH-04 | Phase 5 | Complete |
 | DRIFT-01 | Phase 6 | Complete |
-| DRIFT-02 | Phase 6 | Pending |
-| DRIFT-03 | Phase 6 | Pending |
-| DRIFT-04 | Phase 6 | Pending |
+| DRIFT-02 | Phase 6 | Complete |
+| DRIFT-03 | Phase 6 | Complete |
+| DRIFT-04 | Phase 6 | Complete |
 
 **Coverage:**
 
