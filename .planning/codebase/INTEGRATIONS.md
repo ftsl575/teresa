@@ -52,7 +52,7 @@ The repo is **code-only by policy** (`CLAUDE.md` § "Code-only repository policy
 |------|--------------|----------|
 | INPUT (vendor `.xlsx` files) | `%USERPROFILE%\Desktop\INPUT` | `paths.input_root` in `spec_classifier/config.local.yaml` |
 | OUTPUT (run artifacts, audit reports) | `%USERPROFILE%\Desktop\OUTPUT` | `paths.output_root` in `spec_classifier/config.local.yaml` |
-| TEMP (`.pytest_cache/`, `__pycache__/`) | `C:\Users\G\Desktop\temporary` | `temp_root` in `config.local.yaml` |
+| TEMP (`.pytest_cache/`, `__pycache__/`) | `C:\Users\<USERNAME>\Desktop\temporary` | `temp_root` in `config.local.yaml` |
 | Virtual environment | `C:\venv` | external; not configured by code, by convention only |
 
 **Override mechanism (`config.local.yaml` overlay):**
@@ -147,7 +147,7 @@ Run folders are named via `src/diagnostics/run_manager.py:create_run_folder` (`r
 **Required env vars:**
 - `OPENAI_API_KEY` — only when running `batch_audit.py` without `--no-ai`. Persisted via `setx` from the GUI (`teresa_gui.py:198-208`); prompted via `Read-Host -AsSecureString` from `run.ps1:80-86` if missing.
 - `ANTHROPIC_API_KEY` — only when `--provider anthropic`.
-- `PYTHONPYCACHEPREFIX` — optional. Referenced in `pyproject.toml:4-5` as the only way to redirect `__pycache__/`. Not currently exported by `run.ps1` (was set by the now-retired `scripts/run_full.ps1`).
+- `PYTHONPYCACHEPREFIX` and `PYTEST_ADDOPTS` — set by `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`. Together they redirect `__pycache__/` and `.pytest_cache/` to `$temp_root` so cache artifacts never land inside the repo working tree (Phase 4 CACHE-01/CACHE-02; defense-in-depth — both entry points set both vars independently).
 
 **Secrets location:**
 - Windows User-scope environment (registry, via `setx`). The repo never stores keys.

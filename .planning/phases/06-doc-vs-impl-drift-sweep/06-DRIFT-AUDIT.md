@@ -391,6 +391,9 @@ Categories DEFERRED per D-12 (folded into v1.2 `/gsd-map-codebase` refresh; if e
 | spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md | 246-247 | "`python cluster_audit.py --output-dir <PATH>`; `--dry-run`" | `grep -q '\-\-dry-run' spec_classifier/cluster_audit.py` (D-22 read-only) | no_drift |
 | spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md | 251-255 | "cluster_summary.xlsx columns: cluster_id, count, vendors, top_terms, proposed_device_type, examples, suggested_yaml_rule" | `grep -E 'cluster_id\|proposed_device_type\|suggested_yaml_rule' spec_classifier/cluster_audit.py` (D-22 read-only) | no_drift |
 | spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md | 261-262 | "See also: CLI_CONFIG_REFERENCE.md and DOCS_INDEX.md" | `test -f spec_classifier/docs/user/CLI_CONFIG_REFERENCE.md && test -f spec_classifier/docs/DOCS_INDEX.md` | no_drift |
+| .planning/codebase/STACK.md | 79 | "Not set by run.ps1 (used to be set by old scripts/run_full.ps1)" | `! grep -q "Not set by .run.ps1." .planning/codebase/STACK.md` | patch (pre-state: stale claim grep returned 0 / present; post-state: returns non-0 / removed; D-02/D-03 vocabulary applied — both env vars + both entry points + temp_root named) |
+| .planning/codebase/INTEGRATIONS.md | 150 | "Not currently exported by run.ps1 (was set by the now-retired scripts/run_full.ps1)" | `! grep -q "Not currently exported" .planning/codebase/INTEGRATIONS.md` | patch (pre-state: stale claim present; post-state: removed; D-02/D-03 vocabulary applied — both env vars + both entry points + temp_root named) |
+| .planning/codebase/INTEGRATIONS.md | 55 | "C:\\Users\\G\\Desktop\\temporary" hardcoded username | `! grep -q "C:..Users..G.." .planning/codebase/INTEGRATIONS.md` | patch (pre-state: hardcoded G\\ leak present — v1.0 HYG-01 miss; post-state: replaced with C:\\Users\\<USERNAME>\\Desktop\\temporary placeholder per HYG-01 convention) |
 
 ## Tally (filled by Plan 06)
 

@@ -76,7 +76,7 @@ The repo is two stacked layers:
 **Environment variables:**
 - `OPENAI_API_KEY` — required when AI audit is enabled. Read at `spec_classifier/batch_audit.py:1417`. The GUI persists it via `setx OPENAI_API_KEY ...` at User scope (`teresa_gui.py:198-208`); `run.ps1:80-86` prompts via `Read-Host -AsSecureString` if not set.
 - `ANTHROPIC_API_KEY` — required when `--provider anthropic`. Read at `batch_audit.py:1427`.
-- `PYTHONPYCACHEPREFIX` — referenced in `spec_classifier/pyproject.toml:4-5` as the only mechanism to redirect `__pycache__/`. Not set by `run.ps1` (used to be set by the old `scripts/run_full.ps1`).
+- `PYTHONPYCACHEPREFIX` and `PYTEST_ADDOPTS` — set by `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`. Together they redirect `__pycache__/` and `.pytest_cache/` to `$temp_root` so cache artifacts never land inside the repo working tree (Phase 4 CACHE-01/CACHE-02; defense-in-depth — both entry points set both vars independently).
 
 **Config layering (`config.yaml` + `config.local.yaml`):**
 - `spec_classifier/config.yaml` — committed defaults: `paths.input_root="input"`, `paths.output_root="output"`, `cleaned_spec.include_types=[BASE,HW,SOFTWARE,SERVICE]`, and the `vendor_rules` dict mapping each vendor key to a YAML rule path.
