@@ -6,10 +6,10 @@
 - **Integration (with xlsx):** pipeline run on `dlN.xlsx` from `C:\Users\<USERNAME>\Desktop\INPUT\`; artifact verification (`test_smoke`, `test_excel_writer`, `test_annotated_writer`, `test_cli`).
 - **Regression (xlsx + golden):** `test_regression` — row-by-row comparison with `golden/<stem>_expected.jsonl`.
 - **Acceptance:** `test_unknown_threshold` (unknown limit), `test_dec_acceptance`, etc. as needed.
-- **Cisco Unit:** `test_cisco_parser` — `parse_excel` on `ccw_1`/`ccw_2` (26 and 82 rows); `test_cisco_normalizer` — `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone`.
+- **Cisco Unit:** `test_cisco_parser` — `parse_excel` on `ccw_1`/`ccw_2`; `test_cisco_normalizer` — `bundle_id`, `parent_line_number`, `is_bundle_root`, `module_name`, `standalone`.
 - **Cisco Regression:** `test_regression_cisco` — row-by-row comparison with `golden/ccw_1_expected.jsonl` and `golden/ccw_2_expected.jsonl`.
 - **Cisco Threshold:** `test_unknown_threshold_cisco` — `unknown_count = 0` for `ccw_1` and `ccw_2`.
-- **HPE Unit:** `test_hpe_parser` — parse on `hp1–hp8` (sheet BOM, col_map); `test_hpe_normalizer` — `HPENormalizedRow` vendor extensions; `test_hpe_rules_unit` — 25+ parametrized `device_type`/`hw_type` cases for all HPE device types.
+- **HPE Unit:** `test_hpe_parser` — parse on `hp1–hp8` (sheet BOM, col_map); `test_hpe_normalizer` — `HPENormalizedRow` vendor extensions; `test_hpe_rules_unit` — parametrized `device_type`/`hw_type` cases for all HPE device types.
 - **HPE Regression:** `test_regression_hpe` — row-by-row comparison with `golden/hp1–hp8_expected.jsonl`.
 - **HPE Threshold:** `test_unknown_threshold_hpe` — `unknown_count = 0` for `hp1–hp8`.
 - **Lenovo:** `test_lenovo_parser`, `test_lenovo_normalizer`, `test_lenovo_rules_unit`, `test_regression_lenovo`, `test_unknown_threshold` (Lenovo fixtures).
