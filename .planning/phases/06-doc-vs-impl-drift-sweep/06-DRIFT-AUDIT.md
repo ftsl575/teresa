@@ -112,6 +112,31 @@ Categories DEFERRED per D-12 (folded into v1.2 `/gsd-map-codebase` refresh; if e
 | CONTRIBUTING.md | 153 | "Recent changes → `spec_classifier/CHANGELOG.md`" | `test -f spec_classifier/CHANGELOG.md` | no_drift |
 | CONTRIBUTING.md | 154 | "Project status / current focus → `.planning/STATE.md`" | `test -f .planning/STATE.md` | no_drift |
 | CONTRIBUTING.md | 155 | "Tech-debt items NOT to fix → `.planning/codebase/CONCERNS.md` (BLOCKER + IMPORTANT sections)" | `test -f .planning/codebase/CONCERNS.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 8 | "`docs/product/` Normative. Architecture, baseline, data pipeline" | `test -d spec_classifier/docs/product` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 9 | "`docs/user/` Normative. User guide, CLI reference. How to operate the tool" | `test -d spec_classifier/docs/user` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 10 | "`docs/schemas/` Normative. Data contracts: field specs for all output formats" | `test -d spec_classifier/docs/schemas` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 11 | "`docs/rules/` Normative. Rules authoring guide" | `test -d spec_classifier/docs/rules` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 12 | "`docs/dev/` Normative. Contributing, testing, operational notes" | `test -d spec_classifier/docs/dev` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 13 | "`docs/taxonomy/` Normative. Source of truth for controlled vocabularies (e.g., hw_type)" | `test -d spec_classifier/docs/taxonomy` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 18 | "`README.md` — How do I install and run this?" | `test -f README.md` (root README) | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 19 | "`docs/user/USER_GUIDE.md` — How do I interpret the output?" | `test -f spec_classifier/docs/user/USER_GUIDE.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 20 | "`docs/user/CLI_CONFIG_REFERENCE.md` — What are all CLI options and config keys?" | `test -f spec_classifier/docs/user/CLI_CONFIG_REFERENCE.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 21 | "`docs/user/RUN_PATHS_AND_IO_LAYOUT.md` — Where do inputs/outputs go? Default paths (Desktop INPUT/OUTPUT), vendor run layout, no TEMP" | `test -f spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md` (Plan 02 will sweep contents per D-14 Group 4) | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 22 | "`docs/schemas/DATA_CONTRACTS.md` — What are the exact output schemas?" | `test -f spec_classifier/docs/schemas/DATA_CONTRACTS.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 23 | "`docs/rules/RULES_AUTHORING_GUIDE.md` — How do I add or change a rule safely?" | `test -f spec_classifier/docs/rules/RULES_AUTHORING_GUIDE.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 24 | "`docs/dev/NEW_VENDOR_GUIDE.md` — How do I add a new vendor (adapter, rules, tests)?" | `test -f spec_classifier/docs/dev/NEW_VENDOR_GUIDE.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 25 | "`docs/dev/ONE_BUTTON_RUN.md` — How do I run tests and batch with one script (Windows)?" | `test -f spec_classifier/docs/dev/ONE_BUTTON_RUN.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 26 | "`docs/dev/TESTING_GUIDE.md` — How do I run tests and update golden?" | `test -f spec_classifier/docs/dev/TESTING_GUIDE.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 27 | "`docs/dev/OPERATIONAL_NOTES.md` — How do I run batch jobs and manage artifacts?" | `test -f spec_classifier/docs/dev/OPERATIONAL_NOTES.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 28 | "`docs/product/TECHNICAL_OVERVIEW.md` — How does the pipeline work internally?" | `test -f spec_classifier/docs/product/TECHNICAL_OVERVIEW.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 29 | "`CHANGELOG.md` — What changed in each version?" | `test -f spec_classifier/CHANGELOG.md` (DOCS_INDEX cwd-relative; refers to spec_classifier/CHANGELOG.md) | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 30 | "`docs/taxonomy/hw_type_taxonomy.md` — What are the allowed hw_type values and the exact meaning/boundaries?" | `test -f spec_classifier/docs/taxonomy/hw_type_taxonomy.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 31 | "`docs/taxonomy/cycle2_summary.md` — What device_type changes were made in cycle 2 (PR-8–PR-11)?" | `test -f spec_classifier/docs/taxonomy/cycle2_summary.md` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 32 | "`batch_audit.py` — How do I run post-pipeline rule checks (E1–E18) and LLM verification across all vendor outputs?" | `test -f spec_classifier/batch_audit.py` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 33 | "`cluster_audit.py` — How do I cluster unclassified/UNKNOWN rows to discover new rules?" | `test -f spec_classifier/cluster_audit.py` | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 34 | "`CLAUDE.md` — Project context for Cowork / Claude Desktop sessions" | `test -f spec_classifier/CLAUDE.md` (DOCS_INDEX cwd-relative; refers to spec_classifier/CLAUDE.md, not root) | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 38-39 | "Normative docs (product/, user/, schemas/, rules/, dev/, taxonomy/) must stay in sync with code. Update docs in the same commit as any behavior change" | convention claim; matches CONTRIBUTING.md PR workflow | no_drift |
+| spec_classifier/docs/DOCS_INDEX.md | 41 | "Repo-root contributor doc: see `/CONTRIBUTING.md` for the GSD-native development cycle and contribution rules" | `test -f CONTRIBUTING.md` | no_drift |
 
 <!-- Rows appended by Plans 01-05 below this line. -->
 
