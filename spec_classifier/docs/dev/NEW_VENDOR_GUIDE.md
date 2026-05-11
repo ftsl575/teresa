@@ -75,7 +75,7 @@ In the `vendor_rules` section add: `<vendor>: "rules/<vendor>_rules.yaml"`.
 ### Step 6: Wire the launcher and GUI
 
 - Append `"<vendor>"` to `$ALL_VENDORS` in `run.ps1` (repo root).
-- Append `"<vendor>"` to `VENDORS_ACTIVE` in `teresa_gui.py:38` and add a label entry in `_build_left_column`.
+- Append `"<vendor>"` to `VENDORS_ACTIVE` in `teresa_gui.py` and add a label entry in `_build_left_column`.
 
 ### Step 7: Tests
 
