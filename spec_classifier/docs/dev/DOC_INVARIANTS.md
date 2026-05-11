@@ -113,13 +113,13 @@ for v in dell cisco hpe lenovo huawei xfusion; do grep -q "\"$v\"" run.ps1 || ex
 
 ### 8. Phase 6 help block survives in run.ps1
 
-The `<#.SYNOPSIS .DESCRIPTION .PARAMETER .EXAMPLE#>` comment-based help block added to `run.ps1` in Phase 6 must remain present so `Get-Help .\run.ps1` and `.\run.ps1 -?` continue to return useful help (which is what the trim docs in DRIFT-02 point to).
+The `<#.SYNOPSIS .DESCRIPTION .PARAMETER .EXAMPLE#>` comment-based help block added to `run.ps1` in Phase 6 must remain present so `Get-Help .\run.ps1` and `.\run.ps1 -?` continue to return useful help (which is what the trim docs in DRIFT-02 point to). The second check tightens the gate so that CR-style escape corruption (`.\r` consumed as a literal carriage return, leaving `.un.ps1` instead of `.\run.ps1`) is caught — exactly the regression flagged by Phase 6 code review CR-01.
 
 ```bash
-grep -q ".SYNOPSIS" run.ps1
+grep -q "\.SYNOPSIS" run.ps1 && grep -qF '.\run.ps1' run.ps1
 ```
 
-**Why this matters:** Surfaced by Phase 6 D-05 (self-protect — this is the deliverable the doc itself depends on); accidental removal would re-stale the DRIFT-02 doc pointers — recovery is to re-insert the `<#.SYNOPSIS .DESCRIPTION .PARAMETER .EXAMPLE#>` block above `param()` per the Plan 04 Task 1 specification.
+**Why this matters:** Surfaced by Phase 6 D-05 (self-protect — this is the deliverable the doc itself depends on) and tightened after Phase 6 code review CR-01 found the help block shipped with broken `.un.ps1` examples that the original `.SYNOPSIS`-only grep silently passed; accidental removal or escape corruption would re-stale the DRIFT-02 doc pointers — recovery is to re-insert the `<#.SYNOPSIS .DESCRIPTION .PARAMETER .EXAMPLE#>` block above `param()` per the Plan 04 Task 1 specification with literal `.\run.ps1` in every `.EXAMPLE` line.
 
 ## Adding new invariants
 

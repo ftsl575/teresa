@@ -23,7 +23,7 @@ Creates: for each `.xlsx` in the directory — its own `run-YYYY-MM-DD__HH-MM-SS
 
 ## 3. TOTAL folder
 
-Contains aggregated presentation files for all files processed in the session: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_spec.xlsx`. Used for handing off to the client or consolidating a single session. For Cisco and HPE runs `<stem>_branded.xlsx` is not copied (the file is not created).
+Contains aggregated presentation files for all files processed in the session: `<stem>_annotated.xlsx`, `<stem>_branded.xlsx`, `<stem>_cleaned_spec.xlsx`. Used for handing off to the client or consolidating a single session.
 
 **Important:** `batch_audit.py` automatically excludes TOTAL folders from processing (`-TOTAL` in the parent folder name). This prevents double-counting rows in `audit_report.json`.
 

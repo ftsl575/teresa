@@ -75,7 +75,7 @@ Result — folder `output/dell_run/run-YYYY-MM-DD__HH-MM-SS-dl1/` (or with suffi
 | `run_summary.json` | Summary: total_rows, entity_type_counts, state_counts, unknown_count, device_type_counts, hw_type_counts, rules_file_hash, input_file, run_timestamp. |
 | `cleaned_spec.xlsx` | Filtered specification: types from config (BASE, HW, SOFTWARE, SERVICE), PRESENT only (if `include_only_present: true`). |
 | `<stem>_annotated.xlsx` | Source file + 6 columns: Entity Type, State, device_type, hw_type, row_kind, matched_rule_id. All rows preserved. |
-| `<stem>_branded.xlsx` | Branded specification: grouped by BASE (server) and sections by entity_type; "Not installed" block for ABSENT if needed. Not created for Cisco CCW runs. |
+| `<stem>_branded.xlsx` | Branded specification: grouped by BASE (server) and sections by entity_type; "Not installed" block for ABSENT if needed. |
 | `unknown_rows.csv` | Rows with entity_type = UNKNOWN. Columns: source_row_index, option_id, module_name, option_name, skus, qty, option_price, matched_rule_id. Review after every run. |
 | `rows_raw.json` | Raw rows after the parser (debug). |
 | `rows_normalized.json` | Normalized rows with row_kind (debug). |
@@ -157,7 +157,7 @@ For HPE: Group Name / Group ID columns are populated from `Config Name` (server 
 
 ## 9. branded_spec.xlsx
 
-Structure: first the BASE row (server), then sections by entity_type. Within sections — grouped items with columns SKU, Option Name, Qty, Price. May include a "Not installed" block for ABSENT rows. If there are ITEM rows before the first BASE, they appear in a "Items without server" preamble block. The file is intended for client presentation. Not created for Cisco CCW and HPE runs.
+Structure: first the BASE row (server), then sections by entity_type. Within sections — grouped items with columns SKU, Option Name, Qty, Price. May include a "Not installed" block for ABSENT rows. If there are ITEM rows before the first BASE, they appear in a "Items without server" preamble block. The file is intended for client presentation.
 
 ---
 

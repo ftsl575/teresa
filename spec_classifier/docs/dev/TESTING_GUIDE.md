@@ -12,7 +12,7 @@
 - **HPE Unit:** `test_hpe_parser` — parse on `hp1–hp8` (sheet BOM, col_map); `test_hpe_normalizer` — `HPENormalizedRow` vendor extensions; `test_hpe_rules_unit` — parametrized `device_type`/`hw_type` cases for all HPE device types.
 - **HPE Regression:** `test_regression_hpe` — row-by-row comparison with `golden/hp1–hp8_expected.jsonl`.
 - **HPE Threshold:** `test_unknown_threshold_hpe` — `unknown_count = 0` for `hp1–hp8`.
-- **Lenovo:** `test_lenovo_parser`, `test_lenovo_normalizer`, `test_lenovo_rules_unit`, `test_regression_lenovo`, `test_unknown_threshold` (Lenovo fixtures).
+- **Lenovo:** `test_lenovo_parser`, `test_lenovo_normalizer`, `test_lenovo_rules_unit`, `test_regression_lenovo`.
 - **Huawei / xFusion:** `test_huawei_parser`, `test_huawei_normalizer`, `test_regression_huawei`, `test_xfusion_parser`, `test_xfusion_normalizer`, `test_unknown_threshold_huawei`, `test_unknown_threshold_xfusion`.
 
 ---

@@ -126,7 +126,7 @@ output/
       <stem>_annotated.xlsx
 ```
 
-- For Cisco, there is **no** `<stem>_branded.xlsx`. **run.log** is present in every run.
+- **run.log** is present in every run.
 
 ### HPE
 
@@ -145,7 +145,7 @@ output/
       <stem>_annotated.xlsx
 ```
 
-- For HPE, there is **no** `<stem>_branded.xlsx`. **run.log** is present in every run.
+- **run.log** is present in every run.
 
 ### Batch (TOTAL)
 

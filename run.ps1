@@ -38,27 +38,27 @@
     Skip the default-on scripts/clean.ps1 invocation at the start of the run.
 
 .EXAMPLE
-    .un.ps1
+    .\run.ps1
     Full pipeline + AI audit + cluster + tests (all vendors).
 
 .EXAMPLE
-    .un.ps1 -NoAi
+    .\run.ps1 -NoAi
     Full pipeline + rule-only audit (no OpenAI).
 
 .EXAMPLE
-    .un.ps1 -Vendor dell
+    .\run.ps1 -Vendor dell
     Only dell, otherwise as usual.
 
 .EXAMPLE
-    .un.ps1 -TestsOnly
+    .\run.ps1 -TestsOnly
     Pytest only.
 
 .EXAMPLE
-    .un.ps1 -SkipTests
+    .\run.ps1 -SkipTests
     Full pipeline without pytest at the end.
 
 .EXAMPLE
-    .un.ps1 -Vendor huawei -NoAi -SkipTests
+    .\run.ps1 -Vendor huawei -NoAi -SkipTests
     Minimal smoke run on a single vendor.
 #>
 param(
