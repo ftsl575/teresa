@@ -4,14 +4,14 @@ milestone: v1.1
 milestone_name: Periphery cleanup (residual)
 status: executing
 stopped_at: Phase 6 context gathered
-last_updated: "2026-05-10T23:36:47.256Z"
-last_activity: 2026-05-10 -- Phase 06 planning complete
+last_updated: "2026-05-11T00:00:00.000Z"
+last_activity: 2026-05-11 -- Phase 06 plan 01 complete
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 10
-  completed_plans: 4
-  percent: 40
+  completed_plans: 5
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 05 — orphan-cleanup
+**Current focus:** Phase 06 — doc-vs-impl-drift-sweep
 
 ## Current Position
 
-Phase: 05 (orphan-cleanup) — EXECUTING
-Plan: 1 of 1
-Status: Ready to execute
-Last activity: 2026-05-10 -- Phase 06 planning complete
+Phase: 06 (doc-vs-impl-drift-sweep) — EXECUTING
+Plan: 2 of 6
+Status: Plan 06-01 complete; ready for Plan 06-02 (docs/dev sweep, DRIFT-01 Group 3)
+Last activity: 2026-05-11 -- Phase 06 plan 01 complete
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -91,6 +91,7 @@ Recent decisions affecting current work:
 - [v1.1 Init]: `load_config_with_local()` regex-parser consolidation explicitly out of scope; Phase 4 extends the existing 4+-site regex pattern to `temp_root` only. Helper consolidation deferred to its own milestone (CONCERNS.md § IMPORTANT).
 - [v1.1 Init]: Roadmap created 2026-05-10 — 3 phases (4 Cache Redirect, 5 Orphan Cleanup, 6 Doc-vs-Impl Drift Sweep); 12/12 requirements mapped, no orphans.
 - [Phase 5]: Phase 5 closed: orphan refs purged, .cursor/ + teresa.zip removed, ROADMAP §SC-1 grep tightened to *.toml/*.example scope; Check 5 dispositioned as substantive PASS / literal FAIL (plan-author casing slip, file byte-equal to phase-start)
+- [Phase 6 / Plan 01]: 4 root/index docs (README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md) mechanically swept; 108 claims verified (31+25+27+25); zero drift found; all 4 sweep targets byte-equal; 06-DRIFT-AUDIT.md initialized with skeleton + 108 no_drift rows; D-22 paths byte-equal; goldens byte-equal.
 
 ### Pending Todos
 
@@ -129,9 +130,9 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-05-10T22:44:31.349Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-doc-vs-impl-drift-sweep/06-CONTEXT.md
+Last session: 2026-05-11T00:00:00.000Z
+Stopped at: Phase 6 plan 01 complete
+Resume file: .planning/phases/06-doc-vs-impl-drift-sweep/06-02-PLAN.md
 
 ## Operator Next Steps
 

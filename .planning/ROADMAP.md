@@ -88,10 +88,10 @@ Plans:
 **Pytest skip-ratio gate**: Run `pytest -q` from `spec_classifier/`; session must finish without tripping the 0.50 skip-ratio guard. Doc edits cannot affect test discovery.
 **Goldens byte-equal gate**: `git diff --stat -- spec_classifier/golden/` MUST be empty across the phase window. No `--update-golden`.
 **No new tech-stack constraint**: `DOC_INVARIANTS.md` checks may invoke only Python 3.10, `openpyxl`, `pandas`, `pyyaml`, `pytest`, plus standard shell utilities (`grep`, `Test-Path`). No new runtime dependencies introduced.
-**Plans:** 6 plans
+**Plans:** 1/6 plans complete
 
 Plans:
-- [ ] 06-01-PLAN.md — Sweep root README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md (DRIFT-01) + initialize 06-DRIFT-AUDIT.md
+- [x] 06-01-PLAN.md — Sweep root README.md, CLAUDE.md, CONTRIBUTING.md, DOCS_INDEX.md (DRIFT-01) + initialize 06-DRIFT-AUDIT.md
 - [ ] 06-02-PLAN.md — Sweep docs/dev/ NEW_VENDOR_GUIDE.md, OPERATIONAL_NOTES.md, TESTING_GUIDE.md (DRIFT-01)
 - [ ] 06-03-PLAN.md — Sweep docs/user/ CLI_CONFIG_REFERENCE.md, USER_GUIDE.md + product/TECHNICAL_OVERVIEW.md + schemas/DATA_CONTRACTS.md + rules/RULES_AUTHORING_GUIDE.md + taxonomy/{hw_type_taxonomy,cycle2_summary}.md (DRIFT-01)
 - [ ] 06-04-PLAN.md — run.ps1 help block (D-05) + trim ONE_BUTTON_RUN.md and RUN_PATHS_AND_IO_LAYOUT.md (DRIFT-01, DRIFT-02)
