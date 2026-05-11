@@ -11,6 +11,56 @@
 #   .\run.ps1 -Vendor huawei -NoAi -SkipTests  # минимальный smoke на одном вендоре
 # =============================================================================
 
+<#
+.SYNOPSIS
+    teresa launcher: end-to-end run of parse, normalize, classify, audit, cluster, and tests for one or all vendors.
+
+.DESCRIPTION
+    Single entry point for the spec_classifier pipeline. Reads INPUT/OUTPUT/temp roots from
+    spec_classifier/config.local.yaml (falls back to %USERPROFILE%\Desktop\{INPUT,OUTPUT,temporary}).
+    Sets PYTHONPYCACHEPREFIX and PYTEST_ADDOPTS so __pycache__ and .pytest_cache land under
+    temp_root, never inside the repo working tree. Invokes scripts/clean.ps1 by default at the
+    start of every run; pass -NoClean to opt out.
+
+.PARAMETER Vendor
+    Run only the named vendor (dell, cisco, hpe, lenovo, huawei, xfusion). Empty (default) runs all.
+
+.PARAMETER NoAi
+    Skip the OpenAI/Anthropic audit pass; rule-only audit still runs.
+
+.PARAMETER TestsOnly
+    Short-circuit: run pytest only, skip the full pipeline.
+
+.PARAMETER SkipTests
+    Run the full pipeline but skip pytest at the end.
+
+.PARAMETER NoClean
+    Skip the default-on scripts/clean.ps1 invocation at the start of the run.
+
+.EXAMPLE
+    .un.ps1
+    Full pipeline + AI audit + cluster + tests (all vendors).
+
+.EXAMPLE
+    .un.ps1 -NoAi
+    Full pipeline + rule-only audit (no OpenAI).
+
+.EXAMPLE
+    .un.ps1 -Vendor dell
+    Only dell, otherwise as usual.
+
+.EXAMPLE
+    .un.ps1 -TestsOnly
+    Pytest only.
+
+.EXAMPLE
+    .un.ps1 -SkipTests
+    Full pipeline without pytest at the end.
+
+.EXAMPLE
+    .un.ps1 -Vendor huawei -NoAi -SkipTests
+    Minimal smoke run on a single vendor.
+#>
 param(
     [string]$Vendor = "",
     [switch]$NoAi,
