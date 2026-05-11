@@ -24,8 +24,8 @@ Note: exactly one of `--input`, `--batch-dir`, or `--batch` is required.
 **output_root** is the top-level output root (default: `cwd/output` or `config paths.output_root`). Vendor sub-dirs are automatically created inside:
 
 - `output_root/dell_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Dell (includes `<stem>_branded.xlsx`, `run.log`)
-- `output_root/cisco_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Cisco (no branded, has `run.log`)
-- `output_root/hpe_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — HPE (no branded, has `run.log`)
+- `output_root/cisco_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Cisco (has `run.log`)
+- `output_root/hpe_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — HPE (has `run.log`)
 - `output_root/lenovo_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Lenovo
 - `output_root/huawei_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — Huawei
 - `output_root/xfusion_run/run-YYYY-MM-DD__HH-MM-SS-<stem>/` — xFusion
