@@ -110,7 +110,7 @@ Use `run.ps1` from the repo root:
 4. **Known FP cases** — vendor-tagged false-positive patterns
 5. **fp_patterns / comments** — vendor-specific logic in comments
 
-Current state: 6 vendors (dell, cisco, hpe, lenovo, huawei, xfusion). Functional.
+Current state: vendors covered are dell, cisco, hpe, lenovo, huawei, xfusion. Functional.
 
 Refactor trigger: before adding a 7th vendor. See `.planning/codebase/CONCERNS.md` for details.
 
