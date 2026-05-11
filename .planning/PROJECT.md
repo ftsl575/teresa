@@ -8,16 +8,20 @@ Teresa is a deterministic, rule-based Excel-spec classifier for hardware vendor 
 
 The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
 
-## Current Milestone: v1.1 Periphery cleanup (residual)
+## Current State
 
-**Goal:** Throw out residual periphery v1.0 missed — close the runtime-cache architectural gap (`PYTHONPYCACHEPREFIX`), kill orphan references and on-disk junk, and add a doc-vs-impl drift sweep with a mechanical-invariants doc. No code/rules/golden changes.
+**Last shipped:** v1.1 Periphery cleanup (residual) — 2026-05-11
+**Next milestone:** TBD — run `/gsd-new-milestone` to scope.
 
-**Target features:**
-- Wire-up runtime cache redirect: `run.ps1` + `teresa_gui.py` set `PYTHONPYCACHEPREFIX` from `config.local.yaml::temp_root` before any Python invocation; `run.ps1` calls `clean.ps1` by default with `-NoClean` opt-out.
-- Orphan cleanup: fix two stale `scripts/run_full.ps1` references; remove local `.cursor/` and `teresa.zip`. Leave `CHANGELOG.md` and `LAUNCHER_README.md:4` historical (D-18).
-- Doc-vs-impl sweep + trim class A: mechanically check every "code does X" claim across the doc tree, prefer removing drifted claims over editing, trim excess CLI prose, and create `docs/dev/DOC_INVARIANTS.md` with ≥5 mechanical drift checks.
+**v1.1 delivered:**
+- Runtime cache redirect (`PYTHONPYCACHEPREFIX` + `PYTEST_ADDOPTS`) wired through `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`; `clean.ps1` runs by default with `-NoClean` opt-out (Phase 4: CACHE-01..04).
+- Orphan cleanup: stale `scripts/run_full.ps1` refs gone from `pyproject.toml` + `config.local.yaml.example`; `.cursor/` + `teresa.zip` removed (Phase 5: ORPH-01..04).
+- Doc-vs-impl drift sweep: 369 claims swept across 18 files; 10 patches + 3 removes; `spec_classifier/docs/dev/DOC_INVARIANTS.md` created with 8 mechanical Bash one-liner invariants; `run.ps1` ships English `<#.SYNOPSIS#>` help block alongside the preserved RU header; `ONE_BUTTON_RUN.md` 54→50 and `RUN_PATHS_AND_IO_LAYOUT.md` 281→264 (Phase 6: DRIFT-01..04).
 
-**Sequential dependency:** Plans must run 1 → 2 → 3 (Plan 2 rewrites `pyproject.toml:5` to a wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state).
+**v1.2 candidates** (surfaced during v1.1):
+- Per-vendor knowledge documentation (the original v1.2 scope per `[v1.1 Init]`).
+- Broader `/gsd-map-codebase` refresh of all 7 `.planning/codebase/` maps + `spec_classifier/CLAUDE.md` + `spec_classifier/README.md` drift sweep (deferred from Phase 6's 16-file scope).
+- Pre-commit hook integration of `DOC_INVARIANTS.md` checks (deferred per AUTO-02 — depends on v2.0 cross-platform work).
 
 ## Requirements
 
@@ -52,11 +56,23 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 - ✓ `teresa_gui.py` `main()` sets the same env vars before `QApplication` so subprocess-spawned PowerShell children inherit the redirect — Validated in Phase 4: Cache Redirect (CACHE-02)
 - ✓ `spec_classifier/docs/dev/ONE_BUTTON_RUN.md` reflects the new clean-by-default + cache-redirect contract; `-NoClean` and `clean.ps1` co-occur in the "Workspace cleanup" section — Validated in Phase 4: Cache Redirect (CACHE-04)
 
+<!-- v1.1 Phase 5 — Orphan Cleanup closed 2026-05-10 -->
+
+- ✓ `spec_classifier/pyproject.toml:5` no longer references the deleted `scripts/run_full.ps1`; rewritten to point at the post-Phase-4 `run.ps1` PYTHONPYCACHEPREFIX wiring — Validated in Phase 5: Orphan Cleanup (ORPH-01)
+- ✓ `spec_classifier/config.local.yaml.example:11` no longer references `scripts/run_full.ps1`; rewritten to mention `clean.ps1` and `run.ps1` — Validated in Phase 5: Orphan Cleanup (ORPH-02)
+- ✓ Local `.cursor/` directory and `teresa.zip` sandbox artifact removed from working tree — Validated in Phase 5: Orphan Cleanup (ORPH-03, ORPH-04)
+- ✓ `CHANGELOG.md` and `LAUNCHER_README.md:4` historical mentions preserved per D-18 historical-content convention — confirmed in Phase 5
+
+<!-- v1.1 Phase 6 — Doc-vs-Impl Drift Sweep closed 2026-05-11 -->
+
+- ✓ Mechanical claim sweep across 13 `spec_classifier/docs/` files + 3 root markdown files (`README.md`, `CLAUDE.md`, `CONTRIBUTING.md`) + 2 `.planning/codebase/` map files: 369 claims audited, 10 patches + 3 removes + 356 `no_drift`; remove > patch heuristic applied — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-01)
+- ✓ `spec_classifier/docs/user/RUN_PATHS_AND_IO_LAYOUT.md` (281→264) and `spec_classifier/docs/dev/ONE_BUTTON_RUN.md` (54→50) trimmed of duplicated CLI-flag prose; pointer to `run.ps1 -?` added; `run.ps1` ships English `<# .SYNOPSIS / .DESCRIPTION / 5×.PARAMETER / 6×.EXAMPLE #>` help block (RU header at lines 1-13 byte-equal, SHA-frozen) — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-02)
+- ✓ `spec_classifier/docs/dev/DOC_INVARIANTS.md` created with 8 mechanical Bash one-liner invariants (SC #2 ≥5 floor exceeded); each exits 0 against the post-phase tree (SC #4); audit log at `.planning/phases/06-doc-vs-impl-drift-sweep/06-DRIFT-AUDIT.md` records every (file, line, claim, check, resolution) — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-03)
+- ✓ Re-sweep against the corrected tree returns 0 drift claims (SC #1); 3 surgical patches to `.planning/codebase/{STACK.md:79, INTEGRATIONS.md:55, INTEGRATIONS.md:150}` close the Phase 5 hand-off (PYTHONPYCACHEPREFIX defense-in-depth vocabulary + HYG-01 username placeholder) — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-04)
+
 ### Active
 
-<!-- v1.1 Periphery cleanup (residual). Requirements derived from MILESTONE-CONTEXT.md → 3 sequential plans. Mapped to phases during roadmap creation. -->
-
-(populated by REQUIREMENTS.md / roadmap step — see `## Current Milestone: v1.1` block above)
+(none — v1.1 milestone complete; run `/gsd-new-milestone` to scope v1.2)
 
 ### Out of Scope
 
@@ -90,16 +106,18 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| One milestone — one work | "Throw out → structure → plan → steps with tests" methodology; v1.1 is cleanup-only; per-vendor knowledge docs are v1.2; classifier rule changes are v2.x | — Pending |
-| Sequential plan execution for v1.1 (1 → 2 → 3) | Plan 2 rewrites `pyproject.toml:5` to a wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state. Parallel execution is unsound | — Pending |
-| `DOC_INVARIANTS.md` is in scope despite "no creation" framing | Tooling/meta-doc materializing the v1.0 retrospective lesson (doc-vs-impl drift not caught by read-pass); domain content (per-vendor docs) stays excluded — that's v1.2 | — Pending |
-| Acknowledged debt extension: `config.local.yaml` regex parser | Plan 1 extends an existing 4+-site regex pattern to `temp_root`. Consolidation into `load_config_with_local()` helper deferred to its own milestone (CONCERNS.md § IMPORTANT) — explicit non-goal here | — Pending |
-| Cleanup before classification improvements | User wants a hygienic base before iterating on rules; reduces "fix" PRs that revert intentional behavior | — Pending |
-| Keep both `CLAUDE.md` files; deduplicate overlap | Root stays a thin pointer; deep reference stays with the code in `spec_classifier/` | — Pending |
-| "Done" = clean diff + green tests + GSD-native workflow | Compound criterion: cosmetic cleanup alone is insufficient | — Pending |
-| Strip `C:\Users\G\` username only; do not de-Windowize launchers | Cross-platform is a separate, larger effort; user is Windows-only operator today | — Pending |
-| Retire (or clearly deprecate) `spec_classifier/prompts/00–08` | GSD-native commands now cover PRE-CHECK / PLAN / IMPLEMENT / POST-CHECK / AUDIT cycle | — Pending |
-| Honor "do not fix" tech debt notes | `power_cord=None`, Excel-reading audit, `core/parser.py` Dell-specificity are intentional per project CLAUDE.md; bait for "fix" PRs | — Pending |
+| One milestone — one work | "Throw out → structure → plan → steps with tests" methodology; v1.1 is cleanup-only; per-vendor knowledge docs are v1.2; classifier rule changes are v2.x | ✓ Good — v1.1 closed clean (10 plans, 18 tasks, zero D-22 violations, zero golden regressions) |
+| Sequential plan execution for v1.1 (1 → 2 → 3) | Plan 2 rewrites `pyproject.toml:5` to a wording only true after Plan 1 lands; Plan 3 sweep relies on post-Plan-1+2 state. Parallel execution is unsound | ✓ Good — Phase 4 → 5 → 6 ordering held; Phase 5 D-05/D-06 vocabulary was reused verbatim by Phase 6 D-03 patches as designed |
+| `DOC_INVARIANTS.md` is in scope despite "no creation" framing | Tooling/meta-doc materializing the v1.0 retrospective lesson (doc-vs-impl drift not caught by read-pass); domain content (per-vendor docs) stays excluded — that's v1.2 | ✓ Good — shipped 8 invariants (exceeded ≥5 floor); all 8 exit 0 against post-phase tree; 1 invariant tightened during code review (CR-01 caught by `grep -F '.\run.ps1'` addition) |
+| Acknowledged debt extension: `config.local.yaml` regex parser | Plan 1 extends an existing 4+-site regex pattern to `temp_root`. Consolidation into `load_config_with_local()` helper deferred to its own milestone (CONCERNS.md § IMPORTANT) — explicit non-goal here | ✓ Good — extension landed without consolidation; helper consolidation remains v1.2/v2.x candidate |
+| Cleanup before classification improvements | User wants a hygienic base before iterating on rules; reduces "fix" PRs that revert intentional behavior | ✓ Good — v1.1 close gives a clean, drift-checked base for v1.2 per-vendor work |
+| Keep both `CLAUDE.md` files; deduplicate overlap | Root stays a thin pointer; deep reference stays with the code in `spec_classifier/` | ✓ Good — root CLAUDE.md confirmed as 13-line load-bearing summary; spec_classifier/CLAUDE.md untouched in v1.1 (deferred sweep to v1.2) |
+| "Done" = clean diff + green tests + GSD-native workflow | Compound criterion: cosmetic cleanup alone is insufficient | ✓ Good — Phase 6 post-execution: pytest 774 passed + 1 xfailed; D-22 byte-equal; goldens byte-equal across full milestone window |
+| Strip `C:\Users\G\` username only; do not de-Windowize launchers | Cross-platform is a separate, larger effort; user is Windows-only operator today | ✓ Good — INTEGRATIONS.md:55 retroactive HYG-01 catch landed in Phase 6; cross-platform deferred to v2.0 PLAT-01 |
+| Retire (or clearly deprecate) `spec_classifier/prompts/00–08` | GSD-native commands now cover PRE-CHECK / PLAN / IMPLEMENT / POST-CHECK / AUDIT cycle | ✓ Good — archived in v1.0 Phase 3 (WF-01); GSD-native cycle proven through v1.1 |
+| Honor "do not fix" tech debt notes | `power_cord=None`, Excel-reading audit, `core/parser.py` Dell-specificity are intentional per project CLAUDE.md; bait for "fix" PRs | ✓ Good — Phase 6 sweep caught 1 USER_GUIDE.md violation (Power Cord LOGISTIC mis-classification) and patched it; invariant #6 protects `power_cord` "intentionally unmapped" comment as a mechanical floor |
+| Default to atomic-fix-on-find for code-review findings during auto-mode | Auto-mode mandates fixing clear-cut bugs in the same session rather than punting; CR-01 (`.un.ps1` from `.\r` escape consumption) was a critical bug in Phase 6's own deliverable that would have failed verification | ✓ Good — Phase 6 close: 5 code-review findings auto-fixed (`fix(06)` commits); verifier re-pass confirmed zero residuals; 1 verifier-found 6th sister location patched inline |
+| `06-DRIFT-AUDIT.md` records `no_drift` rows alongside drifts | SC #5 wording requires "every claim flagged"; `no_drift` rows make the audit log a complete inventory rather than just a delta — supports re-sweep verification and gives next contributor a meaningful baseline | ✓ Good — 369 rows total (356 no_drift + 10 patch + 3 remove); composite SC #1 re-sweep returned 0 drift |
 
 ## Evolution
 
@@ -119,4 +137,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-10 after Phase 4 (Cache Redirect) completion — CACHE-01..04 validated.*
+*Last updated: 2026-05-11 after v1.1 milestone (Periphery cleanup) shipped — CACHE-01..04 + ORPH-01..04 + DRIFT-01..04 validated; 12/12 milestone requirements complete.*

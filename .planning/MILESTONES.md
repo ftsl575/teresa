@@ -1,5 +1,49 @@
 # Milestones
 
+## v1.1 Periphery cleanup (residual) (Shipped: 2026-05-11)
+
+**Phases completed:** 3 phases (4-6), 10 plans, 18 tasks
+**Timeline:** 2026-05-10 → 2026-05-11 (2 days; final 6-plan Phase 6 ran in a single auto-mode session)
+**Git range:** `866dd33` → `9dfe793` (~60 commits in milestone window)
+**Tests:** 774 passed + 1 xfailed + 0 skipped (real-data, not structural-skips); zero D-22 violations; goldens byte-equal end-to-end
+
+**Key accomplishments:**
+
+1. **Runtime cache redirect wired (Phase 4: CACHE-01..04)** — `run.ps1` and `teresa_gui.py` both set `PYTHONPYCACHEPREFIX` + `PYTEST_ADDOPTS` from `config.local.yaml::temp_root` before any Python invocation. `clean.ps1` runs by default with `-NoClean` opt-out. Defense-in-depth (both launcher AND GUI) protects against single-source regressions. Closes the runtime-cache architectural gap that v1.0's read-pass DOC-03 audit didn't catch.
+
+2. **Orphan references purged (Phase 5: ORPH-01..04)** — All references to the deleted `scripts/run_full.ps1` removed from `pyproject.toml:5` and `config.local.yaml.example:11`; rewritten with wording true post-Phase-4. Local `.cursor/` directory and `teresa.zip` sandbox artifact removed. `CHANGELOG.md` and `LAUNCHER_README.md:4` historical mentions deliberately preserved per D-18 historical-content convention.
+
+3. **Doc-vs-impl drift sweep (Phase 6: DRIFT-01)** — 369 claims mechanically audited across 18 files (13 `spec_classifier/docs/` + 3 root markdown + 2 `.planning/codebase/` map files). Resolution: 356 `no_drift` + 10 patches + 3 removes. `remove > patch` heuristic applied throughout. Notable patches included: Power Cord LOGISTIC mis-classification in USER_GUIDE.md (load-bearing business rule), HPE no-branded-spec claim in TECHNICAL_OVERVIEW.md, schema column-list omissions, line-number → symbol-ref rewrites.
+
+4. **DRIFT-02 deliverables (Phase 6: DRIFT-02)** — `run.ps1` ships English `<# .SYNOPSIS / .DESCRIPTION / 5×.PARAMETER / 6×.EXAMPLE #>` comment-based help block (RU header at lines 1-13 byte-equal, SHA-frozen at `2c7dd607...`). `ONE_BUTTON_RUN.md` 54→50 lines and `RUN_PATHS_AND_IO_LAYOUT.md` 281→264 lines, both with pointer to `run.ps1 -?` and trimmed CLI-flag duplication.
+
+5. **DOC_INVARIANTS.md mechanical floor (Phase 6: DRIFT-03)** — `spec_classifier/docs/dev/DOC_INVARIANTS.md` created with 8 Bash one-liner invariants (exceeded ≥5 floor): PYTHONPYCACHEPREFIX in `run.ps1` + `teresa_gui.py`, PYTEST_ADDOPTS in `run.ps1`, `clean.ps1` invoked from `run.ps1`, no `run_full` orphans in `*.toml`/`*.example`, `power_cord` "intentionally unmapped" comment present, six-vendor list registered, Phase 6 help block survives. Each cites a real drift incident; all 8 exit 0 against post-phase tree (SC #4 PASS).
+
+6. **Surgical map patches (Phase 6: DRIFT-04)** — 3 surgical line patches to `.planning/codebase/{STACK.md:79, INTEGRATIONS.md:55, INTEGRATIONS.md:150}`. Stale PYTHONPYCACHEPREFIX claims replaced with Phase 5 D-05/D-06 canonical defense-in-depth vocabulary. INTEGRATIONS.md:55 hardcoded `C:\Users\G\` username leak replaced with `C:\Users\<USERNAME>\` per HYG-01 placeholder convention (retroactive v1.0 HYG-01 catch).
+
+7. **Code review caught critical regression in own deliverable** — Phase 6 code review found CR-01: every `.EXAMPLE` line in the new `run.ps1` help block contained `.un.ps1` instead of `.\run.ps1` because `.\r` was consumed as a CR escape during string handling. Auto-fixed via byte-precise replacement (`2e 0d 75 6e` → `2e 5c 72 75 6e`); RU header SHA preserved. Invariant #8 grep tightened to `grep -qF '.\run.ps1'` so future identical regressions trip the gate. 4 additional WR findings (5 stale Cisco/HPE branded.xlsx claims, test_unknown_threshold misattribution to Lenovo) all auto-fixed in the same session.
+
+**Verification gates:**
+
+| Phase | Gate | Verdict |
+|-------|------|---------|
+| Phase 4 | Cache redirect smoke (`Test-Path .\.pytest_cache` = `$false`) | PASS |
+| Phase 5 | `pyproject.toml`/`config.local.yaml.example` no `run_full` refs | PASS |
+| Phase 6 | DOC_INVARIANTS 8/8 exit 0; SC #1 re-sweep returns 0 drift | PASS |
+| All phases | D-22 protected paths byte-equal across milestone window | PASS |
+| All phases | Goldens byte-equal across milestone window | PASS |
+| All phases | Pytest skip-ratio gate (`skipped/total < 0.50`, `passed > 0`) | PASS (774/0/1xf in 21s) |
+
+**Issues deferred to v1.2:**
+
+- Broader `/gsd-map-codebase` refresh of all 7 `.planning/codebase/` maps (folds in volatile-counts deferral from Phase 6)
+- `spec_classifier/CLAUDE.md` + `spec_classifier/README.md` drift sweep (deepest accumulation of drift-prone claims; out of v1.1's 16-file ROADMAP scope)
+- `load_config_with_local()` regex-parser consolidation (CONCERNS.md § IMPORTANT)
+- Pre-commit hook + CI integration of DOC_INVARIANTS.md (depends on v2.0 PLAT-01 cross-platform)
+- `run.ps1:1-13` Russian header → English translation (D-18 historical-content exemption preserved)
+
+---
+
 ## v1.0 Cleanup & Workflow Setup (Shipped: 2026-05-10)
 
 **Phases completed:** 3 phases, 13 plans, 22 tasks

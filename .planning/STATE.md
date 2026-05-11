@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Periphery cleanup (residual)
-status: milestone_complete
-stopped_at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 ready for /gsd-verify-work 6 + /gsd-complete-milestone)
-last_updated: "2026-05-11T01:05:44Z"
-last_activity: 2026-05-11
+status: Awaiting next milestone
+stopped_at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 milestone ready for verification)
+last_updated: "2026-05-11T01:50:25.480Z"
+last_activity: 2026-05-11 — Milestone v1.1 completed and archived
 progress:
   total_phases: 3
   completed_phases: 3
@@ -25,12 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 
 ## Current Position
 
-Phase: 06
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-05-11
-
-Progress: [██████████] 100%
+Phase: Milestone v1.1 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-05-11 — Milestone v1.1 completed and archived
 
 ## Performance Metrics
 
@@ -148,6 +146,4 @@ Resume file: None
 
 ## Operator Next Steps
 
-- `/gsd-verify-work 6` to produce `.planning/phases/06-doc-vs-impl-drift-sweep/06-VERIFICATION.md`. Phase 6 Plan 06 SUMMARY references it ahead of creation per the Plan 06 output spec.
-- After Phase 6 verification: `/gsd-complete-milestone v1.1` (or equivalent) to close the v1.1 Periphery cleanup milestone. All 12 v1.1 requirements are now Complete (CACHE-01..04 in Phase 4, ORPH-01..04 in Phase 5, DRIFT-01..04 in Phase 6).
-- Bookkeeping touch-up: address the Phase 4 row stale entry in `.planning/ROADMAP.md` Progress table (currently shows "0/3 Planning complete"; should read "3/3 Complete | 2026-05-10"). See `.planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md` — this is a pre-existing roadmap-bookkeeping drift not introduced by Plan 06-06; recommended to roll into the milestone-close step.
+- Start the next milestone with /gsd-new-milestone
