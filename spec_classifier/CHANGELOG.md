@@ -13,6 +13,9 @@ Versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- ops(input-integrity): `huawei/hu5.xlsx` drifted on 2026-05-14 (post-v1.1 close). External Excel edit trimmed sheet dimensions from `A1:L28` to `A1:L27`, removing trailing empty HEADER row at sri=28. Symptom: `test_regression_huawei[hu5.xlsx]` failed (expected 19 rows, got 18). Parser/classifier/goldens unchanged. Restored via openpyxl write to A28 → dimensions back to `A1:L28`. Reminder: INPUT files (`.gitignore`'d) are versioned data — avoid Excel re-saves without need (Excel trims trailing empty rows on save).
+
 ### Changed (Phase 1 — Hygiene, 2026-05-10)
 - chore(hygiene): scrubbed `C:\Users\G\` username from 17 tracked files using per-context placeholders (`<USERNAME>`, `$(HOME)`, `~/Desktop/...`); 95 replacements total. See `.planning/phases/01-hygiene/01-SUMMARY.md`.
 - chore(hygiene): consolidated dual `.gitignore` (root + `spec_classifier/`) into a single root file; coverage retained.
