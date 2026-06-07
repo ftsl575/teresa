@@ -1336,13 +1336,14 @@ def _build_claude_prompt(bugs: list, yaml_candidates: list, rule_issues: list) -
     return "\n".join(lines)
 
 
-def find_annotated_files(output_dir: Path, vendor_filter: str | None,
+def find_annotated_files(split_root: Path, vendor_filter: str | None,
                           since: str | None) -> list[Path]:
-    files = sorted(output_dir.rglob("*_annotated.xlsx"))
-    # Exclude already-audited files
+    # D-02: strict SPLIT-only read; missing SPLIT dir -> empty result (no whole-tree fallback)
+    if not split_root.is_dir():
+        return []
+    files = sorted(split_root.rglob("*_annotated.xlsx"))
+    # Exclude already-audited files (defensive; audited files now live under AUDIT/)
     files = [f for f in files if "_audited" not in f.name]
-    # Exclude TOTAL aggregation folders (contain duplicates of per-run files)
-    files = [f for f in files if "-TOTAL" not in f.parent.name]
     if vendor_filter:
         files = [f for f in files if vendor_filter in str(f).lower()]
     if since:
@@ -1357,11 +1358,8 @@ def detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) 
         known_vendors = _get_known_vendors(_load_config())
     s = str(path).lower()
     for vendor in known_vendors:
-        if f"{vendor}_run" in s or f"/{vendor}/" in s or f"\\{vendor}\\" in s:
+        if f"/{vendor}/" in s or f"\\{vendor}\\" in s:
             return vendor
-    # HPE alias: "hp_run" → "hpe"
-    if "hp_run" in s:
-        return "hpe"
     print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
     return "unknown"
 
@@ -1392,14 +1390,18 @@ def main():
         print(f"❌ Папка не найдена: {output_dir}")
         sys.exit(1)
 
-    files = find_annotated_files(output_dir, args.vendor, args.since)
+    # D-01 / SP-1: keep --output-dir = output_root; derive buckets internally.
+    SPLIT_root = output_dir / "SPLIT"   # read base
+    AUDIT_root = output_dir / "AUDIT"   # write base (no rmtree; D-04)
+
+    files = find_annotated_files(SPLIT_root, args.vendor, args.since)
     if not files:
         print("Файлы *_annotated.xlsx не найдены.")
         sys.exit(0)
 
     print(f"Найдено {len(files)} файлов:")
     for f in files:
-        print(f"  {f.relative_to(output_dir)}")
+        print(f"  {f.relative_to(SPLIT_root)}")
 
     if args.dry_run:
         print("\n[dry-run] Обработка не запускалась.")
