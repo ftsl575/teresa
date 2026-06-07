@@ -23,11 +23,13 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 
 ## Current State
 
-**Last shipped:** v1.1 Periphery cleanup (residual) — 2026-05-11
-**Active milestone:** v1.2 Output structure reorganization — Phase 7 complete (2026-06-07).
+**Last shipped:** v1.2 Output structure reorganization — 2026-06-07 (9/9 phases complete).
+**Active milestone:** none — v1.2 COMPLETE; next milestone (v1.3 artifact-content work) not yet started.
 
 **v1.2 delivered:**
 - Three-bucket `<bucket>/<vendor>/<spec>/` output layout: `main.py` routes the nine per-spec artifacts to `SPLIT/<vendor>/<spec>/` and the branded workbook to `READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` (filename rename only, bytes byte-equal); per-run timestamp folder dropped and the TOTAL copy mechanism removed; new wipe-first `run_manager.create_spec_folder` replaces the timestamp-folder helpers (Phase 7: LAYOUT-01..03, ROUTE-01/02/05).
+- `batch_audit.py` + `cluster_audit.py` outputs routed into `AUDIT/` — per-spec `<stem>_annotated_audited.xlsx` under `AUDIT/<vendor>/<spec>/`, batch aggregates (`audit_report.json`, `audit_summary.xlsx`, `cluster_summary.xlsx`) at the AUDIT root; goldens byte-equal (Phase 8: audit routing).
+- `output_root/README.md` manifest: static, byte-stable `run_manager.write_manifest(output_root)` helper called once per `main()` invocation — a file → bucket → purpose table (Russian purpose column) grouped by READY/SPLIT/AUDIT (~14 pattern rows); plus full-suite verification (771 passed, goldens byte-equal) and WR-01 vendor-detector deduplication: one shared `detect_vendor_from_path` in `run_manager.py`, both local copies removed, hardened to right-to-left per-component matching (Phase 9: MANIFEST-01, TEST-01).
 
 **v1.1 delivered:**
 - Runtime cache redirect (`PYTHONPYCACHEPREFIX` + `PYTEST_ADDOPTS`) wired through `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`; `clean.ps1` runs by default with `-NoClean` opt-out (Phase 4: CACHE-01..04).
@@ -86,16 +88,20 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 - ✓ `spec_classifier/docs/dev/DOC_INVARIANTS.md` created with 8 mechanical Bash one-liner invariants (SC #2 ≥5 floor exceeded); each exits 0 against the post-phase tree (SC #4); audit log at `.planning/phases/06-doc-vs-impl-drift-sweep/06-DRIFT-AUDIT.md` records every (file, line, claim, check, resolution) — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-03)
 - ✓ Re-sweep against the corrected tree returns 0 drift claims (SC #1); 3 surgical patches to `.planning/codebase/{STACK.md:79, INTEGRATIONS.md:55, INTEGRATIONS.md:150}` close the Phase 5 hand-off (PYTHONPYCACHEPREFIX defense-in-depth vocabulary + HYG-01 username placeholder) — Validated in Phase 6: Doc-vs-Impl Drift Sweep (DRIFT-04)
 
+<!-- v1.2 Output structure reorganization — closed 2026-06-07 (9/9 phases) -->
+
+- ✓ Three buckets (READY / SPLIT / AUDIT) created under `output_root`, each with `<vendor>/<spec>/` nesting — Validated in Phase 7: Bucket layout (LAYOUT-01..03)
+- ✓ `main.py` per-spec outputs routed to SPLIT (9 files), `branded` routed to READY under Russian name — Validated in Phase 7: main.py routing (ROUTE-01/02/05)
+- ✓ `batch_audit.py` + `cluster_audit.py` outputs routed to AUDIT (per-spec + root aggregates) — Validated in Phase 8: Audit routing
+- ✓ Per-run timestamp folder dropped (overwrite semantics); TOTAL copy mechanism removed — Validated in Phase 7: Bucket layout
+- ✓ README manifest written at `output_root` (static file → bucket → purpose table, Russian purpose column) — Validated in Phase 9: Output manifest (MANIFEST-01)
+- ✓ Path/layout tests updated to the new structure; full suite green within skip-gate, goldens byte-equal; WR-01 vendor-detector dedup into `run_manager.py` — Validated in Phase 9: Full-suite verification (TEST-01)
+
 ### Active
 
-<!-- v1.2 Output structure reorganization — scoped REQ-IDs in REQUIREMENTS.md -->
+<!-- No active milestone — v1.2 complete. v1.3 (artifact-content work: CONTENT-01..03) is the next milestone, not yet scoped into requirements. -->
 
-- [ ] Three buckets (READY / SPLIT / AUDIT) created under `output_root`, each with `<vendor>/<spec>/` nesting
-- [ ] `main.py` per-spec outputs routed to SPLIT (9 files), `branded` routed to READY under Russian name
-- [ ] `batch_audit.py` + `cluster_audit.py` outputs routed to AUDIT (per-spec + root aggregates)
-- [ ] Per-run timestamp folder dropped (overwrite semantics); TOTAL copy mechanism removed
-- [ ] README manifest written at `output_root`
-- [ ] Path/layout tests updated to the new structure (goldens content byte-equal)
+_None — v1.2 shipped. Next: start the v1.3 content milestone (`/gsd-new-milestone`)._
 
 ### Out of Scope
 
@@ -167,4 +173,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-07 — v1.2 Phase 7 complete (bucket layout & main.py routing → READY+SPLIT; LAYOUT-01..03, ROUTE-01/02/05). Milestone started 2026-06-07 (routing-only; READY/SPLIT/AUDIT buckets). v1.1 shipped 2026-05-11 (CACHE-01..04 + ORPH-01..04 + DRIFT-01..04, 12/12 complete).*
+*Last updated: 2026-06-07 — v1.2 Output structure reorganization COMPLETE (9/9 phases): Phase 7 bucket layout & main.py routing (LAYOUT-01..03, ROUTE-01/02/05), Phase 8 audit routing → AUDIT, Phase 9 output manifest + full-suite verification + WR-01 vendor-detector dedup (MANIFEST-01, TEST-01). Goldens byte-equal end-to-end; full suite 771 passed. v1.1 shipped 2026-05-11 (CACHE-01..04 + ORPH-01..04 + DRIFT-01..04). Next: v1.3 artifact-content milestone.*
