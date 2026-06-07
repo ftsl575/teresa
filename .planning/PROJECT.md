@@ -24,7 +24,10 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 ## Current State
 
 **Last shipped:** v1.1 Periphery cleanup (residual) — 2026-05-11
-**Active milestone:** v1.2 Output structure reorganization — scoping (this session).
+**Active milestone:** v1.2 Output structure reorganization — Phase 7 complete (2026-06-07).
+
+**v1.2 delivered:**
+- Three-bucket `<bucket>/<vendor>/<spec>/` output layout: `main.py` routes the nine per-spec artifacts to `SPLIT/<vendor>/<spec>/` and the branded workbook to `READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` (filename rename only, bytes byte-equal); per-run timestamp folder dropped and the TOTAL copy mechanism removed; new wipe-first `run_manager.create_spec_folder` replaces the timestamp-folder helpers (Phase 7: LAYOUT-01..03, ROUTE-01/02/05).
 
 **v1.1 delivered:**
 - Runtime cache redirect (`PYTHONPYCACHEPREFIX` + `PYTEST_ADDOPTS`) wired through `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`; `clean.ps1` runs by default with `-NoClean` opt-out (Phase 4: CACHE-01..04).
@@ -164,4 +167,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-07 — v1.2 Output structure reorganization milestone started (routing-only; READY/SPLIT/AUDIT buckets). v1.1 shipped 2026-05-11 (CACHE-01..04 + ORPH-01..04 + DRIFT-01..04, 12/12 complete).*
+*Last updated: 2026-06-07 — v1.2 Phase 7 complete (bucket layout & main.py routing → READY+SPLIT; LAYOUT-01..03, ROUTE-01/02/05). Milestone started 2026-06-07 (routing-only; READY/SPLIT/AUDIT buckets). v1.1 shipped 2026-05-11 (CACHE-01..04 + ORPH-01..04 + DRIFT-01..04, 12/12 complete).*
