@@ -300,10 +300,7 @@ def main() -> int:
             print(f"Error: no .xlsx files found in {batch_dir}", file=sys.stderr)
             return 1
 
-        session_stamp = get_session_stamp()
-        vendor_base = output_dir / f"{args.vendor}_run"
-        total_folder = create_total_folder(str(vendor_base), session_stamp)
-        log.info("Batch mode: %d files, TOTAL folder: %s", len(xlsx_files), total_folder)
+        log.info("Batch mode: %d files, output_root: %s", len(xlsx_files), output_dir)
 
         adapter = _get_adapter(args.vendor, config)
         processed = []
@@ -327,8 +324,6 @@ def main() -> int:
                 config_path=config_path,
                 output_dir=output_dir,
                 vendor=args.vendor,
-                session_stamp=session_stamp,
-                total_folder=total_folder,
                 save_golden=getattr(args, "save_golden", False),
                 update_golden=getattr(args, "update_golden", False),
                 cwd=cwd,
@@ -343,7 +338,7 @@ def main() -> int:
             "Batch complete: %d processed, %d skipped, %d failed",
             len(processed), len(skipped), len(failed),
         )
-        print(f"Batch complete: {len(processed)} processed, {len(skipped)} skipped, {len(failed)} failed. TOTAL: {total_folder}")
+        print(f"Batch complete: {len(processed)} processed, {len(skipped)} skipped, {len(failed)} failed. Output: {output_dir}")
         return 1 if len(failed) > 0 else 0
 
     if not args.input:
@@ -361,8 +356,6 @@ def main() -> int:
         config_path=config_path,
         output_dir=output_dir,
         vendor=args.vendor,
-        session_stamp=None,
-        total_folder=None,
         save_golden=getattr(args, "save_golden", False),
         update_golden=getattr(args, "update_golden", False),
         cwd=cwd,
