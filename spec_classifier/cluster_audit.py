@@ -20,6 +20,8 @@ import yaml
 
 import pandas as pd
 
+from src.diagnostics.run_manager import detect_vendor_from_path
+
 
 def _load_config() -> dict:
     """Load config.yaml, overlay with config.local.yaml (paths only)."""
@@ -93,29 +95,6 @@ def build_parser(known_vendors: list[str] | None = None) -> argparse.ArgumentPar
 
 
 # ── Step 1: Load candidate rows ───────────────────────────────────────────────
-
-def _detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
-    """Infer vendor from file name, parent, or grandparent directory name."""
-    if known_vendors is None:
-        known_vendors = _get_known_vendors(_load_config())
-    stem = path.stem.lower()
-    parent = path.parent.name.lower()
-    grandparent = path.parent.parent.name.lower()
-
-    for text in (stem, parent, grandparent):
-        for vendor in known_vendors:
-            if f"{vendor}_run" in text or text == vendor:
-                return vendor
-    # HPE alias: "hp_run" or stem starting with "hp"
-    for text in (stem, parent, grandparent):
-        if "hp_run" in text or (text.startswith("hp") and "hp" not in known_vendors):
-            return "hpe"
-    # Cisco alias: "ccw" in path
-    if any("ccw" in t for t in (stem, parent, grandparent)):
-        if "cisco" in known_vendors:
-            return "cisco"
-    return "unknown"
-
 
 def _is_empty(val) -> bool:
     if val is None:
@@ -191,8 +170,11 @@ def load_candidate_rows(output_dir: Path, vendor_filter: str | None = None) -> l
 
     candidates: list[dict] = []
 
+    config = _load_config()
+    known_vendors = _get_known_vendors(config)
+
     for path in files:
-        vendor = _detect_vendor_from_path(path)
+        vendor = detect_vendor_from_path(path, known_vendors)
         if vendor_filter and vendor != vendor_filter:
             continue
 

@@ -32,6 +32,8 @@ import openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
+from src.diagnostics.run_manager import detect_vendor_from_path
+
 if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding \
         and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -1352,18 +1354,6 @@ def find_annotated_files(split_root: Path, vendor_filter: str | None,
         cutoff = datetime.strptime(since, "%Y-%m-%d")
         files = [f for f in files if datetime.fromtimestamp(f.stat().st_mtime) >= cutoff]
     return files
-
-
-def detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
-    """Detect vendor from path components using known vendor list."""
-    if known_vendors is None:
-        known_vendors = _get_known_vendors(_load_config())
-    s = str(path).lower()
-    for vendor in known_vendors:
-        if f"/{vendor}/" in s or f"\\{vendor}\\" in s:
-            return vendor
-    print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
-    return "unknown"
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
