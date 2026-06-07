@@ -34,14 +34,18 @@ accepted). It does NOT trigger for this operator (`C:\Users\G\`), and the canoni
 Options: (a) accept as the locked D-13 tradeoff [recommended], or (b) harden to
 per-component exact matching (`vendor.lower() in [p.lower() for p in Path(path).parts]`)
 as a follow-up — passes all existing tests, but overrides locked decision D-13(2).
-result: [pending]
+result: resolved — user chose to harden. `detect_vendor_from_path` now uses right-to-left
+per-component exact matching (commit `4894ba9`), so the real `<vendor>` segment near the file
+wins over any vendor-named prefix segment. Regression test added (closes review IN-02). Full
+suite 771 passed, goldens byte-equal. Consciously overrides locked decision D-13(2) per user
+approval.
 
 ## Summary
 
 total: 2
-passed: 0
+passed: 1
 issues: 0
-pending: 2
+pending: 1
 skipped: 0
 blocked: 0
 

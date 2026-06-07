@@ -27,6 +27,14 @@ status: issues_found
 **Files Reviewed:** 8
 **Status:** issues_found
 
+> **Resolution (post-review):** **CR-01 RESOLVED** — `detect_vendor_from_path` was hardened to
+> right-to-left per-component exact matching (commit `4894ba9`), eliminating the prefix-segment
+> false-positive class. A regression test was added (closes **IN-02**). This consciously
+> overrides locked decision CONTEXT.md D-13(2) per explicit user approval during phase-09 human
+> verification. Full suite: 771 passed, goldens byte-equal. Remaining items: **WR-01** (uncaught
+> `OSError` from `write_manifest` in `main()`) and **IN-01** (manifest written before CLI usage
+> validation) are accepted as-is (low severity, no functional impact) — left for a future polish pass.
+
 ## Summary
 
 Phase 9 delivers three changes: (1) `detect_vendor_from_path(path, known_vendors)` extracted from both `batch_audit.py` and `cluster_audit.py` into `run_manager.py`, with both callers rewired to import it; (2) `write_manifest(output_root)` added to `run_manager.py` and called once in `main()`; (3) consolidated/updated tests in `test_run_manager.py`, `test_batch_audit.py`, `test_cluster_audit.py`, and `test_output_structure.py`.
