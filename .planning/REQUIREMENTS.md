@@ -25,7 +25,7 @@
 
 ### Output Manifest (MANIFEST)
 
-- [ ] **MANIFEST-01**: A `README.md` manifest is written at `output_root` describing each artifact as a table of file → bucket → purpose.
+- [x] **MANIFEST-01**: A `README.md` manifest is written at `output_root` describing each artifact as a table of file → bucket → purpose.
 
 ### Test Realignment (TEST)
 
@@ -77,7 +77,7 @@ Which phases cover which requirements. Filled during roadmap creation.
 | ROUTE-05 | Phase 7 | Complete |
 | ROUTE-03 | Phase 8 | Complete |
 | ROUTE-04 | Phase 8 | Complete |
-| MANIFEST-01 | Phase 9 | Pending |
+| MANIFEST-01 | Phase 9 | Complete |
 | TEST-01 | Phase 9 | Pending |
 
 **Coverage:**

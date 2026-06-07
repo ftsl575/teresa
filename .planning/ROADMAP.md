@@ -108,7 +108,7 @@ Plans:
 - [x] 09-01-PLAN.md — WR-01 dedup: extract detect_vendor_from_path into run_manager.py; delete both local copies from batch_audit + cluster_audit; update cluster caller
 
 **Wave 2** *(blocked on Wave 1 — shares run_manager.py)*
-- [ ] 09-02-PLAN.md — MANIFEST-01: add write_manifest to run_manager.py; wire once in main.py after output_dir resolution
+- [x] 09-02-PLAN.md — MANIFEST-01: add write_manifest to run_manager.py; wire once in main.py after output_dir resolution
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 09-03-PLAN.md — TEST-01: consolidate detect-vendor tests into test_run_manager.py; add manifest unit tests; extend test_output_structure.py; full suite green + goldens byte-equal + real-data verification in 09-VERIFICATION.md
