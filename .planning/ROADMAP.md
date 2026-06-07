@@ -54,7 +54,7 @@ Full details: [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.m
 
 **Requirements:** LAYOUT-01, LAYOUT-02, LAYOUT-03, ROUTE-01, ROUTE-02, ROUTE-05
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -64,7 +64,7 @@ Plans:
 - [x] 07-02-PLAN.md — Update main.py: reroute _run_single and batch block to SPLIT/READY buckets
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 07-03-PLAN.md — Realign test_output_structure.py and test_cli.py to bucket layout; full suite green
+- [x] 07-03-PLAN.md — Realign test_output_structure.py and test_cli.py to bucket layout; full suite green
 
 **Success criteria:**
 1. After a run, `output_root/READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` exists and is byte-identical to the workbook previously emitted as `<stem>_branded.xlsx`.
@@ -107,7 +107,7 @@ Plans:
 | 4. Cache Redirect            | v1.1      | 3/3            | Complete | 2026-05-10 |
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
-| 7. Bucket layout & main.py routing | v1.2 | 2/3 | In Progress|  |
+| 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
 | 8. Audit routing             | v1.2      | 0/—            | Planned  | —          |
 | 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
 
