@@ -96,8 +96,11 @@ def test_is_empty(val, expected):
 def test_collect_xlsx_files_prefers_audited(tmp_path):
     """When both *_annotated.xlsx and *_annotated_audited.xlsx exist for the
     same source stem, only the audited variant should be returned."""
-    (tmp_path / "widget_annotated.xlsx").touch()
-    (tmp_path / "widget_annotated_audited.xlsx").touch()
+    # Phase 8 dual-bucket layout: audited under AUDIT/, annotated under SPLIT/.
+    (tmp_path / "AUDIT" / "v" / "widget").mkdir(parents=True)
+    (tmp_path / "AUDIT" / "v" / "widget" / "widget_annotated_audited.xlsx").touch()
+    (tmp_path / "SPLIT" / "v" / "widget").mkdir(parents=True)
+    (tmp_path / "SPLIT" / "v" / "widget" / "widget_annotated.xlsx").touch()
 
     result = _collect_xlsx_files(tmp_path)
     names = [p.name for p in result]
@@ -108,7 +111,8 @@ def test_collect_xlsx_files_prefers_audited(tmp_path):
 
 def test_collect_xlsx_files_includes_annotated_only(tmp_path):
     """When only *_annotated.xlsx exists (no audited), it should be returned."""
-    (tmp_path / "gadget_annotated.xlsx").touch()
+    (tmp_path / "SPLIT" / "v" / "gadget").mkdir(parents=True)
+    (tmp_path / "SPLIT" / "v" / "gadget" / "gadget_annotated.xlsx").touch()
 
     result = _collect_xlsx_files(tmp_path)
     names = [p.name for p in result]
@@ -228,12 +232,13 @@ def test_write_cluster_summary_creates_xlsx(tmp_path):
         "suggested_yaml_rule": "fan",
     }]
     write_cluster_summary(clusters, tmp_path, min_cluster_size=3)
-    assert (tmp_path / "cluster_summary.xlsx").exists()
+    assert (tmp_path / "AUDIT" / "cluster_summary.xlsx").exists()
 
 
 def test_write_cluster_summary_updates_json(tmp_path):
     """Existing audit_report.json should gain a 'clusters' key."""
-    report_path = tmp_path / "audit_report.json"
+    (tmp_path / "AUDIT").mkdir(parents=True, exist_ok=True)
+    report_path = tmp_path / "AUDIT" / "audit_report.json"
     report_path.write_text(json.dumps({"meta": {}}), encoding="utf-8")
 
     clusters = [{
@@ -271,7 +276,7 @@ def test_write_cluster_summary_filters_small_clusters(tmp_path):
     write_cluster_summary(clusters, tmp_path, min_cluster_size=3)
 
     import openpyxl
-    wb = openpyxl.load_workbook(tmp_path / "cluster_summary.xlsx")
+    wb = openpyxl.load_workbook(tmp_path / "AUDIT" / "cluster_summary.xlsx")
     ws = wb.active
     # Only header row + 1 data row (cluster 0 with count=10)
     assert ws.max_row == 2
@@ -324,7 +329,8 @@ def test_load_candidate_rows_empty_dir(tmp_path):
 
 def test_load_candidate_rows_audited_E2(tmp_path):
     """Audited xlsx with E2 pipeline_check → exactly one row."""
-    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    # Phase 8 dual-bucket: audited workbooks live under AUDIT/<vendor>/<spec>/.
+    run_dir = tmp_path / "AUDIT" / "dell" / "test"
     run_dir.mkdir(parents=True)
 
     path = run_dir / "test_annotated_audited.xlsx"
@@ -343,7 +349,8 @@ def test_load_candidate_rows_audited_E2(tmp_path):
 
 def test_load_candidate_rows_annotated_unknown(tmp_path):
     """Annotated xlsx (no pipeline_check) with UNKNOWN entity → included."""
-    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    # Phase 8 dual-bucket: annotated workbooks live under SPLIT/<vendor>/<spec>/.
+    run_dir = tmp_path / "SPLIT" / "dell" / "test"
     run_dir.mkdir(parents=True)
 
     path = run_dir / "test_annotated.xlsx"
@@ -362,7 +369,7 @@ def test_load_candidate_rows_annotated_unknown(tmp_path):
 
 def test_load_candidate_rows_filters_ok(tmp_path):
     """Audited xlsx with OK pipeline_check → zero rows."""
-    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir = tmp_path / "AUDIT" / "dell" / "test"
     run_dir.mkdir(parents=True)
 
     path = run_dir / "test_annotated_audited.xlsx"
@@ -380,7 +387,7 @@ def test_load_candidate_rows_filters_ok(tmp_path):
 def test_load_candidate_rows_vendor_filter(tmp_path):
     """Vendor filter returns only matching vendor."""
     for vendor in ("dell", "hpe"):
-        run_dir = tmp_path / f"{vendor}_run" / f"run-2026-01-01__00-00-00-{vendor}"
+        run_dir = tmp_path / "SPLIT" / vendor / "test"
         run_dir.mkdir(parents=True)
 
         path = run_dir / f"{vendor}_test_annotated.xlsx"
@@ -399,7 +406,7 @@ def test_load_candidate_rows_vendor_filter(tmp_path):
 
 def test_load_candidate_rows_hw_no_types(tmp_path):
     """HW row without device_type and hw_type → included."""
-    run_dir = tmp_path / "dell_run" / "run-2026-01-01__00-00-00-test"
+    run_dir = tmp_path / "SPLIT" / "dell" / "test"
     run_dir.mkdir(parents=True)
 
     path = run_dir / "test_annotated.xlsx"
