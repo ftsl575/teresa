@@ -4,14 +4,14 @@ milestone: v1.2
 milestone_name: Output structure reorganization
 status: executing
 stopped_at: Phase 8 context gathered
-last_updated: "2026-06-07T16:45:41.926Z"
+last_updated: "2026-06-07T16:50:44.836Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 08 (audit-routing-audit) — EXECUTING
-Plan: 2 of 3
-Status: Plan 08-01 complete; ready to execute Plan 08-02
-Last activity: 2026-06-07 -- Plan 08-01 complete (batch_audit SPLIT-read / AUDIT-write routing)
+Plan: 3 of 3
+Status: Plan 08-02 complete; ready to execute Plan 08-03
+Last activity: 2026-06-07 -- Plan 08-02 complete (cluster_audit dual-bucket read / AUDIT-root aggregates)
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Last activity: 2026-06-07 -- Plan 08-01 complete (batch_audit SPLIT-read / AUDIT
 | Phase 06 P05 | ~1min | 1 task | 3 files |
 | Phase 06 P06 | ~5min | 3 tasks | 3 files |
 | Phase 07 P02 | 3min | 2 tasks | 1 files |
+| Phase 08 P02 | ~4min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,7 @@ Recent decisions affecting current work:
 - [Phase 6 / Plan 06]: DRIFT-03 + DRIFT-04 closed end-to-end. T1 cffcc38 created spec_classifier/docs/dev/DOC_INVARIANTS.md (128 lines, 8 mechanical Bash-one-liner invariants per D-15..D-20: PYTHONPYCACHEPREFIX in run.ps1+teresa_gui.py, PYTEST_ADDOPTS, clean.ps1, no run_full orphans, power_cord intentionally unmapped, six vendors, .SYNOPSIS help block); T2 7b84b65 added DOC_INVARIANTS.md entry to spec_classifier/docs/DOCS_INDEX.md (1:1 contract preserved, role-grouped placement after OPERATIONAL_NOTES.md); T3 c762167 finalized 06-DRIFT-AUDIT.md Tally (369 claims swept / 356 no_drift / 10 patch / 3 remove / 18 distinct files; conceptual 19 = 16 in-scope + 3 surgical lines reconciled inline since INTEGRATIONS.md contributes 2 of 3 surgical lines from one file) + appended SC #1 + SC #4 verification subsection (8/8 invariants exit 0; 12 patch-row spot-checks PASS; SC #3 line-count gates re-confirmed 50<54 and 264<281; D-25 pytest 774 passed + 1 xfailed + 0 skipped in 23.65s — REAL DATA outcome (a) per N-1 distinction since INPUT populated for all 6 vendors; D-22 + goldens byte-equal across full phase window c615637..HEAD). Phase 6 metadata commit c48bed5. ROADMAP §SC-1, §SC-2, §SC-3, §SC-4, §SC-5 all PASS. v1.1 milestone ready for /gsd-verify-work 6 + /gsd-complete-milestone.
 - [Phase 8 / Plan 01]: batch_audit.py re-pointed at Phase-7 buckets — reads `*_annotated.xlsx` strictly from `output_root/SPLIT` (is_dir guard, no whole-tree fallback; D-02), writes `<stem>_annotated_audited.xlsx` to `output_root/AUDIT/<vendor>/<spec>` via `relative_to(SPLIT_root)` mirror + mkdir-parents (no rmtree; D-03/D-04), `audit_report.json` + `audit_summary.xlsx` → `AUDIT/` root (D-05). Dead `{vendor}_run`/`hp_run`/`-TOTAL` matchers removed; `/{vendor}/` retained (D-07). `_generate_human_report` :924 untouched. `SPLIT_root`/`AUDIT_root` derived inline in `main()` (D-01, no launcher edits). Routing-only; goldens byte-equal. Commits 74c7dda, 83f2eb7. Full pytest gate deferred to Plan 08-02 (Wave 2).
 - [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
+- [Phase ?]: [Phase 8 / Plan 02]: cluster_audit.py re-pointed at Phase-7/8 buckets - dual-bucket read (AUDIT audited + SPLIT annotated, is_dir-guarded, prefer-audited dedup preserved; D-02/D-06); cluster_summary.xlsx + audit_report.json cluster-merge target AUDIT/ root so json_path.exists() finds batch_audit's file (D-05). Routing-only; _detect_vendor_from_path + clustering untouched; goldens byte-equal. Commits 68483f6, d45fe70.
 
 ### Pending Todos
 
@@ -147,7 +149,7 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07T16:45:41.913Z
+Last session: 2026-06-07T16:49:41.845Z
 Stopped at: Phase 8 context gathered
 Resume file: None
 

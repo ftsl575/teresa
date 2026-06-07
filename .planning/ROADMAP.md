@@ -79,12 +79,12 @@ Plans:
 
 **Requirements:** ROUTE-03, ROUTE-04
 
-**Plans:** 3 plans
+**Plans:** 2/3 plans executed
 
 Plans:
 **Wave 1**
 - [x] 08-01-PLAN.md — batch_audit.py: SPLIT-read / AUDIT-write per-spec + AUDIT-root aggregates; drop dead path matchers (ROUTE-03, ROUTE-04)
-- [ ] 08-02-PLAN.md — cluster_audit.py: dual-bucket AUDIT/SPLIT read + cluster_summary/audit_report at AUDIT root (ROUTE-04)
+- [x] 08-02-PLAN.md — cluster_audit.py: dual-bucket AUDIT/SPLIT read + cluster_summary/audit_report at AUDIT root (ROUTE-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 08-03-PLAN.md — Realign batch_audit/cluster_audit path+aggregate tests to new layout; full suite green within skip-gate, goldens byte-equal (TEST-01 / SC#4)
@@ -118,7 +118,7 @@ Plans:
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
 | 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
-| 8. Audit routing             | v1.2      | 0/3            | Planned  | —          |
+| 8. Audit routing             | v1.2      | 2/3 | In Progress|  |
 | 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
 
 ---
