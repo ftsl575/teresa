@@ -150,13 +150,15 @@ def _collect_xlsx_files(output_dir: Path) -> list[Path]:
     Recursively collect xlsx files. Per source stem, prefer *_annotated_audited.xlsx
     over *_annotated.xlsx (pure annotated, not yet audited).
     """
+    audit_root = output_dir / "AUDIT"
+    split_root = output_dir / "SPLIT"
     audited = {
         p.stem.replace("_annotated_audited", ""): p
-        for p in output_dir.rglob("*_annotated_audited.xlsx")
+        for p in (audit_root.rglob("*_annotated_audited.xlsx") if audit_root.is_dir() else [])
     }
     annotated = {
         p.stem.replace("_annotated", ""): p
-        for p in output_dir.rglob("*_annotated.xlsx")
+        for p in (split_root.rglob("*_annotated.xlsx") if split_root.is_dir() else [])
         if not p.stem.endswith("_annotated_audited")
     }
 
