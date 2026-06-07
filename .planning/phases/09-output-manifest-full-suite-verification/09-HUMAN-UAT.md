@@ -1,14 +1,14 @@
 ---
-status: partial
+status: complete
 phase: 09-output-manifest-full-suite-verification
 source: [09-VERIFICATION.md, 09-REVIEW.md]
 started: 2026-06-07T00:00:00Z
-updated: 2026-06-07T00:00:00Z
+updated: 2026-06-07T22:00:00Z
 ---
 
 ## Current Test
 
-[awaiting human testing]
+[testing complete]
 
 ## Tests
 
@@ -21,7 +21,10 @@ and the `README.md` manifest matching the artifacts actually produced. The autom
 verifier confirmed all codepaths; the executor's recorded real-data run covered **Dell only**
 (5 files, classify-only). The remaining 5 vendors + the full 3-process pipeline are unrun
 because they require the operator's INPUT (integration tests skip when INPUT is absent).
-result: [pending]
+result: pass
+verified: Operator confirmed full 6-vendor 3-process pipeline run yields exactly
+`READY/`, `SPLIT/`, `AUDIT/`, `README.md` at `output_root` — `AUDIT/` present, no
+legacy `run-*`/`*_run`/`*-TOTAL` dirs, manifest unchanged. (2026-06-07)
 
 ### 2. CR-01 decision — vendor-detection substring match on pathological paths
 expected: Decide whether to accept or harden `detect_vendor_from_path`. Code review (CR-01,
@@ -43,9 +46,9 @@ approval.
 ## Summary
 
 total: 2
-passed: 1
+passed: 2
 issues: 0
-pending: 1
+pending: 0
 skipped: 0
 blocked: 0
 
