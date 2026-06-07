@@ -101,6 +101,16 @@ Plans:
 
 **Requirements:** MANIFEST-01, TEST-01
 
+**Plans:** 3 plans
+
+Plans:
+**Wave 1** *(parallel — no shared files)*
+- [ ] 09-01-PLAN.md — WR-01 dedup: extract detect_vendor_from_path into run_manager.py; delete both local copies from batch_audit + cluster_audit; update cluster caller
+- [ ] 09-02-PLAN.md — MANIFEST-01: add write_manifest to run_manager.py; wire once in main.py after output_dir resolution
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 09-03-PLAN.md — TEST-01: consolidate detect-vendor tests into test_run_manager.py; add manifest unit tests; extend test_output_structure.py; full suite green + goldens byte-equal + real-data verification in 09-VERIFICATION.md
+
 **Success criteria:**
 1. `output_root/README.md` lists every produced artifact as a table of file → bucket → purpose, and matches the files an actual run produces.
 2. A single end-to-end run yields exactly `READY/`, `SPLIT/`, `AUDIT/`, and `README.md` under `output_root` — nothing in the old flat per-run or TOTAL layout.
@@ -118,8 +128,8 @@ Plans:
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
 | 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
-| 8. Audit routing             | v1.2      | 2/3 | In Progress|  |
-| 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
+| 8. Audit routing             | v1.2      | 3/3 | Complete  |            |
+| 9. Manifest & verification   | v1.2      | 0/3            | Planned  | —          |
 
 ---
 *v1.0 milestone closed 2026-05-10. v1.1 milestone closed 2026-05-11. v1.2 started 2026-06-07. Per-milestone details preserved in `.planning/milestones/`.*
