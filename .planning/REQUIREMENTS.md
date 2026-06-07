@@ -11,9 +11,9 @@
 
 ### Bucket Layout (LAYOUT)
 
-- [ ] **LAYOUT-01**: Operator finds three buckets — `READY/`, `SPLIT/`, `AUDIT/` — created directly under `output_root` on every run.
-- [ ] **LAYOUT-02**: Within each bucket, per-spec artifacts are nested as `<bucket>/<vendor>/<spec>/`, preserving vendor and spec identity.
-- [ ] **LAYOUT-03**: The per-run `run-<timestamp>-<stem>/` folder is gone; re-running a spec overwrites its prior output in place at `<bucket>/<vendor>/<spec>/`.
+- [x] **LAYOUT-01**: Operator finds three buckets — `READY/`, `SPLIT/`, `AUDIT/` — created directly under `output_root` on every run.
+- [x] **LAYOUT-02**: Within each bucket, per-spec artifacts are nested as `<bucket>/<vendor>/<spec>/`, preserving vendor and spec identity.
+- [x] **LAYOUT-03**: The per-run `run-<timestamp>-<stem>/` folder is gone; re-running a spec overwrites its prior output in place at `<bucket>/<vendor>/<spec>/`.
 
 ### Output Routing (ROUTE)
 
@@ -21,7 +21,7 @@
 - [ ] **ROUTE-02**: The `branded` workbook lands in `READY/<vendor>/<spec>/` renamed `Коммерческое предложение_<spec>.xlsx` (filename only; bytes/content unchanged).
 - [ ] **ROUTE-03**: `batch_audit.py` reads `<stem>_annotated.xlsx` from `SPLIT/<vendor>/<spec>/` and writes `<stem>_annotated_audited.xlsx` to `AUDIT/<vendor>/<spec>/`.
 - [ ] **ROUTE-04**: Batch-level aggregates — `audit_report.json`, `audit_summary.xlsx` (`batch_audit.py`), `cluster_summary.xlsx` (`cluster_audit.py`) — are written to the `AUDIT/` root (no vendor/spec nesting).
-- [ ] **ROUTE-05**: The TOTAL copy mechanism (`run_manager.copy_to_total` and its call site) is removed; no artifact is duplicated into a TOTAL folder.
+- [x] **ROUTE-05**: The TOTAL copy mechanism (`run_manager.copy_to_total` and its call site) is removed; no artifact is duplicated into a TOTAL folder.
 
 ### Output Manifest (MANIFEST)
 
@@ -69,12 +69,12 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAYOUT-01 | Phase 7 | Pending |
-| LAYOUT-02 | Phase 7 | Pending |
-| LAYOUT-03 | Phase 7 | Pending |
+| LAYOUT-01 | Phase 7 | Complete |
+| LAYOUT-02 | Phase 7 | Complete |
+| LAYOUT-03 | Phase 7 | Complete |
 | ROUTE-01 | Phase 7 | Pending |
 | ROUTE-02 | Phase 7 | Pending |
-| ROUTE-05 | Phase 7 | Pending |
+| ROUTE-05 | Phase 7 | Complete |
 | ROUTE-03 | Phase 8 | Pending |
 | ROUTE-04 | Phase 8 | Pending |
 | MANIFEST-01 | Phase 9 | Pending |

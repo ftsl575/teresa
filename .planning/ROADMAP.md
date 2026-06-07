@@ -54,11 +54,11 @@ Full details: [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.m
 
 **Requirements:** LAYOUT-01, LAYOUT-02, LAYOUT-03, ROUTE-01, ROUTE-02, ROUTE-05
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 07-01-PLAN.md — Rewrite run_manager.py: delete dead helpers, add create_spec_folder
+- [x] 07-01-PLAN.md — Rewrite run_manager.py: delete dead helpers, add create_spec_folder
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 07-02-PLAN.md — Update main.py: reroute _run_single and batch block to SPLIT/READY buckets
@@ -107,7 +107,7 @@ Plans:
 | 4. Cache Redirect            | v1.1      | 3/3            | Complete | 2026-05-10 |
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
-| 7. Bucket layout & main.py routing | v1.2 | 0/3          | Planning complete | —    |
+| 7. Bucket layout & main.py routing | v1.2 | 1/3 | In Progress|  |
 | 8. Audit routing             | v1.2      | 0/—            | Planned  | —          |
 | 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
 
