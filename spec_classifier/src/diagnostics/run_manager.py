@@ -106,15 +106,22 @@ def write_manifest(output_root: Path) -> None:
 def detect_vendor_from_path(path: Path, known_vendors: list[str]) -> str:
     """Detect vendor from path components using known vendor list.
 
-    Checks for /<vendor>/ as a path segment in the full path string (case-insensitive).
-    known_vendors is required — the caller resolves it from config.
+    Matches a known vendor against the path's components by exact (case-insensitive)
+    equality — i.e. <vendor> must be a whole path segment, not merely a substring of
+    one. Components are scanned from the file end toward the root, so the real
+    <bucket>/<vendor>/<spec>/<file> vendor segment (which sits next to the file) wins
+    over any vendor-named segment that merely appears earlier in the path prefix
+    (e.g. a Windows username `C:\\Users\\dell\\...`). known_vendors is required — the
+    caller resolves it from config.
 
     Returns:
-        vendor string if found in path, "unknown" otherwise (with a WARN to stderr).
+        vendor string if a path component matches, "unknown" otherwise (with a WARN
+        to stderr).
     """
-    s = str(path).lower()
-    for vendor in known_vendors:
-        if f"/{vendor}/" in s or f"\\{vendor}\\" in s:
-            return vendor
+    known_by_lower = {v.lower(): v for v in known_vendors}
+    for part in reversed(Path(path).parts):
+        match = known_by_lower.get(part.lower())
+        if match is not None:
+            return match
     print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
     return "unknown"

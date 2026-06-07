@@ -51,6 +51,15 @@ class TestDetectVendorFromPath:
     def test_vendor_in_directory_path(self):
         assert detect_vendor_from_path(Path("OUTPUT/dell/subdir/file.xlsx"), self.KNOWN) == "dell"
 
+    def test_prefix_segment_does_not_shadow_real_vendor(self):
+        # CR-01 regression: a vendor-named prefix segment (e.g. a Windows username
+        # `C:\Users\dell\...`) must NOT shadow the real <vendor> segment that sits
+        # next to the file in the canonical <bucket>/<vendor>/<spec>/<file> layout.
+        # Built from explicit parts so the path splits identically on POSIX and Windows.
+        p = Path("Users", "dell", "Desktop", "OUTPUT", "AUDIT", "hpe", "hp1",
+                 "hp1_annotated_audited.xlsx")
+        assert detect_vendor_from_path(p, self.KNOWN) == "hpe"
+
 
 # ---------------------------------------------------------------------------
 # write_manifest
