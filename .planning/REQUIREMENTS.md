@@ -69,21 +69,21 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAYOUT-01 | — | Pending |
-| LAYOUT-02 | — | Pending |
-| LAYOUT-03 | — | Pending |
-| ROUTE-01 | — | Pending |
-| ROUTE-02 | — | Pending |
-| ROUTE-03 | — | Pending |
-| ROUTE-04 | — | Pending |
-| ROUTE-05 | — | Pending |
-| MANIFEST-01 | — | Pending |
-| TEST-01 | — | Pending |
+| LAYOUT-01 | Phase 7 | Pending |
+| LAYOUT-02 | Phase 7 | Pending |
+| LAYOUT-03 | Phase 7 | Pending |
+| ROUTE-01 | Phase 7 | Pending |
+| ROUTE-02 | Phase 7 | Pending |
+| ROUTE-05 | Phase 7 | Pending |
+| ROUTE-03 | Phase 8 | Pending |
+| ROUTE-04 | Phase 8 | Pending |
+| MANIFEST-01 | Phase 9 | Pending |
+| TEST-01 | Phase 9 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 10 total
-- Mapped to phases: 0 ⚠️ (roadmap pending)
-- Unmapped: 10
+- Mapped to phases: 10
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-07*

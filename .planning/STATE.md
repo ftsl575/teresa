@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-06-07T13:13:45.113Z"
 last_activity: 2026-06-07
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-10)
+See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 06 — doc-vs-impl-drift-sweep
+**Current focus:** Phase 7 — Bucket layout & main.py routing (v1.2)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap created — 3 phases, 7-9)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-07 — Milestone v1.2 started
+Status: Ready to plan Phase 7
+Last activity: 2026-06-07 — Milestone v1.2 roadmap created (Phases 7-9, 10/10 requirements mapped)
 
 ## Performance Metrics
 
@@ -108,19 +108,21 @@ None yet.
 
 ### Blockers/Concerns
 
-Carried from `.planning/codebase/CONCERNS.md` BLOCKER section as load-bearing exclusions for this milestone (do NOT touch as part of cleanup):
+Load-bearing exclusions carried from `.planning/codebase/CONCERNS.md` BLOCKER section. v1.2 edits `main.py`, `run_manager.py`, `batch_audit.py`, `cluster_audit.py` **for output-path routing only** — none of these load-bearing behaviors may change:
 
 - `power_cord` `hw_type=None` — recovery commit `c3c7cb6` exists; do not "fix".
-- `spec_classifier/src/core/parser.py` is Dell-specific — out of scope, standalone refactor only.
-- `spec_classifier/batch_audit.py` reads Excel — explicit "do not fix as part of unrelated work".
+- `spec_classifier/src/core/parser.py` is Dell-specific — out of scope; not touched by routing.
+- `spec_classifier/batch_audit.py` reads Excel — v1.2 changes only WHERE it reads/writes (SPLIT→AUDIT), not THAT it reads Excel. Do not refactor the Excel-reading design.
 - YAML rule order is load-bearing — never sort or reorder rule blocks.
-- `HW_TYPE_VOCAB` duplicated across `classifier.py` and `batch_audit.py` — tracked but not selected for this milestone.
+- `HW_TYPE_VOCAB` duplicated across `classifier.py` and `batch_audit.py` — tracked, not touched by routing.
 
-**v1.1 phase-gate constraints (apply every phase):**
+**v1.2 phase-gate constraints (apply every phase):**
 
-- D-22 protected paths: any diff inside `spec_classifier/{src,rules,golden,tests,batch_audit.py,cluster_audit.py,main.py,conftest.py}` = phase gate FAIL.
+- **D-22 LIFTED for v1.2:** routing edits to `main.py`, `run_manager.py`, `batch_audit.py`, `cluster_audit.py` are in scope. (The v1.1 protected-path freeze does not apply.) Edits must stay routing-only — no classification/normalization/audit logic changes.
+- Goldens byte-equal: all `spec_classifier/golden/*_expected.jsonl` fixtures stay byte-equal. **No `--update-golden` in v1.2.** Files move; content is not rewritten.
+- Fix tests, not goldens: path/layout assertions that break are updated to the new `<bucket>/<vendor>/<spec>/` structure.
+- No content changes: no column trimming, translation, or new documents. Single content-adjacent change is the `branded` → `Коммерческое предложение_<spec>.xlsx` filename rename.
 - Pytest skip-guard: session fails if `skipped/total > 0.50`. Each phase verification runs `pytest -q`.
-- Goldens byte-equal: all 40 `spec_classifier/golden/*_expected.jsonl` fixtures must remain byte-equal. No `--update-golden` in v1.1.
 - No tech-stack additions: Python 3.10, openpyxl, pandas, pyyaml, pytest only.
 
 ## Deferred Items
@@ -132,17 +134,20 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 | Classification | CLAS-01 rule improvements, CLAS-02 new vendor onboarding | v2 | 2026-05-10 |
 | Cross-Platform | PLAT-01 `run.sh`, PLAT-02 de-Windows GUI | v2 | 2026-05-10 |
 | Automation | AUTO-01 CI pipeline, AUTO-02 pre-commit rule-id schema | v2 | 2026-05-10 |
-| Per-vendor knowledge | VKB-01..04 (PART_NUMBERS, SHEET_LAYOUT, CATALOG_CONVENTIONS, RULES_RATIONALE) | v1.2 | 2026-05-10 |
+| Per-vendor knowledge | VKB-01..04 (PART_NUMBERS, SHEET_LAYOUT, CATALOG_CONVENTIONS, RULES_RATIONALE) | post-v1.2 (deferred again; v1.2 is output structure) | 2026-06-07 |
+| Artifact content | CONTENT-01..03 (column trimming, translation, new summary docs) | next milestone (v1.3) | 2026-06-07 |
 | 3-level taxonomy spec | TAX-01..04 (paper spec, level boundaries, migration plan, entity_type fate) | v2.0 | 2026-05-10 |
 | 3-level taxonomy impl | IMPL-01..04 (engine, 6 YAML, goldens regen, audit re-wire) | v2.1 | 2026-05-10 |
 | Config-overlay helper | `load_config_with_local()` consolidation (4+ regex sites) | post-v1.1 | 2026-05-10 |
 
 ## Session Continuity
 
-Last session: 2026-05-11T01:05:44Z
-Stopped at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 milestone ready for verification)
+Last session: 2026-06-07
+Stopped at: v1.2 milestone initialized — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written, Phases 7-9 mapped (10/10 requirements covered)
 Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- `/clear`, then plan the first v1.2 phase:
+  - `/gsd-discuss-phase 7` — gather context and clarify approach (recommended)
+  - or `/gsd-plan-phase 7` — skip discussion, plan directly
