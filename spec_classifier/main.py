@@ -15,12 +15,7 @@ import yaml
 
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
-from src.diagnostics.run_manager import (
-    create_run_folder,
-    get_session_stamp,
-    create_total_folder,
-    copy_to_total,
-)
+from src.diagnostics.run_manager import create_spec_folder
 from src.outputs.json_writer import (
     save_rows_raw,
     save_rows_normalized,
@@ -116,8 +111,6 @@ def _run_single(
     config_path: Path,
     output_dir: Path,
     vendor: str = "dell",
-    session_stamp: str = None,
-    total_folder: Path = None,
     save_golden: bool = False,
     update_golden: bool = False,
     cwd: Path = None,
@@ -130,10 +123,10 @@ def _run_single(
         log = logging.getLogger(__name__)
     try:
         adapter = _get_adapter(vendor, config)
-        # Create run_folder and run.log before first pipeline log so all stages are captured (OUT-002)
-        vendor_base = output_dir / f"{vendor}_run"
-        run_folder = create_run_folder(str(vendor_base), input_path.name, stamp=session_stamp)
-        run_log_path = run_folder / "run.log"
+        # Create split_folder and ready_folder before first pipeline log so all stages are captured (OUT-002)
+        split_folder = create_spec_folder(output_dir, "SPLIT", vendor, input_path.stem)
+        ready_folder = create_spec_folder(output_dir, "READY", vendor, input_path.stem)
+        run_log_path = split_folder / "run.log"
         fh = logging.FileHandler(run_log_path, encoding="utf-8")
         fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
         root_logger = logging.getLogger()
@@ -155,12 +148,12 @@ def _run_single(
             log.info("Classifying rows...")
             classification_results = [classify_row(r, ruleset) for r in normalized_rows]
 
-            log.info("Saving artifacts to %s", run_folder)
-            save_rows_raw(raw_rows, run_folder)
-            save_rows_normalized(normalized_rows, run_folder)
-            save_classification(classification_results, normalized_rows, run_folder)
-            save_unknown_rows(normalized_rows, classification_results, run_folder)
-            save_header_rows(normalized_rows, run_folder)
+            log.info("Saving artifacts to %s", split_folder)
+            save_rows_raw(raw_rows, split_folder)
+            save_rows_normalized(normalized_rows, split_folder)
+            save_classification(classification_results, normalized_rows, split_folder)
+            save_unknown_rows(normalized_rows, classification_results, split_folder)
+            save_header_rows(normalized_rows, split_folder)
 
             stats = collect_stats(classification_results)
             stats["rules_file_hash"] = compute_file_hash(str(rules_path))
@@ -169,29 +162,24 @@ def _run_single(
 
             stats["vendor_stats"] = adapter.get_vendor_stats(normalized_rows)
 
-            save_run_summary(stats, run_folder)
+            save_run_summary(stats, split_folder)
 
-            generate_cleaned_spec(normalized_rows, classification_results, config, run_folder)
+            generate_cleaned_spec(normalized_rows, classification_results, config, split_folder)
             sheet_name = adapter.get_source_sheet_name()
             generate_annotated_source_excel(
-                raw_rows, normalized_rows, classification_results, input_path, run_folder,
+                raw_rows, normalized_rows, classification_results, input_path, split_folder,
                 header_row_index=header_row_index,
                 sheet_name=sheet_name,
                 extra_cols=adapter.get_extra_cols(),
             )
             if adapter.generates_branded_spec():
-                branded_path = run_folder / f"{input_path.stem}_branded.xlsx"
+                branded_path = ready_folder / f"Коммерческое предложение_{input_path.stem}.xlsx"
                 generate_branded_spec(
                     normalized_rows=normalized_rows,
                     classification_results=classification_results,
                     source_filename=input_path.name,
                     output_path=branded_path,
                 )
-
-            # Copy to TOTAL if batch mode
-            if total_folder is not None:
-                copy_to_total(run_folder, total_folder, input_path.stem)
-                log.info("Copied to TOTAL: %s", total_folder)
 
             log.info("Done.")
 
@@ -222,7 +210,7 @@ def _run_single(
             print(f"  item_rows_count: {stats['item_rows_count']}")
             print(f"  entity_type_counts: {stats['entity_type_counts']}")
             print(f"  unknown_count: {stats['unknown_count']}")
-            print(f"  run_folder: {run_folder}")
+            print(f"  split_folder: {split_folder}")
         finally:
             root_logger.removeHandler(fh)
             fh.close()
