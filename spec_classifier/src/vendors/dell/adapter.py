@@ -35,6 +35,3 @@ class DellAdapter(VendorAdapter):
 
     def get_vendor_stats(self, normalized_rows: list) -> dict:
         return {}
-
-    def generates_branded_spec(self) -> bool:
-        return True

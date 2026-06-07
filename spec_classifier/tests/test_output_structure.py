@@ -1,11 +1,11 @@
 """
 Regression test: output tree shape for the new bucket layout.
 - output_root / SPLIT / <vendor> / <spec> / artifacts   (nine per-spec artifacts)
-- output_root / READY / <vendor> / <spec> / Коммерческое предложение_<spec>.xlsx  (Dell branded)
+- output_root / READY / <vendor> / <spec> / Коммерческое предложение_<spec>.xlsx  (branded — all vendors)
 Required always: rows_raw.json, rows_normalized.json, classification.jsonl, cleaned_spec.xlsx,
   header_rows.csv, unknown_rows.csv, run_summary.json, run.log
 Dell: <stem>_annotated.xlsx in SPLIT + Коммерческое предложение_<stem>.xlsx in READY
-Cisco: <stem>_annotated.xlsx in SPLIT ONLY (no branded)
+Cisco: <stem>_annotated.xlsx in SPLIT + Коммерческое предложение_<stem>.xlsx in READY (all vendors brand)
 Uses tmp_path for output_root; no large golden blobs in git.
 """
 
@@ -74,7 +74,7 @@ def test_output_tree_shape_dell_run(tmp_path):
 
 
 def test_output_tree_shape_cisco_run(tmp_path):
-    """Cisco: output_root/SPLIT/cisco/<stem>/ with artifacts; NO branded in READY."""
+    """Cisco: output_root/SPLIT/cisco/<stem>/ with artifacts + branded in READY/cisco/<stem>/."""
     root = project_root()
     input_xlsx = get_input_root_cisco() / "ccw_1.xlsx"
     if not input_xlsx.exists():
@@ -110,10 +110,11 @@ def test_output_tree_shape_cisco_run(tmp_path):
 
     assert (split_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing in {split_folder}"
 
-    # Cisco: no branded workbook in READY
-    assert not (output_root / "READY" / "cisco" / stem).is_dir() or \
-        not any((output_root / "READY" / "cisco" / stem).iterdir()), \
-        "Cisco must not produce a branded file in READY"
+    # Cisco brands like every vendor — single source: VendorAdapter.generates_branded_spec() → True
+    ready_folder = output_root / "READY" / "cisco" / stem
+    assert ready_folder.is_dir(), f"READY/cisco/{stem} folder must exist under {output_root}"
+    branded_name = f"Коммерческое предложение_{stem}.xlsx"
+    assert (ready_folder / branded_name).exists(), f"{branded_name} missing in {ready_folder} (Cisco)"
 
 
 def test_output_root_configurable_via_cli(tmp_path):

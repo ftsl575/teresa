@@ -68,6 +68,3 @@ class HuaweiAdapter(VendorAdapter):
             ("eom",            "eom"),
             ("eos",            "eos"),
         ]
-
-    def generates_branded_spec(self) -> bool:
-        return True

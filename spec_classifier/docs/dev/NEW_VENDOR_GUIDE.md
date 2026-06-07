@@ -57,7 +57,9 @@ Implement all 6 required abstract methods:
   Dict for `run_summary.json` (see Step 3 below).
 
 - **generates_branded_spec()**
-  `True` only if a branded spec is implemented for the vendor; otherwise `False`.
+  Do NOT override. All vendors brand uniformly; the value is defined once in
+  `VendorAdapter` (base) as `return True` and is the single source of truth.
+  A new vendor inherits branding automatically — no per-vendor method needed.
 
 ### Step 3: rules/<vendor>_rules.yaml
 

@@ -8,10 +8,18 @@ class VendorAdapter(ABC):
         """Vendor-specific stats for run_summary.json (e.g. Cisco: top_level_bundles_count)."""
         pass
 
-    @abstractmethod
     def generates_branded_spec(self) -> bool:
-        """Whether this adapter produces branded spec output (e.g. Dell yes, Cisco no)."""
-        pass
+        """
+        Whether this adapter produces branded spec output.
+
+        Single source of truth: ALL vendors brand uniformly (Dell, Cisco, HPE,
+        Lenovo, Huawei, xFusion) — there is no per-vendor exception. Defined once
+        here and intentionally NOT overridden in any vendor adapter, so branding
+        cannot be silently flipped for one vendor. Confirmed by the documented
+        OUTPUT layout ("<stem>_branded.xlsx ← all vendors") and TECHNICAL_OVERVIEW
+        ("branded spec is generated for all six vendors").
+        """
+        return True
 
     @abstractmethod
     def can_parse(self, path: str) -> bool:

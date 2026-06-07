@@ -25,7 +25,15 @@ def create_spec_folder(output_root: Path, bucket: str, vendor: str, spec: str) -
     Returns:
         Path to the freshly created directory.
     """
-    folder = Path(output_root) / bucket / vendor / spec
+    output_root = Path(output_root)
+    folder = output_root / bucket / vendor / spec
+    # CR-01 guard: never rmtree outside output_root. Guards against a pathological
+    # spec/vendor/bucket token (e.g. a ".." stem) resolving the target above the
+    # intended spec directory before the wipe.
+    if not folder.resolve().is_relative_to(output_root.resolve()):
+        raise ValueError(
+            f"Refusing to create/wipe {folder!r}: resolves outside output_root {output_root!r}"
+        )
     if folder.exists():
         shutil.rmtree(folder)
     folder.mkdir(parents=True)

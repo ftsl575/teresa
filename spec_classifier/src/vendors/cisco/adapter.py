@@ -44,6 +44,3 @@ class CiscoAdapter(VendorAdapter):
             ("line_number",              "line_number"),
             ("service_duration_months",  "service_duration_months"),
         ]
-
-    def generates_branded_spec(self) -> bool:
-        return False

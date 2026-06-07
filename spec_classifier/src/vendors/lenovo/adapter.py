@@ -60,6 +60,3 @@ class LenovoAdapter(VendorAdapter):
 
     def get_extra_cols(self) -> list[tuple[str, str]]:
         return [("export_control", "export_control")]
-
-    def generates_branded_spec(self) -> bool:
-        return True

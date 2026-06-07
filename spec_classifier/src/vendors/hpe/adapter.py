@@ -60,6 +60,3 @@ class HPEAdapter(VendorAdapter):
             ("config_name",           "config_name"),
             ("is_factory_integrated", "is_factory_integrated"),
         ]
-
-    def generates_branded_spec(self) -> bool:
-        return True

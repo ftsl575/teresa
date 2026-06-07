@@ -101,6 +101,3 @@ class XFusionAdapter(VendorAdapter):
             ("total_price",     "total_price"),
             ("lead_time_days",  "lead_time_days"),
         ]
-
-    def generates_branded_spec(self) -> bool:
-        return True
