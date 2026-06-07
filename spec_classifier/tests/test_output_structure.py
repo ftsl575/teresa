@@ -1,14 +1,14 @@
 """
-Regression test: output tree shape must match out.zip (golden reference).
-- output_root / {vendor}_run / run-YYYY-MM-DD__HH-MM-SS-<stem> / artifacts
-- Required always: rows_raw.json, rows_normalized.json, classification.jsonl, cleaned_spec.xlsx,
+Regression test: output tree shape for the new bucket layout.
+- output_root / SPLIT / <vendor> / <spec> / artifacts   (nine per-spec artifacts)
+- output_root / READY / <vendor> / <spec> / Коммерческое предложение_<spec>.xlsx  (Dell branded)
+Required always: rows_raw.json, rows_normalized.json, classification.jsonl, cleaned_spec.xlsx,
   header_rows.csv, unknown_rows.csv, run_summary.json, run.log
-- Dell: <stem>_annotated.xlsx AND <stem>_branded.xlsx
-- Cisco: <stem>_annotated.xlsx ONLY (no branded)
+Dell: <stem>_annotated.xlsx in SPLIT + Коммерческое предложение_<stem>.xlsx in READY
+Cisco: <stem>_annotated.xlsx in SPLIT ONLY (no branded)
 Uses tmp_path for output_root; no large golden blobs in git.
 """
 
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -17,10 +17,7 @@ import pytest
 
 from conftest import project_root, get_input_root_dell, get_input_root_cisco
 
-# Run folder pattern: run-YYYY-MM-DD__HH-MM-SS-<stem> or run-...-<stem>_N for collision
-RUN_FOLDER_PATTERN = re.compile(r"^run-\d{4}-\d{2}-\d{2}__\d{2}-\d{2}-\d{2}-(.+)$")
-
-# Required artifacts in every run folder (per out.zip)
+# Required artifacts in every SPLIT/<vendor>/<spec>/ folder
 REQUIRED_ARTIFACTS = [
     "rows_raw.json",
     "rows_normalized.json",
@@ -34,7 +31,7 @@ REQUIRED_ARTIFACTS = [
 
 
 def test_output_tree_shape_dell_run(tmp_path):
-    """Dell: output_root/dell_run/run-*-<stem>/ with all artifacts including branded."""
+    """Dell: output_root/SPLIT/dell/<stem>/ with all artifacts + READY/dell/<stem>/branded."""
     root = project_root()
     input_root = get_input_root_dell()
     input_xlsx = input_root / "dl1.xlsx"
@@ -58,28 +55,26 @@ def test_output_tree_shape_dell_run(tmp_path):
     )
     assert result.returncode == 0, f"CLI failed: {result.stderr!r}"
 
-    vendor_root = output_root / "dell_run"
-    assert vendor_root.is_dir(), f"Expected vendor root dell_run under {output_root}"
-
-    run_folders = [p for p in vendor_root.iterdir() if p.is_dir() and p.name.startswith("run-")]
-    assert len(run_folders) >= 1, f"Expected at least one run-* folder under {vendor_root}"
-
-    run_folder = run_folders[0]
-    assert RUN_FOLDER_PATTERN.match(run_folder.name) or run_folder.name.startswith("run-"), (
-        f"Run folder name must match run-YYYY-MM-DD__HH-MM-SS-<stem>: got {run_folder.name}"
-    )
-    assert run_folder.parent == vendor_root, "Run folder must be directly under vendor_root (dell_run)"
-
+    # New assertions — bucket layout:
     stem = "dl1"
-    for name in REQUIRED_ARTIFACTS:
-        assert (run_folder / name).exists(), f"Required artifact missing: {name} in {run_folder}"
+    split_folder = output_root / "SPLIT" / "dell" / stem
+    ready_folder = output_root / "READY" / "dell" / stem
 
-    assert (run_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing"
-    assert (run_folder / f"{stem}_branded.xlsx").exists(), f"{stem}_branded.xlsx missing (Dell)"
+    assert split_folder.is_dir(), f"SPLIT/dell/{stem} folder must exist under {output_root}"
+    assert not (output_root / "dell_run").exists(), "Old dell_run/ folder must NOT exist"
+
+    for name in REQUIRED_ARTIFACTS:
+        assert (split_folder / name).exists(), f"Required artifact missing: {name} in {split_folder}"
+
+    assert (split_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing in {split_folder}"
+
+    assert ready_folder.is_dir(), f"READY/dell/{stem} folder must exist under {output_root}"
+    branded_name = f"Коммерческое предложение_{stem}.xlsx"
+    assert (ready_folder / branded_name).exists(), f"{branded_name} missing in {ready_folder} (Dell)"
 
 
 def test_output_tree_shape_cisco_run(tmp_path):
-    """Cisco: output_root/cisco_run/run-*-<stem>/ with artifacts; NO branded.xlsx."""
+    """Cisco: output_root/SPLIT/cisco/<stem>/ with artifacts; NO branded in READY."""
     root = project_root()
     input_xlsx = get_input_root_cisco() / "ccw_1.xlsx"
     if not input_xlsx.exists():
@@ -103,25 +98,26 @@ def test_output_tree_shape_cisco_run(tmp_path):
     )
     assert result.returncode == 0, f"CLI failed: {result.stderr!r}"
 
-    vendor_root = output_root / "cisco_run"
-    assert vendor_root.is_dir(), f"Expected vendor root cisco_run under {output_root}"
-
-    run_folders = [p for p in vendor_root.iterdir() if p.is_dir() and p.name.startswith("run-")]
-    assert len(run_folders) >= 1, f"Expected at least one run-* folder under {vendor_root}"
-
-    run_folder = run_folders[0]
-    assert run_folder.parent == vendor_root, "Run folder must be directly under vendor_root (cisco_run)"
-
+    # New assertions — bucket layout:
     stem = "ccw_1"
-    for name in REQUIRED_ARTIFACTS:
-        assert (run_folder / name).exists(), f"Required artifact missing: {name} in {run_folder}"
+    split_folder = output_root / "SPLIT" / "cisco" / stem
 
-    assert (run_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing"
-    assert (run_folder / f"{stem}_branded.xlsx").exists(), f"{stem}_branded.xlsx missing"
+    assert split_folder.is_dir(), f"SPLIT/cisco/{stem} folder must exist under {output_root}"
+    assert not (output_root / "cisco_run").exists(), "Old cisco_run/ folder must NOT exist"
+
+    for name in REQUIRED_ARTIFACTS:
+        assert (split_folder / name).exists(), f"Required artifact missing: {name} in {split_folder}"
+
+    assert (split_folder / f"{stem}_annotated.xlsx").exists(), f"{stem}_annotated.xlsx missing in {split_folder}"
+
+    # Cisco: no branded workbook in READY
+    assert not (output_root / "READY" / "cisco" / stem).is_dir() or \
+        not any((output_root / "READY" / "cisco" / stem).iterdir()), \
+        "Cisco must not produce a branded file in READY"
 
 
 def test_output_root_configurable_via_cli(tmp_path):
-    """Output root is overridden by --output-dir; run dir is under output_root/<vendor>_run/."""
+    """Output root is overridden by --output-dir; artifacts are under output_root/SPLIT/dell/."""
     root = project_root()
     input_xlsx = get_input_root_dell() / "dl1.xlsx"
     if not input_xlsx.exists():
@@ -142,7 +138,6 @@ def test_output_root_configurable_via_cli(tmp_path):
     )
     assert result.returncode == 0
     assert output_root.exists()
-    vendor_root = output_root / "dell_run"
-    assert vendor_root.is_dir()
-    run_folders = list(vendor_root.glob("run-*"))
-    assert run_folders, "Output must be under output_root/dell_run/ (repo stays clean when using external path)"
+    split_vendor = output_root / "SPLIT" / "dell"
+    assert split_vendor.is_dir(), \
+        "Output must be under output_root/SPLIT/dell/ (repo stays clean when using external path)"
