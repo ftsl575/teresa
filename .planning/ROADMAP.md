@@ -105,7 +105,7 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 09-01-PLAN.md — WR-01 dedup: extract detect_vendor_from_path into run_manager.py; delete both local copies from batch_audit + cluster_audit; update cluster caller
+- [x] 09-01-PLAN.md — WR-01 dedup: extract detect_vendor_from_path into run_manager.py; delete both local copies from batch_audit + cluster_audit; update cluster caller
 
 **Wave 2** *(blocked on Wave 1 — shares run_manager.py)*
 - [ ] 09-02-PLAN.md — MANIFEST-01: add write_manifest to run_manager.py; wire once in main.py after output_dir resolution
@@ -131,7 +131,7 @@ Plans:
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
 | 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
 | 8. Audit routing             | v1.2      | 3/3 | Complete  |            |
-| 9. Manifest & verification   | v1.2      | 0/3            | Planned  | —          |
+| 9. Manifest & verification   | v1.2      | 1/3            | Executing | —         |
 
 ---
 *v1.0 milestone closed 2026-05-10. v1.1 milestone closed 2026-05-11. v1.2 started 2026-06-07. Per-milestone details preserved in `.planning/milestones/`.*

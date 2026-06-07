@@ -4,14 +4,14 @@ milestone: v1.2
 milestone_name: Output structure reorganization
 status: executing
 stopped_at: Phase 9 context gathered
-last_updated: "2026-06-07T18:36:08.341Z"
-last_activity: 2026-06-07 -- Phase 09 planning complete
+last_updated: "2026-06-07T18:58:00.000Z"
+last_activity: 2026-06-07 -- Phase 09 Plan 01 (WR-01 vendor-detector dedup) complete
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 08 — audit-routing-audit
+**Current focus:** Phase 09 — output-manifest-full-suite-verification
 
 ## Current Position
 
-Phase: 9
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-07 -- Phase 09 planning complete
+Phase: 09 (output-manifest-full-suite-verification) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 09
+Last activity: 2026-06-07 -- Plan 09-01 complete (WR-01 vendor-detector dedup, commit d54247b)
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Last activity: 2026-06-07 -- Phase 09 planning complete
 | 04 | 3 | - | - |
 | 06 | 6 | - | - |
 | 07 | 3 | - | - |
+| 09 P01 | 12min | 2 tasks | 4 files |
 | 08 P01 | 6min | 2 tasks | 1 files |
 | 08 | 3 | - | - |
 
@@ -110,6 +111,7 @@ Recent decisions affecting current work:
 - [Phase 8 / Plan 01]: batch_audit.py re-pointed at Phase-7 buckets — reads `*_annotated.xlsx` strictly from `output_root/SPLIT` (is_dir guard, no whole-tree fallback; D-02), writes `<stem>_annotated_audited.xlsx` to `output_root/AUDIT/<vendor>/<spec>` via `relative_to(SPLIT_root)` mirror + mkdir-parents (no rmtree; D-03/D-04), `audit_report.json` + `audit_summary.xlsx` → `AUDIT/` root (D-05). Dead `{vendor}_run`/`hp_run`/`-TOTAL` matchers removed; `/{vendor}/` retained (D-07). `_generate_human_report` :924 untouched. `SPLIT_root`/`AUDIT_root` derived inline in `main()` (D-01, no launcher edits). Routing-only; goldens byte-equal. Commits 74c7dda, 83f2eb7. Full pytest gate deferred to Plan 08-02 (Wave 2).
 - [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
 - [Phase ?]: [Phase 8 / Plan 02]: cluster_audit.py re-pointed at Phase-7/8 buckets - dual-bucket read (AUDIT audited + SPLIT annotated, is_dir-guarded, prefer-audited dedup preserved; D-02/D-06); cluster_summary.xlsx + audit_report.json cluster-merge target AUDIT/ root so json_path.exists() finds batch_audit's file (D-05). Routing-only; _detect_vendor_from_path + clustering untouched; goldens byte-equal. Commits 68483f6, d45fe70.
+- [Phase 9 / Plan 01 WR-01]: detect_vendor_from_path extracted into run_manager.py as pure (path, known_vendors)->vendor; both local copies deleted; D-13 gate: exactly 3 divergences (ccw alias, match mechanism, WARN print), no fourth; D-11: known_vendors required param, no None default, callers resolve and pass; D-14: old _run/ccw_export cluster test assertions removed, suite realigned to SPLIT/<vendor>/ layout; 776 passed/1 xfailed/0 skipped.
 - [Phase 8 / Plan 03]: batch_audit + cluster_audit path/layout tests realigned to the Phase-7/8 buckets — TestDetectVendorFromPath asserts SPLIT/<vendor>/<spec>/ (hp_run alias-removed case now asserts unknown; alias NOT re-added); TestRealBugClassification + cluster write_cluster_summary read audit_report.json/cluster_summary.xlsx from AUDIT/ root; _collect_xlsx_files + load_candidate_rows fixtures relocated to AUDIT/ (audited) + SPLIT/ (annotated), the latter 5 tests beyond the plan's enumerated interfaces (Rule 3 blocking, same path-class, no scope creep, no assertion intent changed). cluster_audit._detect_vendor_from_path tests left byte-unchanged (function not modified by Phase 8). Full suite 774 passed / 1 xfailed / 0 skipped within skip-gate; goldens byte-equal; no --update-golden; no production code touched. SC#4 / TEST-01 met for ROUTE-03 + ROUTE-04. Commits 4c90a4e, ced0fbc.
 
 ### Pending Todos
@@ -152,9 +154,9 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07T17:47:47.222Z
-Stopped at: Phase 9 context gathered
-Resume file: .planning/phases/09-output-manifest-full-suite-verification/09-CONTEXT.md
+Last session: 2026-06-07T18:58:00.000Z
+Stopped at: Completed 09-01-PLAN.md (WR-01 vendor-detector dedup)
+Resume file: .planning/phases/09-output-manifest-full-suite-verification/09-02-PLAN.md
 
 ## Operator Next Steps
 
