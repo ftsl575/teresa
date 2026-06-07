@@ -449,12 +449,13 @@ def write_cluster_summary(clusters: list[dict], output_dir: Path, min_cluster_si
         })
 
     df = pd.DataFrame(rows)
-    xlsx_path = output_dir / "cluster_summary.xlsx"
+    (output_dir / "AUDIT").mkdir(parents=True, exist_ok=True)   # defensive: ensure AUDIT root exists
+    xlsx_path = output_dir / "AUDIT" / "cluster_summary.xlsx"
     df.to_excel(xlsx_path, index=False, engine="openpyxl")
     print(f"[INFO] Written: {xlsx_path}")
 
     # ── 2. audit_report.json (update if exists) ───────────────────────────────
-    json_path = output_dir / "audit_report.json"
+    json_path = output_dir / "AUDIT" / "audit_report.json"
     if json_path.exists():
         try:
             with open(json_path, "r", encoding="utf-8") as fh:
