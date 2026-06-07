@@ -8,10 +8,23 @@ Teresa is a deterministic, rule-based Excel-spec classifier for hardware vendor 
 
 The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
 
+## Current Milestone: v1.2 Output structure reorganization
+
+**Goal:** Route every output artifact into three purpose-named buckets under `output_root` (READY / SPLIT / AUDIT), keyed by `<vendor>/<spec>/`, with zero content changes.
+
+**Target features:**
+- Three buckets under `output_root`: **READY** (clean human-facing Russian docs), **SPLIT** (English technical/debug/DB-feed), **AUDIT** (`annotated_audited` + audit/cluster reports), each preserving `<vendor>/<spec>/` nesting.
+- Routing rule: every per-spec `main.py` output → SPLIT; **exception** — `branded` → READY (renamed `Коммерческое предложение_<spec>.xlsx`, name only); every `batch_audit.py`/`cluster_audit.py` output → AUDIT (per-spec under `<vendor>/<spec>/`, batch aggregates at AUDIT root).
+- Drop the per-run `run-<timestamp>-<stem>/` folder — runs overwrite at `<bucket>/<vendor>/<spec>/`.
+- Remove the TOTAL copy mechanism (`run_manager.copy_to_total`) entirely.
+- README manifest at `output_root` (table: file → bucket → purpose).
+
+**Hard boundary:** no column trimming, translation, or new documents. Artifact *content* work is the next milestone. Single content-adjacent change allowed: renaming `branded` to its Russian filename on move into READY (filename, not bytes).
+
 ## Current State
 
 **Last shipped:** v1.1 Periphery cleanup (residual) — 2026-05-11
-**Next milestone:** TBD — run `/gsd-new-milestone` to scope.
+**Active milestone:** v1.2 Output structure reorganization — scoping (this session).
 
 **v1.1 delivered:**
 - Runtime cache redirect (`PYTHONPYCACHEPREFIX` + `PYTEST_ADDOPTS`) wired through `run.ps1` and `teresa_gui.py` from `config.local.yaml::temp_root`; `clean.ps1` runs by default with `-NoClean` opt-out (Phase 4: CACHE-01..04).
@@ -72,7 +85,14 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 
 ### Active
 
-(none — v1.1 milestone complete; run `/gsd-new-milestone` to scope v1.2)
+<!-- v1.2 Output structure reorganization — scoped REQ-IDs in REQUIREMENTS.md -->
+
+- [ ] Three buckets (READY / SPLIT / AUDIT) created under `output_root`, each with `<vendor>/<spec>/` nesting
+- [ ] `main.py` per-spec outputs routed to SPLIT (9 files), `branded` routed to READY under Russian name
+- [ ] `batch_audit.py` + `cluster_audit.py` outputs routed to AUDIT (per-spec + root aggregates)
+- [ ] Per-run timestamp folder dropped (overwrite semantics); TOTAL copy mechanism removed
+- [ ] README manifest written at `output_root`
+- [ ] Path/layout tests updated to the new structure (goldens content byte-equal)
 
 ### Out of Scope
 
@@ -83,6 +103,13 @@ The classifier produces correct, deterministic, audited artifacts for every supp
 - Regenerating `CLAUDE.md` from a GSD baseline — chose to preserve hand-written content
 - A separate onboarding guide doc — folded into README refresh + `CONTRIBUTING.md`
 - "Do not fix" tech debt items — `power_cord` `hw_type=None`, `batch_audit.py` reading from Excel, `src/core/parser.py` being Dell-specific, `HW_TYPE_VOCAB` duplication. These are load-bearing per `spec_classifier/CLAUDE.md`; explicit non-goals for this milestone (see `.planning/codebase/CONCERNS.md`).
+
+<!-- v1.2 boundaries -->
+
+- Artifact **content** changes (column trimming, translation, new documents) — v1.2 is routing-only; content work is the next milestone.
+- Changing classification/audit *logic* — only file destination paths change in `main.py`, `run_manager.py`, `batch_audit.py`, `cluster_audit.py`. No rule, normalization, or audit behavior edits.
+- `--update-golden` / regenerating golden fixtures — goldens stay byte-equal; only path/layout tests are updated.
+- Per-vendor knowledge docs (VKB-01..04) — original v1.2 idea, deferred again in favor of output structure; still v1.x/v2.x candidate.
 
 ## Context
 
@@ -137,4 +164,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-11 after v1.1 milestone (Periphery cleanup) shipped — CACHE-01..04 + ORPH-01..04 + DRIFT-01..04 validated; 12/12 milestone requirements complete.*
+*Last updated: 2026-06-07 — v1.2 Output structure reorganization milestone started (routing-only; READY/SPLIT/AUDIT buckets). v1.1 shipped 2026-05-11 (CACHE-01..04 + ORPH-01..04 + DRIFT-01..04, 12/12 complete).*

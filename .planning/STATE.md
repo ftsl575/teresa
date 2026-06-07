@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Periphery cleanup (residual)
-status: Awaiting next milestone
-stopped_at: Phase 6 plan 06 complete (Phase 6 done end-to-end; v1.1 milestone ready for verification)
-last_updated: "2026-05-11T01:50:25.480Z"
-last_activity: 2026-05-11 — Milestone v1.1 completed and archived
+milestone: v1.2
+milestone_name: Output structure reorganization
+status: planning
+last_updated: "2026-06-07T13:13:45.113Z"
+last_activity: 2026-06-07
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 
 ## Current Position
 
-Phase: Milestone v1.1 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-05-11 — Milestone v1.1 completed and archived
+Status: Defining requirements
+Last activity: 2026-06-07 — Milestone v1.2 started
 
 ## Performance Metrics
 
