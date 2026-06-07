@@ -29,7 +29,7 @@
 
 ### Test Realignment (TEST)
 
-- [ ] **TEST-01**: Path/layout tests are updated to assert the new `<bucket>/<vendor>/<spec>/` structure and filenames; golden-fixture **content** stays byte-equal (no `--update-golden`); the pytest suite passes within the skip-ratio gate.
+- [x] **TEST-01**: Path/layout tests are updated to assert the new `<bucket>/<vendor>/<spec>/` structure and filenames; golden-fixture **content** stays byte-equal (no `--update-golden`); the pytest suite passes within the skip-ratio gate.
 
 ---
 

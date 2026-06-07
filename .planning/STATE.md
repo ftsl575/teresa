@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Output structure reorganization
-status: executing
-stopped_at: Completed 09-01-PLAN.md (WR-01 vendor-detector dedup)
-last_updated: "2026-06-07T18:52:55.543Z"
+status: complete
+stopped_at: Completed 09-03-PLAN.md (TEST-01 test consolidation + suite verification)
+last_updated: "2026-06-07T19:05:00Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 8
-  percent: 89
+  completed_plans: 9
+  percent: 100
 ---
 
 # Project State
@@ -112,6 +112,8 @@ Recent decisions affecting current work:
 - [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
 - [Phase ?]: [Phase 8 / Plan 02]: cluster_audit.py re-pointed at Phase-7/8 buckets - dual-bucket read (AUDIT audited + SPLIT annotated, is_dir-guarded, prefer-audited dedup preserved; D-02/D-06); cluster_summary.xlsx + audit_report.json cluster-merge target AUDIT/ root so json_path.exists() finds batch_audit's file (D-05). Routing-only; _detect_vendor_from_path + clustering untouched; goldens byte-equal. Commits 68483f6, d45fe70.
 - [Phase 9 / Plan 01 WR-01]: detect_vendor_from_path extracted into run_manager.py as pure (path, known_vendors)->vendor; both local copies deleted; D-13 gate: exactly 3 divergences (ccw alias, match mechanism, WARN print), no fourth; D-11: known_vendors required param, no None default, callers resolve and pass; D-14: old _run/ccw_export cluster test assertions removed, suite realigned to SPLIT/<vendor>/ layout; 776 passed/1 xfailed/0 skipped.
+- [Phase 9 / Plan 02 MANIFEST-01]: Static README.md artifact index (14-row Russian-purpose table, READY/SPLIT/AUDIT) written idempotently at output_root on every main() invocation via write_manifest helper in run_manager.py; _MANIFEST_CONTENT module-level constant; wired in main.py after output_dir resolution before batch/single dispatch.
+- [Phase 9 / Plan 03 TEST-01]: detect-vendor tests consolidated into test_run_manager.py (8 detect-vendor + 3 manifest tests); TestDetectVendorFromPath deleted from test_batch_audit.py; detect-vendor section removed from test_cluster_audit.py; test_output_structure.py extended with README presence + layout assertions; layout assertion scoped to main.py output only (AUDIT/ not asserted; batch_audit writes it); 770 passed/1 xfailed/0 skipped; goldens byte-equal; real-data run (dell 5 files) documented in 09-VERIFICATION.md. v1.2 milestone COMPLETE.
 - [Phase 8 / Plan 03]: batch_audit + cluster_audit path/layout tests realigned to the Phase-7/8 buckets — TestDetectVendorFromPath asserts SPLIT/<vendor>/<spec>/ (hp_run alias-removed case now asserts unknown; alias NOT re-added); TestRealBugClassification + cluster write_cluster_summary read audit_report.json/cluster_summary.xlsx from AUDIT/ root; _collect_xlsx_files + load_candidate_rows fixtures relocated to AUDIT/ (audited) + SPLIT/ (annotated), the latter 5 tests beyond the plan's enumerated interfaces (Rule 3 blocking, same path-class, no scope creep, no assertion intent changed). cluster_audit._detect_vendor_from_path tests left byte-unchanged (function not modified by Phase 8). Full suite 774 passed / 1 xfailed / 0 skipped within skip-gate; goldens byte-equal; no --update-golden; no production code touched. SC#4 / TEST-01 met for ROUTE-03 + ROUTE-04. Commits 4c90a4e, ced0fbc.
 
 ### Pending Todos
@@ -154,8 +156,8 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:52:55.530Z
-Stopped at: Completed 09-01-PLAN.md (WR-01 vendor-detector dedup)
+Last session: 2026-06-07T19:05:00Z
+Stopped at: Completed 09-03-PLAN.md (TEST-01 test consolidation + suite verification) — v1.2 COMPLETE
 Resume file: None
 
 ## Operator Next Steps

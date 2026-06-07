@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Cleanup & Workflow Setup** — Phases 1-3 (shipped 2026-05-10)
 - ✅ **v1.1 Periphery cleanup (residual)** — Phases 4-6 (shipped 2026-05-11)
-- 🔨 **v1.2 Output structure reorganization** — Phases 7-9 (in progress, started 2026-06-07)
+- ✅ **v1.2 Output structure reorganization** — Phases 7-9 (shipped 2026-06-07)
 
 ## Phases
 
@@ -111,7 +111,7 @@ Plans:
 - [x] 09-02-PLAN.md — MANIFEST-01: add write_manifest to run_manager.py; wire once in main.py after output_dir resolution
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 09-03-PLAN.md — TEST-01: consolidate detect-vendor tests into test_run_manager.py; add manifest unit tests; extend test_output_structure.py; full suite green + goldens byte-equal + real-data verification in 09-VERIFICATION.md
+- [x] 09-03-PLAN.md — TEST-01: consolidate detect-vendor tests into test_run_manager.py; add manifest unit tests; extend test_output_structure.py; full suite green + goldens byte-equal + real-data verification in 09-VERIFICATION.md
 
 **Success criteria:**
 1. `output_root/README.md` lists every produced artifact as a table of file → bucket → purpose, and matches the files an actual run produces.
@@ -130,8 +130,8 @@ Plans:
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
 | 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
-| 8. Audit routing             | v1.2      | 3/3 | Complete  |            |
-| 9. Manifest & verification   | v1.2      | 1/3            | Executing | —         |
+| 8. Audit routing             | v1.2      | 3/3 | Complete   | 2026-06-07 |
+| 9. Manifest & verification   | v1.2      | 3/3 | Complete   | 2026-06-07 |
 
 ---
-*v1.0 milestone closed 2026-05-10. v1.1 milestone closed 2026-05-11. v1.2 started 2026-06-07. Per-milestone details preserved in `.planning/milestones/`.*
+*v1.0 milestone closed 2026-05-10. v1.1 milestone closed 2026-05-11. v1.2 closed 2026-06-07 (READY/SPLIT/AUDIT bucket layout + manifest + vendor-detector dedup + full suite green). Per-milestone details preserved in `.planning/milestones/`.*
