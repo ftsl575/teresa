@@ -54,6 +54,18 @@ Full details: [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.m
 
 **Requirements:** LAYOUT-01, LAYOUT-02, LAYOUT-03, ROUTE-01, ROUTE-02, ROUTE-05
 
+**Plans:** 3 plans
+
+Plans:
+**Wave 1**
+- [ ] 07-01-PLAN.md — Rewrite run_manager.py: delete dead helpers, add create_spec_folder
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 07-02-PLAN.md — Update main.py: reroute _run_single and batch block to SPLIT/READY buckets
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 07-03-PLAN.md — Realign test_output_structure.py and test_cli.py to bucket layout; full suite green
+
 **Success criteria:**
 1. After a run, `output_root/READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` exists and is byte-identical to the workbook previously emitted as `<stem>_branded.xlsx`.
 2. After a run, all nine `main.py` artifacts (`cleaned_spec.xlsx`, `classification.jsonl`, `<stem>_annotated.xlsx`, `rows_raw.json`, `rows_normalized.json`, `run_summary.json`, `unknown_rows.csv`, `header_rows.csv`, `run.log`) exist under `output_root/SPLIT/<vendor>/<spec>/`, and no `run-<timestamp>-<stem>/` folder is created.
@@ -95,7 +107,7 @@ Full details: [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.m
 | 4. Cache Redirect            | v1.1      | 3/3            | Complete | 2026-05-10 |
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
-| 7. Bucket layout & main.py routing | v1.2 | 0/—          | Planned  | —          |
+| 7. Bucket layout & main.py routing | v1.2 | 0/3          | Planning complete | —    |
 | 8. Audit routing             | v1.2      | 0/—            | Planned  | —          |
 | 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
 
