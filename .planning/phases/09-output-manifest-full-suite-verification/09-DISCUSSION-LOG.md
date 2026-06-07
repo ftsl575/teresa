@@ -82,6 +82,18 @@
 - Precise placement of the write_manifest call within main() (must run once per invocation).
 - Which specific path/layout assertions to add/realign in test_output_structure.py.
 
+## Addendum — scope addition after initial discussion
+
+User directed adding a separate task to Phase 9: remove the dead
+`{vendor}_run` / `hp_run` matchers from `cluster_audit._detect_vendor_from_path`
+(WR-01 from the Phase 8 review). `batch_audit` had these removed in Phase 8
+(D-07); `cluster_audit` was left untouched, producing a divergence + duplicated
+dead code on the same SPLIT/AUDIT tree. Same discipline requested: grep live
+callers, confirm vendor detection works for SPLIT/AUDIT paths (`<vendor>` =
+folder name), update tests if affected. Captured in 09-CONTEXT.md as D-11..D-13
+(domain deliverable #3, classified path-detection-not-audit logic per Phase 8
+D-08). No question/option round — direct scope instruction.
+
 ## Deferred Ideas
 
 - Artifact content changes (column trimming, translation, new summary docs) — v1.3 (CONTENT-01..03).

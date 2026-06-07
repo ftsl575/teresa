@@ -15,11 +15,21 @@ Close out the v1.2 output-reorganization milestone with two deliverables:
    end-to-end: full pytest suite green within the skip-gate, goldens byte-equal,
    and `output_root` yields exactly `READY/`, `SPLIT/`, `AUDIT/`, and `README.md`
    (nothing in the old flat per-run or TOTAL layout).
+3. **WR-01 (dead vendor-matcher cleanup)** — Remove the dead `{vendor}_run` /
+   `hp_run` matchers from `cluster_audit._detect_vendor_from_path`, mirroring the
+   Phase 8 D-07 removal already applied to `batch_audit.detect_vendor_from_path`.
+   The two modules currently diverge on the same SPLIT/AUDIT tree, and the
+   `cluster_audit` copy is duplicated dead code. (Logged Info / out-of-scope in
+   Phase 8 — `08-REVIEW.md:50`, `08-VERIFICATION.md:85` — as a future consistency
+   pass; this phase is that pass.)
 
-**The only new production code is the manifest writer.** Everything else is
-verification. Routing-only invariants still apply: no `--update-golden`, goldens
-byte-equal, skip-ratio < 0.50, no tech-stack additions, no classification/audit
-logic changes.
+**New production code is the manifest writer plus a dead-branch deletion in
+`cluster_audit._detect_vendor_from_path`.** Everything else is verification.
+Routing-only invariants still apply: no `--update-golden`, goldens byte-equal,
+skip-ratio < 0.50, no tech-stack additions, no classification/audit logic
+changes. The WR-01 deletion is **path-detection logic, not audit logic** —
+in-scope under the v1.2 D-22-lift, exactly as Phase 8 classified the identical
+removal (08-CONTEXT D-08).
 
 **Out of this phase:** any artifact *content* change (column trimming,
 translation of existing artifacts, new summary documents) — that is v1.3
@@ -102,9 +112,42 @@ artifact.
   the heaviest option with the most overlap against existing coverage; D-07 + D-08
   + D-09 together prove SC#2 sufficiently.
 
+### Dead vendor-matcher cleanup (WR-01 — separate task)
+- **D-11: Drop the dead `_run` / `hp_run` branches in
+  `cluster_audit._detect_vendor_from_path`** (`cluster_audit.py:97-117`),
+  mirroring Phase 8's `batch_audit` removal (08-CONTEXT D-07). Concretely:
+  - Line 107: `if f"{vendor}_run" in text or text == vendor:` → keep only
+    `if text == vendor:`. Under the SPLIT/AUDIT layout `<vendor>` is the parent
+    (or grandparent) folder name, which `text == vendor` already matches — the
+    `_run` substring is vestigial (no `*_run/` dirs exist post-Phase-7).
+  - Lines 109-112: remove the entire `hp_run` HPE-alias block (the
+    `"hp_run" in text` match and the `text.startswith("hp")` fallback). After
+    Phase 7 the HPE folder is literally `hpe`, caught by `text == vendor`.
+  - **Keep** the `ccw` Cisco alias (lines 113-116) — `ccw_N` is the real Cisco
+    input stem; the alias is harmless and the WR-01 fix sketch retains it.
+- **D-12: Discipline — verify before deleting.** Grep the single live caller
+  (`load_candidate_rows` at `cluster_audit.py:195`) and confirm vendor detection
+  still resolves for the new layout (`<vendor>` = folder name) before/after the
+  edit. The function's `known_vendors` / `_get_known_vendors` plumbing is
+  unchanged.
+- **D-13: Realign the contradicting tests.** `test_cluster_audit.py`
+  `TestDetectVendorFromPath` (~lines 47-72) currently asserts the OLD behavior
+  (`hpe_run`→hpe, `dell_run`→dell, `ccw_export`→cisco), directly contradicting
+  `test_batch_audit.py:450-457` (now `hp_run`/`lenovo_run`→`unknown`). Update the
+  cluster tests to the SPLIT/AUDIT contract so both modules assert the same rule:
+  bare `<vendor>` folder → vendor; `*_run` → `unknown`; `ccw` → cisco retained.
+  No golden/content change; classification output untouched.
+
 ### Claude's Discretion
 - Exact helper name/signature for the manifest writer in `run_manager.py`
   (`write_manifest(output_root)` is a suggestion).
+- Exact restructuring of the `_detect_vendor_from_path` loop after the `_run`
+  branch is dropped (e.g. collapsing the now-trivial inner `if` vs. the WR-01
+  review's suggested rewrite at `08-REVIEW.md:65-74`) — behavior must equal
+  `batch_audit.detect_vendor_from_path` for the SPLIT/AUDIT tree.
+- Whether the WR-01 cleanup lands as its own plan/commit or alongside the
+  manifest work — planner discretion; it is an independent change from the
+  manifest writer and should be a distinct task either way.
 - Exact Russian wording of each purpose description (must be accurate to each
   artifact's role; see the E-codes / artifact roles in `spec_classifier/CLAUDE.md`
   and the per-bucket semantics in PROJECT.md).
@@ -143,7 +186,18 @@ artifact.
 - `.planning/phases/08-audit-routing-audit/08-CONTEXT.md` — the AUDIT artifacts
   the manifest must list: per-spec `<stem>_annotated_audited.xlsx` under
   `AUDIT/<vendor>/<spec>/`, and the AUDIT-root aggregates `audit_report.json`,
-  `audit_summary.xlsx`, `cluster_summary.xlsx`.
+  `audit_summary.xlsx`, `cluster_summary.xlsx`. Also **D-07/D-08** — the
+  `batch_audit` `_run`/`hp_run` removal this phase mirrors into `cluster_audit`
+  (WR-01), and the classification of that removal as path-detection (not audit)
+  logic.
+
+### WR-01 source (dead vendor-matcher cleanup)
+- `.planning/phases/08-audit-routing-audit/08-REVIEW.md` § WR-01 (line 50) — the
+  full finding: the divergence between `cluster_audit._detect_vendor_from_path`
+  and `batch_audit.detect_vendor_from_path`, the contradicting tests, and the
+  suggested rewrite (lines 65-74).
+- `.planning/phases/08-audit-routing-audit/08-VERIFICATION.md` (line 85) — WR-01
+  logged Info / out-of-scope-for-Phase-8, flagged as a future consistency pass.
 
 ### Artifact roles (source of truth for the Russian "purpose" text)
 - `spec_classifier/CLAUDE.md` § "Current State / OUTPUT layout" and § "E-codes" —
@@ -172,6 +226,12 @@ artifact.
 - `spec_classifier/tests/test_output_structure.py` — top-level layout +
   README presence assertions (D-08); plus a new/colocated manifest unit test
   (D-07).
+- `spec_classifier/cluster_audit.py` — `_detect_vendor_from_path`
+  (lines 97-117): drop the dead `_run`/`hp_run` branches (D-11), keep
+  `text == vendor` and the `ccw` alias. Single live caller at line 195 (D-12).
+- `spec_classifier/tests/test_cluster_audit.py` — `TestDetectVendorFromPath`
+  (~lines 47-72): realign to the SPLIT/AUDIT contract, matching
+  `test_batch_audit.py:450-457` (D-13).
 
 </canonical_refs>
 
@@ -189,6 +249,10 @@ artifact.
   manifest write can hook in (D-03).
 - `tests/test_output_structure.py` — already asserts the Phase 7 bucket layout;
   the README/top-level assertions extend it (D-08).
+- `batch_audit.detect_vendor_from_path` (cleaned in Phase 8 D-07) is the
+  reference implementation the WR-01 cleanup mirrors into
+  `cluster_audit._detect_vendor_from_path`; `test_batch_audit.py:450-457` is the
+  reference test contract for the realigned cluster tests (D-13).
 
 ### Established Patterns
 - `output_dir` resolution (config `paths.output_root` → `--output-dir` → default)
