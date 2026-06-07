@@ -82,17 +82,43 @@
 - Precise placement of the write_manifest call within main() (must run once per invocation).
 - Which specific path/layout assertions to add/realign in test_output_structure.py.
 
-## Addendum — scope addition after initial discussion
+## Addendum 1 — scope addition after initial discussion
 
 User directed adding a separate task to Phase 9: remove the dead
 `{vendor}_run` / `hp_run` matchers from `cluster_audit._detect_vendor_from_path`
 (WR-01 from the Phase 8 review). `batch_audit` had these removed in Phase 8
 (D-07); `cluster_audit` was left untouched, producing a divergence + duplicated
-dead code on the same SPLIT/AUDIT tree. Same discipline requested: grep live
-callers, confirm vendor detection works for SPLIT/AUDIT paths (`<vendor>` =
-folder name), update tests if affected. Captured in 09-CONTEXT.md as D-11..D-13
-(domain deliverable #3, classified path-detection-not-audit logic per Phase 8
-D-08). No question/option round — direct scope instruction.
+dead code on the same SPLIT/AUDIT tree.
+
+## Addendum 2 — WR-01 escalated from point-cleanup to full deduplication
+
+User then escalated WR-01: the real defect is that `detect_vendor_from_path` is
+**duplicated** across `batch_audit.py` and `cluster_audit.py` — that duplication
+is what allowed the drift. Resolution changed to: extract ONE shared cleaned
+function (batch version) into `src/diagnostics/run_manager.py` beside
+`create_spec_folder`, have both modules import it, delete both local copies,
+consolidate the detect-vendor tests into one suite, and verify both live calls
+resolve for the SPLIT/AUDIT layout. Hard requirement: confirm by grep that both
+copies are behaviorally identical to the batch reference BEFORE merging — if a
+subtle difference exists, stop and show the user, do not merge blindly.
+
+During context capture the comparison was performed and **three divergences were
+found** (batch is the reference): (1) `ccw→cisco` alias present only in cluster;
+(2) match mechanism — batch substring-`/<vendor>/`-over-path vs cluster
+exact-`==`-on-stem/parent/grandparent; (3) cluster has no WARN print. These were
+surfaced to the user.
+
+| Decision | Options | Selected |
+|----------|---------|----------|
+| ccw alias in unified function | Drop ccw (clean batch) / Keep ccw (superset) | Drop ccw (clean batch) ✓ |
+
+**User's choice:** Drop ccw — unified function = exact clean-batch behavior
+(segment match + WARN, no `_run`/`hp_run`/`ccw`). This **overrides** the earlier
+"keep ccw" decision. Mechanism and WARN also resolved to the batch reference.
+
+Captured in 09-CONTEXT.md as domain deliverable #3 and decisions D-11..D-15,
+classified path-detection-not-audit logic (in-scope under the v1.2 D-22-lift per
+Phase 8 D-08).
 
 ## Deferred Ideas
 

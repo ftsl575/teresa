@@ -15,21 +15,24 @@ Close out the v1.2 output-reorganization milestone with two deliverables:
    end-to-end: full pytest suite green within the skip-gate, goldens byte-equal,
    and `output_root` yields exactly `READY/`, `SPLIT/`, `AUDIT/`, and `README.md`
    (nothing in the old flat per-run or TOTAL layout).
-3. **WR-01 (dead vendor-matcher cleanup)** — Remove the dead `{vendor}_run` /
-   `hp_run` matchers from `cluster_audit._detect_vendor_from_path`, mirroring the
-   Phase 8 D-07 removal already applied to `batch_audit.detect_vendor_from_path`.
-   The two modules currently diverge on the same SPLIT/AUDIT tree, and the
-   `cluster_audit` copy is duplicated dead code. (Logged Info / out-of-scope in
-   Phase 8 — `08-REVIEW.md:50`, `08-VERIFICATION.md:85` — as a future consistency
-   pass; this phase is that pass.)
+3. **WR-01 (vendor-detector deduplication)** — `detect_vendor_from_path` is
+   **duplicated** in `batch_audit.py` and `cluster_audit.py`; that duplication is
+   what produced the Phase 8 drift (one copy cleaned, the other left with dead
+   `_run`/`hp_run` matchers). Resolve at the root: extract **one** shared,
+   already-cleaned function into `src/diagnostics/run_manager.py` (next to
+   `create_spec_folder`) and have both modules import it; delete both local
+   copies. (Finding logged Info / out-of-scope in Phase 8 — `08-REVIEW.md:50`,
+   `08-VERIFICATION.md:85` — as a future consistency pass; this phase is that
+   pass, escalated from point-cleanup to full dedup.)
 
-**New production code is the manifest writer plus a dead-branch deletion in
-`cluster_audit._detect_vendor_from_path`.** Everything else is verification.
-Routing-only invariants still apply: no `--update-golden`, goldens byte-equal,
-skip-ratio < 0.50, no tech-stack additions, no classification/audit logic
-changes. The WR-01 deletion is **path-detection logic, not audit logic** —
-in-scope under the v1.2 D-22-lift, exactly as Phase 8 classified the identical
-removal (08-CONTEXT D-08).
+**New production code is the manifest writer plus the shared
+`detect_vendor_from_path` extracted into `run_manager.py` (with both duplicated
+copies removed).** Everything else is verification. Routing-only invariants still
+apply: no `--update-golden`, goldens byte-equal, skip-ratio < 0.50, no tech-stack
+additions, no classification/audit logic changes. The dedup touches only
+**path-detection logic, not audit logic** — in-scope under the v1.2 D-22-lift
+(batch_audit.py is editable), exactly as Phase 8 classified the identical removal
+(08-CONTEXT D-08).
 
 **Out of this phase:** any artifact *content* change (column trimming,
 translation of existing artifacts, new summary documents) — that is v1.3
@@ -112,42 +115,88 @@ artifact.
   the heaviest option with the most overlap against existing coverage; D-07 + D-08
   + D-09 together prove SC#2 sufficiently.
 
-### Dead vendor-matcher cleanup (WR-01 — separate task)
-- **D-11: Drop the dead `_run` / `hp_run` branches in
-  `cluster_audit._detect_vendor_from_path`** (`cluster_audit.py:97-117`),
-  mirroring Phase 8's `batch_audit` removal (08-CONTEXT D-07). Concretely:
-  - Line 107: `if f"{vendor}_run" in text or text == vendor:` → keep only
-    `if text == vendor:`. Under the SPLIT/AUDIT layout `<vendor>` is the parent
-    (or grandparent) folder name, which `text == vendor` already matches — the
-    `_run` substring is vestigial (no `*_run/` dirs exist post-Phase-7).
-  - Lines 109-112: remove the entire `hp_run` HPE-alias block (the
-    `"hp_run" in text` match and the `text.startswith("hp")` fallback). After
-    Phase 7 the HPE folder is literally `hpe`, caught by `text == vendor`.
-  - **Keep** the `ccw` Cisco alias (lines 113-116) — `ccw_N` is the real Cisco
-    input stem; the alias is harmless and the WR-01 fix sketch retains it.
-- **D-12: Discipline — verify before deleting.** Grep the single live caller
-  (`load_candidate_rows` at `cluster_audit.py:195`) and confirm vendor detection
-  still resolves for the new layout (`<vendor>` = folder name) before/after the
-  edit. The function's `known_vendors` / `_get_known_vendors` plumbing is
-  unchanged.
-- **D-13: Realign the contradicting tests.** `test_cluster_audit.py`
-  `TestDetectVendorFromPath` (~lines 47-72) currently asserts the OLD behavior
-  (`hpe_run`→hpe, `dell_run`→dell, `ccw_export`→cisco), directly contradicting
-  `test_batch_audit.py:450-457` (now `hp_run`/`lenovo_run`→`unknown`). Update the
-  cluster tests to the SPLIT/AUDIT contract so both modules assert the same rule:
-  bare `<vendor>` folder → vendor; `*_run` → `unknown`; `ccw` → cisco retained.
-  No golden/content change; classification output untouched.
+### Vendor-detector deduplication (WR-01 — separate task)
+- **D-11: One shared function in `run_manager.py`.** Extract the **cleaned
+  `batch_audit` version** of `detect_vendor_from_path` into
+  `spec_classifier/src/diagnostics/run_manager.py`, beside `create_spec_folder`,
+  as the single source of path-derived vendor logic. Canonical behavior =
+  `batch_audit.py:1357-1366` exactly:
+  ```python
+  def detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
+      if known_vendors is None:
+          known_vendors = _get_known_vendors(_load_config())
+      s = str(path).lower()
+      for vendor in known_vendors:
+          if f"/{vendor}/" in s or f"\\{vendor}\\" in s:
+              return vendor
+      print(f"  [WARN] Cannot detect vendor from path: {path}", file=sys.stderr)
+      return "unknown"
+  ```
+  Segment match `/<vendor>/` over the full path string, WARN on miss, **no**
+  `_run`/`hp_run`/`ccw` aliases. Public name `detect_vendor_from_path`.
+  - `_get_known_vendors` / `_load_config` plumbing: the shared function needs
+    access to these (currently defined in each module). Planner decides whether
+    to also centralize them or accept them as injected `known_vendors` — but the
+    function's default-resolution behavior must stay equivalent.
+- **D-12: Both modules import the shared function; delete both local copies.**
+  - `batch_audit.py` — remove `detect_vendor_from_path` (`batch_audit.py:1357-1366`),
+    import from `run_manager`.
+  - `cluster_audit.py` — remove `_detect_vendor_from_path` (`cluster_audit.py:97-117`,
+    the copy that still carries the dead `_run`/`hp_run` branches **and** the
+    `ccw` alias), import the shared function (rename the live call accordingly).
+  - Import path is proven: `main.py:18` already does
+    `from src.diagnostics.run_manager import create_spec_folder` from the
+    `spec_classifier/` cwd, so both audit scripts can import the same way.
+- **D-13: Pre-merge equivalence gate — confirm by grep before deleting, do NOT
+  merge blindly.** The two copies are **not** byte-equivalent after cleanup;
+  three divergences were already identified and are reconciled to the batch
+  reference:
+  1. **ccw alias** — present in `cluster`, absent in `batch`. **DROPPED**
+     (unified = chosen "clean batch"; this **overrides the earlier D-11 'keep
+     ccw'**). Safe because under `<bucket>/<vendor>/<spec>/` the `cisco` folder is
+     always a path segment, so `/cisco/` resolves without the alias.
+  2. **Match mechanism** — `batch` substring-`/<vendor>/`-over-full-path vs
+     `cluster` exact-`==`-on-stem/parent/grandparent. **Batch wins** (reference).
+     Equivalent on the canonical layout; can differ only on pathological paths
+     (e.g. a spec stem equal to a vendor name).
+  3. **WARN print** — `batch` prints `[WARN] Cannot detect vendor`; `cluster`
+     was silent. **Kept** (batch). `cluster`'s path now emits the warning on miss.
+  **If execution surfaces any FOURTH subtle behavioral difference beyond these
+  three, STOP and surface it to the user — do not merge blindly** (per the user's
+  explicit instruction).
+- **D-14: Consolidate the detect-vendor tests into one set.** Merge the
+  vendor-detection tests from `test_batch_audit.py` (`:450-457`, the current
+  correct contract: bare `<vendor>` folder → vendor, `hp_run`/`lenovo_run` →
+  `unknown`) and `test_cluster_audit.py` `TestDetectVendorFromPath` (`~:47-72`,
+  which still asserts the OLD `hpe_run`/`dell_run`/`ccw_export` behavior) into a
+  **single** suite targeting `run_manager.detect_vendor_from_path`. The old
+  cluster assertions (`*_run` → vendor, `ccw_export` → cisco) are **removed** —
+  they encode behavior the unified function deliberately drops. No golden/content
+  change; classification output untouched.
+- **D-15: Verify both live call sites resolve for the SPLIT/AUDIT layout
+  (`<vendor>` = folder name).** Grep the live callers and confirm vendor
+  detection still works after the swap:
+  - `cluster_audit.load_candidate_rows` (`cluster_audit.py:195`).
+  - the `batch_audit` live caller(s) of `detect_vendor_from_path`.
+  Files live at `<bucket>/<vendor>/<spec>/<file>`, so `/<vendor>/` is always a
+  segment — both resolve. Goldens stay byte-equal; D-22 lifted (batch_audit.py
+  editable for this routing/path-detection change).
 
 ### Claude's Discretion
 - Exact helper name/signature for the manifest writer in `run_manager.py`
   (`write_manifest(output_root)` is a suggestion).
-- Exact restructuring of the `_detect_vendor_from_path` loop after the `_run`
-  branch is dropped (e.g. collapsing the now-trivial inner `if` vs. the WR-01
-  review's suggested rewrite at `08-REVIEW.md:65-74`) — behavior must equal
-  `batch_audit.detect_vendor_from_path` for the SPLIT/AUDIT tree.
-- Whether the WR-01 cleanup lands as its own plan/commit or alongside the
-  manifest work — planner discretion; it is an independent change from the
-  manifest writer and should be a distinct task either way.
+- Whether `_get_known_vendors` / `_load_config` are also centralized into
+  `run_manager.py` alongside the shared `detect_vendor_from_path`, or left in
+  their modules with `known_vendors` passed in — provided default-resolution
+  behavior stays equivalent (D-11).
+- Whether the shared function keeps a thin private alias (e.g.
+  `cluster_audit._detect_vendor_from_path = detect_vendor_from_path`) for call-site
+  stability vs. updating call sites directly — planner discretion.
+- Where the consolidated detect-vendor test suite lives (`test_run_manager.py` vs.
+  one of the existing test files) — D-14; content/goldens unaffected regardless.
+- Whether the WR-01 dedup lands as its own plan/commit or alongside the manifest
+  work — planner discretion; it is independent from the manifest writer and should
+  be a distinct task either way.
 - Exact Russian wording of each purpose description (must be accurate to each
   artifact's role; see the E-codes / artifact roles in `spec_classifier/CLAUDE.md`
   and the per-bucket semantics in PROJECT.md).
@@ -226,12 +275,20 @@ artifact.
 - `spec_classifier/tests/test_output_structure.py` — top-level layout +
   README presence assertions (D-08); plus a new/colocated manifest unit test
   (D-07).
-- `spec_classifier/cluster_audit.py` — `_detect_vendor_from_path`
-  (lines 97-117): drop the dead `_run`/`hp_run` branches (D-11), keep
-  `text == vendor` and the `ccw` alias. Single live caller at line 195 (D-12).
-- `spec_classifier/tests/test_cluster_audit.py` — `TestDetectVendorFromPath`
-  (~lines 47-72): realign to the SPLIT/AUDIT contract, matching
-  `test_batch_audit.py:450-457` (D-13).
+- `spec_classifier/src/diagnostics/run_manager.py` — **add** the shared
+  `detect_vendor_from_path` (cleaned batch version, beside `create_spec_folder`)
+  as the single source of vendor-from-path logic (D-11).
+- `spec_classifier/batch_audit.py` — **delete** the local
+  `detect_vendor_from_path` (`batch_audit.py:1357-1366`); import from
+  `run_manager`; update live caller(s) (D-12, D-15).
+- `spec_classifier/cluster_audit.py` — **delete** `_detect_vendor_from_path`
+  (`cluster_audit.py:97-117`, incl. dead `_run`/`hp_run` branches and the `ccw`
+  alias); import the shared function; update the live caller at line 195
+  (D-12, D-15).
+- `spec_classifier/tests/test_batch_audit.py` + `tests/test_cluster_audit.py`
+  (and possibly a new `tests/test_run_manager.py`) — **consolidate** the
+  vendor-detection tests into one suite against the shared function; remove the
+  old `cluster` `*_run`/`ccw_export` assertions (D-14).
 
 </canonical_refs>
 
@@ -249,10 +306,19 @@ artifact.
   manifest write can hook in (D-03).
 - `tests/test_output_structure.py` — already asserts the Phase 7 bucket layout;
   the README/top-level assertions extend it (D-08).
-- `batch_audit.detect_vendor_from_path` (cleaned in Phase 8 D-07) is the
-  reference implementation the WR-01 cleanup mirrors into
-  `cluster_audit._detect_vendor_from_path`; `test_batch_audit.py:450-457` is the
-  reference test contract for the realigned cluster tests (D-13).
+- `batch_audit.detect_vendor_from_path` (`batch_audit.py:1357-1366`, cleaned in
+  Phase 8 D-07) is the canonical implementation extracted to `run_manager.py`;
+  `cluster_audit._detect_vendor_from_path` (`cluster_audit.py:97-117`) is the
+  duplicated, drifted copy being deleted. `test_batch_audit.py:450-457` is the
+  reference test contract for the consolidated suite (D-14).
+- `run_manager.py` is the chosen home for the shared function: it already hosts
+  `create_spec_folder` (Phase 7 D-10) and is imported by `main.py:18` from the
+  `spec_classifier/` cwd — the same import path both audit scripts use, so no
+  packaging/cwd changes are needed (D-11, D-12).
+- Known cross-module divergence already audited (D-13): `cluster` carries a `ccw`
+  alias, exact-`==`-component matching, and no WARN print; the unified function
+  takes the `batch` behavior on all three (ccw dropped, substring-segment match,
+  WARN kept). Any further difference found at merge time halts the merge.
 
 ### Established Patterns
 - `output_dir` resolution (config `paths.output_root` → `--output-dir` → default)
