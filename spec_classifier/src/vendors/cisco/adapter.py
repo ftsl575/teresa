@@ -46,4 +46,4 @@ class CiscoAdapter(VendorAdapter):
         ]
 
     def generates_branded_spec(self) -> bool:
-        return True
+        return False

@@ -8,7 +8,7 @@ from pathlib import Path
 from main import _get_adapter
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
-from src.diagnostics.run_manager import create_run_folder
+from src.diagnostics.run_manager import create_spec_folder
 from src.outputs.json_writer import (
     save_rows_raw,
     save_rows_normalized,
@@ -33,9 +33,8 @@ def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
     rules_path = root / "rules" / "dell_rules.yaml"
     assert rules_path.exists(), f"rules/dell_rules.yaml not found at {rules_path}"
 
-    # Match out.zip layout: output_root / dell_run / run-* /
+    # Bucket layout: output_root / SPLIT / dell / <stem> /
     output_root = tmp_path / "output"
-    vendor_base = output_root / "dell_run"
 
     adapter = _get_adapter("dell", {})
     rows_raw, _ = adapter.parse(str(input_path))
@@ -43,7 +42,7 @@ def test_smoke_full_pipeline_artifacts_created(filename, tmp_path):
     ruleset = RuleSet.load(str(rules_path))
     classification_results = [classify_row(r, ruleset) for r in rows_normalized]
 
-    run_folder = create_run_folder(str(vendor_base), input_path.name)
+    run_folder = create_spec_folder(output_root, "SPLIT", "dell", input_path.stem)
     assert run_folder.exists()
 
     save_rows_raw(rows_raw, run_folder)

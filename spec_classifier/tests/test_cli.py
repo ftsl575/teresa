@@ -38,10 +38,7 @@ def test_cli_exit_code_stdout_artifacts(tmp_path):
     assert result.returncode == 0, f"CLI failed: stderr={result.stderr!r}"
     assert "total_rows" in result.stdout, f"Expected 'total_rows' in stdout: {result.stdout!r}"
 
-    vendor_root = output_dir / "dell_run"
-    assert vendor_root.exists(), "output_root/dell_run should exist"
-    run_folders = list(vendor_root.glob("run-*"))
-    assert run_folders, "At least one run-* folder under dell_run should exist"
-    latest = max(run_folders, key=lambda p: p.stat().st_mtime)
-    assert (latest / "cleaned_spec.xlsx").exists(), f"cleaned_spec.xlsx missing in {latest}"
-    assert (latest / "run_summary.json").exists(), f"run_summary.json missing in {latest}"
+    split_folder = output_dir / "SPLIT" / "dell" / "dl1"
+    assert split_folder.is_dir(), f"SPLIT/dell/dl1 folder must exist under {output_dir}"
+    assert (split_folder / "cleaned_spec.xlsx").exists(), f"cleaned_spec.xlsx missing in {split_folder}"
+    assert (split_folder / "run_summary.json").exists(), f"run_summary.json missing in {split_folder}"
