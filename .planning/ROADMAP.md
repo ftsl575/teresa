@@ -87,7 +87,7 @@ Plans:
 - [x] 08-02-PLAN.md — cluster_audit.py: dual-bucket AUDIT/SPLIT read + cluster_summary/audit_report at AUDIT root (ROUTE-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 08-03-PLAN.md — Realign batch_audit/cluster_audit path+aggregate tests to new layout; full suite green within skip-gate, goldens byte-equal (TEST-01 / SC#4)
+- [x] 08-03-PLAN.md — Realign batch_audit/cluster_audit path+aggregate tests to new layout; full suite green within skip-gate, goldens byte-equal (TEST-01 / SC#4)
 
 **Success criteria:**
 1. `batch_audit.py` discovers `<stem>_annotated.xlsx` under `SPLIT/<vendor>/<spec>/` and writes `<stem>_annotated_audited.xlsx` to `AUDIT/<vendor>/<spec>/`.

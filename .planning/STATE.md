@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Output structure reorganization
-status: executing
+status: verifying
 stopped_at: Phase 8 context gathered
-last_updated: "2026-06-07T16:50:44.836Z"
+last_updated: "2026-06-07T16:58:15.475Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 Phase: 08 (audit-routing-audit) — EXECUTING
 Plan: 3 of 3
-Status: Plan 08-02 complete; ready to execute Plan 08-03
-Last activity: 2026-06-07 -- Plan 08-02 complete (cluster_audit dual-bucket read / AUDIT-root aggregates)
+Status: Phase complete — ready for verification
+Last activity: 2026-06-07
 
 ## Performance Metrics
 
@@ -79,6 +79,7 @@ Last activity: 2026-06-07 -- Plan 08-02 complete (cluster_audit dual-bucket read
 | Phase 06 P06 | ~5min | 3 tasks | 3 files |
 | Phase 07 P02 | 3min | 2 tasks | 1 files |
 | Phase 08 P02 | ~4min | 2 tasks | 1 files |
+| Phase 08 P03 | 8min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,7 @@ Recent decisions affecting current work:
 - [Phase 8 / Plan 01]: batch_audit.py re-pointed at Phase-7 buckets — reads `*_annotated.xlsx` strictly from `output_root/SPLIT` (is_dir guard, no whole-tree fallback; D-02), writes `<stem>_annotated_audited.xlsx` to `output_root/AUDIT/<vendor>/<spec>` via `relative_to(SPLIT_root)` mirror + mkdir-parents (no rmtree; D-03/D-04), `audit_report.json` + `audit_summary.xlsx` → `AUDIT/` root (D-05). Dead `{vendor}_run`/`hp_run`/`-TOTAL` matchers removed; `/{vendor}/` retained (D-07). `_generate_human_report` :924 untouched. `SPLIT_root`/`AUDIT_root` derived inline in `main()` (D-01, no launcher edits). Routing-only; goldens byte-equal. Commits 74c7dda, 83f2eb7. Full pytest gate deferred to Plan 08-02 (Wave 2).
 - [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
 - [Phase ?]: [Phase 8 / Plan 02]: cluster_audit.py re-pointed at Phase-7/8 buckets - dual-bucket read (AUDIT audited + SPLIT annotated, is_dir-guarded, prefer-audited dedup preserved; D-02/D-06); cluster_summary.xlsx + audit_report.json cluster-merge target AUDIT/ root so json_path.exists() finds batch_audit's file (D-05). Routing-only; _detect_vendor_from_path + clustering untouched; goldens byte-equal. Commits 68483f6, d45fe70.
+- [Phase 8 / Plan 03]: batch_audit + cluster_audit path/layout tests realigned to the Phase-7/8 buckets — TestDetectVendorFromPath asserts SPLIT/<vendor>/<spec>/ (hp_run alias-removed case now asserts unknown; alias NOT re-added); TestRealBugClassification + cluster write_cluster_summary read audit_report.json/cluster_summary.xlsx from AUDIT/ root; _collect_xlsx_files + load_candidate_rows fixtures relocated to AUDIT/ (audited) + SPLIT/ (annotated), the latter 5 tests beyond the plan's enumerated interfaces (Rule 3 blocking, same path-class, no scope creep, no assertion intent changed). cluster_audit._detect_vendor_from_path tests left byte-unchanged (function not modified by Phase 8). Full suite 774 passed / 1 xfailed / 0 skipped within skip-gate; goldens byte-equal; no --update-golden; no production code touched. SC#4 / TEST-01 met for ROUTE-03 + ROUTE-04. Commits 4c90a4e, ced0fbc.
 
 ### Pending Todos
 
@@ -149,7 +151,7 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07T16:49:41.845Z
+Last session: 2026-06-07T16:57:49.488Z
 Stopped at: Phase 8 context gathered
 Resume file: None
 
