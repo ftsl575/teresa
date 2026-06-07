@@ -17,8 +17,8 @@
 
 ### Output Routing (ROUTE)
 
-- [ ] **ROUTE-01**: All nine per-spec `main.py` outputs land in `SPLIT/<vendor>/<spec>/` — `cleaned_spec.xlsx`, `classification.jsonl`, `<stem>_annotated.xlsx`, `rows_raw.json`, `rows_normalized.json`, `run_summary.json`, `unknown_rows.csv`, `header_rows.csv`, `run.log`.
-- [ ] **ROUTE-02**: The `branded` workbook lands in `READY/<vendor>/<spec>/` renamed `Коммерческое предложение_<spec>.xlsx` (filename only; bytes/content unchanged).
+- [x] **ROUTE-01**: All nine per-spec `main.py` outputs land in `SPLIT/<vendor>/<spec>/` — `cleaned_spec.xlsx`, `classification.jsonl`, `<stem>_annotated.xlsx`, `rows_raw.json`, `rows_normalized.json`, `run_summary.json`, `unknown_rows.csv`, `header_rows.csv`, `run.log`.
+- [x] **ROUTE-02**: The `branded` workbook lands in `READY/<vendor>/<spec>/` renamed `Коммерческое предложение_<spec>.xlsx` (filename only; bytes/content unchanged).
 - [ ] **ROUTE-03**: `batch_audit.py` reads `<stem>_annotated.xlsx` from `SPLIT/<vendor>/<spec>/` and writes `<stem>_annotated_audited.xlsx` to `AUDIT/<vendor>/<spec>/`.
 - [ ] **ROUTE-04**: Batch-level aggregates — `audit_report.json`, `audit_summary.xlsx` (`batch_audit.py`), `cluster_summary.xlsx` (`cluster_audit.py`) — are written to the `AUDIT/` root (no vendor/spec nesting).
 - [x] **ROUTE-05**: The TOTAL copy mechanism (`run_manager.copy_to_total` and its call site) is removed; no artifact is duplicated into a TOTAL folder.
@@ -72,8 +72,8 @@ Which phases cover which requirements. Filled during roadmap creation.
 | LAYOUT-01 | Phase 7 | Complete |
 | LAYOUT-02 | Phase 7 | Complete |
 | LAYOUT-03 | Phase 7 | Complete |
-| ROUTE-01 | Phase 7 | Pending |
-| ROUTE-02 | Phase 7 | Pending |
+| ROUTE-01 | Phase 7 | Complete |
+| ROUTE-02 | Phase 7 | Complete |
 | ROUTE-05 | Phase 7 | Complete |
 | ROUTE-03 | Phase 8 | Pending |
 | ROUTE-04 | Phase 8 | Pending |
