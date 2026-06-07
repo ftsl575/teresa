@@ -83,7 +83,7 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 08-01-PLAN.md — batch_audit.py: SPLIT-read / AUDIT-write per-spec + AUDIT-root aggregates; drop dead path matchers (ROUTE-03, ROUTE-04)
+- [x] 08-01-PLAN.md — batch_audit.py: SPLIT-read / AUDIT-write per-spec + AUDIT-root aggregates; drop dead path matchers (ROUTE-03, ROUTE-04)
 - [ ] 08-02-PLAN.md — cluster_audit.py: dual-bucket AUDIT/SPLIT read + cluster_summary/audit_report at AUDIT root (ROUTE-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*

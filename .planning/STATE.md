@@ -4,14 +4,14 @@ milestone: v1.2
 milestone_name: Output structure reorganization
 status: executing
 stopped_at: Phase 8 context gathered
-last_updated: "2026-06-07T16:41:07.530Z"
-last_activity: 2026-06-07 -- Phase 08 planning complete
+last_updated: "2026-06-07T16:45:41.926Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
-**Current focus:** Phase 07 — Bucket layout & main.py routing (READY + SPLIT)
+**Current focus:** Phase 08 — audit-routing-audit
 
 ## Current Position
 
-Phase: 8
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-07 -- Phase 08 planning complete
+Phase: 08 (audit-routing-audit) — EXECUTING
+Plan: 2 of 3
+Status: Plan 08-01 complete; ready to execute Plan 08-02
+Last activity: 2026-06-07 -- Plan 08-01 complete (batch_audit SPLIT-read / AUDIT-write routing)
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Last activity: 2026-06-07 -- Phase 08 planning complete
 | 04 | 3 | - | - |
 | 06 | 6 | - | - |
 | 07 | 3 | - | - |
+| 08 P01 | 6min | 2 tasks | 1 files |
 
 **Recent Trend:**
 
@@ -103,6 +104,7 @@ Recent decisions affecting current work:
 - [Phase 6 / Plan 04]: DRIFT-02 closed end-to-end — run.ps1 now ships .SYNOPSIS/.DESCRIPTION/5 .PARAMETER/6 .EXAMPLE help block (RU header at lines 1-13 SHA-frozen, comments-only edit, B-3 zero-deletion gate PASS); ONE_BUTTON_RUN.md trimmed 54→50 with "run .\\run.ps1 -?" pointer (Phase 4 CACHE-04 -NoClean+clean.ps1 co-occurrence preserved); RUN_PATHS_AND_IO_LAYOUT.md trimmed 281→264 with top pointer to run.ps1 -? + ONE_BUTTON_RUN.md, PYTHONPYCACHEPREFIX claim PATCHED to Phase 4 D-13 vocabulary (run.ps1 + teresa_gui co-mention + PYTEST_ADDOPTS partner); 44 sweep rows appended (16 ONE_BUTTON_RUN + 28 RUN_PATHS, 1 patch + 43 no_drift); D-22 byte-equal; goldens byte-equal; DOC_INVARIANTS #8 prerequisite landed.
 - [Phase 6 / Plan 05]: DRIFT-04 closed — 3 surgical line patches landed in .planning/codebase/ (STACK.md:79 + INTEGRATIONS.md:55,150). Both stale PYTHONPYCACHEPREFIX bullets replaced with Phase 5 D-05/D-06 canonical defense-in-depth vocabulary (PYTHONPYCACHEPREFIX + PYTEST_ADDOPTS env vars set by run.ps1 AND teresa_gui.py from config.local.yaml::temp_root); INTEGRATIONS.md:55 hardcoded `C:\\Users\\G\\Desktop\\temporary` username leak replaced with `C:\\Users\\<USERNAME>\\Desktop\\temporary` per HYG-01 placeholder convention (v1.0 HYG-01 retroactive miss-fix). 3 patch rows appended to 06-DRIFT-AUDIT.md using N-2-fixed column shape (bare check_command + parenthesized pre-state context in resolution column). Single atomic `docs(06): T1 ...` commit per planner discretion (D-21 borderline doc-class call). D-22 byte-equal; goldens byte-equal. Commit: 44447d3.
 - [Phase 6 / Plan 06]: DRIFT-03 + DRIFT-04 closed end-to-end. T1 cffcc38 created spec_classifier/docs/dev/DOC_INVARIANTS.md (128 lines, 8 mechanical Bash-one-liner invariants per D-15..D-20: PYTHONPYCACHEPREFIX in run.ps1+teresa_gui.py, PYTEST_ADDOPTS, clean.ps1, no run_full orphans, power_cord intentionally unmapped, six vendors, .SYNOPSIS help block); T2 7b84b65 added DOC_INVARIANTS.md entry to spec_classifier/docs/DOCS_INDEX.md (1:1 contract preserved, role-grouped placement after OPERATIONAL_NOTES.md); T3 c762167 finalized 06-DRIFT-AUDIT.md Tally (369 claims swept / 356 no_drift / 10 patch / 3 remove / 18 distinct files; conceptual 19 = 16 in-scope + 3 surgical lines reconciled inline since INTEGRATIONS.md contributes 2 of 3 surgical lines from one file) + appended SC #1 + SC #4 verification subsection (8/8 invariants exit 0; 12 patch-row spot-checks PASS; SC #3 line-count gates re-confirmed 50<54 and 264<281; D-25 pytest 774 passed + 1 xfailed + 0 skipped in 23.65s — REAL DATA outcome (a) per N-1 distinction since INPUT populated for all 6 vendors; D-22 + goldens byte-equal across full phase window c615637..HEAD). Phase 6 metadata commit c48bed5. ROADMAP §SC-1, §SC-2, §SC-3, §SC-4, §SC-5 all PASS. v1.1 milestone ready for /gsd-verify-work 6 + /gsd-complete-milestone.
+- [Phase 8 / Plan 01]: batch_audit.py re-pointed at Phase-7 buckets — reads `*_annotated.xlsx` strictly from `output_root/SPLIT` (is_dir guard, no whole-tree fallback; D-02), writes `<stem>_annotated_audited.xlsx` to `output_root/AUDIT/<vendor>/<spec>` via `relative_to(SPLIT_root)` mirror + mkdir-parents (no rmtree; D-03/D-04), `audit_report.json` + `audit_summary.xlsx` → `AUDIT/` root (D-05). Dead `{vendor}_run`/`hp_run`/`-TOTAL` matchers removed; `/{vendor}/` retained (D-07). `_generate_human_report` :924 untouched. `SPLIT_root`/`AUDIT_root` derived inline in `main()` (D-01, no launcher edits). Routing-only; goldens byte-equal. Commits 74c7dda, 83f2eb7. Full pytest gate deferred to Plan 08-02 (Wave 2).
 - [Phase 6 / Plan 06]: Deferred bookkeeping note — .planning/ROADMAP.md Progress table shows Phase 4 as "0/3 | Planning complete" but Phase 4 actually completed 3/3 plans (commits 46c88d2/9cf94dd/f61d996/8eb8302; 04-VERIFICATION.md exists). Out of scope for Plan 06-06 per executor SCOPE BOUNDARY rule; tracked in .planning/phases/06-doc-vs-impl-drift-sweep/deferred-items.md for v1.1 milestone-close cleanup.
 
 ### Pending Todos
@@ -145,9 +147,9 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07T15:19:21.031Z
+Last session: 2026-06-07T16:45:41.913Z
 Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-audit-routing-audit/08-CONTEXT.md
+Resume file: None
 
 ## Operator Next Steps
 
