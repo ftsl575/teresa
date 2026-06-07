@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Output structure reorganization
 status: planning
-last_updated: "2026-06-07T13:13:45.113Z"
-last_activity: 2026-06-07
+stopped_at: Phase 7 context gathered
+last_updated: "2026-06-07T13:35:58.191Z"
+last_activity: 2026-06-07 — Milestone v1.2 roadmap created (Phases 7-9, 10/10 requirements mapped)
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 # Project State
@@ -142,9 +142,9 @@ Items acknowledged and carried forward (v2 scope per REQUIREMENTS.md):
 
 ## Session Continuity
 
-Last session: 2026-06-07
-Stopped at: v1.2 milestone initialized — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written, Phases 7-9 mapped (10/10 requirements covered)
-Resume file: None
+Last session: 2026-06-07T13:35:58.181Z
+Stopped at: Phase 7 context gathered
+Resume file: .planning/phases/07-bucket-layout-main-py-routing-ready-split/07-CONTEXT.md
 
 ## Operator Next Steps
 
