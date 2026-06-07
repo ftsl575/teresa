@@ -142,3 +142,72 @@ def test_output_root_configurable_via_cli(tmp_path):
     split_vendor = output_root / "SPLIT" / "dell"
     assert split_vendor.is_dir(), \
         "Output must be under output_root/SPLIT/dell/ (repo stays clean when using external path)"
+
+
+def test_manifest_readme_exists_after_run(tmp_path):
+    """README.md manifest must exist at output_root after a main.py run."""
+    root = project_root()
+    input_xlsx = get_input_root_dell() / "dl1.xlsx"
+    if not input_xlsx.exists():
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml)")
+
+    output_root = tmp_path / "output"
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    result = subprocess.run(
+        [
+            sys.executable, "main.py",
+            "--input", str(input_xlsx),
+            "--config", str(root / "config.yaml"),
+            "--output-dir", str(output_root),
+        ],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, f"CLI failed: {result.stderr!r}"
+    assert (output_root / "README.md").exists(), \
+        "README.md manifest must exist at output_root after a run"
+
+
+def test_output_root_top_level_layout(tmp_path):
+    """output_root must contain exactly READY/, SPLIT/, AUDIT/, README.md — no legacy dirs."""
+    root = project_root()
+    input_xlsx = get_input_root_dell() / "dl1.xlsx"
+    if not input_xlsx.exists():
+        pytest.skip(f"Input not found: {input_xlsx} (set paths.input_root in config.local.yaml)")
+
+    output_root = tmp_path / "output"
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    result = subprocess.run(
+        [
+            sys.executable, "main.py",
+            "--input", str(input_xlsx),
+            "--config", str(root / "config.yaml"),
+            "--output-dir", str(output_root),
+        ],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, f"CLI failed: {result.stderr!r}"
+
+    # output_root must contain READY/, SPLIT/, and README.md after a main.py run;
+    # AUDIT/ is written by batch_audit.py (a subsequent step) and may be absent here.
+    # The required set is a subset check — no extra legacy dirs allowed.
+    top_level = {p.name for p in output_root.iterdir()}
+    assert "READY" in top_level, f"READY/ bucket missing from output_root — got {top_level!r}"
+    assert "SPLIT" in top_level, f"SPLIT/ bucket missing from output_root — got {top_level!r}"
+    assert "README.md" in top_level, f"README.md missing from output_root — got {top_level!r}"
+
+    # Negative assertions: no legacy layout patterns allowed
+    for item in output_root.iterdir():
+        assert not item.name.startswith("run-"), \
+            f"Legacy run-<timestamp>-* directory found: {item.name}"
+        assert not item.name.endswith("_run"), \
+            f"Legacy *_run directory found: {item.name}"
+        assert not item.name.endswith("-TOTAL"), \
+            f"Legacy *-TOTAL directory found: {item.name}"

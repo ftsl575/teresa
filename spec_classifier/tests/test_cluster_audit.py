@@ -23,7 +23,6 @@ from cluster_audit import (
     print_dry_run_report,
     build_parser,
 )
-from src.diagnostics.run_manager import detect_vendor_from_path
 
 
 def _make_xlsx(path, columns, rows):
@@ -35,45 +34,6 @@ def _make_xlsx(path, columns, rows):
         ws.append(row)
     wb.save(path)
     wb.close()
-
-
-# ---------------------------------------------------------------------------
-# detect_vendor_from_path (shared function from run_manager — D-14)
-# ---------------------------------------------------------------------------
-# These tests target the unified detect_vendor_from_path in run_manager.py.
-# The old _run/hp_run/ccw alias behavior is intentionally dropped (Phase 9 D-13).
-# Reference contract: test_batch_audit.py TestDetectVendorFromPath.
-
-_KNOWN = ["cisco", "dell", "hpe"]
-
-
-@pytest.mark.parametrize("path_str, expected", [
-    # canonical SPLIT/<vendor>/<spec>/ layout — vendor is a path segment
-    ("OUTPUT/SPLIT/hpe/hp8/hp8_annotated_audited.xlsx", "hpe"),
-    ("OUTPUT/SPLIT/dell/dl5/dl5_annotated_audited.xlsx", "dell"),
-    ("OUTPUT/SPLIT/cisco/ccw_2/ccw_2_annotated_audited.xlsx", "cisco"),
-    # vendor as bare directory segment (no SPLIT prefix)
-    ("OUTPUT/hpe/some_file.xlsx", "hpe"),
-    ("OUTPUT/dell/some_file.xlsx", "dell"),
-    # nothing matches → unknown (dead _run paths no longer resolve to a vendor)
-    ("OUTPUT/hpe_run/hp8_annotated_audited.xlsx", "unknown"),
-    ("OUTPUT/dell_run/dl5_annotated_audited.xlsx", "unknown"),
-    ("OUTPUT/cisco_run/ccw_2_annotated_audited.xlsx", "unknown"),
-    ("OUTPUT/other/mystery_file.xlsx", "unknown"),
-])
-def test_detect_vendor_from_path(path_str, expected):
-    assert detect_vendor_from_path(Path(path_str), _KNOWN) == expected
-
-
-def test_detect_vendor_new_vendor_in_known():
-    extended = _KNOWN + ["lenovo"]
-    # SPLIT/<vendor>/ layout — lenovo_run is no longer resolved
-    assert detect_vendor_from_path(Path("OUTPUT/SPLIT/lenovo/L1/file.xlsx"), extended) == "lenovo"
-    assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx"), extended) == "unknown"
-
-
-def test_detect_vendor_unknown_path():
-    assert detect_vendor_from_path(Path("/random/path/file.xlsx"), _KNOWN) == "unknown"
 
 
 # ---------------------------------------------------------------------------

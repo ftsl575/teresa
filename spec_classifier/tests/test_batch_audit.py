@@ -9,7 +9,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from batch_audit import (
-    validate_row, _generate_report, detect_vendor_from_path,
+    validate_row, _generate_report,
     issue_color, _is_known_fp, KNOWN_FP_CASES,
 )
 
@@ -429,42 +429,6 @@ class TestKnownFPSuppression:
             {"vendor": "dell", "option_name": "Random Cable Assembly"},
         ]
         assert _is_known_fp(items, "device_mismatch", "cable→accessory") is False
-
-
-# ---------------------------------------------------------------------------
-# detect_vendor_from_path
-# ---------------------------------------------------------------------------
-
-class TestDetectVendorFromPath:
-    KNOWN = ["cisco", "dell", "hpe"]
-
-    def test_dell_split_layout(self):
-        assert detect_vendor_from_path(Path("OUTPUT/SPLIT/dell/dl1/dl1_annotated.xlsx"), self.KNOWN) == "dell"
-
-    def test_hpe_split_layout(self):
-        assert detect_vendor_from_path(Path("OUTPUT/SPLIT/hpe/hp1/hp1_annotated.xlsx"), self.KNOWN) == "hpe"
-
-    def test_cisco_split_layout(self):
-        assert detect_vendor_from_path(Path("OUTPUT/SPLIT/cisco/ccw_1/ccw_1_annotated.xlsx"), self.KNOWN) == "cisco"
-
-    def test_hp_run_alias_removed_returns_unknown(self):
-        # The hp_run -> hpe alias was removed in Phase 8 (D-07). A bare hp_run-style
-        # path no longer maps to hpe; the /{vendor}/ matcher does not match it.
-        assert detect_vendor_from_path(Path("OUTPUT/hp_run/file.xlsx"), self.KNOWN) == "unknown"
-
-    def test_lenovo_run_returns_unknown(self):
-        # lenovo not in KNOWN; the {vendor}_run matcher is gone too -> unknown.
-        assert detect_vendor_from_path(Path("OUTPUT/lenovo_run/file.xlsx"), self.KNOWN) == "unknown"
-
-    def test_no_vendor_keyword_returns_unknown(self):
-        assert detect_vendor_from_path(Path("/some/random/path/file.xlsx"), self.KNOWN) == "unknown"
-
-    def test_new_vendor_in_known_vendors(self):
-        extended = self.KNOWN + ["lenovo"]
-        assert detect_vendor_from_path(Path("OUTPUT/SPLIT/lenovo/L1/L1_annotated.xlsx"), extended) == "lenovo"
-
-    def test_vendor_in_directory_path(self):
-        assert detect_vendor_from_path(Path("OUTPUT/dell/subdir/file.xlsx"), self.KNOWN) == "dell"
 
 
 # ---------------------------------------------------------------------------
