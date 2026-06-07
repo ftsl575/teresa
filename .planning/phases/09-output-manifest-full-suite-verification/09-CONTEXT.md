@@ -116,15 +116,16 @@ artifact.
   + D-09 together prove SC#2 sufficiently.
 
 ### Vendor-detector deduplication (WR-01 — separate task)
-- **D-11: One shared function in `run_manager.py`.** Extract the **cleaned
-  `batch_audit` version** of `detect_vendor_from_path` into
+- **D-11: One shared, config-free function in `run_manager.py`;
+  `known_vendors` is a required parameter.** Extract the **cleaned `batch_audit`
+  version** of `detect_vendor_from_path` into
   `spec_classifier/src/diagnostics/run_manager.py`, beside `create_spec_folder`,
-  as the single source of path-derived vendor logic. Canonical behavior =
-  `batch_audit.py:1357-1366` exactly:
+  as the single source of path-derived vendor logic. The function is **pure**
+  `(path, known_vendors) → vendor` — it does **not** load config and does **not**
+  call `_load_config` / `_get_known_vendors`. `run_manager` stays a path-helper
+  module with no config dependency. Signature and body:
   ```python
-  def detect_vendor_from_path(path: Path, known_vendors: list[str] | None = None) -> str:
-      if known_vendors is None:
-          known_vendors = _get_known_vendors(_load_config())
+  def detect_vendor_from_path(path: Path, known_vendors: list[str]) -> str:
       s = str(path).lower()
       for vendor in known_vendors:
           if f"/{vendor}/" in s or f"\\{vendor}\\" in s:
@@ -134,10 +135,22 @@ artifact.
   ```
   Segment match `/<vendor>/` over the full path string, WARN on miss, **no**
   `_run`/`hp_run`/`ccw` aliases. Public name `detect_vendor_from_path`.
-  - `_get_known_vendors` / `_load_config` plumbing: the shared function needs
-    access to these (currently defined in each module). Planner decides whether
-    to also centralize them or accept them as injected `known_vendors` — but the
-    function's default-resolution behavior must stay equivalent.
+  - **Signature change from the batch original:** `known_vendors` loses its
+    `| None = None` default and the in-function default-resolution branch — it is
+    now **required**. Detection behavior is otherwise byte-identical to
+    `batch_audit.py:1357-1366`.
+  - **Callers resolve and pass the list.** `batch_audit` and `cluster_audit` each
+    obtain their vendor list from their own config (`_get_known_vendors(config)` /
+    `_load_config`, which **stay in the caller modules**) and pass it in.
+    `batch_audit`'s call sites already have `known_vendors` in scope
+    (`batch_audit.py:1373`); `cluster_audit`'s live call (`cluster_audit.py:195`)
+    currently relies on the old `None` default and **must be updated to pass the
+    list explicitly** (resolved via its existing `_get_known_vendors` /
+    `_load_config`, e.g. as already done at `cluster_audit.py:100`).
+  - **Rationale:** a pure `(path + list → vendor)` function is unit-testable with
+    no config mocks, and `run_manager` does not acquire a config dependency.
+  - `import sys` is added to `run_manager.py` for the WARN print (stdlib, not a
+    config dependency).
 - **D-12: Both modules import the shared function; delete both local copies.**
   - `batch_audit.py` — remove `detect_vendor_from_path` (`batch_audit.py:1357-1366`),
     import from `run_manager`.
@@ -185,10 +198,6 @@ artifact.
 ### Claude's Discretion
 - Exact helper name/signature for the manifest writer in `run_manager.py`
   (`write_manifest(output_root)` is a suggestion).
-- Whether `_get_known_vendors` / `_load_config` are also centralized into
-  `run_manager.py` alongside the shared `detect_vendor_from_path`, or left in
-  their modules with `known_vendors` passed in — provided default-resolution
-  behavior stays equivalent (D-11).
 - Whether the shared function keeps a thin private alias (e.g.
   `cluster_audit._detect_vendor_from_path = detect_vendor_from_path`) for call-site
   stability vs. updating call sites directly — planner discretion.

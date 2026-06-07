@@ -120,6 +120,19 @@ Captured in 09-CONTEXT.md as domain deliverable #3 and decisions D-11..D-15,
 classified path-detection-not-audit logic (in-scope under the v1.2 D-22-lift per
 Phase 8 D-08).
 
+## Addendum 3 — D-11 open question closed (known_vendors)
+
+User closed the planner-deferred sub-question in D-11. Decision: the shared
+`detect_vendor_from_path(path, known_vendors)` takes `known_vendors` as a
+**required parameter** (no `None` default, no in-function config resolution).
+`run_manager` stays config-free — it does NOT call `_load_config` /
+`_get_known_vendors`; those remain in the caller modules, which resolve their
+vendor list and pass it in. `cluster_audit`'s live call (`:195`) is updated to
+pass the list explicitly. Rationale: a pure `(path + list → vendor)` function is
+unit-testable without config mocks and keeps `run_manager` a dependency-free
+path-helper module. D-11 updated accordingly; corresponding Claude's-Discretion
+bullet removed (no longer open).
+
 ## Deferred Ideas
 
 - Artifact content changes (column trimming, translation, new summary docs) — v1.3 (CONTENT-01..03).
