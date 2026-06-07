@@ -79,6 +79,16 @@ Plans:
 
 **Requirements:** ROUTE-03, ROUTE-04
 
+**Plans:** 3 plans
+
+Plans:
+**Wave 1**
+- [ ] 08-01-PLAN.md — batch_audit.py: SPLIT-read / AUDIT-write per-spec + AUDIT-root aggregates; drop dead path matchers (ROUTE-03, ROUTE-04)
+- [ ] 08-02-PLAN.md — cluster_audit.py: dual-bucket AUDIT/SPLIT read + cluster_summary/audit_report at AUDIT root (ROUTE-04)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 08-03-PLAN.md — Realign batch_audit/cluster_audit path+aggregate tests to new layout; full suite green within skip-gate, goldens byte-equal (TEST-01 / SC#4)
+
 **Success criteria:**
 1. `batch_audit.py` discovers `<stem>_annotated.xlsx` under `SPLIT/<vendor>/<spec>/` and writes `<stem>_annotated_audited.xlsx` to `AUDIT/<vendor>/<spec>/`.
 2. `audit_report.json` and `audit_summary.xlsx` are written to the `AUDIT/` root (no vendor/spec nesting).
@@ -108,7 +118,7 @@ Plans:
 | 5. Orphan Cleanup            | v1.1      | 1/1            | Complete | 2026-05-10 |
 | 6. Doc-vs-Impl Drift Sweep   | v1.1      | 6/6            | Complete | 2026-05-11 |
 | 7. Bucket layout & main.py routing | v1.2 | 3/3 | Complete   | 2026-06-07 |
-| 8. Audit routing             | v1.2      | 0/—            | Planned  | —          |
+| 8. Audit routing             | v1.2      | 0/3            | Planned  | —          |
 | 9. Manifest & verification   | v1.2      | 0/—            | Planned  | —          |
 
 ---
