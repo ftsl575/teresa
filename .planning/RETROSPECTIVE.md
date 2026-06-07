@@ -97,6 +97,47 @@
 
 ---
 
+## Milestone: v1.2 — Output structure reorganization
+
+**Shipped:** 2026-06-07
+**Phases:** 3 (Phases 7-9) | **Plans:** 9 | **Tasks:** 19 | **Sessions:** 1 (discuss → plan → execute → audit → close)
+
+### What Was Built
+- Three-bucket `<bucket>/<vendor>/<spec>/` output layout — `main.py` routes the nine per-spec artifacts to `SPLIT/<vendor>/<spec>/` and the branded workbook to `READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` (filename rename only, bytes byte-equal); per-run timestamp folder dropped (wipe-first overwrite) and the TOTAL copy mechanism removed; `run_manager.py` shrank 72 → 32 lines via `create_spec_folder` (Phase 7: LAYOUT-01..03, ROUTE-01/02/05).
+- Audit routing → AUDIT — `batch_audit.py` reads annotated input from SPLIT and writes `<stem>_annotated_audited.xlsx` per-spec under `AUDIT/<vendor>/<spec>/` via a `relative_to` mirror; batch aggregates (`audit_report.json`, `audit_summary.xlsx`, `cluster_summary.xlsx`) at the AUDIT root; `cluster_audit.py` dual-bucket read (Phase 8: ROUTE-03/04).
+- `output_root/README.md` manifest — static, byte-stable `write_manifest(output_root)` (file → bucket → purpose table, Russian purpose column) — plus WR-01 vendor-detector dedup (one shared `detect_vendor_from_path` in `run_manager.py`, both local copies removed) and full-suite verification (771 passed, goldens byte-equal) (Phase 9: MANIFEST-01, TEST-01).
+
+### What Worked
+- **Routing-only invariant made verification mechanical.** "Files move, bytes don't" is a git-diff/grep-checkable property: goldens byte-equal end-to-end (no `--update-golden`), and `git diff`/`grep` for removed symbols (`copy_to_total`, `create_total_folder`, `get_session_stamp`, `create_run_folder`) confirmed no dangling references. Every phase gate had the same hard invariant, so verification never relied on subjective judgment.
+- **Clean milestone audit before close.** `/gsd-audit-milestone` ran a 3-source cross-reference (VERIFICATION.md status · SUMMARY frontmatter · REQUIREMENTS.md table) and a `gsd-integration-checker` pass on all four cross-phase seams — caught the ROUTE-01/02 frontmatter bookkeeping gaps and the TEST-01 "Pending" nit *before* archival, so close had no surprises (10/10 REQs, 3/3 phases, 4/4 seams, 1/1 E2E flow, all PASS).
+- **`relative_to` bucket mirror.** Phase 8 reproduces SPLIT's `<vendor>/<spec>/` nesting under AUDIT by computing `path.relative_to(SPLIT_root)` rather than re-deriving vendor/spec — one source of truth for the nesting, so producer (Phase 7) and consumer (Phase 8) can't drift apart. Integration-checker verified the seam WIRED.
+- **Latent bug surfaced by the routing work.** Phase 7 exposed and fixed a Cisco `generates_branded_spec()` True→False bug; the verifier assessed it ACCEPTABLE (routing-only, a latent-bug fix not a behavior change). Touching the routing paths forced the code into the light.
+
+### What Was Inefficient
+- **SUMMARY `requirements-completed` frontmatter went unfilled (07-02/07-03 empty).** ROUTE-01/02 were satisfied in code but not echoed in the per-plan SUMMARY frontmatter, so the milestone audit's 3-source cross-reference showed them as "partial" until VERIFICATION.md code evidence resolved it. The executor needs to populate `requirements-completed` as part of plan close, not leave it to the auditor to reconcile.
+- **MILESTONES.md auto-extraction produced `- One-liner:` junk — third consecutive milestone.** `summary-extract` pulled literal `"One-liner:"` label fragments from 09-02/09-03 summaries (whose one-liner bodies were on the next line). Same root cause as v1.0 W-2 and v1.1's "noisy extraction" lesson. Hand-curated the v1.2 entry to the 5-bullet style. The SDK extractor still doesn't filter section labels — this is now a verified-recurring defect, not a one-off.
+- **REQUIREMENTS.md traceability drift recurred (TEST-01 stuck "Pending").** Despite the `[x]` checkbox and a passing Phase 9 verification, the traceability table still read "Pending" at close — identical to v1.1's CACHE-01..04 drift. Corrected during archival (in the archived copy). The per-phase workflow still doesn't reach into the REQUIREMENTS.md traceability table; milestone close keeps absorbing the reconcile cost.
+- **Documentation prose not realigned to the new layout.** `docs/product/TECHNICAL_OVERVIEW.md:43,50`, `spec_classifier/CLAUDE.md` "OUTPUT layout", and two `main.py` help/docstring strings still describe the pre-v1.2 run-folder/TOTAL layout. Consciously logged as v1.3 tech debt (routing-only milestone boundary held — content/prose work is next milestone), but it means the docs ship one milestone behind the code.
+
+### Patterns Established
+- **Routing-only invariant ("files move, bytes don't").** A whole-milestone hard gate enforced two ways: goldens byte-equal (content) + `git diff`/`grep` for removed-symbol references (structure). Lets a "move things around" milestone be verified mechanically rather than by re-reading every artifact.
+- **`relative_to(producer_root)` bucket mirror.** When a consumer must reproduce a producer's directory nesting in a different bucket, compute it from the producer's path rather than re-deriving the key — single source of truth for the nesting, integration-checkable as one seam.
+- **Static, byte-stable manifest helper.** `write_manifest` emits a fixed pattern-row table (no per-run timestamps or counts) so the manifest itself is golden-stable and testable as a unit, not a moving target.
+- **Milestone audit before close as standard practice.** The 3-source requirements cross-reference + integration-checker seam audit caught every bookkeeping nit before archival. Worth running on every milestone, not just contested ones.
+
+### Key Lessons
+1. **A routing-only boundary is the cleanest milestone invariant yet.** By forbidding content changes entirely (single `branded`-rename exception), the whole milestone reduced to "byte-equal goldens + no dangling symbol references." This is more mechanically verifiable than v1.0/v1.1's doc-sweep gates and should be the template for any "restructure without rewrite" milestone.
+2. **The MILESTONES.md extraction defect is now confirmed-recurring (3×).** v1.0 flagged it, v1.1 re-flagged it, v1.2 hit it again (`- One-liner:`). Three data points = a real SDK bug in `summary-extract`, not user error. It needs a fix (filter `^(One-liner|Pre-patch text|Check \d+):` style labels), not another hand-curation workaround.
+3. **REQUIREMENTS.md traceability drift is structural, not incidental.** Two consecutive milestones (v1.1 CACHE, v1.2 TEST-01) shipped with stale "Pending" rows that the `[x]` checkboxes contradicted. The per-phase update step provably doesn't touch the traceability table. Until an SDK reconcile step exists, milestone close must always diff checkboxes against table status.
+4. **Touching the paths surfaces latent bugs for free.** The Cisco branded-spec bug had been dormant; rerouting forced every code path into a test. "Restructure" milestones are a low-risk opportunity to catch latent bugs because the invariant (byte-equal output) makes any behavior change loud.
+
+### Cost Observations
+- Model mix: sonnet for executor + planner + checker + verifier + reviewer (per `.planning/config.json` `model_profile: quality`); orchestrator + audit on opus
+- Sessions: 1 — discuss → plan → execute (3 phases / 9 plans) → milestone audit → close
+- Notable: `parallelization: false` meant Phase 7→8→9 ran strictly sequential, correct here because Phase 8 reads what Phase 7 writes and Phase 9 shares `run_manager.py` with both. The producer→consumer coupling across phases is exactly the case where sequential is not a limitation but the right model.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -105,6 +146,7 @@
 |-----------|----------|--------|------------|
 | v1.0 | 1 | 3 | Initial GSD adoption — established discuss/plan/execute/verify cycle, archive pattern, strict-gate template |
 | v1.1 | 2 | 3 | Auto-mode end-to-end on multi-plan phase; code-review gate as load-bearing post-execution step; frozen-SHA preservation pattern; "tighten the invariant after the bug it would have caught" |
+| v1.2 | 1 | 3 | First feature-touching (routing) milestone; routing-only invariant ("files move, bytes don't") via goldens + symbol-grep; pre-close milestone audit (3-source cross-ref + integration-checker) as standard; `relative_to` bucket-mirror pattern |
 
 ### Cumulative Quality
 
@@ -112,6 +154,7 @@
 |-----------|-------|----------|-------------------|
 | v1.0 | 774 passed (1 xfailed, 0 skipped, 0 failed) | unchanged from baseline (no test additions; doc-only milestone) | 0 (zero new runtime dependencies; goal was hygiene + workflow, not feature work) |
 | v1.1 | 774 passed (1 xfailed, 0 skipped, 0 failed) | unchanged from v1.0 (D-22 protected paths byte-equal across milestone window; goldens byte-equal; doc-only + comments-only-launcher milestone) | 0 (zero new runtime dependencies; D-27 enforced) |
+| v1.2 | 771 passed (1 xfailed, 0 skipped, 0 failed) | path/layout tests realigned to `<bucket>/<vendor>/<spec>/`; new `test_run_manager.py` (detect-vendor + manifest units); goldens byte-equal end-to-end (no `--update-golden`) | 0 (zero new runtime dependencies; routing-only milestone) |
 
 ### Top Lessons (Verified Across Milestones)
 
@@ -122,4 +165,4 @@
 5. **Auto-mode is appropriate for low-judgment, sharply-scoped phases.** v1.0 Phase 3 (WF-01 + WF-02) and v1.1 Phase 6 (DRIFT-01..04) both ran end-to-end in `--auto` because their CONTEXT.md captured every locked decision. The auto-mode unlock is upfront discuss-phase investment, not a quality compromise.
 
 ---
-*Last updated: 2026-05-11 after v1.1 milestone close*
+*Last updated: 2026-06-07 after v1.2 milestone close*

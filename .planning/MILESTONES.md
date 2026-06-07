@@ -1,5 +1,45 @@
 # Milestones
 
+## v1.2 Output structure reorganization (Shipped: 2026-06-07)
+
+**Phases completed:** 3 phases (7-9), 9 plans, 19 tasks
+**Timeline:** 2026-05-11 → 2026-06-07
+**Git range:** `feat(07-01)` → `feat(09-03)` (~60 commits in milestone window)
+**Tests:** 771 passed + 1 xfailed + 0 skipped; goldens byte-equal end-to-end (no `--update-golden` anywhere in v1.2); routing-only invariant held under git-diff/grep across the milestone window
+
+**Delivered:** Every output artifact routed into three purpose-named buckets under `output_root` (READY / SPLIT / AUDIT), keyed by `<vendor>/<spec>/`, with zero content changes (single content-adjacent exception: the `branded` workbook renamed to its Russian filename on move into READY).
+
+**Key accomplishments:**
+
+1. **Three-bucket layout & main.py routing (Phase 7: LAYOUT-01..03, ROUTE-01/02/05)** — Replaced four timestamp/TOTAL helpers in `run_manager.py` with a single wipe-first `create_spec_folder` (72 → 32 lines). All nine per-spec `main.py` artifacts route to `SPLIT/<vendor>/<spec>/`; the branded workbook routes to `READY/<vendor>/<spec>/Коммерческое предложение_<spec>.xlsx` (filename rename only, bytes byte-equal). Per-run timestamp folder dropped (overwrite-in-place semantics); the TOTAL copy mechanism (`copy_to_total` + call site) removed entirely; all TOTAL/timestamp dead code stripped from `main.py` (387 → 367 lines).
+
+2. **Audit routing → AUDIT (Phase 8: ROUTE-03/04)** — `batch_audit.py` reads `<stem>_annotated.xlsx` from `SPLIT/<vendor>/<spec>/` (rglob) and writes `<stem>_annotated_audited.xlsx` to `AUDIT/<vendor>/<spec>/` via a `relative_to` mirror; batch-level aggregates (`audit_report.json`, `audit_summary.xlsx`, `cluster_summary.xlsx`) written to the AUDIT root; `cluster_audit.py` dual-bucket SPLIT/AUDIT read. Dead path matchers stripped; goldens byte-equal.
+
+3. **Output manifest (Phase 9: MANIFEST-01)** — `output_root/README.md` written once per `main()` via static, byte-stable `run_manager.write_manifest(output_root)`: a file → bucket → purpose table (Russian purpose column) grouped by READY/SPLIT/AUDIT (~14 pattern rows). A single end-to-end run yields exactly `{READY/, SPLIT/, AUDIT/, README.md}` — no legacy `run-*` / `*_run` / `*-TOTAL` layout.
+
+4. **Vendor-detector deduplication (Phase 9: WR-01)** — Single shared `detect_vendor_from_path` extracted into `run_manager.py`; both local copies (in `batch_audit.py` + `cluster_audit.py`) deleted; cluster caller updated to pass `known_vendors` explicitly; hardened to right-to-left per-component matching.
+
+5. **Full-suite verification & test realignment (Phase 9: TEST-01)** — Path/layout tests across `test_output_structure.py`, `test_cli.py`, `test_smoke.py`, `batch_audit`/`cluster_audit` path tests, and a consolidated `test_run_manager.py` (detect-vendor + manifest units) realigned to the `<bucket>/<vendor>/<spec>/` structure; full suite green (771 passed, 1 xfailed, 0 skipped) within the skip-gate. Fixed a latent Cisco branded-spec routing bug surfaced during Phase 7.
+
+**Verification gates:**
+
+| Phase | Gate | Verdict |
+|-------|------|---------|
+| Phase 7 | READY/SPLIT layout + no run-folder/TOTAL; goldens byte-equal | PASS (5/5 truths) |
+| Phase 8 | AUDIT routing; routing-only invariant under git-diff/grep; goldens byte-equal | PASS (4/4 truths) |
+| Phase 9 | Manifest + WR-01 dedup + full-suite green; CR-01 (vendor-detector) resolved `4894ba9`; UAT closed | PASS (11/11 truths) |
+| Milestone | Audit: 10/10 REQs · 3/3 phases · 4/4 integration seams · 1/1 E2E flow | ✅ PASSED |
+
+**Tech debt deferred to v1.3** (documentation/help-text drift only — routing/classification correct):
+
+- `main.py:240` `--batch-dir` help text still mentions the removed TOTAL aggregation folder (IN-01).
+- `main.py:3` module docstring lists only 3 of 6 vendors (IN-01).
+- `docs/product/TECHNICAL_OVERVIEW.md:43,50` and `spec_classifier/CLAUDE.md` "OUTPUT layout" section still describe the pre-v1.2 run-folder/TOTAL layout (doc drift).
+
+**Known deferred items at close:** 0 (open-artifact audit clear).
+
+---
+
 ## v1.1 Periphery cleanup (residual) (Shipped: 2026-05-11)
 
 **Phases completed:** 3 phases (4-6), 10 plans, 18 tasks

@@ -8,19 +8,6 @@ Teresa is a deterministic, rule-based Excel-spec classifier for hardware vendor 
 
 The classifier produces correct, deterministic, audited artifacts for every supported vendor. Everything else is plumbing.
 
-## Current Milestone: v1.2 Output structure reorganization
-
-**Goal:** Route every output artifact into three purpose-named buckets under `output_root` (READY / SPLIT / AUDIT), keyed by `<vendor>/<spec>/`, with zero content changes.
-
-**Target features:**
-- Three buckets under `output_root`: **READY** (clean human-facing Russian docs), **SPLIT** (English technical/debug/DB-feed), **AUDIT** (`annotated_audited` + audit/cluster reports), each preserving `<vendor>/<spec>/` nesting.
-- Routing rule: every per-spec `main.py` output → SPLIT; **exception** — `branded` → READY (renamed `Коммерческое предложение_<spec>.xlsx`, name only); every `batch_audit.py`/`cluster_audit.py` output → AUDIT (per-spec under `<vendor>/<spec>/`, batch aggregates at AUDIT root).
-- Drop the per-run `run-<timestamp>-<stem>/` folder — runs overwrite at `<bucket>/<vendor>/<spec>/`.
-- Remove the TOTAL copy mechanism (`run_manager.copy_to_total`) entirely.
-- README manifest at `output_root` (table: file → bucket → purpose).
-
-**Hard boundary:** no column trimming, translation, or new documents. Artifact *content* work is the next milestone. Single content-adjacent change allowed: renaming `branded` to its Russian filename on move into READY (filename, not bytes).
-
 ## Current State
 
 **Last shipped:** v1.2 Output structure reorganization — 2026-06-07 (9/9 phases complete).
@@ -154,6 +141,10 @@ _None — v1.2 shipped. Next: start the v1.3 content milestone (`/gsd-new-milest
 | Honor "do not fix" tech debt notes | `power_cord=None`, Excel-reading audit, `core/parser.py` Dell-specificity are intentional per project CLAUDE.md; bait for "fix" PRs | ✓ Good — Phase 6 sweep caught 1 USER_GUIDE.md violation (Power Cord LOGISTIC mis-classification) and patched it; invariant #6 protects `power_cord` "intentionally unmapped" comment as a mechanical floor |
 | Default to atomic-fix-on-find for code-review findings during auto-mode | Auto-mode mandates fixing clear-cut bugs in the same session rather than punting; CR-01 (`.un.ps1` from `.\r` escape consumption) was a critical bug in Phase 6's own deliverable that would have failed verification | ✓ Good — Phase 6 close: 5 code-review findings auto-fixed (`fix(06)` commits); verifier re-pass confirmed zero residuals; 1 verifier-found 6th sister location patched inline |
 | `06-DRIFT-AUDIT.md` records `no_drift` rows alongside drifts | SC #5 wording requires "every claim flagged"; `no_drift` rows make the audit log a complete inventory rather than just a delta — supports re-sweep verification and gives next contributor a meaningful baseline | ✓ Good — 369 rows total (356 no_drift + 10 patch + 3 remove); composite SC #1 re-sweep returned 0 drift |
+| v1.2 is routing-only — content work deferred to v1.3 (D-22 lifted for the four routing files only) | Separating destination-path changes from artifact-content changes (column trimming, translation, new docs) keeps each milestone's invariant mechanically checkable: "files move, bytes don't" | ✓ Good — goldens byte-equal end-to-end (771 passed, no `--update-golden`); routing-only invariant held under git-diff/grep across the whole milestone window |
+| `branded` → `Коммерческое предложение_<spec>.xlsx` is the single content-adjacent exception | READY is the human-facing bucket; a Russian filename is the operator's expected deliverable. Rename on move only — bytes preserved (D-07 source bytes byte-equal) | ✓ Good — Phase 7 verification confirmed READY workbook byte-identical to the former `<stem>_branded.xlsx` |
+| Drop the per-run timestamp folder for wipe-first overwrite at `<bucket>/<vendor>/<spec>/` | Operators want the latest run in a stable, predictable path, not an accumulating pile of `run-<timestamp>-<stem>/` dirs; `create_spec_folder` wipes-then-creates | ✓ Good — re-running a spec overwrites in place; no second directory accumulates (LAYOUT-03) |
+| WR-01: deduplicate `detect_vendor_from_path` into `run_manager.py` (one shared copy) | Three near-identical local copies (main/batch/cluster) is a drift hazard; one shared helper hardened to right-to-left per-component matching removes it | ✓ Good — both local copies deleted; CR-01 vendor-detector edge case resolved `4894ba9` (D-13(2) override, user-approved); both consumers import cleanly |
 
 ## Evolution
 
