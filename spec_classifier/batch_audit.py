@@ -1024,7 +1024,8 @@ def _generate_human_report(report_files: list, output_dir: str, llm_model: str) 
         ls.cell(row=i, column=2, value=desc).font = Font(name="Arial", size=10)
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    out_path = Path(output_dir) / "audit_summary.xlsx"
+    out_path = Path(output_dir) / "AUDIT" / "audit_summary.xlsx"
+    out_path.parent.mkdir(parents=True, exist_ok=True)   # defensive: AUDIT root may not exist yet
     wb.save(out_path)
     print(f"📊 Сводный отчёт: {out_path}  ({total_written} строк)")
 
@@ -1287,7 +1288,8 @@ def _generate_report(report_files: list, output_dir: str, llm_model: str,
     }
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    out_path = Path(output_dir) / "audit_report.json"
+    out_path = Path(output_dir) / "AUDIT" / "audit_report.json"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(report, fh, ensure_ascii=False, indent=2)
     print(f"\n📄 Отчёт сохранён: {out_path}")
@@ -1447,7 +1449,9 @@ def main():
 
     for f in files:
         vendor = args.vendor or detect_vendor_from_path(f, known_vendors)
-        out_path = f.parent / f"{f.stem}{args.suffix}.xlsx"
+        # D-03: mirror the SPLIT <vendor>/<spec> subpath into AUDIT; D-04: overwrite in place, no rmtree
+        out_path = AUDIT_root / f.relative_to(SPLIT_root).parent / f"{f.stem}{args.suffix}.xlsx"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         file_num = files.index(f) + 1
         print(f"  [{file_num}/{len(files)}] [{vendor.upper()}] {f.name}", flush=True)
 
