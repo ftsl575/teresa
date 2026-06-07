@@ -15,7 +15,7 @@ import yaml
 
 from src.rules.rules_engine import RuleSet
 from src.core.classifier import classify_row
-from src.diagnostics.run_manager import create_spec_folder
+from src.diagnostics.run_manager import create_spec_folder, write_manifest
 from src.outputs.json_writer import (
     save_rows_raw,
     save_rows_normalized,
@@ -281,6 +281,7 @@ def main() -> int:
         or str(DEFAULT_OUTPUT_ROOT)
     )
     output_dir = Path(output_dir_raw) if Path(output_dir_raw).is_absolute() else _resolve_path(output_dir_raw, cwd)
+    write_manifest(output_dir)
 
     # Batch mode: --batch-dir <path> or --batch (use input_root from config or default)
     if args.batch_dir:
